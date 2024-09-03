@@ -3,7 +3,10 @@
         <div id="main-menu" class="main-menu collapse navbar-collapse">
             <ul class="nav navbar-nav">
                 <li class="active">
-                    <a href="index.html"><i class="menu-icon fa fa-laptop"></i>Dashboard </a>
+                    <a href="{{ route(".admindashboard") }}"><i class="menu-icon fa fa-laptop"></i>Dashboard</a>
+                </li>
+                <li class="active">
+                    <a href="{{ route('.adminbanners.index') }}"><i class="menu-icon fa fa-laptop"></i>Banner</a>
                 </li>
                 <li class="menu-title">UI elements</li><!-- /.menu-title -->
                 <li class="menu-item-has-children dropdown">
