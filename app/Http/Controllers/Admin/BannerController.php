@@ -11,8 +11,10 @@ class BannerController extends Controller
 
     public function index()
     {
-        $banners = Banner::all();
-        return "hello";
+        $banners = Banner::select('id', 'title', 'redirect_url', 'image', 'position', 'start_time', 'end_time')
+            ->orderByDesc('id')
+            ->get();
+        return view('admin.banners.index', compact('banners'));
     }
 
 

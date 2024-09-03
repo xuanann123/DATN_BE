@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\api\Admin\BannerController;
+use App\Http\Controllers\api\Client\BannerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
