@@ -6,7 +6,7 @@
                     <a href="{{ route(".admindashboard") }}"><i class="menu-icon fa fa-laptop"></i>Dashboard</a>
                 </li>
                 <li class="active">
-                    <a href="{{ route('.adminbanners.index') }}"><i class="menu-icon fa fa-laptop"></i>Banner</a>
+                    <a href="{{ route('.adminbanners.index') }}"><i class="menu-icon fa fa-image"></i>Banner</a>
                 </li>
                 <li class="menu-title">UI elements</li><!-- /.menu-title -->
                 <li class="menu-item-has-children dropdown">
