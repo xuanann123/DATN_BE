@@ -12,7 +12,7 @@ class BannerController extends Controller
     {
         $banners = Banner::select('id', 'title', 'redirect_url', 'image', 'position', 'start_time', 'end_time')
             ->where('is_active', '=', 0)
-            ->orderByDesc('id')
+            ->orderByDesc('position')
             ->get();
 
 
