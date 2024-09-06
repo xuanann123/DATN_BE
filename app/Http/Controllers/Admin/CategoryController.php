@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Categories\CreateCategoryRequest;
+use App\Http\Requests\Admin\Categories\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -40,24 +42,8 @@ class CategoryController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(CreateCategoryRequest $request)
     {
-        $request->validate([
-            'name' => 'required|max:255',
-            'slug' => 'required|unique:categories,slug|max:255',
-            'image' => 'nullable|image|max:5120',
-            'description' => 'nullable|min:6|max:255',
-        ], [
-            'name.required' => 'Vui lòng nhập tên danh mục',
-            'name.max' => 'Tên danh mục dưới 255 kí tự',
-            'slug.required' => 'Vui lòng nhập slug',
-            'slug.unique' => 'Slug đã tồn tại',
-            'slug.max' => 'Slug không quá 255 kí tự',
-            'image.image' => 'Đây không phải ảnh',
-            'image.max' => 'Kích thước ảnh không quá 5mb',
-            'description.min' => 'Mô tả tối thiểu 6 kí tự',
-            'description.max' => 'Mô tả không quá 255 kí tự',
-        ]);
 
         $data = $request->except('image');
 
@@ -91,21 +77,8 @@ class CategoryController extends Controller
     }
 
 
-    public function update(Request $request, string $id)
+    public function update(UpdateCategoryRequest $request, string $id)
     {
-        $request->validate([
-            'name' => 'required|max:255',
-            'slug' => 'required|unique:categories,slug,' . $id . '|max:255',
-            'description' => 'nullable|min:6|max:255',
-        ], [
-            'name.required' => 'Vui lòng nhập tên danh mục',
-            'name.max' => 'Tên danh mục dưới 255 kí tự',
-            'slug.required' => 'Vui lòng nhập slug',
-            'slug.unique' => 'Slug đã tồn tại',
-            'slug.max' => 'Slug không quá 255 kí tự',
-            'description.min' => 'Mô tả tối thiểu 6 kí tự',
-            'description.max' => 'Mô tả không quá 255 kí tự',
-        ]);
 
         $data = $request->except('image');
 
