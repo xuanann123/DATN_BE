@@ -6,66 +6,65 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        <strong>Edit banner</strong>
+                        <strong>Create category</strong>
                     </div>
                     <div class="card-body card-block">
-                        <form action="{{ route('.adminbanners.update', ['banner' => $banner->id]) }}" method="post" enctype="multipart/form-data" class="form-horizontal">
+                        <form action="{{ route('.admincategories.store') }}" method="post" enctype="multipart/form-data" class="form-horizontal">
                             @csrf
-                            @method("PUT")
                             <div class="row form-group">
-                                <div class="col col-md-3"><label for="title" class=" form-control-label">Title</label></div>
-                                <div class="col-12 col-md-9"><input type="text" value="{{ old('title') ?? $banner->title }}" id="title" name="title" placeholder="Title" class="form-control"><small class="help-block form-text text-danger">
-                                  @if ($errors->has('title'))
-                                    {{ $errors->first('title') }}
+                                <div class="col col-md-3"><label for="name" class=" form-control-label">Name</label></div>
+                                <div class="col-12 col-md-9"><input type="text" value="{{ old('name') }}" id="name" name="name" placeholder="Name" class="form-control"><small class="help-block form-text text-danger">
+                                  @if ($errors->has('name'))
+                                    {{ $errors->first('name') }}
                                   @endif  
                                 </small></div>
                             </div>
                             <div class="row form-group">
-                                <div class="col col-md-3"><label for="redirect-url" class=" form-control-label">Redirect url</label></div>
-                                <div class="col-12 col-md-9"><input type="text" value="{{ old('redirect_url') ?? $banner->redirect_url }}" id="redirect-url" name="redirect_url" placeholder="Redirect url" class="form-control"><small class="help-block form-text text-danger">
-                                    @if ($errors->has('redirect_url'))
-                                      {{ $errors->first('redirect_url') }}
+                                <div class="col col-md-3"><label for="slug" class=" form-control-label">Slug</label></div>
+                                <div class="col-12 col-md-9"><input type="text" value="{{ old('slug') }}" id="slug" name="slug" placeholder="Slug" class="form-control"><small class="help-block form-text text-danger">
+                                    @if ($errors->has('slug'))
+                                      {{ $errors->first('slug') }}
                                     @endif  
                                 </small></div>
                             </div>
                             <div class="row form-group">
                                 <div class="col col-md-3"><label for="image" class=" form-control-label">Image</label></div>
-                                    <div class="col-12 col-md-9 file"><input type="file" id="image" accept="image/*" name="image" class="form-control"><small class="help-block form-text text-danger">
-                                        @if ($errors->has('image'))
-                                        {{ $errors->first('image') }}
-                                        @endif  
+                                <div class="col-12 col-md-9 file"><input type="file" id="image" accept="image/*" name="image" class="form-control"><small class="help-block form-text text-danger">
+                                    @if ($errors->has('image'))
+                                      {{ $errors->first('image') }}
+                                    @endif  
+                                </small></div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="description" class=" form-control-label">Description</label></div>
+                                <div class="col-12 col-md-9"><input type="text" value="{{ old('description') }}" id="description" name="description" placeholder="Description" class="form-control"><small class="help-block form-text text-danger">
+                                    @if ($errors->has('description'))
+                                      {{ $errors->first('description') }}
+                                    @endif  
+                                </small></div>
+                            </div>
+
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="parent_id" class=" form-control-label">Parent category</label></div>
+                                <div class="col-12 col-md-9">
+                                    <select name="parent_id" id="parent_id" class="form-control">
+                                        <option value="">Chọn danh mục cha</option>
+                                        @foreach($options as $id => $name)
+                                            <option value="{{ $id }}">{!! $name !!}</option>
+                                        @endforeach
+                                    </select>
+                                    <small class="help-block form-text text-danger">
+                                        {{-- @if ($errors->has('description'))
+                                            {{ $errors->first('description') }}
+                                        @endif   --}}
                                     </small>
-                                    <img class="mt-2" src="{{ asset($banner->image) }}" alt="Ảnh danh mục">
                                 </div>
                             </div>
-                            <div class="row form-group">
-                                <div class="col col-md-3"><label for="position" class=" form-control-label">Position</label></div>
-                                <div class="col-12 col-md-9"><input type="text" value="{{ old('position') ?? $banner->position }}" id="position" name="position" placeholder="Position" class="form-control"><small class="help-block form-text text-danger">
-                                    @if ($errors->has('position'))
-                                      {{ $errors->first('position') }}
-                                    @endif  
-                                </small></div>
-                            </div>
-                            <div class="row form-group">
-                                <div class="col col-md-3"><label for="start-time" class=" form-control-label">Start time</label></div>
-                                <div class="col-12 col-md-9"><input type="datetime-local" value="{{ old('start_time') ?? $banner->start_time }}" id="start-time" name="start_time" placeholder="Start time" class="form-control"><small class="help-block form-text text-danger">
-                                    @if ($errors->has('start_time'))
-                                      {{ $errors->first('start_time') }}
-                                    @endif  
-                                </small></div>
-                            </div>
-                            <div class="row form-group">
-                                <div class="col col-md-3"><label for="end-time" class=" form-control-label">End time</label></div>
-                                <div class="col-12 col-md-9"><input type="datetime-local" id="end-time" value="{{ old('end_time') ?? $banner->end_time }}" name="end_time" placeholder="End time" class="form-control"><small class="help-block form-text text-danger">
-                                    @if ($errors->has('end_time'))
-                                      {{ $errors->first('end_time') }}
-                                    @endif  
-                                </small></div>
-                            </div>
+                            
                             <div class="row form-group">
                                 <div class="col col-md-3"><label for="is-active" class=" form-control-label">Is active</label></div>
                                 <div class="col-12 col-md-9"><label class="switch">
-                                    <input {{ $banner->is_active == 0 ? '' : 'checked' }} name="is_active" value="1" type="checkbox">
+                                    <input checked="" name="is_active" value="1" type="checkbox">
                                     <div class="slider">
                                         <div class="circle">
                                             <svg class="cross" xml:space="preserve" style="enable-background:new 0 0 512 512" viewBox="0 0 365.696 365.696" y="0" x="0" height="6" width="6" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" xmlns="http://www.w3.org/2000/svg">

@@ -36,7 +36,7 @@ class BannerController extends Controller
             'end_time' => 'nullable|date_format:Y-m-d\TH:i',
         ], [
             'title.required' => 'Vui lòng nhập tiêu đề',
-            'title.max' => 'Tiêu đề dưới 256 kí tự',
+            'title.max' => 'Tiêu đề dưới 255 kí tự',
             'redirect_url' => 'Url không hợp lệ',
             'image.required' => 'Vui lòng tải ảnh lên',
             'image.image' => 'Đây không phải ảnh',
@@ -51,7 +51,7 @@ class BannerController extends Controller
 
         if ($request->image && $request->hasFile('image')) {
             $pathImage = Storage::putFile('banners', $request->file('image'));
-            $fullNameImage = 'http://127.0.0.1:8000/' . 'storage/' . $pathImage;
+            $fullNameImage = env('URL') . 'storage/' . $pathImage;
 
             $data['image'] = $fullNameImage;
         }
@@ -88,8 +88,8 @@ class BannerController extends Controller
             'end_time' => 'nullable|date_format:Y-m-d\TH:i',
         ], [
             'title.required' => 'Vui lòng nhập tiêu đề',
-            'title.max' => 'Tiêu đề dưới 256 kí tự',
-            'redirect_url' => 'Url không hợp lệ',
+            'title.max' => 'Tiêu đề dưới 255 kí tự',
+            'redirect_url.url' => 'Url không hợp lệ',
             'position.integer' => 'Position phải là số nguyên',
             'position.min' => 'Position phải là số dương',
             'start_time.date_format' => 'Thời gian phải gồm ngày, giờ, tháng, năm',
@@ -111,11 +111,11 @@ class BannerController extends Controller
         if ($request->image && $request->hasFile('image')) {
             $pathImage = Storage::putFile('banners', $request->file('image'));
 
-            $fullNameImage = 'http://127.0.0.1:8000/' . 'storage/' . $pathImage;
+            $fullNameImage = env('URL') . 'storage/' . $pathImage;
 
             $data['image'] = $fullNameImage;
 
-            $subStringImage = substr($banner->image, 22);
+            $subStringImage = substr($banner->image, strlen(env('URL')));
 
             if ($subStringImage && file_exists($subStringImage)) {
                 unlink($subStringImage);
@@ -140,7 +140,7 @@ class BannerController extends Controller
             return redirect()->route('.adminbanners.index')->with(['error' => 'Banner not exit!']);
         }
 
-        $subStringImage = substr($banner->image, 22);
+        $subStringImage = substr($banner->image, strlen(env('URL')));
 
         if ($subStringImage && file_exists($subStringImage)) {
             unlink($subStringImage);
