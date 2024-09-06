@@ -8,7 +8,7 @@
                 <div class="card">
                     <div class="card-header">
                         <strong class="card-title">Data Table</strong>
-                        <a class="btn-redirect-add" href="{{ route('.adminbanners.create') }}">Add</a>
+                        <a class="btn-redirect-add" href="{{ route('.admincategories.create') }}">Add</a>
                     </div>
                     
                     <div class="card-body">
@@ -26,36 +26,34 @@
                         <table id="bootstrap-data-table" class="table table-striped table-bordered">
                             <thead>
                                 <tr>
-                                    <th>Title</th>
-                                    <th>Redirect url</th>
+                                    <th>Name</th>
+                                    <th>Slug</th>
                                     <th>Image</th>
-                                    <th>Position</th>
-                                    <th>Start time</th>
-                                    <th>End time</th>
+                                    <th>Description</th>
+                                    <th>Parent</th>
                                     <th>Is_active</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($banners as $banner)
+                                @foreach ($categories as $category)
                                     <tr>
-                                        <td>{{ $banner->title }}</td>
-                                        <td>
-                                            <a style="color:rgb(16, 92, 232);" target="_blank" href="{{ $banner->redirect_url }}">Link</a>
-                                        </td>
+                                        <td>{{ $category->name }}</td>
+                                        <td>{{ $category->slug }}</td>
                                         <td class="td-image">
-                                            <img width="150px" src="{{ asset($banner->image) }}" alt="">
+                                            <img width="150px" src="{{ asset($category->image) }}" alt="">
                                         </td>
-                                        <td class="td-position">{{ $banner->position }}</td>
-                                        <td>{{ $banner->start_time }}</td>
-                                        <td>{{ $banner->end_time }}</td>
+                                        <td class="td-position">{{ $category->description }}</td>
+
+                                        <td>{{ $category->parent_id != null ? $category->parent->name : '' }}</td>
+
                                         <td>
-                                            {{ $banner->is_active == 1 ? 'On' : 'Off' }}
+                                            {{ $category->is_active == 1 ? 'On' : 'Off' }}
                                         </td>
                                         <td>
                                             <span class="action">
-                                                <a href="{{ route('.adminbanners.edit', ['banner' => $banner->id]) }}"><i class="menu-icon fa fa-edit"></i></a>
-                                                <form action="{{ route('.adminbanners.destroy', ['banner' => $banner->id]) }}" method="post">
+                                                <a href="{{ route('.admincategories.edit', ['category' => $category->id]) }}"><i class="menu-icon fa fa-edit"></i></a>
+                                                <form action="{{ route('.admincategories.destroy', ['category' => $category->id]) }}" method="post">
                                                     @csrf
                                                     @method("DELETE")
                                                     <button onclick="return confirm('Are you sure ?')"><i class="menu-icon fa fa-trash"></i></button>

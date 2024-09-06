@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Banners\CreateBannerRequest;
+use App\Http\Requests\Admin\Banners\UpdateBannerRequest;
 use App\Models\Banner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -25,33 +27,14 @@ class BannerController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(CreateBannerRequest $request)
     {
-        $request->validate([
-            'title' => 'required|max:255',
-            'redirect_url' => 'nullable|url',
-            'image' => 'required|image|max:5120',
-            'position' => 'nullable|integer|min:0',
-            'start_time' => 'nullable|date_format:Y-m-d\TH:i',
-            'end_time' => 'nullable|date_format:Y-m-d\TH:i',
-        ], [
-            'title.required' => 'Vui lòng nhập tiêu đề',
-            'title.max' => 'Tiêu đề dưới 256 kí tự',
-            'redirect_url' => 'Url không hợp lệ',
-            'image.required' => 'Vui lòng tải ảnh lên',
-            'image.image' => 'Đây không phải ảnh',
-            'image.max' => 'Kích thước ảnh không quá 5mb',
-            'position.integer' => 'Position phải là số nguyên',
-            'position.min' => 'Position phải là số dương',
-            'start_time.date_format' => 'Thời gian phải gồm ngày, giờ, tháng, năm',
-            'end_time.date_format' => 'Thời gian phải gồm ngày, giờ, tháng, năm',
-        ]);
 
         $data = $request->except('image');
 
         if ($request->image && $request->hasFile('image')) {
             $pathImage = Storage::putFile('banners', $request->file('image'));
-            $fullNameImage = 'http://127.0.0.1:8000/' . 'storage/' . $pathImage;
+            $fullNameImage = env('URL') . 'storage/' . $pathImage;
 
             $data['image'] = $fullNameImage;
         }
@@ -77,24 +60,8 @@ class BannerController extends Controller
     }
 
 
-    public function update(Request $request, string $id)
+    public function update(UpdateBannerRequest $request, string $id)
     {
-
-        $request->validate([
-            'title' => 'required|max:255',
-            'redirect_url' => 'nullable|url',
-            'position' => 'nullable|integer|min:0',
-            'start_time' => 'nullable|date_format:Y-m-d\TH:i',
-            'end_time' => 'nullable|date_format:Y-m-d\TH:i',
-        ], [
-            'title.required' => 'Vui lòng nhập tiêu đề',
-            'title.max' => 'Tiêu đề dưới 256 kí tự',
-            'redirect_url' => 'Url không hợp lệ',
-            'position.integer' => 'Position phải là số nguyên',
-            'position.min' => 'Position phải là số dương',
-            'start_time.date_format' => 'Thời gian phải gồm ngày, giờ, tháng, năm',
-            'end_time.date_format' => 'Thời gian phải gồm ngày, giờ, tháng, năm',
-        ]);
 
         $data = $request->except('image');
 
@@ -111,11 +78,11 @@ class BannerController extends Controller
         if ($request->image && $request->hasFile('image')) {
             $pathImage = Storage::putFile('banners', $request->file('image'));
 
-            $fullNameImage = 'http://127.0.0.1:8000/' . 'storage/' . $pathImage;
+            $fullNameImage = env('URL') . 'storage/' . $pathImage;
 
             $data['image'] = $fullNameImage;
 
-            $subStringImage = substr($banner->image, 22);
+            $subStringImage = substr($banner->image, strlen(env('URL')));
 
             if ($subStringImage && file_exists($subStringImage)) {
                 unlink($subStringImage);
@@ -140,7 +107,7 @@ class BannerController extends Controller
             return redirect()->route('.adminbanners.index')->with(['error' => 'Banner not exit!']);
         }
 
-        $subStringImage = substr($banner->image, 22);
+        $subStringImage = substr($banner->image, strlen(env('URL')));
 
         if ($subStringImage && file_exists($subStringImage)) {
             unlink($subStringImage);
