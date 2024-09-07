@@ -11,6 +11,9 @@
                 <li class="active">
                     <a href="{{ route('.admincategories.index') }}"><i class="menu-icon fa fa-list"></i>Category</a>
                 </li>
+                <li class="active">
+                    <a href="{{ route('.adminvouchers.index') }}"><i class="menu-icon fa fa-ticket"></i>Voucher</a>
+                </li>
                 <li class="menu-title">UI elements</li><!-- /.menu-title -->
                 <li class="menu-item-has-children dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"

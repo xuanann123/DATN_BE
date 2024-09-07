@@ -42,7 +42,7 @@ class BannerController extends Controller
         $newBanner = Banner::query()->create($data);
 
         if (!$newBanner) {
-            return back()->with(['error' => 'Create banner failed!']);
+            return redirect()->route('.adminbanners.index')->with(['error' => 'Create banner failed!']);
         }
 
         return redirect()->route('.adminbanners.index')->with(['message' => 'Create banner successfully!']);
