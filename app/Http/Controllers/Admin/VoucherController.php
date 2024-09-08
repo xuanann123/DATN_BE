@@ -14,21 +14,8 @@ class VoucherController extends Controller
     public function index()
     {
         $title = "Danh sách voucher";
-        $vouchers = Voucher::select(
-            'id',
-            'name',
-            'code',
-            'description',
-            'type',
-            'discount',
-            'count',
-            'used_count',
-            'start_time',
-            'end_time',
-            'is_active'
-        )
-            ->orderbyDesc('id')
-            ->get();
+
+        $vouchers = Voucher::query()->orderbyDesc('id')->paginate(10);
 
         return view('admin.vouchers.index', compact('vouchers', 'title'));
     }
