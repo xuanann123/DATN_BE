@@ -13,6 +13,7 @@ class VoucherController extends Controller
 
     public function index()
     {
+        $title = "Danh sách voucher";
         $vouchers = Voucher::select(
             'id',
             'name',
@@ -29,13 +30,14 @@ class VoucherController extends Controller
             ->orderbyDesc('id')
             ->get();
 
-        return view('admin.vouchers.index', compact('vouchers'));
+        return view('admin.vouchers.index', compact('vouchers', 'title'));
     }
 
 
     public function create()
     {
-        return view('admin.vouchers.create');
+        $title = "Thêm mới voucher";
+        return view('admin.vouchers.create', compact('title'));
     }
 
 
@@ -61,8 +63,9 @@ class VoucherController extends Controller
 
     public function edit(string $id)
     {
+        $title = "Chỉnh sửa voucher";
         $voucher = Voucher::find($id);
-        return view('admin.vouchers.edit', compact('voucher'));
+        return view('admin.vouchers.edit', compact('voucher', 'title'));
     }
 
 

@@ -14,10 +14,11 @@ class CategoryController extends Controller
 
     public function index()
     {
+        $title = "Danh sách danh mục";
         $categories = Category::with('parent:id,name')
             ->orderbyDesc('id')
             ->get();
-        return view('admin.categories.index', compact('categories'));
+        return view('admin.categories.index', compact('categories', 'title'));
     }
 
     private function getCategoryOptions($categories, $level = 0)
@@ -36,9 +37,10 @@ class CategoryController extends Controller
 
     public function create()
     {
+        $title = "Thêm mới danh mục";
         $categories = Category::whereNull('parent_id')->with('children')->get();
         $options = $this->getCategoryOptions($categories);
-        return view('admin.categories.create', compact('options'));
+        return view('admin.categories.create', compact('options', 'title'));
     }
 
 
@@ -70,10 +72,11 @@ class CategoryController extends Controller
 
     public function edit(string $id)
     {
+        $title = "Chỉnh sửa danh mục";
         $categories = Category::whereNull('parent_id')->with('children')->get();
         $options = $this->getCategoryOptions($categories);
         $category = Category::find($id);
-        return view('admin.categories.edit', compact('options', 'category'));
+        return view('admin.categories.edit', compact('options', 'category', 'title'));
     }
 
 
