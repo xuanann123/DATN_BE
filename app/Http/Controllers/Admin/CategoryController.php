@@ -61,7 +61,7 @@ class CategoryController extends Controller
         $newCategory = Category::query()->create($data);
 
         if (!$newCategory) {
-            return back()->with(['error' => 'Create category failed!']);
+            return redirect()->route('.admincategories.index')->with(['error' => 'Create category failed!']);
         }
 
         return redirect()->route('.admincategories.index')->with(['message' => 'Create category successfully!']);

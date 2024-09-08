@@ -6,17 +6,18 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        <strong>Create category</strong>
+                        <strong>Update category</strong>
                     </div>
                     <div class="card-body card-block">
-                        <form action="{{ route('.admincategories.store') }}" method="post" enctype="multipart/form-data" class="form-horizontal">
+                        <form action="{{ route('.adminvouchers.update', ['voucher' => $voucher->id]) }}" method="post" enctype="multipart/form-data" class="form-horizontal">
                             @csrf
+                            @method("PUT")
                             <div class="row form-group">
                                 <div class="col col-md-3">
                                     <label for="name" class=" form-control-label">Name</label>
                                 </div>
                                 <div class="col-12 col-md-9">
-                                    <input type="text" value="{{ old('name') }}" id="name" name="name" placeholder="Name" class="form-control">
+                                    <input type="text" value="{{ old('name') ?? $voucher->name }}" id="name" name="name" placeholder="Name" class="form-control">
                                     <small class="help-block form-text text-danger">
                                         @if ($errors->has('name'))
                                             {{ $errors->first('name') }}
@@ -26,26 +27,13 @@
                             </div>
                             <div class="row form-group">
                                 <div class="col col-md-3">
-                                    <label for="slug" class=" form-control-label">Slug</label>
+                                    <label for="code" class=" form-control-label">Code</label>
                                 </div>
                                 <div class="col-12 col-md-9">
-                                    <input type="text" value="{{ old('slug') }}" id="slug" name="slug" placeholder="Slug" class="form-control">
+                                    <input type="text" value="{{ old('code') ?? $voucher->code }}" id="code" name="code" placeholder="Code" class="form-control">
                                     <small class="help-block form-text text-danger">
-                                        @if ($errors->has('slug'))
-                                            {{ $errors->first('slug') }}
-                                        @endif  
-                                    </small>
-                                </div>
-                            </div>
-                            <div class="row form-group">
-                                <div class="col col-md-3">
-                                    <label for="image" class=" form-control-label">Image</label>
-                                </div>
-                                <div class="col-12 col-md-9 file">
-                                    <input type="file" id="image" accept="image/*" name="image" class="form-control">
-                                    <small class="help-block form-text text-danger">
-                                        @if ($errors->has('image'))
-                                            {{ $errors->first('image') }}
+                                        @if ($errors->has('code'))
+                                            {{ $errors->first('code') }}
                                         @endif  
                                     </small>
                                 </div>
@@ -55,7 +43,7 @@
                                     <label for="description" class=" form-control-label">Description</label>
                                 </div>
                                 <div class="col-12 col-md-9">
-                                    <input type="text" value="{{ old('description') }}" id="description" name="description" placeholder="Description" class="form-control">
+                                    <textarea name="description" id="description" cols="30" placeholder="Description" rows="4" class="form-control">{{ old('description') ?? $voucher->description }}</textarea>
                                     <small class="help-block form-text text-danger">
                                         @if ($errors->has('description'))
                                             {{ $errors->first('description') }}
@@ -66,22 +54,74 @@
 
                             <div class="row form-group">
                                 <div class="col col-md-3">
-                                    <label for="parent_id" class=" form-control-label">Parent category</label>
+                                    <label for="type" class=" form-control-label">Type</label>
                                 </div>
                                 <div class="col-12 col-md-9">
-                                    <select name="parent_id" id="parent_id" class="form-control">
-                                        <option value="">Select parent category</option>
-                                        @foreach($options as $id => $name)
-                                            <option value="{{ $id }}">{!! $name !!}</option>
-                                        @endforeach
+                                    <select name="type" id="type" class="form-control">
+                                        <option value="">Select type voucher</option>
+                                        <option {{ $voucher->type == 'percent' || old('type') == 'percent' ? 'selected' : '' }} value="percent">Percent</option>
+                                        <option {{ $voucher->type == 'fixed' || old('type') == 'fixed' ? 'selected' : '' }} value="fixed">Fixed</option>
                                     </select>
                                     <small class="help-block form-text text-danger">
-                                        {{-- @if ($errors->has('description'))
-                                            {{ $errors->first('description') }}
-                                        @endif   --}}
+                                        @if ($errors->has('type'))
+                                            {{ $errors->first('type') }}
+                                        @endif  
                                     </small>
                                 </div>
                             </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="discount" class=" form-control-label">Discount</label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    <input type="text" value="{{ old('discount') ?? $voucher->discount }}" id="discount" name="discount" placeholder="Discount" class="form-control">
+                                    <small class="help-block form-text text-danger">
+                                        @if ($errors->has('discount'))
+                                            {{ $errors->first('discount') }}
+                                        @endif  
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="count" class=" form-control-label">Count</label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    <input type="number" min="0" value="{{ old('count') ?? $voucher->count }}" id="count" name="count" placeholder="Count" class="form-control">
+                                    <small class="help-block form-text text-danger">
+                                        @if ($errors->has('count'))
+                                            {{ $errors->first('count') }}
+                                        @endif  
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="start-time" class=" form-control-label">Start time</label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    <input type="datetime-local" value="{{ old('start_time') ?? $voucher->start_time }}" id="start-time" name="start_time" placeholder="Start time" class="form-control">
+                                    <small class="help-block form-text text-danger">
+                                        @if ($errors->has('start_time'))
+                                        {{ $errors->first('start_time') }}
+                                        @endif  
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="end-time" class=" form-control-label">End time</label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    <input type="datetime-local" id="end-time" value="{{ old('end_time') ?? $voucher->end_time }}" name="end_time" placeholder="End time" class="form-control">
+                                    <small class="help-block form-text text-danger">
+                                        @if ($errors->has('end_time'))
+                                            {{ $errors->first('end_time') }}
+                                        @endif  
+                                    </small>
+                                </div>
+                            </div>
+                            
                             
                             <div class="row form-group">
                                 <div class="col col-md-3">
@@ -89,7 +129,7 @@
                                 </div>
                                 <div class="col-12 col-md-9">
                                     <label class="switch">
-                                        <input {{ old('is_active') == 1 ? 'checked' : '' }} name="is_active" value="1" type="checkbox">
+                                        <input {{ $voucher->is_active == 1 ? 'checked' : '' }} name="is_active" value="1" type="checkbox">
                                         <div class="slider">
                                             <div class="circle">
                                                 <svg class="cross" xml:space="preserve" style="enable-background:new 0 0 512 512" viewBox="0 0 365.696 365.696" y="0" x="0" height="6" width="6" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" xmlns="http://www.w3.org/2000/svg">

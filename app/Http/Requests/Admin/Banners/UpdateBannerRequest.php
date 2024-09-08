@@ -21,7 +21,7 @@ class UpdateBannerRequest extends FormRequest
             'image' => 'nullable|image|max:5120',
             'position' => 'nullable|integer|min:0',
             'start_time' => 'nullable|date_format:Y-m-d\TH:i',
-            'end_time' => 'nullable|date_format:Y-m-d\TH:i',
+            'end_time' => 'nullable|date_format:Y-m-d\TH:i|after:start_time',
         ];
     }
 
@@ -37,6 +37,7 @@ class UpdateBannerRequest extends FormRequest
             'position.min' => 'The position must be a positive number.',
             'start_time.date_format' => 'The start time must be in the format of day, hour, month, year.',
             'end_time.date_format' => 'The end time must be in the format of day, hour, month, year.',
+            'end_time.after' => 'The end time must be after the start time.',
         ];
     }
 }
