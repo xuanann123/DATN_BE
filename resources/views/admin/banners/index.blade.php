@@ -85,7 +85,8 @@
                                     <a href="{{ $banner->redirect_url }}">Link</a>
                                 </td>
                                 <td>
-                                    <img src="{{ $banner->image }}" width="100px" alt="">
+
+                                    <img src="{{ asset($banner->image) }}" width="100px" alt="">
                                 </td>
                                 <td>
                                     <span class="badge bg-info">{{ $banner->position }}</span>

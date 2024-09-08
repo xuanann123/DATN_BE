@@ -121,19 +121,15 @@ class CategoryController extends Controller
     public function destroy(string $id)
     {
         $category = Category::find($id);
-
         if (!$category) {
             return redirect()->route('.admincategories.index')->with(['error' => 'Category not exit!']);
         }
-
         $subStringImage = substr($category->image, strlen(env('URL')));
 
         if ($subStringImage && file_exists($subStringImage)) {
             unlink($subStringImage);
         }
-
         $category->delete();
-
         return back()->with(['message' => 'Delete successfully!']);
     }
 }

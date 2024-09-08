@@ -83,7 +83,7 @@
                                     {{ $category->slug }}
                                 </td>
                                 <td>
-                                    <img src="{{ $category->image }}" width="100px" alt="">
+                                    <img src="{{ asset($category->image)  }}" width="100px" alt="">
                                 </td>
                                 <td>
                                     {{ $category->description }}
