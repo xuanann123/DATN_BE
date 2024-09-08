@@ -34,6 +34,7 @@
                     </div>
                     <ul class="navbar-nav" id="navbar-nav">
                         <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+                        
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#sidebarDashboards" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
                                 <i class="ri-dashboard-2-line"></i> <span data-key="t-dashboards">Dashboards</span>
@@ -64,6 +65,25 @@
                                 </ul>
                             </div>
                         </li> <!-- end Dashboard Menu -->
+
+                        <li class="nav-item">
+                            <a href="{{ route('.adminbanners.index') }}" class="nav-link">
+                                <i class="ri-image-2-line"></i> <span>Banners</span>
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a href="{{ route('.admincategories.index') }}" class="nav-link">
+                                <i class="ri-lists-2-line"></i> <span>Danh mục</span>
+                            </a>
+                        </li> 
+
+                        <li class="nav-item">
+                            <a href="{{ route('.adminvouchers.index') }}" class="nav-link">
+                                <i class="ri-ticket-2-line"></i> <span>Mã giảm giá</span>
+                            </a>
+                        </li> 
+
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#sidebarApps" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarApps">
                                 <i class="ri-apps-2-line"></i> <span data-key="t-apps">Apps</span>

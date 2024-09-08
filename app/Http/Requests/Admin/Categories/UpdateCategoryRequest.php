@@ -17,7 +17,7 @@ class UpdateCategoryRequest extends FormRequest
     {
         $id = $this->route('category');
         return [
-            'name' => 'required|max:255',
+            'name' => 'required|unique:categories,name,' . $id . '|max:255',
             'slug' => 'required|unique:categories,slug,' . $id . '|max:255',
             'image' => 'nullable|image|max:5120',
             'description' => 'nullable|min:6|max:255',
@@ -28,6 +28,7 @@ class UpdateCategoryRequest extends FormRequest
     {
         return [
             'name.required' => 'Please enter the category name.',
+            'name.unique' => 'The name already exists.',
             'name.max' => 'The category name must be under 255 characters.',
             'slug.required' => 'Please enter the slug.',
             'slug.unique' => 'The slug already exists.',

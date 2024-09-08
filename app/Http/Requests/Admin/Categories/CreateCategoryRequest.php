@@ -16,7 +16,7 @@ class CreateCategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|max:255',
+            'name' => 'required|unique:categories,name|max:255',
             'slug' => 'required|unique:categories,slug|max:255',
             'image' => 'nullable|image|max:5120',
             'description' => 'nullable|min:6|max:255',
@@ -27,6 +27,7 @@ class CreateCategoryRequest extends FormRequest
     {
         return [
             'name.required' => 'Please enter the category name.',
+            'name.unique' => 'The name already exists.',
             'name.max' => 'The category name must be under 255 characters.',
             'slug.required' => 'Please enter the slug.',
             'slug.unique' => 'The slug already exists.',
