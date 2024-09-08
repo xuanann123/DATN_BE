@@ -11,7 +11,7 @@
                     <div class="card-body card-block">
                         <form action="{{ route('.admincategories.store') }}" method="post" enctype="multipart/form-data" class="form-horizontal">
                             @csrf
-                            <div class="row form-group">
+                            <div class="row form-group mt-3">
                                 <div class="col col-md-3">
                                     <label for="name" class=" form-control-label">Name</label>
                                 </div>
@@ -24,7 +24,7 @@
                                     </small>
                                 </div>
                             </div>
-                            <div class="row form-group">
+                            <div class="row form-group mt-3">
                                 <div class="col col-md-3">
                                     <label for="slug" class=" form-control-label">Slug</label>
                                 </div>
@@ -37,7 +37,7 @@
                                     </small>
                                 </div>
                             </div>
-                            <div class="row form-group">
+                            <div class="row form-group mt-3">
                                 <div class="col col-md-3">
                                     <label for="image" class=" form-control-label">Image</label>
                                 </div>
@@ -50,7 +50,7 @@
                                     </small>
                                 </div>
                             </div>
-                            <div class="row form-group">
+                            <div class="row form-group mt-3">
                                 <div class="col col-md-3">
                                     <label for="description" class=" form-control-label">Description</label>
                                 </div>
@@ -64,7 +64,7 @@
                                 </div>
                             </div>
 
-                            <div class="row form-group">
+                            <div class="row form-group mt-3">
                                 <div class="col col-md-3">
                                     <label for="parent_id" class=" form-control-label">Parent category</label>
                                 </div>
@@ -83,7 +83,7 @@
                                 </div>
                             </div>
                             
-                            <div class="row form-group">
+                            <div class="row form-group mt-3">
                                 <div class="col col-md-3">
                                     <label for="is-active" class=" form-control-label">Is active</label>
                                 </div>
@@ -107,7 +107,7 @@
                                     </label>
                                 </div>
                             </div>
-                            <div class="card-footer">
+                            <div class="justify-content-lg-end">
                                 <button type="submit" class="btn btn-primary btn-sm">
                                     <i class="fa fa-dot-circle-o"></i> Submit
                                 </button>
