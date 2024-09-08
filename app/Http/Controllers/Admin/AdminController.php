@@ -13,7 +13,7 @@ class AdminController extends Controller
     {
         // dd('OK');
         if (Auth::check() && Auth::user()->user_type == 'admin') {
-            return redirect()->route('.admindashboard');
+            return redirect()->route('admin.dashboard');
         }
 
         return view('admin.auth.login');
@@ -30,7 +30,7 @@ class AdminController extends Controller
         if (Auth::attempt($credentials)) {
             // check admin
             if (Auth::user()->user_type == 'admin') {
-                return redirect()->route('.admindashboard');
+                return redirect()->route('admin.dashboard');
             } else {
                 Auth::logout();
                 return redirect()->route('admin.login.index')->withErrors(['email' => 'Bạn không có quyền truy cập.']);
