@@ -15,9 +15,7 @@ class CategoryController extends Controller
     public function index()
     {
         $title = "Danh sách danh mục";
-        $categories = Category::with('parent:id,name')
-            ->orderbyDesc('id')
-            ->get();
+        $categories = Category::with('parent:id,name')->orderbyDesc('id')->paginate(10);
         return view('admin.categories.index', compact('categories', 'title'));
     }
 

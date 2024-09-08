@@ -22,6 +22,7 @@
     <!-- custom Css-->
     <link href="{{ asset('theme/admin/assets/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
 </head>
+
 <body>
     <!-- Begin page -->
     <div id="layout-wrapper">
@@ -38,8 +39,7 @@
                     <div class="modal-body">
                         <div class="mt-2 text-center">
                             <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
-                                colors="primary:#f7b84b,secondary:#f06548"
-                                style="width:100px;height:100px"></lord-icon>
+                                colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
                             <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
                                 <h4>Are you sure ?</h4>
                                 <p class="text-muted mx-4 mb-0">Are you sure you want to remove this Notification ?</p>
@@ -74,7 +74,7 @@
             </div>
             <!-- End Page-content -->
 
-        @include('admin.layouts.footer')
+            @include('admin.layouts.footer')
         </div>
         <!-- end main content-->
     </div>
@@ -102,23 +102,23 @@
         </div>
     </div>
 
-   
+
     <script>
         const PATH_ROOT = 'http://php3.test/';
     </script>
     <!-- JAVASCRIPT -->
     <!-- JAVASCRIPT -->
-    <script src="{{asset("theme/admin/assets/libs/bootstrap/js/bootstrap.bundle.min.js")}}"></script>
-    <script src="{{asset("theme/admin/assets/libs/simplebar/simplebar.min.js")}}"></script>
-    <script src="{{asset("theme/admin/assets/libs/node-waves/waves.min.js")}}"></script>
-    <script src="{{asset("theme/admin/assets/libs/feather-icons/feather.min.js")}}"></script>
-    <script src="{{asset("theme/admin/assets/js/pages/plugins/lord-icon-2.1.0.js")}}"></script>
-    <script src="{{asset("theme/admin/assets/js/plugins.js")}}"></script>
+    <script src="{{ asset('theme/admin/assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('theme/admin/assets/libs/simplebar/simplebar.min.js') }}"></script>
+    <script src="{{ asset('theme/admin/assets/libs/node-waves/waves.min.js') }}"></script>
+    <script src="{{ asset('theme/admin/assets/libs/feather-icons/feather.min.js') }}"></script>
+    <script src="{{ asset('theme/admin/assets/js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
+    <script src="{{ asset('theme/admin/assets/js/plugins.js') }}"></script>
 
-    @yield("script-libs")
+    @yield('script-libs')
 
     <!-- App js -->
-    <script src="{{asset("theme/admin/assets/js/app.js")}}"></script>
+    <script src="{{ asset('theme/admin/assets/js/app.js') }}"></script>
 </body>
 
 </html>

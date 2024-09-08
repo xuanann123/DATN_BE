@@ -15,9 +15,7 @@ class BannerController extends Controller
     public function index()
     {
         $title = "Danh sách banner";
-        $banners = Banner::select('id', 'title', 'redirect_url', 'image', 'position', 'start_time', 'end_time', 'is_active')
-            ->orderByDesc('position')
-            ->get();
+        $banners = Banner::query()->orderbyDesc('id')->paginate(10);
         return view('admin.banners.index', compact('banners', 'title'));
     }
 

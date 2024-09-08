@@ -30,32 +30,33 @@ class CreateVoucherRequest extends FormRequest
     public function messages()
     {
         return [
-            'name.required' => 'The name field is required.',
-            'name.max' => 'The name may not be greater than 255 characters.',
+            'name.required' => 'Vui lòng nhập tên voucher.',
+            'name.max' => 'Tên voucher không được vượt quá 255 ký tự.',
 
-            'code.required' => 'The code field is required.',
-            'code.unique' => 'The code already exists.',
-            'code.max' => 'The code may not be greater than 255 characters.',
+            'code.required' => 'Vui lòng nhập mã voucher.',
+            'code.unique' => 'Mã voucher đã tồn tại.',
+            'code.max' => 'Mã voucher không được vượt quá 255 ký tự.',
 
-            'description.min' => 'The description must be at least 6 characters.',
-            'description.max' => 'The description may not be greater than 65,535 characters.',
+            'description.min' => 'Mô tả phải có ít nhất 6 ký tự.',
+            'description.max' => 'Mô tả không được vượt quá 65.535 ký tự.',
 
-            'type.required' => 'The type field is required.',
+            'type.required' => 'Vui lòng chọn loại voucher.',
 
-            'discount.required' => 'The discount field is required.',
-            'discount.numeric' => 'The discount must be a number.',
-            'discount.min' => 'The discount must be at least 0.',
+            'discount.required' => 'Vui lòng nhập số phần trăm/xu giảm.',
+            'discount.numeric' => 'Số phần trăm/xu giảm phải là một số.',
+            'discount.min' => 'Giảm giá phải ít nhất là 1.',
 
-            'count.required' => 'The count field is required.',
-            'count.integer' => 'The count must be an integer.',
-            'count.min' => 'The count must be at least 0.',
+            'count.required' => 'Vui lòng nhập số lượng voucher.',
+            'count.integer' => 'Số lượng phải là một số nguyên.',
+            'count.min' => 'Số lượng phải ít nhất là 1.',
 
-            'start_time.required' => 'The start time field is required.',
-            'start_time.date_format' => 'The start time must be in the format Y-m-d\TH:i.',
+            'start_time.required' => 'Vui lòng nhập thời gian bắt đầu.',
+            'start_time.date_format' => 'Thời gian bắt đầu phải theo định dạng Y-m-d\TH:i.',
 
-            'end_time.required' => 'The end time field is required.',
-            'end_time.date_format' => 'The end time must be in the format Y-m-d\TH:i.',
-            'end_time.after' => 'The end time must be after the start time.',
+            'end_time.required' => 'Vui lòng nhập thời gian kết thúc.',
+            'end_time.date_format' => 'Thời gian kết thúc phải theo định dạng Y-m-d\TH:i.',
+            'end_time.after' => 'Thời gian kết thúc phải sau thời gian bắt đầu.',
+
         ];
     }
 }

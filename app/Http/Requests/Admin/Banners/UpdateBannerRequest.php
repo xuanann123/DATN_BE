@@ -28,16 +28,17 @@ class UpdateBannerRequest extends FormRequest
     public function messages()
     {
         return [
-            'title.required' => 'Please enter the title.',
-            'title.max' => 'The title must be under 255 characters.',
-            'redirect_url.url' => 'The URL is not valid.',
-            'image.image' => 'This is not an image.',
-            'image.max' => 'The image size must not exceed 5MB.',
-            'position.integer' => 'The position must be an integer.',
-            'position.min' => 'The position must be a positive number.',
-            'start_time.date_format' => 'The start time must be in the format of day, hour, month, year.',
-            'end_time.date_format' => 'The end time must be in the format of day, hour, month, year.',
-            'end_time.after' => 'The end time must be after the start time.',
+            'title.required' => 'Vui lòng nhập tiêu đề.',
+            'title.max' => 'Tiêu đề phải dưới 255 ký tự.',
+            'redirect_url.url' => 'URL không hợp lệ.',
+            'image.image' => 'Đây không phải là một hình ảnh.',
+            'image.max' => 'Kích thước hình ảnh không được vượt quá 5MB.',
+            'position.integer' => 'Vị trí phải là một số nguyên.',
+            'position.min' => 'Vị trí phải là một số dương.',
+            'start_time.date_format' => 'Thời gian bắt đầu phải theo định dạng ngày, giờ, tháng, năm.',
+            'end_time.date_format' => 'Thời gian kết thúc phải theo định dạng ngày, giờ, tháng, năm.',
+            'end_time.after' => 'Thời gian kết thúc phải sau thời gian bắt đầu.',
+
         ];
     }
 }
