@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->timestamp('email_verified_at')->nullable();
             $table->string('verification_token')->nullable();
             $table->rememberToken();
-            $table->string('user_type');
+            $table->string('user_type')->default('client');
             $table->timestamps();
         });
     }

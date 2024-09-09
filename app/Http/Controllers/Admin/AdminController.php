@@ -11,13 +11,13 @@ class AdminController extends Controller
 {
     public function index()
     {
-        // dd('OK');
         if (Auth::check() && Auth::user()->user_type == 'admin') {
             return redirect()->route('.admindashboard');
         }
 
         return view('admin.auth.login');
 
+        // create ex password
         // $p = bcrypt('12345678');
         // dd($p);
     }
