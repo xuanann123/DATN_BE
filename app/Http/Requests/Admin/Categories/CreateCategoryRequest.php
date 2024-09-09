@@ -16,7 +16,7 @@ class CreateCategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|max:255',
+            'name' => 'required|unique:categories,name|max:255',
             'slug' => 'required|unique:categories,slug|max:255',
             'image' => 'nullable|image|max:5120',
             'description' => 'nullable|min:6|max:255',
@@ -26,15 +26,17 @@ class CreateCategoryRequest extends FormRequest
     public function messages()
     {
         return [
-            'name.required' => 'Please enter the category name.',
-            'name.max' => 'The category name must be under 255 characters.',
-            'slug.required' => 'Please enter the slug.',
-            'slug.unique' => 'The slug already exists.',
-            'slug.max' => 'The slug must not exceed 255 characters.',
-            'image.image' => 'This is not an image.',
-            'image.max' => 'The image size must not exceed 5MB.',
-            'description.min' => 'The description must be at least 6 characters.',
-            'description.max' => 'The description must not exceed 255 characters.',
+            'name.required' => 'Vui lòng nhập tên danh mục.',
+            'name.unique' => 'Tên danh mục đã tồn tại.',
+            'name.max' => 'Tên danh mục phải dưới 255 ký tự.',
+            'slug.required' => 'Vui lòng nhập đường dẫn thân thiện.',
+            'slug.unique' => 'Đường dẫn thân thiện đã tồn tại.',
+            'slug.max' => 'Đường dẫn thân thiện không được vượt quá 255 ký tự.',
+            'image.image' => 'Đây không phải là một hình ảnh.',
+            'image.max' => 'Kích thước hình ảnh không được vượt quá 5MB.',
+            'description.min' => 'Mô tả phải có ít nhất 6 ký tự.',
+            'description.max' => 'Mô tả không được vượt quá 255 ký tự.',
+
         ];
     }
 }

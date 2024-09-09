@@ -14,16 +14,16 @@ class BannerController extends Controller
 
     public function index()
     {
-        $banners = Banner::select('id', 'title', 'redirect_url', 'image', 'position', 'start_time', 'end_time', 'is_active')
-            ->orderByDesc('position')
-            ->get();
-        return view('admin.banners.index', compact('banners'));
+        $title = "Danh sách banner";
+        $banners = Banner::query()->orderbyDesc('id')->paginate(10);
+        return view('admin.banners.index', compact('banners', 'title'));
     }
 
 
     public function create()
     {
-        return view('admin.banners.create');
+        $title = "Thêm mới banner";
+        return view('admin.banners.create', compact('title'));
     }
 
 
@@ -50,13 +50,14 @@ class BannerController extends Controller
 
     public function edit(string $id)
     {
+        $title = "Chỉnh sửa banner";
         $banner = Banner::find($id);
 
         if (!$banner) {
             return back()->with(['error' => 'Banner not exit!']);
         }
 
-        return view('admin.banners.edit', compact('banner'));
+        return view('admin.banners.edit', compact('banner', 'title'));
     }
 
 
