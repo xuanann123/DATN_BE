@@ -176,7 +176,7 @@
                 </div><!-- end card header -->
 
                 <div class="card-body">
-                    <form action="{{ route('.admincategories.update', ['category' => $category->id]) }}" method="POST"
+                    <form action="{{ route('admin.categories.update', ['category' => $category->id]) }}" method="POST"
                         enctype="multipart/form-data">
                         @csrf
                         @method('PUT')

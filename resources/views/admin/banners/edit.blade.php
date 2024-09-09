@@ -176,7 +176,7 @@
                 </div><!-- end card header -->
 
                 <div class="card-body">
-                    <form action="{{ route('.adminbanners.update', ['banner' => $banner->id]) }}" method="POST"
+                    <form action="{{ route('admin.banners.update', ['banner' => $banner->id]) }}" method="POST"
                         enctype="multipart/form-data">
                         @csrf
                         @method('PUT')

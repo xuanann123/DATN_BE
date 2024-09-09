@@ -31,7 +31,7 @@ Route::prefix("admin")
     ->as("admin.")
     ->group(function () {
         Route::get("/", [DashboardController::class, "index"])->name("dashboard");
-        Route::get('logout', [AdminController::class, 'logout'])->name('.logout');
+        Route::get('logout', [AdminController::class, 'logout'])->name('logout');
         Route::resource('banners', BannerController::class)->except('show');
         Route::resource('categories', CategoryController::class)->except('show');
         Route::resource('vouchers', VoucherController::class)->except('show');

@@ -41,10 +41,10 @@ class VoucherController extends Controller
         $newVoucher = Voucher::query()->create($data);
 
         if (!$newVoucher) {
-            return redirect()->route('.adminvouchers.index')->with(['error' => 'Create banner failed!']);
+            return redirect()->route('admin.vouchers.index')->with(['error' => 'Create banner failed!']);
         }
 
-        return redirect()->route('.adminvouchers.index')->with(['message' => 'Create banner successfully!']);
+        return redirect()->route('admin.vouchers.index')->with(['message' => 'Create banner successfully!']);
     }
 
 
@@ -70,14 +70,14 @@ class VoucherController extends Controller
         $data['used_count'] = $voucher->used_count;
 
         if (!$voucher) {
-            return redirect()->route('.adminvouchers.index')->with(['error' => 'Voucher not exit!']);
+            return redirect()->route('admin.vouchers.index')->with(['error' => 'Voucher not exit!']);
         }
 
         if ($voucher->update($data)) {
-            return redirect()->route('.adminvouchers.index')->with(['message' => 'Update voucher successfully!']);
+            return redirect()->route('admin.vouchers.index')->with(['message' => 'Update voucher successfully!']);
         }
 
-        return redirect()->route('.adminvouchers.index')->with(['error' => 'Update voucher failed!']);
+        return redirect()->route('admin.vouchers.index')->with(['error' => 'Update voucher failed!']);
     }
 
 
@@ -86,7 +86,7 @@ class VoucherController extends Controller
         $voucher = Voucher::find($id);
 
         if (!$voucher) {
-            return redirect()->route('.adminvouchers.index')->with(['error' => 'Voucher not exit!']);
+            return redirect()->route('admin.vouchers.index')->with(['error' => 'Voucher not exit!']);
         }
 
         if ($voucher->delete()) {

@@ -176,7 +176,7 @@
                 </div><!-- end card header -->
 
                 <div class="card-body">
-                    <form action="{{ route('.adminvouchers.update', ['voucher' => $voucher->id]) }}" method="POST"
+                    <form action="{{ route('admin.vouchers.update', ['voucher' => $voucher->id]) }}" method="POST"
                         enctype="multipart/form-data">
                         @csrf
                         @method('PUT')

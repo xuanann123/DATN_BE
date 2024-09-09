@@ -58,7 +58,7 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between">
                     <h5 class="card-title mb-0">Danh sách banner</h5>
-                    <a href="{{ route('.adminbanners.create') }}" class="btn btn-primary">Thêm mới</a>
+                    <a href="{{ route('admin.banners.create') }}" class="btn btn-primary">Thêm mới</a>
                 </div>
                 <div class="card-body">
                     <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
@@ -116,13 +116,13 @@
                                                 <i class="ri-more-fill align-middle"></i>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end">
-                                                <li><a href="{{ route('.adminbanners.edit', ['banner' => $banner->id]) }}"
+                                                <li><a href="{{ route('admin.banners.edit', ['banner' => $banner->id]) }}"
                                                         class="dropdown-item edit-item-btn"><i
                                                             class="ri-pencil-fill align-bottom me-2 text-muted"></i>
                                                         Sửa</a></li>
                                                 <li>
                                                     <form
-                                                        action="{{ route('.adminbanners.destroy', ['banner' => $banner->id]) }}"
+                                                        action="{{ route('admin.banners.destroy', ['banner' => $banner->id]) }}"
                                                         method="post">
                                                         @csrf
                                                         @method('DELETE')

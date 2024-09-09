@@ -61,10 +61,10 @@ class CategoryController extends Controller
         $newCategory = Category::query()->create($data);
 
         if (!$newCategory) {
-            return redirect()->route('.admincategories.index')->with(['error' => 'Create category failed!']);
+            return redirect()->route('admin.categories.index')->with(['error' => 'Create category failed!']);
         }
 
-        return redirect()->route('.admincategories.index')->with(['message' => 'Create category successfully!']);
+        return redirect()->route('admin.categories.index')->with(['message' => 'Create category successfully!']);
     }
 
 
@@ -90,7 +90,7 @@ class CategoryController extends Controller
         $category = Category::find($id);
 
         if (!$category) {
-            return redirect()->route('.admincategories.index')->with(['error' => 'Category not exit!']);
+            return redirect()->route('admin.categories.index')->with(['error' => 'Category not exit!']);
         }
 
         if ($request->image && $request->hasFile('image')) {
@@ -109,10 +109,10 @@ class CategoryController extends Controller
         }
 
         if ($category->update($data)) {
-            return redirect()->route('.admincategories.index')->with(['message' => 'Update category successfully!']);
+            return redirect()->route('admin.categories.index')->with(['message' => 'Update category successfully!']);
         }
 
-        return redirect()->route('.admincategories.index')->with(['error' => 'Update category failed!']);
+        return redirect()->route('admin.categories.index')->with(['error' => 'Update category failed!']);
     }
 
 
@@ -121,7 +121,7 @@ class CategoryController extends Controller
         $category = Category::find($id);
 
         if (!$category) {
-            return redirect()->route('.admincategories.index')->with(['error' => 'Category not exit!']);
+            return redirect()->route('admin.categories.index')->with(['error' => 'Category not exit!']);
         }
 
         $subStringImage = substr($category->image, strlen(env('URL')));
