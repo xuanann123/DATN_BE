@@ -852,8 +852,50 @@
                             </div>
                         </div>
 
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="#sidebarMember" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarMember">
+                                <i class="ri-account-circle-line"></i> <span data-key="t-base-ui">Quản lý thành viên</span>
+                            </a>
+                            <div class="collapse menu-dropdown mega-dropdown-menu" id="sidebarMember">
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <ul class="nav nav-sm flex-column">
+                                            <li class="nav-item">
+                                                <a href="ui-alerts.html" class="nav-link" data-key="t-alerts">Thêm mới</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="{{ route('admin.users.list') }}" class="nav-link" data-key="t-badges">Danh sách</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="#sidebarPermission" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarPermission">
+                                <i class="ri-angularjs-line"></i> <span data-key="t-base-ui">Quản lý phân quyền</span>
+                            </a>
+                            <div class="collapse menu-dropdown mega-dropdown-menu" id="sidebarPermission">
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <ul class="nav nav-sm flex-column">
+                                            <li class="nav-item">
+                                                <a href="ui-alerts.html" class="nav-link" data-key="t-alerts">Thêm mới</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="ui-badges.html" class="nav-link" data-key="t-badges">Danh sách</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </li>
                     </div>
                 </li>
+
 
 
 
