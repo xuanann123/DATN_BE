@@ -176,7 +176,7 @@
                 </div><!-- end card header -->
 
                 <div class="card-body">
-                    <form action="{{ route('.adminbanners.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.banners.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div>
                             <div class="row">

@@ -42,10 +42,10 @@ class BannerController extends Controller
         $newBanner = Banner::query()->create($data);
 
         if (!$newBanner) {
-            return redirect()->route('.adminbanners.index')->with(['error' => 'Create banner failed!']);
+            return redirect()->route('admin.banners.index')->with(['error' => 'Create banner failed!']);
         }
 
-        return redirect()->route('.adminbanners.index')->with(['message' => 'Create banner successfully!']);
+        return redirect()->route('admin.banners.index')->with(['message' => 'Create banner successfully!']);
     }
 
     public function edit(string $id)
@@ -73,7 +73,7 @@ class BannerController extends Controller
         $banner = Banner::find($id);
 
         if (!$banner) {
-            return redirect()->route('.adminbanners.index')->with(['error' => 'Banner not exit!']);
+            return redirect()->route('admin.banners.index')->with(['error' => 'Banner not exit!']);
         }
 
         if ($request->image && $request->hasFile('image')) {
@@ -93,10 +93,10 @@ class BannerController extends Controller
         }
 
         if ($banner->update($data)) {
-            return redirect()->route('.adminbanners.index')->with(['message' => 'Update banner successfully!']);
+            return redirect()->route('admin.banners.index')->with(['message' => 'Update banner successfully!']);
         }
 
-        return redirect()->route('.adminbanners.index')->with(['error' => 'Update banner failed!']);
+        return redirect()->route('admin.banners.index')->with(['error' => 'Update banner failed!']);
     }
 
 
@@ -105,7 +105,7 @@ class BannerController extends Controller
         $banner = Banner::find($id);
 
         if (!$banner) {
-            return redirect()->route('.adminbanners.index')->with(['error' => 'Banner not exit!']);
+            return redirect()->route('admin.banners.index')->with(['error' => 'Banner not exit!']);
         }
 
         $subStringImage = substr($banner->image, strlen(env('URL')));

@@ -57,7 +57,7 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between">
                     <h5 class="card-title mb-0">{{ $title }}</h5>
-                    <a href="{{ route('.adminvouchers.create') }}" class="btn btn-primary">Thêm mới</a>
+                    <a href="{{ route('admin.vouchers.create') }}" class="btn btn-primary">Thêm mới</a>
                 </div>
                 <div class="card-body">
                     <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
@@ -137,13 +137,13 @@
                                                 <i class="ri-more-fill align-middle"></i>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end">
-                                                <li><a href="{{ route('.adminvouchers.edit', ['voucher' => $voucher->id]) }}"
+                                                <li><a href="{{ route('admin.vouchers.edit', ['voucher' => $voucher->id]) }}"
                                                         class="dropdown-item edit-item-btn"><i
                                                             class="ri-pencil-fill align-bottom me-2 text-muted"></i>
                                                         Sửa</a></li>
                                                 <li>
                                                     <form
-                                                        action="{{ route('.adminvouchers.destroy', ['voucher' => $voucher->id]) }}"
+                                                        action="{{ route('admin.vouchers.destroy', ['voucher' => $voucher->id]) }}"
                                                         method="post">
                                                         @csrf
                                                         @method('DELETE')

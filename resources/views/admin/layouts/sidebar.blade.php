@@ -70,19 +70,19 @@
                 </li> <!-- end Dashboard Menu -->
 
                 <li class="nav-item">
-                    <a href="{{ route('.adminbanners.index') }}" class="nav-link">
+                    <a href="{{ route('admin.banners.index') }}" class="nav-link">
                         <i class="ri-image-2-line"></i> <span>Banners</span>
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('.admincategories.index') }}" class="nav-link">
+                    <a href="{{ route('admin.categories.index') }}" class="nav-link">
                         <i class="bx bx-list-minus"></i> <span>Danh mục</span>
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('.adminvouchers.index') }}" class="nav-link">
+                    <a href="{{ route('admin.vouchers.index') }}" class="nav-link">
                         <i class="ri-ticket-2-line"></i> <span>Mã giảm giá</span>
                     </a>
                 </li>
@@ -890,7 +890,7 @@
                                         </ul>
                                     </div>
                                 </div>
-                                
+
                             </div>
                         </li>
                     </div>
