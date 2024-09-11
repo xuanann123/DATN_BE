@@ -88,6 +88,12 @@
                 </li>
 
                 <li class="nav-item">
+                    <a href="{{ route('admin.courses.list') }}" class="nav-link">
+                        <i class="ri-playstation-line"></i> <span>Khóa học</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarApps" data-bs-toggle="collapse" role="button"
                         aria-expanded="false" aria-controls="sidebarApps">
                         <i class="ri-apps-2-line"></i> <span data-key="t-apps">Apps</span>
