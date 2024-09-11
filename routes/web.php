@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VoucherController;
@@ -49,5 +50,12 @@ Route::prefix("admin")
             Route::get("/detail/{user}", [UserController::class, 'detail'])->name('detail');
             Route::get("/restore/{id}", [UserController::class, 'restore'])->name('restore');
             Route::get("/forceDelete/{id}", [UserController::class, 'forceDelete'])->name('forceDelete');
+        });
+        Route::prefix('courses')
+            ->as('courses.')
+            ->group(function () {
+            Route::get("/", [CourseController::class, 'index'])->name('list');
+            Route::get("/create", [CourseController::class, 'create'])->name('create');
+            Route::get("/detail", [CourseController::class, 'detail'])->name('detail'); // cái này ae sửa lại cho ok
         });
     });
