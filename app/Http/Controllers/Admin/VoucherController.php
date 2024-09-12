@@ -41,10 +41,10 @@ class VoucherController extends Controller
         $newVoucher = Voucher::query()->create($data);
 
         if (!$newVoucher) {
-            return redirect()->route('admin.vouchers.index')->with(['error' => 'Create banner failed!']);
+            return redirect()->route('admin.vouchers.index')->with(['error' => 'Thêm mới thất bại!']);
         }
 
-        return redirect()->route('admin.vouchers.index')->with(['message' => 'Create banner successfully!']);
+        return redirect()->route('admin.vouchers.index')->with(['message' => 'Thêm mới thành công!']);
     }
 
 
@@ -70,14 +70,14 @@ class VoucherController extends Controller
         $data['used_count'] = $voucher->used_count;
 
         if (!$voucher) {
-            return redirect()->route('admin.vouchers.index')->with(['error' => 'Voucher not exit!']);
+            return redirect()->route('admin.vouchers.index')->with(['error' => 'Mã giảm giá không tồn tại!']);
         }
 
         if ($voucher->update($data)) {
-            return redirect()->route('admin.vouchers.index')->with(['message' => 'Update voucher successfully!']);
+            return redirect()->route('admin.vouchers.index')->with(['message' => 'Cập nhật thành công!']);
         }
 
-        return redirect()->route('admin.vouchers.index')->with(['error' => 'Update voucher failed!']);
+        return redirect()->route('admin.vouchers.index')->with(['error' => 'Cập nhật thất bại!']);
     }
 
 
@@ -86,13 +86,13 @@ class VoucherController extends Controller
         $voucher = Voucher::find($id);
 
         if (!$voucher) {
-            return redirect()->route('admin.vouchers.index')->with(['error' => 'Voucher not exit!']);
+            return redirect()->route('admin.vouchers.index')->with(['error' => 'Mã giảm giá không tồn tại!']);
         }
 
         if ($voucher->delete()) {
-            return back()->with(['message' => 'Delete successfully!']);
+            return back()->with(['message' => 'Xóa thành công!']);
         }
 
-        return back()->with(['error' => 'Delete failed!']);
+        return back()->with(['error' => 'Xóa thất bại!']);
     }
 }

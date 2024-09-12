@@ -42,10 +42,10 @@ class BannerController extends Controller
         $newBanner = Banner::query()->create($data);
 
         if (!$newBanner) {
-            return redirect()->route('admin.banners.index')->with(['error' => 'Create banner failed!']);
+            return redirect()->route('admin.banners.index')->with(['error' => 'Thêm mới thành công!']);
         }
 
-        return redirect()->route('admin.banners.index')->with(['message' => 'Create banner successfully!']);
+        return redirect()->route('admin.banners.index')->with(['message' => 'Thêm mới thất bại!']);
     }
 
     public function edit(string $id)
@@ -54,7 +54,7 @@ class BannerController extends Controller
         $banner = Banner::find($id);
 
         if (!$banner) {
-            return back()->with(['error' => 'Banner not exit!']);
+            return back()->with(['error' => 'Banner không tồn tại!']);
         }
 
         return view('admin.banners.edit', compact('banner', 'title'));
@@ -73,7 +73,7 @@ class BannerController extends Controller
         $banner = Banner::find($id);
 
         if (!$banner) {
-            return redirect()->route('admin.banners.index')->with(['error' => 'Banner not exit!']);
+            return redirect()->route('admin.banners.index')->with(['error' => 'Banner không tồn tại!']);
         }
 
         if ($request->image && $request->hasFile('image')) {
@@ -93,10 +93,10 @@ class BannerController extends Controller
         }
 
         if ($banner->update($data)) {
-            return redirect()->route('admin.banners.index')->with(['message' => 'Update banner successfully!']);
+            return redirect()->route('admin.banners.index')->with(['message' => 'Cập nhật thành công!']);
         }
 
-        return redirect()->route('admin.banners.index')->with(['error' => 'Update banner failed!']);
+        return redirect()->route('admin.banners.index')->with(['error' => 'Cập nhật thất bại!']);
     }
 
 
@@ -105,7 +105,7 @@ class BannerController extends Controller
         $banner = Banner::find($id);
 
         if (!$banner) {
-            return redirect()->route('admin.banners.index')->with(['error' => 'Banner not exit!']);
+            return redirect()->route('admin.banners.index')->with(['error' => 'Banner không tồn tại!']);
         }
 
         $subStringImage = substr($banner->image, strlen(env('URL')));
@@ -116,6 +116,6 @@ class BannerController extends Controller
 
         $banner->delete();
 
-        return back()->with(['message' => 'Delete successfully!']);
+        return back()->with(['message' => 'Xóa thành công!']);
     }
 }

@@ -61,10 +61,10 @@ class CategoryController extends Controller
         $newCategory = Category::query()->create($data);
 
         if (!$newCategory) {
-            return redirect()->route('admin.categories.index')->with(['error' => 'Create category failed!']);
+            return redirect()->route('admin.categories.index')->with(['error' => 'Thêm mới thất bại!']);
         }
 
-        return redirect()->route('admin.categories.index')->with(['message' => 'Create category successfully!']);
+        return redirect()->route('admin.categories.index')->with(['message' => 'Thêm mới thành công!']);
     }
 
 
@@ -90,7 +90,7 @@ class CategoryController extends Controller
         $category = Category::find($id);
 
         if (!$category) {
-            return redirect()->route('admin.categories.index')->with(['error' => 'Category not exit!']);
+            return redirect()->route('admin.categories.index')->with(['error' => 'Danh mục không tồn tại!']);
         }
 
         if ($request->image && $request->hasFile('image')) {
@@ -109,10 +109,10 @@ class CategoryController extends Controller
         }
 
         if ($category->update($data)) {
-            return redirect()->route('admin.categories.index')->with(['message' => 'Update category successfully!']);
+            return redirect()->route('admin.categories.index')->with(['message' => 'Cập nhật thành công!']);
         }
 
-        return redirect()->route('admin.categories.index')->with(['error' => 'Update category failed!']);
+        return redirect()->route('admin.categories.index')->with(['error' => 'Cập nhật thất bại!']);
     }
 
 
@@ -121,7 +121,7 @@ class CategoryController extends Controller
         $category = Category::find($id);
 
         if (!$category) {
-            return redirect()->route('admin.categories.index')->with(['error' => 'Category not exit!']);
+            return redirect()->route('admin.categories.index')->with(['error' => 'Danh mục không tồn tại!']);
         }
 
         $subStringImage = substr($category->image, strlen(env('URL')));
@@ -132,6 +132,6 @@ class CategoryController extends Controller
 
         $category->delete();
 
-        return back()->with(['message' => 'Delete successfully!']);
+        return back()->with(['message' => 'Xóa thành công!']);
     }
 }
