@@ -40,22 +40,26 @@ Route::prefix("admin")
         Route::prefix('users')
             ->as('users.')
             ->group(function () {
-            Route::get("/", [UserController::class, 'index'])->name('list');
-            Route::get("/create", [UserController::class, 'create'])->name('create');
-            Route::post("/store", [UserController::class, 'store'])->name('store');
-            Route::get("/destroy/{user}", [UserController::class, 'destroy'])->name('destroy');
-            Route::get("/action", [UserController::class, 'action'])->name('action');
-            Route::get("/edit/{user}", [UserController::class, 'edit'])->name('edit');
-            Route::put("/update/{user}", [UserController::class, 'update'])->name('update');
-            Route::get("/detail/{user}", [UserController::class, 'detail'])->name('detail');
-            Route::get("/restore/{id}", [UserController::class, 'restore'])->name('restore');
-            Route::get("/forceDelete/{id}", [UserController::class, 'forceDelete'])->name('forceDelete');
-        });
+                Route::get("/", [UserController::class, 'index'])->name('list');
+                Route::get("/create", [UserController::class, 'create'])->name('create');
+                Route::post("/store", [UserController::class, 'store'])->name('store');
+                Route::get("/destroy/{user}", [UserController::class, 'destroy'])->name('destroy');
+                Route::get("/action", [UserController::class, 'action'])->name('action');
+                Route::get("/edit/{user}", [UserController::class, 'edit'])->name('edit');
+                Route::put("/update/{user}", [UserController::class, 'update'])->name('update');
+                Route::get("/detail/{user}", [UserController::class, 'detail'])->name('detail');
+                Route::get("/restore/{id}", [UserController::class, 'restore'])->name('restore');
+                Route::get("/forceDelete/{id}", [UserController::class, 'forceDelete'])->name('forceDelete');
+            });
         Route::prefix('courses')
             ->as('courses.')
             ->group(function () {
-            Route::get("/", [CourseController::class, 'index'])->name('list');
-            Route::get("/create", [CourseController::class, 'create'])->name('create');
-            Route::get("/detail", [CourseController::class, 'detail'])->name('detail'); // cái này ae sửa lại cho ok
-        });
+                Route::get("/", [CourseController::class, 'index'])->name('list');
+                Route::get("/create", [CourseController::class, 'create'])->name('create');
+                Route::post('/store', [CourseController::class, 'store'])->name('store');
+                Route::get("/detail", [CourseController::class, 'detail'])->name('detail');
+                Route::delete('/delete/{id}', [CourseController::class, 'delete'])->name('delete');
+                Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('edit');
+                Route::put('/update/{id}', [CourseController::class, 'update'])->name('update');
+            });
     });

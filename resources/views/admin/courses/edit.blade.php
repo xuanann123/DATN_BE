@@ -167,15 +167,17 @@
     </div>
     <!-- end page title -->
 
-    <form action="{{ route('admin.courses.store') }}" class="row" method="post" enctype="multipart/form-data">
+    <form class="row" action="{{ route('admin.courses.update', ['id' => $course->id]) }}" method="post"
+        enctype="multipart/form-data">
         @csrf
+        @method('PUT')
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label" for="name">Tên khóa học</label>
-                        <input type="text" class="form-control" id="name" value="{{ old('name') }}" name="name"
-                            placeholder="Tên khóa học">
+                        <input type="text" class="form-control" id="name" value="{{ old('name') ?? $course->name }}"
+                            name="name" placeholder="Tên khóa học">
                         <small class="help-block form-text text-danger">
                             @if ($errors->has('name'))
                                 {{ $errors->first('name') }}
@@ -188,7 +190,7 @@
                             <div>
                                 <label for="code" class="form-label">Mã khóa học</label>
                                 <input type="text" class="form-control" id="code" name="code"
-                                    placeholder="Mã khóa học" value="{{ old('code') }}">
+                                    placeholder="Mã khóa học" value="{{ old('code') ?? $course->code }}">
                                 <small class="help-block form-text text-danger">
                                     @if ($errors->has('code'))
                                         {{ $errors->first('code') }}
@@ -200,7 +202,7 @@
                             <div>
                                 <label for="slug" class="form-label">Đường dẫn thân thiện</label>
                                 <input type="text" class="form-control" id="slug" name="slug"
-                                    placeholder="Đường dẫn thân thiện" value="{{ old('slug') }}" readonly>
+                                    placeholder="Đường dẫn thân thiện" value="{{ old('slug') ?? $course->slug }}" readonly>
                                 <small class="help-block form-text text-danger">
                                     @if ($errors->has('slug'))
                                         {{ $errors->first('slug') }}
@@ -211,8 +213,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label" for="thumbnail">Ảnh khóa học</label>
-                        <input class="form-control" id="thumbnail" name="thumbnail" type="file" accept="image/*">
+                        <label class="form-label" for="thumbnail">Ảnh khóa học</label> <br>
+                        <img src="{{ asset($course->thumbnail) }}" width="200px" alt="">
+                        <input class="form-control mt-3" id="thumbnail" name="thumbnail" type="file" accept="image/*">
                         <small class="help-block form-text text-danger">
                             @if ($errors->has('thumbnail'))
                                 {{ $errors->first('thumbnail') }}
@@ -226,25 +229,25 @@
                                 <label for="price" class="form-label">Giá</label>
                                 <select class="form-select" data-choices data-choices-search-false id="price"
                                     name="price">
-                                    <option {{ old('price') == 0 ? 'selected' : '' }} value="0">--Miễn phí--
+                                    <option {{ $course->price == 0 ? 'selected' : '' }} value="0">--Miễn phí--
                                     </option>
-                                    <option {{ old('price') == 199000 ? 'selected' : '' }} value="199000">199.000 vnđ
+                                    <option {{ $course->price == 199000 ? 'selected' : '' }} value="199000">199.000 vnđ
                                     </option>
-                                    <option {{ old('price') == 299000 ? 'selected' : '' }} value="299000">299.000 vnđ
+                                    <option {{ $course->price == 299000 ? 'selected' : '' }} value="299000">299.000 vnđ
                                     </option>
-                                    <option {{ old('price') == 399000 ? 'selected' : '' }} value="399000">399.000 vnđ
+                                    <option {{ $course->price == 399000 ? 'selected' : '' }} value="399000">399.000 vnđ
                                     </option>
-                                    <option {{ old('price') == 499000 ? 'selected' : '' }} value="499000">499.000 vnđ
+                                    <option {{ $course->price == 499000 ? 'selected' : '' }} value="499000">499.000 vnđ
                                     </option>
-                                    <option {{ old('price') == 599000 ? 'selected' : '' }} value="599000">599.000 vnđ
+                                    <option {{ $course->price == 599000 ? 'selected' : '' }} value="599000">599.000 vnđ
                                     </option>
-                                    <option {{ old('price') == 699000 ? 'selected' : '' }} value="699000">699.000 vnđ
+                                    <option {{ $course->price == 699000 ? 'selected' : '' }} value="699000">699.000 vnđ
                                     </option>
-                                    <option {{ old('price') == 799000 ? 'selected' : '' }} value="799000">799.000 vnđ
+                                    <option {{ $course->price == 799000 ? 'selected' : '' }} value="799000">799.000 vnđ
                                     </option>
-                                    <option {{ old('price') == 899000 ? 'selected' : '' }} value="899000">899.000 vnđ
+                                    <option {{ $course->price == 899000 ? 'selected' : '' }} value="899000">899.000 vnđ
                                     </option>
-                                    <option {{ old('price') == 999000 ? 'selected' : '' }} value="999000">949.000 vnđ
+                                    <option {{ $course->price == 999000 ? 'selected' : '' }} value="999000">999.000 vnđ
                                     </option>
                                 </select>
                                 <small class="help-block form-text text-danger">
@@ -260,25 +263,34 @@
                                 <label for="price_sale" class="form-label">Giá ưu đãi</label>
                                 <select class="form-select" data-choices data-choices-search-false id="price_sale"
                                     name="price_sale">
-                                    <option {{ old('price') == 0 ? 'selected' : '' }} value="0">--Miễn phí--
+                                    <option {{ $course->price_sale == 0 ? 'selected' : '' }} value="0">--Miễn phí--
                                     </option>
-                                    <option {{ old('price_sale') == 199000 ? 'selected' : '' }} value="199000">199.000 vnđ
+                                    <option {{ $course->price_sale == 199000 ? 'selected' : '' }} value="199000">199.000
+                                        vnđ
                                     </option>
-                                    <option {{ old('price_sale') == 299000 ? 'selected' : '' }} value="299000">299.000 vnđ
+                                    <option {{ $course->price_sale == 299000 ? 'selected' : '' }} value="299000">299.000
+                                        vnđ
                                     </option>
-                                    <option {{ old('price_sale') == 399000 ? 'selected' : '' }} value="399000">399.000 vnđ
+                                    <option {{ $course->price_sale == 399000 ? 'selected' : '' }} value="399000">399.000
+                                        vnđ
                                     </option>
-                                    <option {{ old('price_sale') == 499000 ? 'selected' : '' }} value="499000">499.000 vnđ
+                                    <option {{ $course->price_sale == 499000 ? 'selected' : '' }} value="499000">499.000
+                                        vnđ
                                     </option>
-                                    <option {{ old('price_sale') == 599000 ? 'selected' : '' }} value="599000">599.000 vnđ
+                                    <option {{ $course->price_sale == 599000 ? 'selected' : '' }} value="599000">599.000
+                                        vnđ
                                     </option>
-                                    <option {{ old('price_sale') == 699000 ? 'selected' : '' }} value="699000">699.000 vnđ
+                                    <option {{ $course->price_sale == 699000 ? 'selected' : '' }} value="699000">699.000
+                                        vnđ
                                     </option>
-                                    <option {{ old('price_sale') == 799000 ? 'selected' : '' }} value="799000">799.000 vnđ
+                                    <option {{ $course->price_sale == 799000 ? 'selected' : '' }} value="799000">799.000
+                                        vnđ
                                     </option>
-                                    <option {{ old('price_sale') == 899000 ? 'selected' : '' }} value="899000">899.000 vnđ
+                                    <option {{ $course->price_sale == 899000 ? 'selected' : '' }} value="899000">899.000
+                                        vnđ
                                     </option>
-                                    <option {{ old('price_sale') == 999000 ? 'selected' : '' }} value="999000">949.000 vnđ
+                                    <option {{ $course->price_sale == 999000 ? 'selected' : '' }} value="999000">999.000
+                                        vnđ
                                     </option>
                                 </select>
                                 <small class="help-block form-text text-danger">
@@ -292,7 +304,7 @@
 
                     <div class="mb-3">
                         <label class="form-label">Mô tả ngắn</label>
-                        <textarea name="sort_description" id="ckeditor-classic">{{ old('sort_description') }}</textarea>
+                        <textarea name="sort_description" id="ckeditor-classic">{{ old('sort_description') ?? $course->sort_description }}</textarea>
                         <small class="help-block form-text text-danger">
                             @if ($errors->has('sort_description'))
                                 {{ $errors->first('sort_description') }}
@@ -301,7 +313,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Mô tả</label>
-                        <textarea name="description" id="ckeditor-classic-2">{{ old('description') }}</textarea>
+                        <textarea name="description" id="ckeditor-classic-2">{{ old('description') ?? $course->description }}</textarea>
                         <small class="help-block form-text text-danger">
                             @if ($errors->has('description'))
                                 {{ $errors->first('description') }}
@@ -310,7 +322,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Nội dung nhận được</label>
-                        <textarea name="learned" id="ckeditor-classic-3">{{ old('learned') }}</textarea>
+                        <textarea name="learned" id="ckeditor-classic-3">{{ old('learned') ?? $course->learned }}</textarea>
                         <small class="help-block form-text text-danger">
                             @if ($errors->has('learned'))
                                 {{ $errors->first('learned') }}
@@ -332,7 +344,7 @@
                         <select name="id_category" id="id_category" class="form-control">
                             <option value="">Chọn danh mục</option>
                             @foreach ($options as $id => $name)
-                                <option {{ old('id_category') == $id ? 'selected' : '' }} value="{{ $id }}">
+                                <option {{ $course->id_category == $id ? 'selected' : '' }} value="{{ $id }}">
                                     {!! $name !!}</option>
                             @endforeach
                         </select>
@@ -346,7 +358,7 @@
                     <div class="mb-3">
                         <label for="is_active" class="form-label">Trạng thái</label> <br>
                         <label class="switch">
-                            <input {{ old('is_active') == 1 ? 'checked' : '' }} name="is_active" id="is_active"
+                            <input {{ $course->is_active == 1 ? 'checked' : '' }} name="is_active" id="is_active"
                                 value="1" type="checkbox">
                             <div class="slider">
                                 <div class="circle">
@@ -381,8 +393,8 @@
             <!-- end card -->
             <div class="text-start mb-4">
                 {{-- <button type="submit" class="btn btn-danger w-sm">Delete</button> --}}
-                <button type="submit" class="btn btn-success w-sm">Thêm mới</button>
-                <button type="reset" class="btn btn-secondary w-sm">Xóa tất cả</button>
+                <button type="submit" class="btn btn-success w-sm">Cập nhật</button>
+                {{-- <button type="reset" class="btn btn-secondary w-sm">Xóa tất cả</button> --}}
             </div>
         </div>
         <!-- end col -->
