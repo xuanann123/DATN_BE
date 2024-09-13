@@ -51,10 +51,11 @@ class CourseController extends Controller
 
 
         if ($request->thumbnail && $request->hasFile('thumbnail')) {
-            $pathImage = Storage::putFile('courses', $request->file('thumbnail'));
-            $fullNameImage = env('URL') . 'storage/' . $pathImage;
+            $image = $request->file('thumbnail');
+            $newNameImage = 'course_' . time() . '.' . $image->getClientOriginalExtension();
+            $pathImage = Storage::putFileAs('courses', $image, $newNameImage);
 
-            $data['thumbnail'] = $fullNameImage;
+            $data['thumbnail'] = $pathImage;
         }
 
         $newCourse = Course::query()->create($data);
@@ -96,18 +97,18 @@ class CourseController extends Controller
         $data['is_active'] = !$request->is_active ? 0 : 1;
 
         if ($request->thumbnail && $request->hasFile('thumbnail')) {
-            $pathImage = Storage::putFile('courses', $request->file('thumbnail'));
-            $fullNameImage = env('URL') . 'storage/' . $pathImage;
+            $image = $request->file('thumbnail');
+            $newNameImage = 'course_' . time() . '.' . $image->getClientOriginalExtension();
+            $pathImage = Storage::putFileAs('courses', $image, $newNameImage);
 
-            $data['thumbnail'] = $fullNameImage;
+            $data['thumbnail'] = $pathImage;
 
-            $subStringImage = substr($course->thumbnail, strlen(env('URL')));
-
-            if ($subStringImage && file_exists($subStringImage)) {
-                unlink($subStringImage);
-            } else {
-                $data['thumbnail'] = $course->thumbnail;
+            $fileExists = Storage::disk('public')->exists($course->thumbnail);
+            if ($fileExists) {
+                Storage::disk('public')->delete($course->thumbnail);
             }
+        } else {
+            $data['thumbnail'] = $course->thumbnail;
         }
 
         if ($course->update($data)) {
@@ -125,10 +126,9 @@ class CourseController extends Controller
             return redirect()->route('admin.courses.list')->with(['error' => 'Khóa học không tồn tại!']);
         }
 
-        $subStringImage = substr($course->thumbnail, strlen(env('URL')));
-
-        if ($subStringImage && file_exists($subStringImage)) {
-            unlink($subStringImage);
+        $fileExists = Storage::disk('public')->exists($course->thumbnail);
+        if ($fileExists) {
+            Storage::disk('public')->delete($course->thumbnail);
         }
 
         $course->delete();

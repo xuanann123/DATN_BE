@@ -214,7 +214,7 @@
 
                     <div class="mb-3">
                         <label class="form-label" for="thumbnail">Ảnh khóa học</label> <br>
-                        <img src="{{ asset($course->thumbnail) }}" width="200px" alt="">
+                        <img src="{{ Storage::url($course->thumbnail) }}" width="200px" alt="">
                         <input class="form-control mt-3" id="thumbnail" name="thumbnail" type="file" accept="image/*">
                         <small class="help-block form-text text-danger">
                             @if ($errors->has('thumbnail'))
