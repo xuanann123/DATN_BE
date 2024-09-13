@@ -11,22 +11,22 @@ class BannerController extends Controller
     public function getBanners()
     {
         $banners = Banner::select('id', 'title', 'redirect_url', 'image', 'position', 'start_time', 'end_time')
-            ->where('is_active', '=', 0)
+            ->where('is_active', '=', 1)
             ->orderByDesc('position')
             ->get();
 
 
         if ($banners->isEmpty()) {
             return response()->json([
-                'status' => 204,
+                'status' => 'failed',
                 'message' => 'Empty banner list',
-            ]);
+            ], 204);
         }
 
         return response()->json([
-            'status' => 200,
-            'message' => 'Get banner successfully',
+            'status' => 'success',
+            'message' => 'Get banners successfully!',
             'data' => $banners
-        ]);
+        ], 200);
     }
 }

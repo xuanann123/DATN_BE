@@ -4,7 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class Banner extends Model
 {
@@ -19,4 +21,10 @@ class Banner extends Model
         'end_time',
         'is_active',
     ];
+
+    // Xử lí phần hiển thị ảnh cho api;
+    public function getImageAttribute()
+    {
+        return url(Storage::url($this->attributes['image']));
+    }
 }
