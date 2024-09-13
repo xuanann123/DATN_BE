@@ -57,9 +57,23 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between">
-                    <h5 class="card-title mb-0">Danh sách banner</h5>
+                    
+                    <div class="col-sm-auto d-flex ms-2">
+                        <h5 class=" mb-0 mt-1">Trạng thái</h5>
+                        <ul class="d-flex gap-4 mt-1">
+                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'all']) }}">Tất
+                                    cả()</a></li>
+                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'active']) }}">Kích
+                                    hoạt()</a></li>
+                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'pending']) }}">Chờ xác
+                                    nhận()</a></li>
+                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'trash']) }}">Vô hiệu
+                                    hoá()</a></li>
+                        </ul>
+                    </div>
                     <a href="{{ route('admin.banners.create') }}" class="btn btn-primary">Thêm mới</a>
                 </div>
+                
                 <div class="card-body">
                     <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
                         style="width:100%">
