@@ -12,10 +12,27 @@ use Illuminate\Support\Facades\Storage;
 class BannerController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
         $title = "Danh sách banner";
-        $banners = Banner::query()->orderbyDesc('id')->paginate(10);
+        $status = $request->query('status', 'all');
+        $banners = Banner::when($status != 'all', function ($query) use ($status) {
+            switch ($status) {
+                case "active":
+                    $query->where('is_active', 1);
+                    break;
+                case "pending":
+                    $query->where('is_active', 0);
+                    break;
+                case "trash":
+                    $query->onlyTrashed();
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+        })->paginate(5);
+        // dd($banners);
         return view('admin.banners.index', compact('banners', 'title'));
     }
 

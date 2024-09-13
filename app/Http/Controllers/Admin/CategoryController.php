@@ -57,14 +57,13 @@ class CategoryController extends Controller
 
             $data['image'] = $fullNameImage;
         }
-
         $newCategory = Category::query()->create($data);
 
         if (!$newCategory) {
             return redirect()->route('admin.categories.index')->with(['error' => 'Thêm mới thất bại!']);
         }
 
-        return redirect()->route('admin.categories.index')->with(['message' => 'Thêm mới thành công!']);
+        return redirect()->route('admin.categories.index')->with(['success' => 'Thêm mới thành công!']);
     }
 
 
@@ -109,7 +108,7 @@ class CategoryController extends Controller
         }
 
         if ($category->update($data)) {
-            return redirect()->route('admin.categories.index')->with(['message' => 'Cập nhật thành công!']);
+            return redirect()->route('admin.categories.index')->with(['success' => 'Cập nhật thành công!']);
         }
 
         return redirect()->route('admin.categories.index')->with(['error' => 'Cập nhật thất bại!']);
