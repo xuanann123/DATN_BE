@@ -126,7 +126,8 @@
                                 <div class="flex-shrink-0 me-3">
                                     <div class="avatar-sm">
                                         <span class="avatar-title bg-danger-subtle rounded">
-                                            <img src="{{ $course->thumbnail }}" alt="" class="img-fluid px-1">
+                                            <img src="{{ Storage::url($course->thumbnail) }}" alt=""
+                                                class="img-fluid px-1">
                                         </span>
                                     </div>
                                 </div>

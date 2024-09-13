@@ -227,7 +227,7 @@
                                         </small>
                                     </div>
                                     @if ($category->image)
-                                        <img src="{{ asset($category->image) }}" width="200px" alt="">
+                                        <img src="{{ Storage::url($category->image) }}" width="200px" alt="">
                                     @endif
                                 </div>
 

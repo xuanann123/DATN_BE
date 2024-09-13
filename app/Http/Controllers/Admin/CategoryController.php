@@ -52,10 +52,11 @@ class CategoryController extends Controller
         }
 
         if ($request->image && $request->hasFile('image')) {
-            $pathImage = Storage::putFile('categories', $request->file('image'));
-            $fullNameImage = env('URL') . 'storage/' . $pathImage;
+            $image = $request->file('image');
+            $newNameImage = 'category_' . time() . '.' . $image->getClientOriginalExtension();
+            $pathImage = Storage::putFileAs('categories', $image, $newNameImage);
 
-            $data['image'] = $fullNameImage;
+            $data['image'] = $pathImage;
         }
         $newCategory = Category::query()->create($data);
 
@@ -93,15 +94,15 @@ class CategoryController extends Controller
         }
 
         if ($request->image && $request->hasFile('image')) {
-            $pathImage = Storage::putFile('categories', $request->file('image'));
-            $fullNameImage = env('URL') . 'storage/' . $pathImage;
+            $image = $request->file('image');
+            $newNameImage = 'category_' . time() . '.' . $image->getClientOriginalExtension();
+            $pathImage = Storage::putFileAs('categories', $image, $newNameImage);
 
-            $data['image'] = $fullNameImage;
+            $data['image'] = $pathImage;
 
-            $subStringImage = substr($category->image, strlen(env('URL')));
-
-            if ($subStringImage && file_exists($subStringImage)) {
-                unlink($subStringImage);
+            $fileExists = Storage::disk('public')->exists($category->image);
+            if ($fileExists) {
+                Storage::disk('public')->delete($category->image);
             }
         } else {
             $data['image'] = $category->image;
@@ -123,10 +124,9 @@ class CategoryController extends Controller
             return redirect()->route('admin.categories.index')->with(['error' => 'Danh mục không tồn tại!']);
         }
 
-        $subStringImage = substr($category->image, strlen(env('URL')));
-
-        if ($subStringImage && file_exists($subStringImage)) {
-            unlink($subStringImage);
+        $fileExists = Storage::disk('public')->exists($category->image);
+        if ($fileExists) {
+            Storage::disk('public')->delete($category->image);
         }
 
         $category->delete();

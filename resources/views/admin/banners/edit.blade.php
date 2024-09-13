@@ -227,7 +227,7 @@
                                             @endif
                                         </small>
                                     </div>
-                                    <img src="{{ asset($banner->image) }}" width="200px" alt="">
+                                    <img src="{{ Storage::url($banner->image) }}" width="200px" alt="">
 
                                 </div>
 

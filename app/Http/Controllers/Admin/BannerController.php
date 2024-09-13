@@ -50,10 +50,11 @@ class BannerController extends Controller
         $data = $request->except('image');
 
         if ($request->image && $request->hasFile('image')) {
-            $pathImage = Storage::putFile('banners', $request->file('image'));
-            $fullNameImage = env('URL') . 'storage/' . $pathImage;
+            $image = $request->file('image');
+            $newNameImage = 'banner_' . time() . '.' . $image->getClientOriginalExtension();
+            $pathImage = Storage::putFileAs('banners', $image, $newNameImage);
 
-            $data['image'] = $fullNameImage;
+            $data['image'] = $pathImage;
         }
 
         $newBanner = Banner::query()->create($data);
@@ -68,6 +69,7 @@ class BannerController extends Controller
     public function edit(string $id)
     {
         $title = "Chỉnh sửa banner";
+
         $banner = Banner::find($id);
 
         if (!$banner) {
@@ -80,7 +82,6 @@ class BannerController extends Controller
 
     public function update(UpdateBannerRequest $request, string $id)
     {
-
         $data = $request->except('image');
 
         if (!$request->is_active) {
@@ -94,16 +95,15 @@ class BannerController extends Controller
         }
 
         if ($request->image && $request->hasFile('image')) {
-            $pathImage = Storage::putFile('banners', $request->file('image'));
+            $image = $request->file('image');
+            $newNameImage = 'banner_' . time() . '.' . $image->getClientOriginalExtension();
+            $pathImage = Storage::putFileAs('banners', $image, $newNameImage);
 
-            $fullNameImage = env('URL') . 'storage/' . $pathImage;
+            $data['image'] = $pathImage;
 
-            $data['image'] = $fullNameImage;
-
-            $subStringImage = substr($banner->image, strlen(env('URL')));
-
-            if ($subStringImage && file_exists($subStringImage)) {
-                unlink($subStringImage);
+            $fileExists = Storage::disk('public')->exists($banner->image);
+            if ($fileExists) {
+                Storage::disk('public')->delete($banner->image);
             }
         } else {
             $data['image'] = $banner->image;
@@ -125,10 +125,9 @@ class BannerController extends Controller
             return redirect()->route('admin.banners.index')->with(['error' => 'Banner không tồn tại!']);
         }
 
-        $subStringImage = substr($banner->image, strlen(env('URL')));
-
-        if ($subStringImage && file_exists($subStringImage)) {
-            unlink($subStringImage);
+        $fileExists = Storage::disk('public')->exists($banner->image);
+        if ($fileExists) {
+            Storage::disk('public')->delete($banner->image);
         }
 
         $banner->delete();
