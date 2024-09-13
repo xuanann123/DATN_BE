@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BannerController extends Controller
 {
@@ -23,10 +24,23 @@ class BannerController extends Controller
             ], 204);
         }
 
+        $bannersWithUrls = $banners->map(function ($banner) {
+            return [
+                'id' => $banner->id,
+                'title' => $banner->title,
+                'redirect_url' => $banner->redirect_url,
+                'image' => url(Storage::url($banner->image)),
+                'position' => $banner->position,
+                'start_time' => $banner->start_time,
+                'end_time' => $banner->end_time,
+
+            ];
+        });
+
         return response()->json([
             'status' => 'success',
             'message' => 'Get banners successfully!',
-            'data' => $banners
+            'data' => $bannersWithUrls
         ], 200);
     }
 }
