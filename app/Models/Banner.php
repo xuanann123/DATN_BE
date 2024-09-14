@@ -23,8 +23,8 @@ class Banner extends Model
     ];
 
     // Xử lí phần hiển thị ảnh cho api;
-    public function getImageAttribute()
-    {
-        return url(Storage::url($this->attributes['image']));
-    }
+    // public function getImageAttribute()
+    // {
+    //     return url(Storage::url($this->attributes['image']));
+    // }
 }
