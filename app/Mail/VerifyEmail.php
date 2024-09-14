@@ -22,9 +22,9 @@ class VerifyEmail extends Mailable
 
     public function build()
     {
-        $verifyUrl = url('/api/verify-email/' . $this->verificationToken);
+        $verifyUrl = config('app.fe_url') . 'verify-email/' . $this->verificationToken;
 
-        return $this->view('emails.verify_email')
+        return $this->markdown('emails.verify_email')
                     ->subject('Xác Thực Email')
                     ->with([
                         'verifyUrl' => $verifyUrl,
