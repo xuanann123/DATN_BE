@@ -41,7 +41,10 @@ class AuthController extends Controller
 
             DB::commit(); // OK thì save
 
-            return response()->json(['message' => 'Vui lòng kiểm tra email để xác nhận đăng ký.'], 201);
+            return response()->json([
+                'success' => 'Vui lòng kiểm tra email để xác nhận đăng ký.',
+                'verification_token' => $verificationToken
+            ], 201);
         } catch (Throwable $e) {
             DB::rollBack(); // err thì rollback db
             Log::error("Error: " . $e->getMessage());
@@ -66,7 +69,13 @@ class AuthController extends Controller
                 'verification_token' => null,
             ]);
 
-            return response()->json(['message' => 'Xác thực email thành công, tài khoản của bạn đã có thể đăng nhập.'], 200);
+            $token = $user->createToken('main', expiresAt: now()->addMinutes('20160'))->plainTextToken;
+
+            return response()->json([
+                'message' => 'Xác thực email thành công, bạn đã đăng nhập.',
+                'user' => $user,
+                'token' => $token
+            ], 200);
         } catch (Throwable $e) {
             Log::error("Error: " . $e->getMessage());
             return response()->json([
@@ -94,7 +103,11 @@ class AuthController extends Controller
             // set token 2 weeks
             $token = $user->createToken('main', expiresAt: now()->addMinutes('20160'))->plainTextToken;
 
-            return response()->json(['user' => $user, 'token' => $token], 200);
+            return response()->json([
+                'success' => 'Đăng nhập thành công.',
+                'user' => $user,
+                'token' => $token
+            ], 200);
         } catch (Throwable $e) {
             Log::error("Error: " . $e->getMessage());
             return response()->json([

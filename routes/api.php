@@ -4,6 +4,8 @@ use App\Http\Controllers\api\Client\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\Client\BannerController;
+use App\Http\Controllers\api\Client\UserController;
+use App\Http\Middleware\VerifyCsrfToken;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,7 +19,7 @@ use App\Http\Controllers\api\Client\BannerController;
 */
 
 
-Route::middleware('guest')->group(function () {
+Route::prefix('')->group(function () {
     Route::post('/signup', [AuthController::class, 'signup']);
     Route::post('/login', [AuthController::class, 'login']);
 });
@@ -28,9 +30,7 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
+    Route::get('/user/profile', [UserController::class, 'show']);
     // Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 });
 

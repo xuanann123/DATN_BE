@@ -29,7 +29,7 @@ class CheckExpiredToken
                     // del
                     $accessToken->delete();
 
-                    return response()->json(['message' => 'Token đã hết hạn và bị xóa.'], 401);
+                    return response()->json(['message' => 'Hết hạn phiên đăng nhập.'], 401);
                 }
             }
         }
