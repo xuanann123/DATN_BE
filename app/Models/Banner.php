@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Banner extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'title',
@@ -22,9 +22,11 @@ class Banner extends Model
         'is_active',
     ];
 
+
     // Xử lí phần hiển thị ảnh cho api;
     // public function getImageAttribute()
     // {
     //     return url(Storage::url($this->attributes['image']));
     // }
+
 }
