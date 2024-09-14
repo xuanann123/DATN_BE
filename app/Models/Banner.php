@@ -21,4 +21,12 @@ class Banner extends Model
         'end_time',
         'is_active',
     ];
+
+
+    // Xử lí phần hiển thị ảnh cho api;
+    // public function getImageAttribute()
+    // {
+    //     return url(Storage::url($this->attributes['image']));
+    // }
+
 }
