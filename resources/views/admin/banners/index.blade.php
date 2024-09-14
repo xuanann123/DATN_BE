@@ -40,40 +40,46 @@
         </div>
     </div>
     <!-- end page title -->
-
     @if (session('message'))
         <div class="alert alert-success" role="alert">
             {{ session('message') }}
         </div>
     @endif
-
     @if (session('error'))
         <div class="alert alert-error" role="alert">
             {{ session('error') }}
         </div>
     @endif
-
     <div class="row">
         <div class="col-lg-12">
+            <div class="row">
+                <div class="col-md-12 mb-3 mx-auto">
+                    <div class="float-end">
+                        <a href="{{ route('admin.banners.create') }}" class="btn btn-primary">Thêm mới</a>
+                    </div>
+                </div>
+            </div>
             <div class="card">
-                <div class="card-header d-flex justify-content-between">
-                    
+                <div class="card-header d-flex justify-content-between gap-3">
+                    <div class="col-sm-auto d-flex">
+                        <select name="" id="" class="form-select ">
+                            <option value="" class="form-control">Chọn thao tác thực hiện</option>
+                        </select>
+                        <button type="submit" class="ms-2 btn btn-primary">Chose</button>
+                    </div>
                     <div class="col-sm-auto d-flex ms-2">
-                        <h5 class=" mb-0 mt-1">Trạng thái</h5>
-                        <ul class="d-flex gap-4 mt-1">
+                        <ul class="d-flex gap-4 mt-1 list-unstyled">
                             <li><a href="{{ request()->fullUrlWithQuery(['status' => 'all']) }}">Tất
-                                    cả()</a></li>
+                                    cả({{ $count['all'] }})</a></li>
                             <li><a href="{{ request()->fullUrlWithQuery(['status' => 'active']) }}">Kích
-                                    hoạt()</a></li>
-                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'pending']) }}">Chờ xác
-                                    nhận()</a></li>
+                                    hoạt({{ $count['active'] }})</a></li>
+                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'inactive']) }}">Chờ xác
+                                    nhận({{ $count['inactive'] }})</a></li>
                             <li><a href="{{ request()->fullUrlWithQuery(['status' => 'trash']) }}">Vô hiệu
-                                    hoá()</a></li>
+                                    hoá({{ $count['trash'] }})</a></li>
                         </ul>
                     </div>
-                    <a href="{{ route('admin.banners.create') }}" class="btn btn-primary">Thêm mới</a>
                 </div>
-                
                 <div class="card-body">
                     <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
                         style="width:100%">
