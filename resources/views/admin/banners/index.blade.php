@@ -60,115 +60,145 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-header d-flex justify-content-between gap-3">
-                    <div class="col-sm-auto d-flex">
-                        <select name="" id="" class="form-select ">
-                            <option value="" class="form-control">Chọn thao tác thực hiện</option>
-                        </select>
-                        <button type="submit" class="ms-2 btn btn-primary">Chose</button>
+
+                <form action="{{ route('admin.banners.action') }}">
+                    @csrf
+                    <div class="card-header d-flex justify-content-between gap-3">
+                        <div class="col-sm-auto d-flex">
+                            <select name="act" id="" class="form-select">
+                                <option value="" class="form-control">Thao tác nhiều bản ghi</option>
+                                @foreach ($listAct as $key => $act)
+                                    <option value="{{ $key }}" class="form-control">{{ $act }}</option>
+                                @endforeach
+                            </select>
+                            <button type="submit" class="ms-2 btn btn-primary">Chose</button>
+                        </div>
+                        <div class="col-sm-auto d-flex ms-2">
+                            <ul class="d-flex gap-4 mt-1 list-unstyled">
+                                <li><a href="{{ request()->fullUrlWithQuery(['status' => 'all']) }}">Tất
+                                        cả({{ $count['all'] }})</a></li>
+                                <li><a href="{{ request()->fullUrlWithQuery(['status' => 'active']) }}">Kích
+                                        hoạt({{ $count['active'] }})</a></li>
+                                <li><a href="{{ request()->fullUrlWithQuery(['status' => 'inactive']) }}">Chờ xác
+                                        nhận({{ $count['inactive'] }})</a></li>
+                                <li><a href="{{ request()->fullUrlWithQuery(['status' => 'trash']) }}">Vô hiệu
+                                        hoá({{ $count['trash'] }})</a></li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="col-sm-auto d-flex ms-2">
-                        <ul class="d-flex gap-4 mt-1 list-unstyled">
-                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'all']) }}">Tất
-                                    cả({{ $count['all'] }})</a></li>
-                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'active']) }}">Kích
-                                    hoạt({{ $count['active'] }})</a></li>
-                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'inactive']) }}">Chờ xác
-                                    nhận({{ $count['inactive'] }})</a></li>
-                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'trash']) }}">Vô hiệu
-                                    hoá({{ $count['trash'] }})</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
-                        style="width:100%">
-                        <thead>
-                            <tr>
-                                <th scope="col" style="width: 10px;">
-                                    <div class="form-check">
-                                        <input class="form-check-input fs-15" type="checkbox" id="checkAll" value="option">
-                                    </div>
-                                </th>
-                                <th data-ordering="false">Tiêu đề</th>
-                                <th data-ordering="false">Trang đích</th>
-                                <th data-ordering="false">Ảnh</th>
-                                <th>Vị trí</th>
-                                <th>Ngày bắt đầu</th>
-                                <th>Ngày kết thúc</th>
-                                <th>Trạng thái</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($banners as $banner)
+                    <div class="card-body">
+                        <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
+                            style="width:100%">
+                            <thead>
                                 <tr>
-                                    <th scope="row">
+                                    <th scope="col" style="width: 50px;">
                                         <div class="form-check">
-                                            <input class="form-check-input fs-15" type="checkbox" name="checkAll"
-                                                value="{{ $banner->id }}">
+                                            <input class="form-check-input" type="checkbox" id="selectAll" value="option">
                                         </div>
                                     </th>
-                                    <td>{{ $banner->title }}</td>
-                                    <td>
-                                        <a href="{{ $banner->redirect_url }}">Link</a>
-                                    </td>
-                                    <td>
-                                        <img src="{{ Storage::url($banner->image) }}" width="100px" alt="">
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-info">{{ $banner->position }}</span>
-                                    </td>
-                                    <td>{{ $banner->start_time }}</td>
-                                    <td>{{ $banner->end_time }}</td>
-                                    <td class="td_is_active">
-                                        @if ($banner->is_active == 1)
-                                            <span class="badge rounded-pill bg-success">On</span>
-                                        @else
-                                            <span class="badge rounded-pill bg-danger">Off</span>
-                                        @endif
-                                    </td>
-
-                                    <td>
-                                        <div class="dropdown d-inline-block">
-                                            <button class="btn btn-soft-secondary btn-sm dropdown" type="button"
-                                                data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class="ri-more-fill align-middle"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li><a href="{{ route('admin.banners.edit', ['banner' => $banner->id]) }}"
-                                                        class="dropdown-item edit-item-btn"><i
-                                                            class="ri-pencil-fill align-bottom me-2 text-muted"></i>
-                                                        Sửa</a></li>
-                                                <li>
-                                                    <form
-                                                        action="{{ route('admin.banners.destroy', ['banner' => $banner->id]) }}"
-                                                        method="post">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button class="dropdown-item remove-item-btn"
-                                                            onclick="return confirm('Xác nhận xóa ?')"><i
-                                                                class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
-                                                            Xóa</button>
-                                                    </form>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </td>
+                                    <th data-ordering="false">Tiêu đề</th>
+                                    <th data-ordering="false">Trang đích</th>
+                                    <th data-ordering="false">Ảnh</th>
+                                    <th>Vị trí</th>
+                                    <th>Ngày bắt đầu</th>
+                                    <th>Ngày kết thúc</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                    <div class="paginate-data">
-                        {{ $banners->links() }}
+                            </thead>
+                            <tbody class="list form-check-all">
+                                @foreach ($banners as $banner)
+                                    <tr>
+                                        <th scope="row">
+                                            <div class="form-check">
+                                                <input class="form-check-input checkbox" type="checkbox" name="listCheck[]"
+                                                    value="{{ $banner->id }}">
+                                            </div>
+                                        </th>
+                                        <td>{{ $banner->title }}</td>
+                                        <td>
+                                            <a href="{{ $banner->redirect_url }}">Link</a>
+                                        </td>
+                                        <td>
+                                            <img src="{{ Storage::url($banner->image) }}" width="100px" alt="">
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ $banner->position }}</span>
+                                        </td>
+                                        <td>{{ $banner->start_time }}</td>
+                                        <td>{{ $banner->end_time }}</td>
+                                        <td class="td_is_active">
+                                            @if ($banner->is_active == 1)
+                                                <span class="badge rounded-pill bg-success">On</span>
+                                            @else
+                                                <span class="badge rounded-pill bg-danger">Off</span>
+                                            @endif
+                                        </td>
+
+                                        <td>
+                                            <div class="dropdown d-inline-block">
+                                                <button class="btn btn-soft-secondary btn-sm dropdown" type="button"
+                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="ri-more-fill align-middle"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    @if (request()->status == 'trash')
+                                                        <li><a href="{{ route('admin.banners.restore', ['id' => $banner->id]) }}"
+                                                                onclick="return confirm('Bạn có muốn khôi phục bản ghi {{ $banner->title }} không ?')"
+                                                                class="dropdown-item edit-item-btn"><i
+                                                                    class="ri-restart-fill align-bottom me-2 text-muted"></i>
+                                                                Khôi phục</a></li>
+                                                        <li><a href="{{ route('admin.banners.forceDelete', ['id' => $banner->id]) }}"
+                                                                onclick="return confirm('Bạn có muốn xoá vĩnh viễn bản ghi {{ $banner->title }} không ?')"
+                                                                class="dropdown-item edit-item-btn"><i
+                                                                    class="ri-delete-bin-line align-bottom me-2 text-muted"></i>
+                                                                Xoá vĩnh viễn</a></li>
+                                                    @else
+                                                        <li><a href="{{ route('admin.banners.edit', ['banner' => $banner->id]) }}"
+                                                                class="dropdown-item edit-item-btn"><i
+                                                                    class="ri-pencil-fill align-bottom me-2 text-muted"></i>
+                                                                Sửa</a></li>
+                                                        <li>
+                                                            <form
+                                                                action="{{ route('admin.banners.destroy', ['banner' => $banner->id]) }}"
+                                                                method="post">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button class="dropdown-item remove-item-btn"
+                                                                    onclick="return confirm('Bạn có muốn xoá bản ghi {{ $banner->title }} không ?')"><i
+                                                                        class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
+                                                                    Xóa</button>
+                                                            </form>
+                                                        </li>
+                                                    @endif
+
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+
+                        <div class="paginate-data">
+                            {{ $banners->links() }}
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div><!--end col-->
     </div><!--end row-->
 @endsection
 
 @section('script-libs')
+    <script>
+        document.getElementById('selectAll').addEventListener('change', function() {
+            var checkboxes = document.querySelectorAll('.checkbox');
+            for (var checkbox of checkboxes) {
+                checkbox.checked = this.checked;
+            }
+        });
+    </script>
     <!--datatable js-->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>

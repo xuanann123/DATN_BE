@@ -51,11 +51,11 @@
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
                                 <a href="{{ route('admin.banners.index') }}"  class="nav-link"
-                                    data-key="t-horizontal">Danh sách</a>
+                                    data-key="t-horizontal">Danh sách banners</a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('admin.banners.create') }}"  class="nav-link"
-                                    data-key="t-detached">Thêm mới</a>
+                                    data-key="t-detached">Thêm mới banner</a>
                             </li>
                         </ul>
                     </div>
@@ -101,11 +101,11 @@
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
                                 <a href="{{ route('admin.categories.index') }}" class="nav-link" data-key="t-one-page">
-                                    Danh sách</a>
+                                    Danh sách danh mục</a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('admin.categories.create') }}" class="nav-link" data-key="t-job">
-                                    Thêm mới </a>
+                                    Thêm mới danh mục</a>
                             </li>
                         </ul>
                     </div>
@@ -120,11 +120,11 @@
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
                                 <a href="{{ route('admin.vouchers.index') }}" class="nav-link" data-key="t-one-page">
-                                    Danh sách</a>
+                                    Danh sách mã</a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('admin.vouchers.create') }}" class="nav-link" data-key="t-job">
-                                    Thêm mới </a>
+                                    Thêm mới mã</a>
                             </li>
                         </ul>
                     </div>
@@ -133,31 +133,31 @@
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarCourses" data-bs-toggle="collapse" role="button"
                         aria-expanded="false" aria-controls="sidebarCourses">
-                        <i class="ri-book-open-line"></i> <span>Khóa học</span>
+                        <i class="ri-book-open-line"></i> <span> Khóa học </span>
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarCourses">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
                                 <a href="{{ route('admin.courses.list') }}" class="nav-link" data-key="t-one-page">
-                                    Danh sách</a>
+                                    Danh sách khoá học</a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('admin.courses.create') }}" class="nav-link" data-key="t-job">
-                                    Thêm mới </a>
+                                    Thêm mới khoá học</a>
                             </li>
                         </ul>
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarCourses" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false" aria-controls="sidebarCourses">
+                    <a class="nav-link menu-link" href="#sidebarCertificate" data-bs-toggle="collapse" role="button"
+                        aria-expanded="false" aria-controls="sidebarCertificate">
                         <i class="ri-graduation-cap-line"></i> <span>Chứng chỉ</span>
                     </a>
-                    <div class="collapse menu-dropdown" id="sidebarCourses">
+                    <div class="collapse menu-dropdown" id="sidebarCertificate">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
                                 <a href="{{ route('admin.courses.list') }}" class="nav-link" data-key="t-one-page">
-                                    Danh sách</a>
+                                    Danh sách chứng chỉ</a>
                             </li>
 
                         </ul>

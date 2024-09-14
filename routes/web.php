@@ -34,6 +34,11 @@ Route::prefix("admin")
         Route::get("/", [DashboardController::class, "index"])->name("dashboard");
         Route::get('logout', [AdminController::class, 'logout'])->name('logout');
         Route::resource('banners', BannerController::class)->except('show');
+        Route::get('banners/action', [BannerController::class, 'action'])->name('banners.action');
+        Route::get('banners/restore/{id}', [BannerController::class, 'restore'])->name('banners.restore');
+        Route::get('banners/forceDelete/{id}', [BannerController::class, 'forceDelete'])->name('banners.forceDelete');
+
+
         Route::resource('categories', CategoryController::class)->except('show');
         Route::resource('vouchers', VoucherController::class)->except('show');
         //Về phần user thì sao nhỉ
