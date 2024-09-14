@@ -146,47 +146,47 @@ class BannerController extends Controller
 
         return back()->with(['success' => 'Xóa thành công!']);
     }
-    function action(Request $request)
+    public function action(Request $request)
     {
-        //Lấy danh sách listCheck của bạn ghi đã chọn
+        // Lấy danh sách listCheck của bạn ghi đã chọn
         $listCheck = $request->listCheck;
-        //Kiểm tra tồn tại những bản ghi đó không
-        if ($listCheck) {
-            //Lấy ra hành động của người dùng
-            $act = $request->act;
-            if ($act) {
-                if ($act == "trash") {
-                    //Xoá toàn bộ bản ghi đó, chuyển từ trạng thái hoạt động sang hoạt động sang tắt
-                    Banner::whereIn("id", $listCheck)->update(["is_active" => 0]);
-                    Banner::destroy($listCheck);
-                    return redirect()->route("admin.banners.index")->with('success', 'Xoá thành công toàn bộ bản ghi đã chọn');
-                }
-                if ($act == "active") {
-                    Banner::whereIn("id", $listCheck)->update(["is_active" => 1]);
-                    return redirect()->route("admin.banners.index")->with('success', 'Đăng toàn bộ những bản ghi đã chọn');
-                }
-                if ($act == "inactive") {
-                    Banner::whereIn("id", $listCheck)->update(["is_active" => 0]);
-                    return redirect()->route("admin.banners.index")->with('success', 'Chuyển đổi toàn bộ những bài viết về chờ xác nhận');
-                }
-                if ($act == "restore") {
-                    Banner::onlyTrashed()->whereIn("id", $listCheck)->restore();
-                    return redirect()->route("admin.banners.index")->with('success', 'Khôi phục thành công toàn bộ bản ghi');
-                }
-                if ($act == "forceDelete") {
-                    Banner::onlyTrashed()->whereIn("id", $listCheck)->forceDelete();
-                    return redirect()->route("admin.banners.index")->with('success', 'Xoá vĩnh viễn toàn bộ bản ghi khỏi hệ thống');
-                }
-            } else {
-                //Nếu không có hành động thao tác trên nhiều bản ghi thì cũng báo lại cho người dùng
-                return redirect()->route("admin.banners.index")->with('error', 'Vui lòng chọn hành động để thao tác');
-            }
-
-        } else {
-            //Nếu không có thì báo lại cho người dùng biết rằng mình chưa chọn hành động thao tác
+        // Kiểm tra tồn tại những bản ghi đó không
+        if (!$listCheck) {
             return redirect()->route("admin.banners.index")->with('error', 'Vui lòng chọn danh mục cần thao tác');
         }
+        // Lấy ra hành động của người dùng
+        $act = $request->act;
+        if (!$act) {
+            return redirect()->route("admin.banners.index")->with('error', 'Vui lòng chọn hành động để thao tác');
+        }
+        // Thực hiện hành động tương ứng
+        $message = match ($act) {
+            'trash' => function () use ($listCheck) {
+                    Banner::whereIn("id", $listCheck)->update(["is_active" => 0]);
+                    Banner::destroy($listCheck);
+                    return 'Xoá thành công toàn bộ bản ghi đã chọn';
+                },
+            'active' => function () use ($listCheck) {
+                    Banner::whereIn("id", $listCheck)->update(["is_active" => 1]);
+                    return 'Đăng toàn bộ những bản ghi đã chọn';
+                },
+            'inactive' => function () use ($listCheck) {
+                    Banner::whereIn("id", $listCheck)->update(["is_active" => 0]);
+                    return 'Chuyển đổi toàn bộ những bài viết về chờ xác nhận';
+                },
+            'restore' => function () use ($listCheck) {
+                    Banner::onlyTrashed()->whereIn("id", $listCheck)->restore();
+                    return 'Khôi phục thành công toàn bộ bản ghi';
+                },
+            'forceDelete' => function () use ($listCheck) {
+                    Banner::onlyTrashed()->whereIn("id", $listCheck)->forceDelete();
+                    return 'Xoá vĩnh viễn toàn bộ bản ghi khỏi hệ thống';
+                },
+            default => fn() => 'Hành động không hợp lệ',
+        };
+        return redirect()->route("admin.banners.index")->with('success', $message());
     }
+
 
     public function restore(string $id)
     {
