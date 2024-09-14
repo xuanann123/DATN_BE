@@ -17,26 +17,21 @@ class BannerController extends Controller
         $title = "Danh sách banner";
         $status = $request->query('status', 'all');
         $banners = Banner::when($status != 'all', function ($query) use ($status) {
-            switch ($status) {
-                case "active":
-                    $query->where('is_active', 1);
-                    break;
-                case "pending":
-                    $query->where('is_active', 0);
-                    break;
-                case "trash":
-                    $query->onlyTrashed();
-                    break;
-                default:
-                    # code...
-                    break;
-            }
-        })->paginate(5);
-        // dd($banners);
-        return view('admin.banners.index', compact('banners', 'title'));
+            $query->when(match ($status) {
+                'active' => fn() => $query->where('is_active', 1),
+                'inactive' => fn() => $query->where('is_active', 0),
+                'trash' => fn() => $query->onlyTrashed(),
+                default => null
+            });
+        })->latest("id")->paginate(2);
+        $count = [
+            'all' => Banner::count(),
+            'active' => Banner::where('is_active', 1)->count(),
+            'inactive' => Banner::where('is_active', 0)->count(),
+            'trash' => Banner::onlyTrashed()->count(),
+        ];
+        return view('admin.banners.index', compact('banners', 'title','count'));
     }
-
-
     public function create()
     {
         $title = "Thêm mới banner";
@@ -53,10 +48,8 @@ class BannerController extends Controller
             $image = $request->file('image');
             $newNameImage = 'banner_' . time() . '.' . $image->getClientOriginalExtension();
             $pathImage = Storage::putFileAs('banners', $image, $newNameImage);
-
             $data['image'] = $pathImage;
         }
-
         $newBanner = Banner::query()->create($data);
 
         if (!$newBanner) {
