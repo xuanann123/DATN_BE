@@ -11,7 +11,7 @@ class BannerController extends Controller
 {
     public function getBanners()
     {
-        $banners = Banner::select('id', 'title', 'redirect_url', 'image', 'position', 'start_time', 'end_time')
+        $banners = Banner::select('id', 'title', 'redirect_url', 'image', 'content', 'position', 'start_time', 'end_time')
             ->where('is_active', '=', 1)
             ->orderByDesc('position')
             ->get();
@@ -30,6 +30,7 @@ class BannerController extends Controller
                 'title' => $banner->title,
                 'redirect_url' => $banner->redirect_url,
                 'image' => url(Storage::url($banner->image)),
+                'content' => $banner->content,
                 'position' => $banner->position,
                 'start_time' => $banner->start_time,
                 'end_time' => $banner->end_time,

@@ -227,7 +227,9 @@
                                         </small>
                                     </div>
                                     @if ($category->image)
-                                        <img src="{{ Storage::url($category->image) }}" width="200px" alt="">
+                                        <img src="{{ Storage::url($category->image) }}" id="show-image" width="200px">
+                                    @else
+                                        <img src="" id="show-image" style="display: none;" width="200px">
                                     @endif
                                 </div>
 
@@ -238,6 +240,7 @@
                                             <option value="">Chọn danh mục cha</option>
                                             @foreach ($options as $id => $name)
                                                 <option {{ $id == $category->parent_id ? 'selected' : '' }}
+                                                    {{ $id == $category->id ? 'hidden' : '' }}
                                                     value="{{ $id }}">{!! $name !!}</option>
                                             @endforeach
                                         </select>
@@ -354,6 +357,24 @@
                 .replace(/[^\w-]+/g, '');
 
             document.getElementById('slug').value = slug;
+        });
+    </script>
+    <script>
+        const imageInput = document.getElementById('image');
+        const showImage = document.getElementById('show-image');
+
+        imageInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    showImage.src = e.target.result;
+                    showImage.style.display = "block";
+                };
+
+                reader.readAsDataURL(file);
+            }
         });
     </script>
 @endsection

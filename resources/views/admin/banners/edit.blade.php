@@ -227,7 +227,7 @@
                                             @endif
                                         </small>
                                     </div>
-                                    <img src="{{ Storage::url($banner->image) }}" width="200px" alt="">
+                                    <img src="{{ Storage::url($banner->image) }}" id="show-image" width="200px">
 
                                 </div>
 
@@ -239,6 +239,24 @@
                                         <small class="help-block form-text text-danger">
                                             @if ($errors->has('position'))
                                                 {{ $errors->first('position') }}
+                                            @endif
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border mt-3 border-dashed"></div>
+
+                        <div class="mt-4">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="content" class="form-label">Nội dung</label>
+                                        <textarea name="content" id="content" class="form-control" placeholder="Nội dung" rows="2">{{ old('content') ?? $banner->content }}</textarea>
+                                        <small class="help-block form-text text-danger">
+                                            @if ($errors->has('content'))
+                                                {{ $errors->first('content') }}
                                             @endif
                                         </small>
                                     </div>
@@ -345,4 +363,22 @@
 @section('script-libs')
     <script src="theme/admin/assets/libs/cleave.js/cleave.min.js"></script>
     <script src="theme/admin/assets/js/pages/form-masks.init.js"></script>
+
+    <script>
+        const imageInput = document.getElementById('image');
+        const showImage = document.getElementById('show-image');
+
+        imageInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    showImage.src = e.target.result;
+                };
+
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
 @endsection

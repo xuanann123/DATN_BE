@@ -71,7 +71,9 @@ class CategoryController extends Controller
     public function edit(string $id)
     {
         $title = "Chỉnh sửa danh mục";
-        $categories = Category::whereNull('parent_id')->with('children')->get();
+        $categories = Category::whereNull('parent_id')
+            ->where('id', '!=', $id)
+            ->with('children')->get();
         $options = $this->getCategoryOptions($categories);
         $category = Category::find($id);
         return view('admin.categories.edit', compact('options', 'category', 'title'));
@@ -100,9 +102,11 @@ class CategoryController extends Controller
 
             $data['image'] = $pathImage;
 
-            $fileExists = Storage::disk('public')->exists($category->image);
-            if ($fileExists) {
-                Storage::disk('public')->delete($category->image);
+            if ($category->image) {
+                $fileExists = Storage::disk('public')->exists($category->image);
+                if ($fileExists) {
+                    Storage::disk('public')->delete($category->image);
+                }
             }
         } else {
             $data['image'] = $category->image;
@@ -124,9 +128,11 @@ class CategoryController extends Controller
             return redirect()->route('admin.categories.index')->with(['error' => 'Danh mục không tồn tại!']);
         }
 
-        $fileExists = Storage::disk('public')->exists($category->image);
-        if ($fileExists) {
-            Storage::disk('public')->delete($category->image);
+        if ($category->image) {
+            $fileExists = Storage::disk('public')->exists($category->image);
+            if ($fileExists) {
+                Storage::disk('public')->delete($category->image);
+            }
         }
 
         $category->delete();

@@ -72,17 +72,17 @@ class BannerController extends Controller
         $newBanner = Banner::query()->create($data);
 
         if (!$newBanner) {
-            return redirect()->route('admin.banners.index')->with(['error' => 'Thêm mới thành công!']);
+            return redirect()->route('admin.banners.index')->with(['error' => 'Thêm mới thất bại!']);
         }
 
-        return redirect()->route('admin.banners.index')->with(['success' => 'Thêm mới thất bại!']);
+        return redirect()->route('admin.banners.index')->with(['success' => 'Thêm mới thành công!']);
     }
 
     public function edit(Banner $banner)
     {
         $title = "Chỉnh sửa banner";
 
-      
+
 
         return view('admin.banners.edit', compact('banner', 'title'));
     }
@@ -140,26 +140,26 @@ class BannerController extends Controller
         }
         $message = match ($act) {
             'trash' => function () use ($listCheck) {
-                    Banner::whereIn("id", $listCheck)->update(["is_active" => 0]);
-                    Banner::destroy($listCheck);
-                    return 'Xoá thành công toàn bộ bản ghi đã chọn';
-                },
+                Banner::whereIn("id", $listCheck)->update(["is_active" => 0]);
+                Banner::destroy($listCheck);
+                return 'Xoá thành công toàn bộ bản ghi đã chọn';
+            },
             'active' => function () use ($listCheck) {
-                    Banner::whereIn("id", $listCheck)->update(["is_active" => 1]);
-                    return 'Đăng toàn bộ những bản ghi đã chọn';
-                },
+                Banner::whereIn("id", $listCheck)->update(["is_active" => 1]);
+                return 'Đăng toàn bộ những bản ghi đã chọn';
+            },
             'inactive' => function () use ($listCheck) {
-                    Banner::whereIn("id", $listCheck)->update(["is_active" => 0]);
-                    return 'Chuyển đổi toàn bộ những bài viết về chờ xác nhận';
-                },
+                Banner::whereIn("id", $listCheck)->update(["is_active" => 0]);
+                return 'Chuyển đổi toàn bộ những bài viết về chờ xác nhận';
+            },
             'restore' => function () use ($listCheck) {
-                    Banner::onlyTrashed()->whereIn("id", $listCheck)->restore();
-                    return 'Khôi phục thành công toàn bộ bản ghi';
-                },
+                Banner::onlyTrashed()->whereIn("id", $listCheck)->restore();
+                return 'Khôi phục thành công toàn bộ bản ghi';
+            },
             'forceDelete' => function () use ($listCheck) {
-                    Banner::onlyTrashed()->whereIn("id", $listCheck)->forceDelete();
-                    return 'Xoá vĩnh viễn toàn bộ bản ghi khỏi hệ thống';
-                },
+                Banner::onlyTrashed()->whereIn("id", $listCheck)->forceDelete();
+                return 'Xoá vĩnh viễn toàn bộ bản ghi khỏi hệ thống';
+            },
             default => fn() => 'Hành động không hợp lệ',
         };
         return redirect()->route("admin.banners.index")->with('success', $message());
@@ -170,10 +170,10 @@ class BannerController extends Controller
     {
         $banner = Banner::onlyTrashed()->find($id);
         if (!$banner) {
-            return redirect()->route('admin.banners.index')->with(['error' => 'Banner không đoàn tại!']);
+            return redirect()->route('admin.banners.index')->with(['error' => 'Banner không tồn tại!']);
         }
         $banner->restore();
-        return redirect()->route('admin.banners.index')->with(['success' => 'Khoi phuc thanh cong!']);
+        return redirect()->route('admin.banners.index')->with(['success' => 'Khôi phục thành công!']);
     }
 
     public function forceDelete(string $id)
@@ -181,7 +181,7 @@ class BannerController extends Controller
         $banner = Banner::onlyTrashed()->find($id);
         //Nếu banner đó không tồn tại thì báo lỗi
         if (!$banner) {
-            return redirect()->route('admin.banners.index')->with(['error' => 'Banner không đoàn tại!']);
+            return redirect()->route('admin.banners.index')->with(['error' => 'Banner không tồn tại!']);
         }
         //Xóa hình ảnh bản ghi đó
         $fileExists = Storage::disk('public')->exists($banner->image);

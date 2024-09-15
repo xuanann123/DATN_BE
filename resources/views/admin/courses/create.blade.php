@@ -217,7 +217,8 @@
                             @if ($errors->has('thumbnail'))
                                 {{ $errors->first('thumbnail') }}
                             @endif
-                        </small>
+                        </small> <br>
+                        <img src="" style="display: none" id="show-image" width="200px">
                     </div>
 
                     <div class="mb-3 row">
@@ -416,6 +417,24 @@
                 .replace(/[^\w-]+/g, '');
 
             document.getElementById('slug').value = slug;
+        });
+    </script>
+    <script>
+        const imageInput = document.getElementById('thumbnail');
+        const showImage = document.getElementById('show-image');
+
+        imageInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    showImage.src = e.target.result;
+                    showImage.style.display = "block";
+                };
+
+                reader.readAsDataURL(file);
+            }
         });
     </script>
 @endsection
