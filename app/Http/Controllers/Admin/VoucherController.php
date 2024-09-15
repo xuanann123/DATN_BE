@@ -11,13 +11,43 @@ use Illuminate\Http\Request;
 class VoucherController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
         $title = "Danh sách voucher";
+        $status = $request->query('status', 'all');
+        // Khởi tạo listAct ban đầu
+        $listAct = [
+            "active" => "Hoạt động tất cả",
+            "inactive" => "Tắt hoạt động tất cả",
+            "trash" => "Xoá toàn bộ",
+        ];
+        // Lọc banners và đồng thời thay đổi giá trị listAct
+        $vouchers = Voucher::when($status != 'all', function ($query) use ($status, &$listAct) {
+            match ($status) {
+                'active' => $query->where('is_active', 1) && $listAct = [
+                    "inactive" => "Tắt hoạt động tất cả",
+                    "trash" => "Xoá toàn bộ",
+                ],
+                'inactive' => $query->where('is_active', 0) && $listAct = [
+                    "active" => "Hoạt động tất cả",
+                    "trash" => "Xoá toàn bộ",
+                ],
+                'trash' => $query->onlyTrashed() && $listAct = [
+                    "restore" => "Khôi phục toàn bộ",
+                    "forceDelete" => "Xoá cứng toàn bộ",
+                ],
+                default => null
+            };
+        })->latest("id")->paginate(10);
 
-        $vouchers = Voucher::query()->orderbyDesc('id')->paginate(10);
+        $count = [
+            'all' => Voucher::count(),
+            'active' => Voucher::where('is_active', 1)->count(),
+            'inactive' => Voucher::where('is_active', 0)->count(),
+            'trash' => Voucher::onlyTrashed()->count(),
+        ];
 
-        return view('admin.vouchers.index', compact('vouchers', 'title'));
+        return view('admin.vouchers.index', compact('vouchers', 'title', 'count', "listAct"));
     }
 
 

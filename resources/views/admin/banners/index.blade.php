@@ -60,7 +60,6 @@
                 </div>
             </div>
             <div class="card">
-
                 <form action="{{ route('admin.banners.action') }}">
                     @csrf
                     <div class="card-header d-flex justify-content-between gap-3">

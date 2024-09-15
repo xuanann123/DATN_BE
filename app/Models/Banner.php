@@ -22,7 +22,6 @@ class Banner extends Model
         'is_active',
     ];
 
-
     // Xử lí phần hiển thị ảnh cho api;
     // public function getImageAttribute()
     // {
