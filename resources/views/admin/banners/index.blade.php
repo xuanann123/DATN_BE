@@ -158,17 +158,11 @@
                                                                     class="ri-pencil-fill align-bottom me-2 text-muted"></i>
                                                                 Sửa</a></li>
                                                         <li>
-                                                            <form
-                                                                action="{{ route('admin.banners.destroy', ['banner' => $banner->id]) }}"
-                                                                method="post">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button class="dropdown-item remove-item-btn"
-                                                                    onclick="return confirm('Bạn có muốn xoá bản ghi {{ $banner->title }} không ?')"><i
-                                                                        class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
-                                                                    Xóa</button>
-                                                            </form>
-                                                        </li>
+
+                                                        <li><a href="{{ route('admin.banners.destroy', ['banner' => $banner->id]) }}"
+                                                                class="dropdown-item remove-item-btn"><i
+                                                                    class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
+                                                                Xoá</a></li>
                                                     @endif
 
                                                 </ul>

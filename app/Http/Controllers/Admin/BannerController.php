@@ -78,34 +78,22 @@ class BannerController extends Controller
         return redirect()->route('admin.banners.index')->with(['success' => 'Thêm mới thất bại!']);
     }
 
-    public function edit(string $id)
+    public function edit(Banner $banner)
     {
         $title = "Chỉnh sửa banner";
 
-        $banner = Banner::find($id);
-
-        if (!$banner) {
-            return back()->with(['error' => 'Banner không tồn tại!']);
-        }
+      
 
         return view('admin.banners.edit', compact('banner', 'title'));
     }
 
 
-    public function update(UpdateBannerRequest $request, string $id)
+    public function update(UpdateBannerRequest $request, Banner $banner)
     {
         $data = $request->except('image');
-
         if (!$request->is_active) {
             $data['is_active'] = 0;
         }
-
-        $banner = Banner::find($id);
-
-        if (!$banner) {
-            return redirect()->route('admin.banners.index')->with(['error' => 'Banner không tồn tại!']);
-        }
-
         if ($request->image && $request->hasFile('image')) {
             $image = $request->file('image');
             $newNameImage = 'banner_' . time() . '.' . $image->getClientOriginalExtension();
@@ -129,14 +117,8 @@ class BannerController extends Controller
     }
 
 
-    public function destroy(string $id)
+    public function destroy(Banner $banner)
     {
-        $banner = Banner::find($id);
-
-        if (!$banner) {
-            return redirect()->route('admin.banners.index')->with(['error' => 'Banner không tồn tại!']);
-        }
-
         $fileExists = Storage::disk('public')->exists($banner->image);
         if ($fileExists) {
             Storage::disk('public')->delete($banner->image);
@@ -148,18 +130,14 @@ class BannerController extends Controller
     }
     public function action(Request $request)
     {
-        // Lấy danh sách listCheck của bạn ghi đã chọn
         $listCheck = $request->listCheck;
-        // Kiểm tra tồn tại những bản ghi đó không
         if (!$listCheck) {
             return redirect()->route("admin.banners.index")->with('error', 'Vui lòng chọn danh mục cần thao tác');
         }
-        // Lấy ra hành động của người dùng
         $act = $request->act;
         if (!$act) {
             return redirect()->route("admin.banners.index")->with('error', 'Vui lòng chọn hành động để thao tác');
         }
-        // Thực hiện hành động tương ứng
         $message = match ($act) {
             'trash' => function () use ($listCheck) {
                     Banner::whereIn("id", $listCheck)->update(["is_active" => 0]);
