@@ -98,6 +98,7 @@
                                     <th data-ordering="false">Tiêu đề</th>
                                     <th data-ordering="false">Trang đích</th>
                                     <th data-ordering="false">Ảnh</th>
+                                    <th>Nội dung</th>
                                     <th>Vị trí</th>
                                     <th>Ngày bắt đầu</th>
                                     <th>Ngày kết thúc</th>
@@ -120,6 +121,9 @@
                                         </td>
                                         <td>
                                             <img src="{{ Storage::url($banner->image) }}" width="100px" alt="">
+                                        </td>
+                                        <td>
+                                            {{ $banner->content }}
                                         </td>
                                         <td>
                                             <span class="badge bg-info">{{ $banner->position }}</span>

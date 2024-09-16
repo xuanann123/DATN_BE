@@ -224,7 +224,7 @@
                                             @endif
                                         </small>
                                     </div>
-
+                                    <img src="" id="show-image" width="200px" style="display: none;">
                                 </div>
 
                                 <div class="col-xl-6">
@@ -350,6 +350,25 @@
                 .replace(/[^\w-]+/g, '');
 
             document.getElementById('slug').value = slug;
+        });
+    </script>
+
+    <script>
+        const imageInput = document.getElementById('image');
+        const showImage = document.getElementById('show-image');
+
+        imageInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    showImage.src = e.target.result;
+                    showImage.style.display = "block";
+                };
+
+                reader.readAsDataURL(file);
+            }
         });
     </script>
 @endsection

@@ -214,13 +214,13 @@
 
                     <div class="mb-3">
                         <label class="form-label" for="thumbnail">Ảnh khóa học</label> <br>
-                        <img src="{{ Storage::url($course->thumbnail) }}" width="200px" alt="">
                         <input class="form-control mt-3" id="thumbnail" name="thumbnail" type="file" accept="image/*">
                         <small class="help-block form-text text-danger">
                             @if ($errors->has('thumbnail'))
                                 {{ $errors->first('thumbnail') }}
                             @endif
-                        </small>
+                        </small> <br>
+                        <img src="{{ Storage::url($course->thumbnail) }}" id="show-image" width="200px">
                     </div>
 
                     <div class="mb-3 row">
@@ -428,6 +428,24 @@
                 .replace(/[^\w-]+/g, '');
 
             document.getElementById('slug').value = slug;
+        });
+    </script>
+
+    <script>
+        const imageInput = document.getElementById('thumbnail');
+        const showImage = document.getElementById('show-image');
+
+        imageInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    showImage.src = e.target.result;
+                };
+
+                reader.readAsDataURL(file);
+            }
         });
     </script>
 @endsection
