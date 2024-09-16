@@ -18,8 +18,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\Client\Auth\LoginRequest;
 use App\Http\Requests\Client\Auth\SingupRequest;
+use App\Http\Requests\Client\Auth\VerifyOtpRequest;
+use App\Mail\Auth\VerifyOTP;
+use App\Models\OtpCode;
 use App\Models\PasswordResetToken;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
@@ -28,62 +32,138 @@ class AuthController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->validated();
-            $verificationToken = Str::random(64);
+            $otpCode = rand(100000, 999999);
+            $expiresAt = Carbon::now()->addMinutes(15);
 
+            // insert user
             $user = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'password' => bcrypt($data['password']),
-                'verification_token' => $verificationToken
             ]);
 
-            Mail::to($data['email'])->send(new VerifyEmail($verificationToken));
+            // insert OTP
+            OtpCode::create([
+                'user_id' => $user->id,
+                'otp_code' => $otpCode,
+                'expires_at' => $expiresAt,
+            ]);
+
+            // send mail OTP
+            Mail::to($data['email'])->send(new VerifyOTP($otpCode));
 
             DB::commit(); // OK thì save
 
             return response()->json([
-                'success' => 'Vui lòng kiểm tra email để xác nhận đăng ký.',
-                'verification_token' => $verificationToken
+                'message' => 'Mã OTP đã được gửi tới email của bạn.',
+                'code' => 0,
+                'data' => ['otp_code' => $otpCode],
+                'status' => 201,
             ], 201);
         } catch (Throwable $e) {
             DB::rollBack(); // err thì rollback db
             Log::error("Error: " . $e->getMessage());
             return response()->json([
                 'message' => 'Đã xảy ra lỗi trong quá trình đăng ký.',
-                'error' => $e->getMessage(),
+                'code' => 1,
+                'data' => [],
+                'status' => 500,
             ], 500);
         }
     }
 
-    public function verifyEmail($token)
+    public function verifyOtp(VerifyOtpRequest $request)
     {
         try {
-            $user = User::where('verification_token', $token)->first();
+            $user = User::where('email', $request->email)->first();
 
             if (!$user) {
-                return response()->json(['message' => 'Token không hợp lệ hoặc đã hết hạn.'], 400);
+                return response()->json(['message' => 'Người dùng không tồn tại.'], 404);
+            }
+
+            $otp = OtpCode::where('user_id', $user->id)
+                ->where('otp_code', $request->otp_code)
+                ->first();
+
+            if (!$otp || $otp->isExpired()) {
+                return response()->json([
+                    'message' => 'Mã OTP không hợp lệ hoặc đã hết hạn.',
+                    'code' => 1,
+                    'data' => [],
+                    'status' => 400,
+                ], 400);
             }
 
             $user->update([
                 'email_verified_at' => now(),
-                'verification_token' => null,
             ]);
 
+            $otp->delete();
+
+            // tạo token đăng nhập
             $token = $user->createToken('main', expiresAt: now()->addMinutes('20160'))->plainTextToken;
 
             return response()->json([
-                'message' => 'Xác thực email thành công, bạn đã đăng nhập.',
-                'user' => $user,
-                'token' => $token
+                'message' => 'Xác thực thành công, bạn đã đăng nhập.',
+                'code' => 0,
+                'data' => ['user' => $user, 'token' => $token],
+                'status' => 200,
             ], 200);
         } catch (Throwable $e) {
             Log::error("Error: " . $e->getMessage());
             return response()->json([
-                'message' => 'Đã xảy ra lỗi trong quá trình xác thực email.',
-                'error' => $e->getMessage(),
+                'message' => 'Đã xảy ra lỗi trong quá trình xác thực.',
+                'code' => 1,
+                'data' => [],
+                'status' => 500,
             ], 500);
         }
     }
+
+    public function resendOtp(Request $request)
+    {
+        try {
+            $user = User::where('email', $request->email)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Người dùng không tồn tại.',
+                    'code' => 1,
+                    'data' => [],
+                    'status' => 404,
+                ], 404);
+            }
+
+            // gen otp
+            $otpCode = rand(100000, 999999);
+            $expiresAt = Carbon::now()->addMinutes(15);
+
+            // update or insert otp
+            OtpCode::updateOrInsert(
+                ['user_id' => $user->id],
+                ['otp_code' => $otpCode, 'expires_at' => $expiresAt]
+            );
+
+            // Send otp
+            Mail::to($user->email)->send(new VerifyOTP($otpCode));
+
+            return response()->json([
+                'message' => 'Mã OTP đã được gửi lại, vui lòng kiểm tra email của bạn.',
+                'code' => 0,
+                'data' => ['otp_code' => $otpCode],
+                'status' => 200,
+            ], 200);
+        } catch (Throwable $e) {
+            Log::error("Error: " . $e->getMessage());
+            return response()->json([
+                'message' => 'Đã xảy ra lỗi khi gửi lại mã OTP.',
+                'code' => 1,
+                'data' => [],
+                'status' => 500,
+            ], 500);
+        }
+    }
+
 
     public function login(LoginRequest $request)
     {
@@ -91,28 +171,41 @@ class AuthController extends Controller
             $credentials = $request->validated();
 
             if (!Auth::attempt($credentials)) {
-                return response()->json(['message' => 'Email hoặc mật khẩu không đúng !'], 422);
+                return response()->json([
+                    'message' => 'Email hoặc mật khẩu không chính xác.',
+                    'code' => 1,
+                    'data' => [],
+                    'status' => 401,
+                ], 401);
             }
 
             $user = Auth::user();
 
             if (!$user->email_verified_at) {
-                return response()->json(['message' => 'Vui lòng xác nhận email trước khi đăng nhập.'], 403);
+                return response()->json([
+                    'message' => 'Vui lòng xác nhận email trước khi đăng nhập.',
+                    'code' => 1,
+                    'data' => [],
+                    'status' => 403,
+                ], 403);
             }
 
             // set token 2 weeks
             $token = $user->createToken('main', expiresAt: now()->addMinutes('20160'))->plainTextToken;
 
             return response()->json([
-                'success' => 'Đăng nhập thành công.',
-                'user' => $user,
-                'token' => $token
+                'message' => 'Đăng nhập thành công.',
+                'code' => 0,
+                'data' => ['token' => $token, 'user' => $user],
+                'status' => 200,
             ], 200);
         } catch (Throwable $e) {
             Log::error("Error: " . $e->getMessage());
             return response()->json([
                 'message' => 'Đã xảy ra lỗi trong quá trình đăng nhập.',
-                'error' => $e->getMessage(),
+                'code' => 1,
+                'data' => [],
+                'status' => 500,
             ], 500);
         }
     }
@@ -125,45 +218,39 @@ class AuthController extends Controller
             $user = User::where('email', $data['email'])->first();
 
             if (!$user) {
-                return response(['message' => 'Email không tồn tại.'], 404);
+                return response()->json([
+                    'message' => 'Người dùng không tồn tại.',
+                    'code' => 1,
+                    'data' => [],
+                    'status' => 404,
+                ], 404);
             }
 
-            // limit request in 15'
-            $recentRequest = PasswordResetToken::where('email', $user->email)
-                ->latest('created_at')
-                ->first();
-            if ($recentRequest) {
-                $timeLimit = 900;
-                $timeElapsed = now()->diffInSeconds(Carbon::parse($recentRequest->created_at));
-                $timeRemaining = $timeLimit - $timeElapsed;
+            // otp
+            $otpCode = rand(100000, 999999);
+            $expiresAt = Carbon::now()->addMinutes(15);
 
-                // return response()->json([$timeElapsed]);
-
-                if ($timeElapsed < $timeLimit) {
-                    $timeString = $timeRemaining < 60
-                        ? "$timeRemaining giây"
-                        : ceil($timeRemaining / 60) . ' phút';
-
-                    return response()->json([
-                        'message' => 'Bạn chỉ có thể yêu cầu đặt lại mật khẩu sau: ' . $timeString,
-                    ], 429);
-                }
-            }
-
-            $token = Str::random(64);
-            PasswordResetToken::updateOrInsert(
-                ['email' => $user->email],
-                ['token' => $token, 'created_at' => now()],
+            // luu otp
+            OtpCode::updateOrInsert(
+                ['user_id' => $user->id],
+                ['otp_code' => $otpCode, 'expires_at' => $expiresAt]
             );
 
-            Mail::to($user->email)->send(new ForgotPasswordMail($token));
+            Mail::to($user->email)->send(new VerifyOTP($otpCode));
 
-            return response(['message' => 'Liên kết đặt lại mật khẩu đã được gửi về email của bạn.'], 200);
+            return response()->json([
+                'message' => 'Mã OTP đặt lại mật khẩu đã được gửi về email của bạn.',
+                'code' => 0,
+                'data' => ['otp_code' => $otpCode],
+                'status' => 200,
+            ], 200);
         } catch (Throwable $e) {
             Log::error("Error: " . $e->getMessage());
             return response()->json([
-                'message' => 'Đã xảy ra lỗi trong quá trình xử lý yêu cầu đặt lại mật khẩu.',
-                'error' => $e->getMessage(),
+                'message' => 'Đã xảy ra lỗi trong quá trình gửi email.',
+                'code' => 1,
+                'data' => [],
+                'status' => 500,
             ], 500);
         }
     }
@@ -174,32 +261,46 @@ class AuthController extends Controller
 
             $data = $request->validated();
 
-            $passwordReset = PasswordResetToken::where('token', $data['token'])->first();
+            $otpCode = OtpCode::where('otp_code', $data['otp_code'])->first();
 
-            if (!$passwordReset) {
-                return response()->json(['message' => 'Token không hợp lệ hoặc đã hết hạn.'], 400);
+            if (!$otpCode || $otpCode->isExpired()) {
+                return response()->json([
+                    'message' => 'Mã OTP không hợp lệ hoặc đã hết hạn.',
+                    'code' => 1,
+                    'data' => [],
+                    'status' => 400,
+                ], 400);
             }
 
-            $user = User::where('email', $passwordReset->email)->first();
+            $user = User::where('id', $otpCode->user_id)->first();
 
             if (!$user) {
-                return response()->json(['message' => 'Không tìm thấy người dùng với email này.'], 404);
+                return response()->json([
+                    'message' => 'Không tìm thấy người dùng với email này.',
+                    'code' => 1,
+                    'data' => [],
+                    'status' => 404,
+                ], 404);
             }
 
+            // update password
             $user->update(['password' => bcrypt($data['new_password'])]);
 
-            PasswordResetToken::where('email', $passwordReset->email)
-                ->where('token', $data['token'])
-                ->delete();
+            $otpCode->delete();
 
             return response()->json([
                 'message' => 'Đặt lại mật khẩu thành công!',
+                'code' => 0,
+                'data' => [],
+                'status' => 200,
             ], 200);
         } catch (Throwable $e) {
             Log::error("Error: " . $e->getMessage());
             return response()->json([
                 'message' => 'Đã xảy ra lỗi trong quá trình đặt lại mật khẩu.',
-                'error' => $e->getMessage(),
+                'code' => 1,
+                'data' => [],
+                'status' => 500,
             ], 500);
         }
 
@@ -211,12 +312,19 @@ class AuthController extends Controller
             $user = $request->user();
             $user->currentAccessToken()->delete();
 
-            return response('Get out !!!', 204);
+            return response()->json([
+                'message' => 'Đăng xuất thành công.',
+                'code' => 0,
+                'data' => [],
+                'status' => 204,
+            ], 204);
         } catch (Throwable $e) {
             Log::error("Error: " . $e->getMessage());
             return response()->json([
                 'message' => 'Đã xảy ra lỗi trong quá trình đăng xuất.',
-                'error' => $e->getMessage(),
+                'code' => 1,
+                'data' => [],
+                'status' => 500,
             ], 500);
         }
     }
