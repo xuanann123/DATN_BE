@@ -19,18 +19,22 @@ use App\Http\Middleware\VerifyCsrfToken;
 */
 
 
-Route::prefix('')->group(function () {
+Route::prefix('auth')->group(function () {
     Route::post('/signup', [AuthController::class, 'signup']);
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
+    Route::post('/resend-otp', [AuthController::class, 'resendOtp']);
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 });
-Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail']);
-Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/user/profile', [UserController::class, 'show']);
+    Route::prefix('user')->group(function () {
+        Route::get('/profile', [UserController::class, 'show']);
+        Route::post('/profile', [UserController::class, 'updateProfile']);
+        Route::post('/change-password', [UserController::class, 'changePassword']);
+    });
     // Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 });
 

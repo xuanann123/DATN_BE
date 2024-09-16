@@ -9,8 +9,7 @@ class ResetPasswordRequest extends FormRequest
     public function rules()
     {
         return [
-            // 'current_password' => 'required|string',
-            'token' => 'required',
+            'otp_code' => 'required',
             'new_password' => 'required|string|min:8|confirmed',
         ];
     }
