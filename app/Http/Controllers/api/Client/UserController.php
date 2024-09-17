@@ -47,16 +47,14 @@ class UserController extends Controller
 
                 $data['avatar'] = $pathAvatar;
 
-                // del avatar cũ nếu có
-                if ($user->avatar) {
-                    $fileExists = Storage::disk('public')->exists($user->avatar);
-                    if ($fileExists) {
-                        Storage::disk('public')->delete($user->avatar);
-                    }
-                }
+                $this->deleteOldAvatar($user->avatar);
 
                 // update avt
                 $user->update(['avatar' => $pathAvatar]);
+            } elseif ($request->input('remove_avatar')) {
+                $this->deleteOldAvatar($user->avatar);
+
+                $user->update(['avatar' => null]);
             }
 
             // Update profile
@@ -113,6 +111,17 @@ class UserController extends Controller
                 'data' => [],
                 'status' => 500,
             ], 500);
+        }
+    }
+
+    // xoa anh cu
+    private function deleteOldAvatar($oldAvatarPath)
+    {
+        if ($oldAvatarPath) {
+            $fileExists = Storage::disk('public')->exists($oldAvatarPath);
+            if ($fileExists) {
+                Storage::disk('public')->delete($oldAvatarPath);
+            }
         }
     }
 }

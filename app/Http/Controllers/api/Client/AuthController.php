@@ -7,9 +7,7 @@ use App\Http\Requests\Client\Auth\ResetPasswordRequest;
 use Throwable;
 use Carbon\Carbon;
 use App\Models\User;
-use App\Mail\VerifyEmail;
 use Illuminate\Support\Str;
-use App\Mail\ForgotPasswordMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -22,6 +20,7 @@ use App\Http\Requests\Client\Auth\VerifyOtpRequest;
 use App\Mail\Auth\VerifyOTP;
 use App\Models\OtpCode;
 use App\Models\PasswordResetToken;
+use App\Models\RefreshToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -39,7 +38,7 @@ class AuthController extends Controller
             $user = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
-                'password' => bcrypt($data['password']),
+                'passworrd' => bcrypt($data['password']),
             ]);
 
             // insert OTP
@@ -164,7 +163,6 @@ class AuthController extends Controller
         }
     }
 
-
     public function login(LoginRequest $request)
     {
         try {
@@ -191,18 +189,82 @@ class AuthController extends Controller
             }
 
             // set token 2 weeks
-            $token = $user->createToken('main', expiresAt: now()->addMinutes('20160'))->plainTextToken;
+            $token = $user->createToken('main', expiresAt: now()->addMinutes(config('sanctum.expiration')))->plainTextToken;
+            $refreshToken = Str::random(60);
+
+            // save RT
+            $user->refreshTokens()->create([
+                'token' => $refreshToken,
+                'expires_at' => now()->addDays(30), // 1 month
+            ]);
 
             return response()->json([
                 'message' => 'Đăng nhập thành công.',
                 'code' => 0,
-                'data' => ['token' => $token, 'user' => $user],
+                'data' => [
+                    'access_token' => $token,
+                    'refresh_token' => $refreshToken,
+                    'user' => $user,
+                    'profile' => $user->profile
+                ],
                 'status' => 200,
             ], 200);
         } catch (Throwable $e) {
             Log::error("Error: " . $e->getMessage());
             return response()->json([
                 'message' => 'Đã xảy ra lỗi trong quá trình đăng nhập.',
+                'code' => 1,
+                'data' => [],
+                'status' => 500,
+            ], 500);
+        }
+    }
+
+    public function refreshToken(Request $request)
+    {
+        try {
+            $refreshToken = $request->input('refresh_token');
+
+            $token = RefreshToken::where('token', $refreshToken)->first();
+
+            if (!$token || $token->expires_at < now()) {
+                return response()->json([
+                    'message' => 'Refresh token không hợp lệ hoặc đã hết hạn.',
+                    'code' => 1,
+                    'data' => [],
+                    'status' => 400
+                ], 400);
+            }
+
+            $user = $token->user;
+            $user->tokens()->delete();
+
+            // new token
+            $newToken = $user->createToken('main', expiresAt: now()->addMinutes(config('sanctum.expiration')))->plainTextToken;
+            $newRefreshToken = Str::random(60);
+
+            //
+            $token->update([
+                'token' => $newRefreshToken,
+                'expires_at' => now()->addDays(30)
+            ]);
+
+            return response()->json([
+                'message' => 'Refresh token thành công.',
+                'code' => 0,
+                'data' => [
+                    'token' => $newToken,
+                    'refresh_token' => $newRefreshToken
+                ],
+                'status' => 200,
+            ], 200);
+        } catch (Throwable $e) {
+            Log::error("Error: " . $e->getMessage());
+            return response()->json([
+                'message' => [
+                    'msg' => 'Đã xảy ra lỗi khi làm mới token.',
+                    'errors' => $e->getMessage()
+                ],
                 'code' => 1,
                 'data' => [],
                 'status' => 500,
@@ -255,14 +317,16 @@ class AuthController extends Controller
         }
     }
 
-    public function resetPassword(ResetPasswordRequest $request)
+    public function verifyOtpForResetPassword(VerifyOtpRequest $request)
     {
         try {
+            $user = User::where('email', $request->email)->first();
 
-            $data = $request->validated();
+            $otpCode = OtpCode::where('otp_code', $request->otp_code)
+                ->where('user_id', $user->id)
+                ->first();
 
-            $otpCode = OtpCode::where('otp_code', $data['otp_code'])->first();
-
+            // check otp
             if (!$otpCode || $otpCode->isExpired()) {
                 return response()->json([
                     'message' => 'Mã OTP không hợp lệ hoặc đã hết hạn.',
@@ -272,7 +336,30 @@ class AuthController extends Controller
                 ], 400);
             }
 
-            $user = User::where('id', $otpCode->user_id)->first();
+            return response()->json([
+                'message' => 'Mã OTP hợp lệ.',
+                'code' => 0,
+                'data' => [
+                    'email' => $user->email,
+                    'otp_code' => $otpCode->otp_code
+                ],
+                'status' => 200,
+            ], 200);
+        } catch (Throwable $e) {
+            Log::error("Error: " . $e->getMessage());
+            return response()->json([
+                'message' => 'Đã xảy ra lỗi khi kiểm tra mã OTP.',
+                'code' => 1,
+                'data' => [],
+                'status' => 500,
+            ], 500);
+        }
+    }
+
+    public function resetPassword(ResetPasswordRequest $request)
+    {
+        try {
+            $user = User::where('email', $request->email)->first();
 
             if (!$user) {
                 return response()->json([
@@ -283,8 +370,21 @@ class AuthController extends Controller
                 ], 404);
             }
 
+            $otpCode = OtpCode::where('otp_code', $request->otp_code)
+                ->where('user_id', $user->id)
+                ->first();
+
+            if (!$otpCode || $otpCode->isExpired()) {
+                return response()->json([
+                    'message' => 'Mã OTP không hợp lệ hoặc đã hết hạn.',
+                    'code' => 1,
+                    'data' => [],
+                    'status' => 400,
+                ], 400);
+            }
+
             // update password
-            $user->update(['password' => bcrypt($data['new_password'])]);
+            $user->update(['password' => bcrypt($request->new_password)]);
 
             $otpCode->delete();
 

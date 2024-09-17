@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Client\Auth;
 
+use App\Http\Requests\BaseFormRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class SingupRequest extends FormRequest
+class SingupRequest extends BaseFormRequest
 {
     public function rules()
     {

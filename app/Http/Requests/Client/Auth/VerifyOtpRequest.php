@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Client\Auth;
 
+use App\Http\Requests\BaseFormRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class VerifyOtpRequest extends FormRequest
+class VerifyOtpRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

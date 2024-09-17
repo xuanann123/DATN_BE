@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\Client\BannerController;
 use App\Http\Controllers\api\Client\UserController;
 use App\Http\Middleware\VerifyCsrfToken;
+use PHPUnit\Framework\Attributes\Group;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,14 +23,18 @@ use App\Http\Middleware\VerifyCsrfToken;
 Route::prefix('auth')->group(function () {
     Route::post('/signup', [AuthController::class, 'signup']);
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/refresh-token', [AuthController::class, 'refreshToken']);
     Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
     Route::post('/resend-otp', [AuthController::class, 'resendOtp']);
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/verify-otp-resetpassword', [AuthController::class, 'verifyOtpForResetPassword']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::prefix('auth')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
+    });
     Route::prefix('user')->group(function () {
         Route::get('/profile', [UserController::class, 'show']);
         Route::post('/profile', [UserController::class, 'updateProfile']);
