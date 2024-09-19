@@ -15,6 +15,10 @@ class BannerController extends Controller
     public function index(Request $request)
     {
         $title = "Danh sách banner";
+        $keyword = "";
+        if ($request->input('keyword')) {
+            $keyword = $request->input('keyword');
+        }
         $status = $request->query('status', 'all');
         // Khởi tạo listAct ban đầu
         $listAct = [
@@ -39,7 +43,7 @@ class BannerController extends Controller
                 ],
                 default => null
             };
-        })->latest("id")->paginate(10);
+        })->search($keyword)->latest("id")->paginate(10);
 
         $count = [
             'all' => Banner::count(),
@@ -74,7 +78,6 @@ class BannerController extends Controller
         if (!$newBanner) {
             return redirect()->route('admin.banners.index')->with(['error' => 'Thêm mới thất bại!']);
         }
-
         return redirect()->route('admin.banners.index')->with(['success' => 'Thêm mới thành công!']);
     }
 
@@ -140,26 +143,26 @@ class BannerController extends Controller
         }
         $message = match ($act) {
             'trash' => function () use ($listCheck) {
-                Banner::whereIn("id", $listCheck)->update(["is_active" => 0]);
-                Banner::destroy($listCheck);
-                return 'Xoá thành công toàn bộ bản ghi đã chọn';
-            },
+                    Banner::whereIn("id", $listCheck)->update(["is_active" => 0]);
+                    Banner::destroy($listCheck);
+                    return 'Xoá thành công toàn bộ bản ghi đã chọn';
+                },
             'active' => function () use ($listCheck) {
-                Banner::whereIn("id", $listCheck)->update(["is_active" => 1]);
-                return 'Đăng toàn bộ những bản ghi đã chọn';
-            },
+                    Banner::whereIn("id", $listCheck)->update(["is_active" => 1]);
+                    return 'Đăng toàn bộ những bản ghi đã chọn';
+                },
             'inactive' => function () use ($listCheck) {
-                Banner::whereIn("id", $listCheck)->update(["is_active" => 0]);
-                return 'Chuyển đổi toàn bộ những bài viết về chờ xác nhận';
-            },
+                    Banner::whereIn("id", $listCheck)->update(["is_active" => 0]);
+                    return 'Chuyển đổi toàn bộ những bài viết về chờ xác nhận';
+                },
             'restore' => function () use ($listCheck) {
-                Banner::onlyTrashed()->whereIn("id", $listCheck)->restore();
-                return 'Khôi phục thành công toàn bộ bản ghi';
-            },
+                    Banner::onlyTrashed()->whereIn("id", $listCheck)->restore();
+                    return 'Khôi phục thành công toàn bộ bản ghi';
+                },
             'forceDelete' => function () use ($listCheck) {
-                Banner::onlyTrashed()->whereIn("id", $listCheck)->forceDelete();
-                return 'Xoá vĩnh viễn toàn bộ bản ghi khỏi hệ thống';
-            },
+                    Banner::onlyTrashed()->whereIn("id", $listCheck)->forceDelete();
+                    return 'Xoá vĩnh viễn toàn bộ bản ghi khỏi hệ thống';
+                },
             default => fn() => 'Hành động không hợp lệ',
         };
         return redirect()->route("admin.banners.index")->with('success', $message());

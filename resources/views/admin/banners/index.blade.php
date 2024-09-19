@@ -39,53 +39,53 @@
             </div>
         </div>
     </div>
-    <!-- end page title -->
-    @if (session('message'))
-        <div class="alert alert-success" role="alert">
-            {{ session('message') }}
-        </div>
-    @endif
-    @if (session('error'))
-        <div class="alert alert-error" role="alert">
-            {{ session('error') }}
-        </div>
-    @endif
     <div class="row">
         <div class="col-lg-12">
-            <div class="row">
-                <div class="col-md-12 mb-3 mx-auto">
-                    <div class="float-end">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between gap-3">
+                    <div class="col-sm-auto d-flex">
                         <a href="{{ route('admin.banners.create') }}" class="btn btn-primary">Thêm mới</a>
                     </div>
-                </div>
-            </div>
-            <div class="card">
-                <form action="{{ route('admin.banners.action') }}">
-                    @csrf
-                    <div class="card-header d-flex justify-content-between gap-3">
-                        <div class="col-sm-auto d-flex">
-                            <select name="act" id="" class="form-select">
-                                <option value="" class="form-control">Thao tác nhiều bản ghi</option>
-                                @foreach ($listAct as $key => $act)
-                                    <option value="{{ $key }}" class="form-control">{{ $act }}</option>
-                                @endforeach
-                            </select>
-                            <button type="submit" class="ms-2 btn btn-primary">Chose</button>
-                        </div>
-                        <div class="col-sm-auto d-flex ms-2">
-                            <ul class="d-flex gap-4 mt-1 list-unstyled">
-                                <li><a href="{{ request()->fullUrlWithQuery(['status' => 'all']) }}">Tất
-                                        cả({{ $count['all'] }})</a></li>
-                                <li><a href="{{ request()->fullUrlWithQuery(['status' => 'active']) }}">Kích
-                                        hoạt({{ $count['active'] }})</a></li>
-                                <li><a href="{{ request()->fullUrlWithQuery(['status' => 'inactive']) }}">Chờ xác
-                                        nhận({{ $count['inactive'] }})</a></li>
-                                <li><a href="{{ request()->fullUrlWithQuery(['status' => 'trash']) }}">Vô hiệu
-                                        hoá({{ $count['trash'] }})</a></li>
-                            </ul>
-                        </div>
+                    <div class="col-sm-auto d-flex ms-2">
+                        <ul class="d-flex gap-4 mt-1 list-unstyled">
+                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'all']) }}">Tất
+                                    cả({{ $count['all'] }})</a></li>
+                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'active']) }}">Kích
+                                    hoạt({{ $count['active'] }})</a></li>
+                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'inactive']) }}">Chờ xác
+                                    nhận({{ $count['inactive'] }})</a></li>
+                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'trash']) }}">Vô hiệu
+                                    hoá({{ $count['trash'] }})</a></li>
+                        </ul>
                     </div>
-                    <div class="card-body">
+                    <div class="col-sm-auto d-flex ms-2">
+                        <form action="{{ route('admin.banners.index') }}" method="GET" class="d-flex gap-2">
+                            <input type="text" class="form-control ml-2" placeholder="Tìm kiếm ..." name="keyword" value="{{ request()->input('keyword') }}">
+                            <input type="hidden" name="status" value="{{ request()->input('status') }}">
+                            <button class="btn btn-outline-primary ms-2" type="submit">
+                                <i class="ri-search-line"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('admin.banners.action') }}">
+                        @csrf
+                        <div class="row mb-3">
+                            <div class="col-md-4 d-flex">
+                                <select name="act" id="" class="form-select">
+                                    <option value="" class="form-control">Thao tác nhiều bản ghi</option>
+                                    @foreach ($listAct as $key => $act)
+                                        <option value="{{ $key }}" class="form-control">{{ $act }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <button class="btn btn-outline-primary ms-2" type="submit">
+                                    Chọn
+                                </button>
+                            </div>
+                        </div>
+
                         <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
                             style="width:100%">
                             <thead>
@@ -137,7 +137,6 @@
                                                 <span class="badge rounded-pill bg-danger">Off</span>
                                             @endif
                                         </td>
-
                                         <td>
                                             <div class="dropdown d-inline-block">
                                                 <button class="btn btn-soft-secondary btn-sm dropdown" type="button"
@@ -176,12 +175,13 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </form>
 
-                        <div class="paginate-data">
-                            {{ $banners->links() }}
-                        </div>
+                    <div class="paginate-data">
+                        {{ $banners->links() }}
                     </div>
-                </form>
+                </div>
+
             </div>
         </div><!--end col-->
     </div><!--end row-->
@@ -199,8 +199,7 @@
     <!--datatable js-->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    {{-- <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script> --}}
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
