@@ -41,7 +41,7 @@
                     </a>
                 </li>
                 <li class="menu-title"><span data-key="t-menu">Quản lý giao diện</span></li>
-         
+
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarBanners" data-bs-toggle="collapse" role="button"
                         aria-expanded="false" aria-controls="sidebarBanners">
@@ -163,6 +163,25 @@
                         </ul>
                     </div>
                 </li>
+
+                {{-- Kiểm duyệt --}}
+                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý kiểm duyệt</span>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ route('admin.approval.ratings.list') }}" data-bs-toggle="" role="button"
+                        aria-expanded="false" aria-controls="">
+                        <i class="ri-star-fill"></i> <span> Đánh giá </span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ route('admin.approval.courses.list') }}" data-bs-toggle="" role="button"
+                        aria-expanded="false" aria-controls="">
+                        <i class="ri-book-open-line"></i> <span> Khóa học </span>
+                    </a>
+                </li>
+
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components">Quản lý tài
                         khoản</span></li>
                 <li class="nav-item">

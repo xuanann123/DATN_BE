@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\ApprovalCourseController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\RatingController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VoucherController;
 use Illuminate\Support\Facades\Route;
@@ -77,5 +79,17 @@ Route::prefix("admin")
                 Route::delete('/delete/{id}', [CourseController::class, 'delete'])->name('delete');
                 Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('edit');
                 Route::put('/update/{id}', [CourseController::class, 'update'])->name('update');
+            });
+
+            Route::prefix('approval ')
+            ->as('approval.')
+            ->group(function () {
+                Route::get('ratings/list', [RatingController::class, 'index'])->name('ratings.list');
+                Route::prefix('courses')
+                    ->as('courses.')
+                    ->group(function () {
+                        Route::get("/", [ApprovalCourseController::class, 'index'])->name('list');
+                        Route::get("/detail", [ApprovalCourseController::class, 'show'])->name('detail');
+                    });
             });
     });
