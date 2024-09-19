@@ -22,4 +22,12 @@ class Banner extends Model
         'end_time',
         'is_active',
     ];
+    //Khai báo cách search từ khoá như sau
+    public function scopeSearch($query, $keyword)
+    {
+        if ($keyword) {
+            return $query->whereFullText(['title', 'content'], $keyword);
+        }
+        return $query;
+    }
 }
