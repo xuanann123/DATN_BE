@@ -243,7 +243,6 @@
                                             @endif
                                         </small>
                                     </div>
-
                                 </div>
                             </div>
                         </div>

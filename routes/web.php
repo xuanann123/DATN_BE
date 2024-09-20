@@ -51,8 +51,20 @@ Route::prefix("admin")
         });
 
 
+        Route::prefix("categories")
+            ->as('categories.')
+            ->group(function () {
+                Route::get("/", [CategoryController::class, 'index'])->name('index');
+                Route::get("/create", [CategoryController::class, 'create'])->name('create');
+                Route::post("/store", [CategoryController::class, 'store'])->name('store');
+                Route::get("/edit/{category}", [CategoryController::class, 'edit'])->name('edit');
+                Route::put("/update/{category}", [CategoryController::class, 'update'])->name('update');
+                Route::get("/destroy/{category}", [CategoryController::class, 'destroy'])->name('destroy');
+                Route::get('action', [CategoryController::class, 'action'])->name('action');
+                Route::get('restore/{id}', [CategoryController::class, 'restore'])->name('restore');
+                Route::get('forceDelete/{id}', [CategoryController::class, 'forceDelete'])->name('forceDelete');
+            });
 
-        Route::resource('categories', CategoryController::class)->except('show');
         Route::resource('vouchers', VoucherController::class)->except('show');
         //Về phần user thì sao nhỉ
         Route::prefix('users')

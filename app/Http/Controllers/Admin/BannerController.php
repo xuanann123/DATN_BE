@@ -153,7 +153,7 @@ class BannerController extends Controller
                 },
             'inactive' => function () use ($listCheck) {
                     Banner::whereIn("id", $listCheck)->update(["is_active" => 0]);
-                    return 'Chuyển đổi toàn bộ những bài viết về chờ xác nhận';
+                    return 'Chuyển đổi toàn bộ những bản ghi về chờ xác nhận';
                 },
             'restore' => function () use ($listCheck) {
                     Banner::onlyTrashed()->whereIn("id", $listCheck)->restore();
