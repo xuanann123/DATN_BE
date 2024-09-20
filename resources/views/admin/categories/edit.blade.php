@@ -240,7 +240,8 @@
                                             <option value="">Chọn danh mục cha</option>
                                             @foreach ($options as $id => $name)
                                                 <option {{ $id == $category->parent_id ? 'selected' : '' }}
-                                                    {{ $id == $category->id ? 'hidden' : '' }}
+                                                    {{ $id == $category->id ? 'disabled' : '' }}
+                                                    {{ $id == $category->parent_id ? 'disabled' : '' }}
                                                     value="{{ $id }}">{!! $name !!}</option>
                                             @endforeach
                                         </select>

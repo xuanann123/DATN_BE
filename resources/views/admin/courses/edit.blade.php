@@ -394,7 +394,7 @@
             <div class="text-start mb-4">
                 {{-- <button type="submit" class="btn btn-danger w-sm">Delete</button> --}}
                 <button type="submit" class="btn btn-success w-sm">Cập nhật</button>
-                {{-- <button type="reset" class="btn btn-secondary w-sm">Xóa tất cả</button> --}}
+                <a href="" class="btn btn-secondary w-sm">Thêm bài học</a>
             </div>
         </div>
         <!-- end col -->
