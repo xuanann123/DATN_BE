@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\CourseController;
@@ -37,7 +38,7 @@ Route::prefix("admin")
     ->group(function () {
         Route::get("/", [DashboardController::class, "index"])->name("dashboard");
         Route::get('logout', [AdminController::class, 'logout'])->name('logout');
-        // Route::resource('banners', BannerController::class)->except('show');
+        #============================== BANNERS DONE =============================
         Route::prefix("banners")
             ->as('banners.')
             ->group(function () {
@@ -66,6 +67,22 @@ Route::prefix("admin")
                 Route::get('restore/{id}', [CategoryController::class, 'restore'])->name('restore');
                 Route::get('forceDelete/{id}', [CategoryController::class, 'forceDelete'])->name('forceDelete');
             });
+        #============================== TAGS DONE =============================
+        Route::prefix("tags")
+            ->as('tags.')
+            ->group(function () {
+                Route::get("/", [TagController::class, 'index'])->name('index');
+                Route::get("/create", [TagController::class, 'create'])->name('create');
+                Route::post("/store", [TagController::class, 'store'])->name('store');
+                Route::get("/edit/{tag}", [TagController::class, 'edit'])->name('edit');
+                Route::put("/update/{tag}", [TagController::class, 'update'])->name('update');
+                Route::get("/destroy/{tag}", [TagController::class, 'destroy'])->name('destroy');
+                Route::get('action', [TagController::class, 'action'])->name('action');
+                Route::get('restore/{id}', [TagController::class, 'restore'])->name('restore');
+                Route::get('forceDelete/{id}', [TagController::class, 'forceDelete'])->name('forceDelete');
+            });
+
+
 
         Route::resource('vouchers', VoucherController::class)->except('show');
         //Về phần user thì sao nhỉ
@@ -94,7 +111,6 @@ Route::prefix("admin")
                 Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('edit');
                 Route::put('/update/{id}', [CourseController::class, 'update'])->name('update');
             });
-
         Route::prefix('modules')
             ->as('modules.')
             ->group(function () {
@@ -106,7 +122,6 @@ Route::prefix("admin")
             ->group(function () {
                 Route::post('/store', [LessonController::class, 'store'])->name('store');
             });
-
         Route::prefix('approval ')
             ->as('approval.')
             ->group(function () {
