@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Course;
+use App\Models\Category;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Admin\Courses\CreateCourseRequest;
 use App\Http\Requests\Admin\Courses\UpdateCourseRequest;
-use App\Models\Category;
-use App\Models\Course;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class CourseController extends Controller
 {
@@ -67,10 +67,24 @@ class CourseController extends Controller
         return redirect()->route('admin.courses.list')->with(['message' => 'Thêm mới thành công!']);
     }
 
-    public function detail()
+    public function detail($id)
     {
         $title = 'Chi tiết khóa học';
-        return view('admin.courses.detail', compact('title'));
+        $course = Course::with(
+            'category',
+            'user',
+            'modules.lessons'
+        )->findOrFail($id);
+
+        $lecturesCount = $course->modules->sum(function ($module) {
+            return $module->lessons->whereIn('content_type', ['document', 'video'])->count();
+        });
+
+        $quizzesCount = $course->modules->sum(function ($module) {
+            return $module->lessons->where('content_type', 'quiz')->count();
+        });
+
+        return view('admin.courses.detail', compact('title', 'course', 'lecturesCount', 'quizzesCount'));
     }
 
     public function edit(string $id)

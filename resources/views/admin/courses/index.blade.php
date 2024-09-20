@@ -132,7 +132,7 @@
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <h5 class="mb-1 fs-15"><a href="{{ route('admin.courses.detail') }}"
+                                    <h5 class="mb-1 fs-15"><a href="{{ route('admin.courses.detail', $course->id) }}"
                                             class="text-body">{{ $course->name }}</a></h5>
                                     <p class="text-muted text-truncate-two-lines mb-3">
                                         {{ strip_tags($course->sort_description) }}</p>

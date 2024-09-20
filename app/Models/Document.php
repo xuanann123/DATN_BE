@@ -12,10 +12,16 @@ class Document extends Model
     protected $fillable = [
         'title',
         'description',
+        'id_lesson',
+        'content'
     ];
 
-    public function lessons()
-    {
-        return $this->morphMany(Lesson::class, 'lessonable');
+    // public function lessons()
+    // {
+    //     return $this->morphMany(Lesson::class, 'lessonable');
+    // }
+
+    public function lesson () {
+        return $this->belongsTo(Lesson::class, 'id_lesson');
     }
 }
