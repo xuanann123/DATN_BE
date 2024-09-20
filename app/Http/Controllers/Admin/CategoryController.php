@@ -102,10 +102,9 @@ class CategoryController extends Controller
 
     public function edit(Category $category)
     {
+        // dd($category);
         $title = "Chỉnh sửa danh mục";
-        $categories = Category::whereNull('parent_id')
-            ->where('id', '!=', $category->id)
-            ->with('children')->get();
+        $categories = Category::whereNull('parent_id')->with('children')->get();
         $options = $this->getCategoryOptions($categories);
         return view('admin.categories.edit', compact('options', 'category', 'title'));
     }
@@ -117,6 +116,9 @@ class CategoryController extends Controller
 
         if (!$request->is_active) {
             $data['is_active'] = 0;
+        }
+        if (!$request->parent_id) {
+            $data['parent_id'] = $category->parent_id;
         }
 
         if ($request->image && $request->hasFile('image')) {
@@ -172,26 +174,26 @@ class CategoryController extends Controller
         }
         $message = match ($act) {
             'trash' => function () use ($listCheck) {
-                    Category::whereIn("id", $listCheck)->update(["is_active" => 0]);
-                    Category::destroy($listCheck);
-                    return 'Xoá thành công toàn bộ bản ghi đã chọn';
-                },
+                Category::whereIn("id", $listCheck)->update(["is_active" => 0]);
+                Category::destroy($listCheck);
+                return 'Xoá thành công toàn bộ bản ghi đã chọn';
+            },
             'active' => function () use ($listCheck) {
-                    Category::whereIn("id", $listCheck)->update(["is_active" => 1]);
-                    return 'Đăng toàn bộ những bản ghi đã chọn';
-                },
+                Category::whereIn("id", $listCheck)->update(["is_active" => 1]);
+                return 'Đăng toàn bộ những bản ghi đã chọn';
+            },
             'inactive' => function () use ($listCheck) {
-                    Category::whereIn("id", $listCheck)->update(["is_active" => 0]);
-                    return 'Chuyển đổi toàn bộ những bản ghi về chờ xác nhận';
-                },
+                Category::whereIn("id", $listCheck)->update(["is_active" => 0]);
+                return 'Chuyển đổi toàn bộ những bản ghi về chờ xác nhận';
+            },
             'restore' => function () use ($listCheck) {
-                    Category::onlyTrashed()->whereIn("id", $listCheck)->restore();
-                    return 'Khôi phục thành công toàn bộ bản ghi';
-                },
+                Category::onlyTrashed()->whereIn("id", $listCheck)->restore();
+                return 'Khôi phục thành công toàn bộ bản ghi';
+            },
             'forceDelete' => function () use ($listCheck) {
-                    Category::onlyTrashed()->whereIn("id", $listCheck)->forceDelete();
-                    return 'Xoá vĩnh viễn toàn bộ bản ghi khỏi hệ thống';
-                },
+                Category::onlyTrashed()->whereIn("id", $listCheck)->forceDelete();
+                return 'Xoá vĩnh viễn toàn bộ bản ghi khỏi hệ thống';
+            },
             default => fn() => 'Hành động không hợp lệ',
         };
         return redirect()->route("admin.categories.index")->with('success', $message());
