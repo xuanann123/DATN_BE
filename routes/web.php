@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ApprovalCourseController;
 use App\Http\Controllers\Admin\BannerController;
@@ -35,7 +36,7 @@ Route::prefix("admin")
     ->group(function () {
         Route::get("/", [DashboardController::class, "index"])->name("dashboard");
         Route::get('logout', [AdminController::class, 'logout'])->name('logout');
-        // Route::resource('banners', BannerController::class)->except('show');
+        #============================== BANNERS DONE =============================
         Route::prefix("banners")
             ->as('banners.')
             ->group(function () {
@@ -64,6 +65,22 @@ Route::prefix("admin")
                 Route::get('restore/{id}', [CategoryController::class, 'restore'])->name('restore');
                 Route::get('forceDelete/{id}', [CategoryController::class, 'forceDelete'])->name('forceDelete');
             });
+        #============================== TAGS DONE =============================
+        Route::prefix("tags")
+            ->as('tags.')
+            ->group(function () {
+                Route::get("/", [TagController::class, 'index'])->name('index');
+                Route::get("/create", [TagController::class, 'create'])->name('create');
+                Route::post("/store", [TagController::class, 'store'])->name('store');
+                Route::get("/edit/{tag}", [TagController::class, 'edit'])->name('edit');
+                Route::put("/update/{tag}", [TagController::class, 'update'])->name('update');
+                Route::get("/destroy/{tag}", [TagController::class, 'destroy'])->name('destroy');
+                Route::get('action', [TagController::class, 'action'])->name('action');
+                Route::get('restore/{id}', [TagController::class, 'restore'])->name('restore');
+                Route::get('forceDelete/{id}', [TagController::class, 'forceDelete'])->name('forceDelete');
+            });
+
+
 
         Route::resource('vouchers', VoucherController::class)->except('show');
         //Về phần user thì sao nhỉ
@@ -93,7 +110,7 @@ Route::prefix("admin")
                 Route::put('/update/{id}', [CourseController::class, 'update'])->name('update');
             });
 
-            Route::prefix('approval ')
+        Route::prefix('approval ')
             ->as('approval.')
             ->group(function () {
                 Route::get('ratings/list', [RatingController::class, 'index'])->name('ratings.list');
