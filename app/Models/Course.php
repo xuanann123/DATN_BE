@@ -37,4 +37,8 @@ class Course extends Model
     {
         return $this->belongsTo(Category::class, 'id_category');
     }
+
+    public function modules () {
+        return $this->hasMany(Module::class, 'id_course');
+    }
 }

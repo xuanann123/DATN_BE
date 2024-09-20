@@ -1,15 +1,17 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\ApprovalCourseController;
-use App\Http\Controllers\Admin\BannerController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\CourseController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\RatingController;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\VoucherController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\CourseController;
+use App\Http\Controllers\Admin\LessonController;
+use App\Http\Controllers\Admin\ModuleController;
+use App\Http\Controllers\Admin\RatingController;
+use App\Http\Controllers\Admin\VoucherController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ApprovalCourseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -87,13 +89,25 @@ Route::prefix("admin")
                 Route::get("/", [CourseController::class, 'index'])->name('list');
                 Route::get("/create", [CourseController::class, 'create'])->name('create');
                 Route::post('/store', [CourseController::class, 'store'])->name('store');
-                Route::get("/detail", [CourseController::class, 'detail'])->name('detail');
+                Route::get("/detail/{id}", [CourseController::class, 'detail'])->name('detail');
                 Route::delete('/delete/{id}', [CourseController::class, 'delete'])->name('delete');
                 Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('edit');
                 Route::put('/update/{id}', [CourseController::class, 'update'])->name('update');
             });
 
-            Route::prefix('approval ')
+        Route::prefix('modules')
+            ->as('modules.')
+            ->group(function () {
+                Route::post('/store', [ModuleController::class, 'store'])->name('store');
+            });
+
+        Route::prefix('lessons')
+            ->as('lessons.')
+            ->group(function () {
+                Route::post('/store', [LessonController::class, 'store'])->name('store');
+            });
+
+        Route::prefix('approval ')
             ->as('approval.')
             ->group(function () {
                 Route::get('ratings/list', [RatingController::class, 'index'])->name('ratings.list');

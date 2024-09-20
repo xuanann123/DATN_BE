@@ -2343,7 +2343,8 @@
                                                                 Machine Learning</h4>
                                                             <div class="hstack gap-3 flex-wrap">
                                                                 <div><i class="ri-building-line align-bottom me-1"></i>
-                                                                    <span id="instructor-name">John Doe</span></div>
+                                                                    <span id="instructor-name">John Doe</span>
+                                                                </div>
                                                                 <div class="vr"></div>
                                                                 <div>Category : <span class="fw-medium"
                                                                         id="course-category">Computer Science</span>
@@ -2491,220 +2492,598 @@
                                 <div class="tab-pane fade" id="course-content" role="tabpanel">
                                     <div class="card">
                                         <div class="card-body">
-                                            <h5 class="card-title mb-3">Course Content</h5>
-                                            <div class="accordion" id="courseContentAccordion">
+                                            <h5 class="card-title mb-4">Course Content</h5>
+
+                                            <!-- Course Overview -->
+                                            <div class="row mb-4">
+                                                <div class="col-md-3 mb-3">
+                                                    <div class="card bg-danger text-white border-0 h-100">
+                                                        <div class="card-body text-center">
+                                                            <i class="ri-time-line fs-1 mb-2"></i>
+                                                            <h6 class="card-title">Total Duration</h6>
+                                                            <p class="card-text fs-2 fw-bold mb-0">12 hours</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 mb-3">
+                                                    <div class="card bg-success text-white border-0 h-100">
+                                                        <div class="card-body text-center">
+                                                            <i class="ri-video-line fs-1 mb-2"></i>
+                                                            <h6 class="card-title">Video Lessons</h6>
+                                                            <p class="card-text fs-2 fw-bold mb-0">18 videos</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 mb-3">
+                                                    <div class="card bg-info text-white border-0 h-100">
+                                                        <div class="card-body text-center">
+                                                            <i class="ri-file-text-line fs-1 mb-2"></i>
+                                                            <h6 class="card-title">Text Lessons</h6>
+                                                            <p class="card-text fs-2 fw-bold mb-0">12 articles</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 mb-3">
+                                                    <div class="card bg-warning text-white border-0 h-100">
+                                                        <div class="card-body text-center">
+                                                            <i class="ri-question-answer-line fs-1 mb-2"></i>
+                                                            <h6 class="card-title">Quizzes</h6>
+                                                            <p class="card-text fs-2 fw-bold mb-0">8 quizzes</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="accordion custom-accordionwithicon custom-accordion-border accordion-border-box"
+                                                id="courseContentAccordion">
+                                                <!-- Section 1 -->
                                                 <div class="accordion-item">
-                                                    <h2 class="accordion-header" id="week1Header">
+                                                    <h2 class="accordion-header" id="section1Header">
                                                         <button class="accordion-button" type="button"
-                                                            data-bs-toggle="collapse" data-bs-target="#week1Collapse"
-                                                            aria-expanded="true" aria-controls="week1Collapse">
-                                                            Week 1: Introduction to Machine Learning (3 hours)
+                                                            data-bs-toggle="collapse" data-bs-target="#section1Collapse"
+                                                            aria-expanded="true" aria-controls="section1Collapse">
+                                                            Section 1: Introduction to Machine Learning
                                                         </button>
                                                     </h2>
-                                                    <div id="week1Collapse" class="accordion-collapse collapse show"
-                                                        aria-labelledby="week1Header"
+                                                    <div id="section1Collapse" class="accordion-collapse collapse show"
+                                                        aria-labelledby="section1Header"
                                                         data-bs-parent="#courseContentAccordion">
                                                         <div class="accordion-body">
-                                                            <ul class="list-unstyled vstack gap-2">
-                                                                <li><a href="" data-bs-toggle="modal"
-                                                                        data-bs-target="#viewLesson">1.1 What is Machine
-                                                                        Learning? (30 minutes, bấm vào đây là preview
-                                                                        nhé)</a></li>
-                                                                <li>1.2 Types of Machine Learning (45 minutes)</li>
-                                                                <li>1.3 Applications of Machine Learning (45 minutes)
-                                                                </li>
-                                                                <li>1.4 Setting up the Python Environment (30 minutes)
-                                                                </li>
-                                                                <li>1.5 Introduction to NumPy and Pandas (30 minutes)
-                                                                </li>
-                                                            </ul>
-                                                            <p><strong>Learning Materials:</strong> Lecture slides,
-                                                                Python environment setup guide, NumPy and Pandas cheat
-                                                                sheets</p>
+                                                            <div
+                                                                class="d-flex align-items-center justify-content-between mb-3">
+                                                                <h6 class="mb-0">Duration: 3 hours</h6>
+                                                                <div class="dropdown">
+                                                                    <button
+                                                                        class="btn btn-sm btn-primary dropdown-toggle"
+                                                                        type="button" id="addLessonDropdown"
+                                                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                                                        <i class="ri-add-line align-bottom"></i> Add
+                                                                        Lesson
+                                                                    </button>
+                                                                    <ul class="dropdown-menu"
+                                                                        aria-labelledby="addLessonDropdown">
+                                                                        <li><a class="dropdown-item" href="#"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#addVideoLessonModal">Video
+                                                                                Lesson</a></li>
+                                                                        <li><a class="dropdown-item" href="#"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#addTextLessonModal">Text
+                                                                                Lesson</a></li>
+                                                                        <li><a class="dropdown-item" href="#"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#addQuizLessonModal">Quiz</a>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="lesson-list">
+                                                                <!-- Lesson 1.1 (Video) -->
+                                                                <div class="card border mb-2">
+                                                                    <div
+                                                                        class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                                        <h6 class="mb-0">
+                                                                            <i
+                                                                                class="ri-video-line text-primary me-2"></i>
+                                                                            1.1 What is Machine Learning?
+                                                                        </h6>
+                                                                        <div>
+                                                                            <button class="btn btn-sm btn-light me-2"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#previewLessonModal"
+                                                                                data-lesson-id="1"
+                                                                                data-lesson-type="video">
+                                                                                <i class="ri-eye-line"></i> Preview
+                                                                            </button>
+                                                                            <div class="dropdown d-inline-block">
+                                                                                <button class="btn btn-sm btn-light"
+                                                                                    type="button"
+                                                                                    data-bs-toggle="dropdown">
+                                                                                    <i class="ri-more-2-fill"></i>
+                                                                                </button>
+                                                                                <ul class="dropdown-menu">
+                                                                                    <li><a class="dropdown-item"
+                                                                                            href="#"
+                                                                                            data-bs-toggle="modal"
+                                                                                            data-bs-target="#editLessonModal">Edit</a>
+                                                                                    </li>
+                                                                                    <li><a class="dropdown-item text-danger"
+                                                                                            href="#">Delete</a></li>
+                                                                                </ul>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="card-body">
+                                                                        <p class="mb-0">Video Lecture - 30 minutes</p>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Lesson 1.2 (Text) -->
+                                                                <div class="card border mb-2">
+                                                                    <div
+                                                                        class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                                        <h6 class="mb-0">
+                                                                            <i
+                                                                                class="ri-file-text-line text-success me-2"></i>
+                                                                            1.2 History of Machine Learning
+                                                                        </h6>
+                                                                        <div>
+                                                                            <button class="btn btn-sm btn-light me-2"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#previewLessonModal"
+                                                                                data-lesson-id="2"
+                                                                                data-lesson-type="text">
+                                                                                <i class="ri-eye-line"></i> Preview
+                                                                            </button>
+                                                                            <div class="dropdown d-inline-block">
+                                                                                <button class="btn btn-sm btn-light"
+                                                                                    type="button"
+                                                                                    data-bs-toggle="dropdown">
+                                                                                    <i class="ri-more-2-fill"></i>
+                                                                                </button>
+                                                                                <ul class="dropdown-menu">
+                                                                                    <li><a class="dropdown-item"
+                                                                                            href="#"
+                                                                                            data-bs-toggle="modal"
+                                                                                            data-bs-target="#editLessonModal">Edit</a>
+                                                                                    </li>
+                                                                                    <li><a class="dropdown-item text-danger"
+                                                                                            href="#">Delete</a></li>
+                                                                                </ul>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="card-body">
+                                                                        <p class="mb-0">Reading Material - 15 minutes
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Lesson 1.3 (Quiz) -->
+                                                                <div class="card border mb-2">
+                                                                    <div
+                                                                        class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                                        <h6 class="mb-0">
+                                                                            <i
+                                                                                class="ri-question-answer-line text-warning me-2"></i>
+                                                                            1.3 Introduction to Machine Learning Quiz
+                                                                        </h6>
+                                                                        <div>
+                                                                            <button class="btn btn-sm btn-light me-2"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#previewLessonModal"
+                                                                                data-lesson-id="3"
+                                                                                data-lesson-type="quiz">
+                                                                                <i class="ri-eye-line"></i> Preview
+                                                                            </button>
+                                                                            <div class="dropdown d-inline-block">
+                                                                                <button class="btn btn-sm btn-light"
+                                                                                    type="button"
+                                                                                    data-bs-toggle="dropdown">
+                                                                                    <i class="ri-more-2-fill"></i>
+                                                                                </button>
+                                                                                <ul class="dropdown-menu">
+                                                                                    <li><a class="dropdown-item"
+                                                                                            href="#"
+                                                                                            data-bs-toggle="modal"
+                                                                                            data-bs-target="#editLessonModal">Edit</a>
+                                                                                    </li>
+                                                                                    <li><a class="dropdown-item text-danger"
+                                                                                            href="#">Delete</a></li>
+                                                                                </ul>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="card-body">
+                                                                        <p class="mb-0">Quiz - 10 questions</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
+
+                                                <!-- Section 2 -->
                                                 <div class="accordion-item">
-                                                    <h2 class="accordion-header" id="week2Header">
+                                                    <h2 class="accordion-header" id="section2Header">
                                                         <button class="accordion-button collapsed" type="button"
-                                                            data-bs-toggle="collapse" data-bs-target="#week2Collapse"
-                                                            aria-expanded="false" aria-controls="week2Collapse">
-                                                            Week 2: Data Preprocessing and Exploratory Data Analysis (4
-                                                            hours)
+                                                            data-bs-toggle="collapse" data-bs-target="#section2Collapse"
+                                                            aria-expanded="false" aria-controls="section2Collapse">
+                                                            Section 2: Data Preprocessing and Exploratory Data Analysis
                                                         </button>
                                                     </h2>
-                                                    <div id="week2Collapse" class="accordion-collapse collapse"
-                                                        aria-labelledby="week2Header"
+                                                    <div id="section2Collapse" class="accordion-collapse collapse"
+                                                        aria-labelledby="section2Header"
                                                         data-bs-parent="#courseContentAccordion">
                                                         <div class="accordion-body">
-                                                            <ul class="list-unstyled vstack gap-2">
-                                                                <li>2.1 Data Cleaning and Handling Missing Values (60
-                                                                    minutes)</li>
-                                                                <li>2.2 Feature Scaling and Normalization (45 minutes)
-                                                                </li>
-                                                                <li>2.3 Handling Categorical Data (45 minutes)</li>
-                                                                <li>2.4 Exploratory Data Analysis Techniques (60
-                                                                    minutes)</li>
-                                                                <li>2.5 Data Visualization with Matplotlib and Seaborn
-                                                                    (30 minutes)</li>
-                                                            </ul>
-                                                            <p><strong>Learning Materials:</strong> Lecture slides, Data
-                                                                preprocessing notebook, EDA case study dataset</p>
+                                                            <div
+                                                                class="d-flex align-items-center justify-content-between mb-3">
+                                                                <h6 class="mb-0">Duration: 4 hours</h6>
+                                                                <div class="dropdown">
+                                                                    <button
+                                                                        class="btn btn-sm btn-primary dropdown-toggle"
+                                                                        type="button" id="addLessonDropdown2"
+                                                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                                                        <i class="ri-add-line align-bottom"></i> Add
+                                                                        Lesson
+                                                                    </button>
+                                                                    <ul class="dropdown-menu"
+                                                                        aria-labelledby="addLessonDropdown2">
+                                                                        <li><a class="dropdown-item" href="#"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#addVideoLessonModal">Video
+                                                                                Lesson</a></li>
+                                                                        <li><a class="dropdown-item" href="#"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#addTextLessonModal">Text
+                                                                                Lesson</a></li>
+                                                                        <li><a class="dropdown-item" href="#"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#addQuizLessonModal">Quiz</a>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="lesson-list">
+                                                                <!-- Add lessons for Section 2 here -->
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="accordion-item">
-                                                    <h2 class="accordion-header" id="week3Header">
-                                                        <button class="accordion-button collapsed" type="button"
-                                                            data-bs-toggle="collapse" data-bs-target="#week3Collapse"
-                                                            aria-expanded="false" aria-controls="week3Collapse">
-                                                            Week 3: Supervised Learning - Regression (4 hours)
-                                                        </button>
-                                                    </h2>
-                                                    <div id="week3Collapse" class="accordion-collapse collapse"
-                                                        aria-labelledby="week3Header"
-                                                        data-bs-parent="#courseContentAccordion">
-                                                        <div class="accordion-body">
-                                                            <ul class="list-unstyled vstack gap-2">
-                                                                <li>3.1 Introduction to Regression (30 minutes)</li>
-                                                                <li>3.2 Linear Regression (60 minutes)</li>
-                                                                <li>3.3 Polynomial Regression (45 minutes)</li>
-                                                                <li>3.4 Regularization Techniques: Ridge and Lasso (60
-                                                                    minutes)</li>
-                                                                <li>3.5 Evaluating Regression Models (45 minutes)</li>
-                                                            </ul>
-                                                            <p><strong>Learning Materials:</strong> Lecture slides,
-                                                                Regression algorithms notebook, Housing price dataset
-                                                                for practice</p>
+                                            </div>
+
+                                            <!-- Add Section Button -->
+                                            <div class="text-center mt-4">
+                                                <button class="btn btn-primary" data-bs-toggle="modal"
+                                                    data-bs-target="#addSectionModal">
+                                                    <i class="ri-add-line align-bottom"></i> Add New Section
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Add Section Modal -->
+                                <div class="modal fade" id="addSectionModal" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Add New Section</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="addSectionForm">
+                                                    <div class="mb-3">
+                                                        <label for="sectionTitle" class="form-label">Section
+                                                            Title</label>
+                                                        <input type="text" class="form-control" id="sectionTitle"
+                                                            required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="sectionDuration" class="form-label">Duration
+                                                            (hours)</label>
+                                                        <input type="number" class="form-control" id="sectionDuration"
+                                                            required>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" form="addSectionForm" class="btn btn-primary">Add
+                                                    Section</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Add Video Lesson Modal -->
+                                <div class="modal fade" id="addVideoLessonModal" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Add Video Lesson</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="addVideoLessonForm">
+                                                    <div class="mb-3">
+                                                        <label for="videoLessonTitle" class="form-label">Lesson
+                                                            Title</label>
+                                                        <input type="text" class="form-control" id="videoLessonTitle"
+                                                            required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="videoUrl" class="form-label">Video URL</label>
+                                                        <input type="url" class="form-control" id="videoUrl" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="videoDuration" class="form-label">Duration
+                                                            (minutes)</label>
+                                                        <input type="number" class="form-control" id="videoDuration"
+                                                            required>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" form="addVideoLessonForm"
+                                                    class="btn btn-primary">Add Video Lesson</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Add Text Lesson Modal -->
+                                <div class="modal fade" id="addTextLessonModal" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Add Text Lesson</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="addTextLessonForm">
+                                                    <div class="mb-3">
+                                                        <label for="textLessonTitle" class="form-label">Lesson
+                                                            Title</label>
+                                                        <input type="text" class="form-control" id="textLessonTitle"
+                                                            required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="textContent" class="form-label">Lesson
+                                                            Content</label>
+                                                        <textarea class="form-control" id="textContent" rows="5"
+                                                            required></textarea>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="textDuration" class="form-label">Estimated Reading
+                                                            Time (minutes)</label>
+                                                        <input type="number" class="form-control" id="textDuration"
+                                                            required>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" form="addTextLessonForm"
+                                                    class="btn btn-primary">Add Text Lesson</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Add Quiz Lesson Modal -->
+                                <div class="modal fade" id="addQuizLessonModal" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Add Quiz</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="addQuizLessonForm">
+                                                    <div class="mb-3">
+                                                        <label for="quizTitle" class="form-label">Quiz Title</label>
+                                                        <input type="text" class="form-control" id="quizTitle" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="quizDescription" class="form-label">Quiz
+                                                            Description</label>
+                                                        <textarea class="form-control" id="quizDescription" rows="3"
+                                                            required></textarea>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="quizDuration" class="form-label">Time Limit
+                                                            (minutes)</label>
+                                                        <input type="number" class="form-control" id="quizDuration"
+                                                            required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Questions</label>
+                                                        <div id="quizQuestions">
+                                                            <div class="card mb-3">
+                                                                <div class="card-body">
+                                                                    <h6 class="card-title">Question 1</h6>
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">Question Text</label>
+                                                                        <input type="text" class="form-control"
+                                                                            name="question_1" required>
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label">Options</label>
+                                                                        <div class="input-group mb-2">
+                                                                            <div class="input-group-text">
+                                                                                <input class="form-check-input mt-0"
+                                                                                    type="radio" name="correct_answer_1"
+                                                                                    required>
+                                                                            </div>
+                                                                            <input type="text" class="form-control"
+                                                                                placeholder="Option 1" name="option_1_1"
+                                                                                required>
+                                                                        </div>
+                                                                        <div class="input-group mb-2">
+                                                                            <div class="input-group-text">
+                                                                                <input class="form-check-input mt-0"
+                                                                                    type="radio" name="correct_answer_1"
+                                                                                    required>
+                                                                            </div>
+                                                                            <input type="text" class="form-control"
+                                                                                placeholder="Option 2" name="option_1_2"
+                                                                                required>
+                                                                        </div>
+                                                                        <div class="input-group mb-2">
+                                                                            <div class="input-group-text">
+                                                                                <input class="form-check-input mt-0"
+                                                                                    type="radio" name="correct_answer_1"
+                                                                                    required>
+                                                                            </div>
+                                                                            <input type="text" class="form-control"
+                                                                                placeholder="Option 3" name="option_1_3"
+                                                                                required>
+                                                                        </div>
+                                                                        <div class="input-group mb-2">
+                                                                            <div class="input-group-text">
+                                                                                <input class="form-check-input mt-0"
+                                                                                    type="radio" name="correct_answer_1"
+                                                                                    required>
+                                                                            </div>
+                                                                            <input type="text" class="form-control"
+                                                                                placeholder="Option 4" name="option_1_4"
+                                                                                required>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <button type="button" class="btn btn-sm btn-secondary mt-2"
+                                                            id="addQuestionBtn">Add Question</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" form="addQuizLessonForm"
+                                                    class="btn btn-primary">Add Quiz</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Preview Lesson Modal -->
+                                <!-- Preview Lesson Modal -->
+                                <div class="modal fade" id="previewLessonModal" tabindex="-1">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Lesson Preview</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div id="lessonPreviewContent">
+                                                    <!-- Video Preview -->
+                                                    <div id="videoPreview" style="display: none;">
+                                                        <h4 id="videoTitle">Introduction to Machine Learning Algorithms
+                                                        </h4>
+                                                        <div class="ratio ratio-16x9 mt-3">
+                                                            <iframe id="videoFrame"
+                                                                src="https://www.youtube.com/embed/TfKOFRpqSME"
+                                                                title="Lesson Video" allowfullscreen></iframe>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="accordion-item">
-                                                    <h2 class="accordion-header" id="week4Header">
-                                                        <button class="accordion-button collapsed" type="button"
-                                                            data-bs-toggle="collapse" data-bs-target="#week4Collapse"
-                                                            aria-expanded="false" aria-controls="week4Collapse">
-                                                            Week 4: Supervised Learning - Classification (4 hours)
-                                                        </button>
-                                                    </h2>
-                                                    <div id="week4Collapse" class="accordion-collapse collapse"
-                                                        aria-labelledby="week4Header"
-                                                        data-bs-parent="#courseContentAccordion">
-                                                        <div class="accordion-body">
-                                                            <ul class="list-unstyled vstack gap-2">
-                                                                <li>4.1 Introduction to Classification (30 minutes)</li>
-                                                                <li>4.2 Logistic Regression (60 minutes)</li>
-                                                                <li>4.3 Decision Trees (45 minutes)</li>
-                                                                <li>4.4 Support Vector Machines (60 minutes)</li>
-                                                                <li>4.5 Evaluating Classification Models (45 minutes)
-                                                                </li>
-                                                            </ul>
-                                                            <p><strong>Learning Materials:</strong> Lecture slides,
-                                                                Classification algorithms notebook, Iris dataset for
-                                                                practice</p>
+
+                                                    <!-- Text Preview -->
+                                                    <div id="textPreview" style="display: none;">
+                                                        <h4 id="textTitle">Understanding Data Preprocessing</h4>
+                                                        <div id="textContent" class="mt-3">
+                                                            <p>Data preprocessing is a crucial step in any machine
+                                                                learning project. It involves cleaning, normalizing, and
+                                                                transforming raw data into a format that can be easily
+                                                                and effectively processed by machine learning
+                                                                algorithms.</p>
+                                                            <h5>Key steps in data preprocessing:</h5>
+                                                            <ol>
+                                                                <li>Data cleaning: Handling missing values and removing
+                                                                    outliers</li>
+                                                                <li>Data integration: Combining data from multiple
+                                                                    sources</li>
+                                                                <li>Data transformation: Normalizing and scaling
+                                                                    features</li>
+                                                                <li>Data reduction: Reducing the volume of data while
+                                                                    preserving important information</li>
+                                                            </ol>
+                                                            <p>By properly preprocessing your data, you can
+                                                                significantly improve the performance and accuracy of
+                                                                your machine learning models.</p>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="accordion-item">
-                                                    <h2 class="accordion-header" id="week5Header">
-                                                        <button class="accordion-button collapsed" type="button"
-                                                            data-bs-toggle="collapse" data-bs-target="#week5Collapse"
-                                                            aria-expanded="false" aria-controls="week5Collapse">
-                                                            Week 5: Unsupervised Learning (3 hours)
-                                                        </button>
-                                                    </h2>
-                                                    <div id="week5Collapse" class="accordion-collapse collapse"
-                                                        aria-labelledby="week5Header"
-                                                        data-bs-parent="#courseContentAccordion">
-                                                        <div class="accordion-body">
-                                                            <ul class="list-unstyled vstack gap-2">
-                                                                <li>5.1 Introduction to Unsupervised Learning (30
-                                                                    minutes)</li>
-                                                                <li>5.2 K-Means Clustering (60 minutes)</li>
-                                                                <li>5.3 Hierarchical Clustering (45 minutes)</li>
-                                                                <li>5.4 Principal Component Analysis (PCA) (45 minutes)
-                                                                </li>
-                                                            </ul>
-                                                            <p><strong>Learning Materials:</strong> Lecture slides,
-                                                                Unsupervised learning notebook, Customer segmentation
-                                                                dataset</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="accordion-item">
-                                                    <h2 class="accordion-header" id="week6Header">
-                                                        <button class="accordion-button collapsed" type="button"
-                                                            data-bs-toggle="collapse" data-bs-target="#week6Collapse"
-                                                            aria-expanded="false" aria-controls="week6Collapse">
-                                                            Week 6: Ensemble Methods (3 hours)
-                                                        </button>
-                                                    </h2>
-                                                    <div id="week6Collapse" class="accordion-collapse collapse"
-                                                        aria-labelledby="week6Header"
-                                                        data-bs-parent="#courseContentAccordion">
-                                                        <div class="accordion-body">
-                                                            <ul class="list-unstyled vstack gap-2">
-                                                                <li>6.1 Introduction to Ensemble Methods (30 minutes)
-                                                                </li>
-                                                                <li>6.2 Bagging and Random Forests (60 minutes)</li>
-                                                                <li>6.3 Boosting: AdaBoost and Gradient Boosting (60
-                                                                    minutes)</li>
-                                                                <li>6.4 Stacking (30 minutes)</li>
-                                                            </ul>
-                                                            <p><strong>Learning Materials:</strong> Lecture slides,
-                                                                Ensemble methods notebook, Credit risk dataset</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="accordion-item">
-                                                    <h2 class="accordion-header" id="week7Header">
-                                                        <button class="accordion-button collapsed" type="button"
-                                                            data-bs-toggle="collapse" data-bs-target="#week7Collapse"
-                                                            aria-expanded="false" aria-controls="week7Collapse">
-                                                            Week 7: Model Evaluation and Hyperparameter Tuning (3 hours)
-                                                        </button>
-                                                    </h2>
-                                                    <div id="week7Collapse" class="accordion-collapse collapse"
-                                                        aria-labelledby="week7Header"
-                                                        data-bs-parent="#courseContentAccordion">
-                                                        <div class="accordion-body">
-                                                            <ul class="list-unstyled vstack gap-2">
-                                                                <li>7.1 Cross-validation Techniques (45 minutes)</li>
-                                                                <li>7.2 Bias-Variance Tradeoff (30 minutes)</li>
-                                                                <li>7.3 Hyperparameter Tuning: Grid Search and Random
-                                                                    Search (60 minutes)</li>
-                                                                <li>7.4 Model Selection and Evaluation Metrics (45
-                                                                    minutes)</li>
-                                                            </ul>
-                                                            <p><strong>Learning Materials:</strong> Lecture slides,
-                                                                Model evaluation notebook, Hyperparameter tuning case
-                                                                study</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="accordion-item">
-                                                    <h2 class="accordion-header" id="week8Header">
-                                                        <button class="accordion-button collapsed" type="button"
-                                                            data-bs-toggle="collapse" data-bs-target="#week8Collapse"
-                                                            aria-expanded="false" aria-controls="week8Collapse">
-                                                            Week 8: Final Project and Course Wrap-up (4 hours)
-                                                        </button>
-                                                    </h2>
-                                                    <div id="week8Collapse" class="accordion-collapse collapse"
-                                                        aria-labelledby="week8Header"
-                                                        data-bs-parent="#courseContentAccordion">
-                                                        <div class="accordion-body">
-                                                            <ul class="list-unstyled vstack gap-2">
-                                                                <li>8.1 Final Project Overview and Guidelines (30
-                                                                    minutes)</li>
-                                                                <li>8.2 Working on the Final Project (180 minutes)</li>
-                                                                <li>8.3 Course Recap and Future Learning Paths (30
-                                                                    minutes)</li>
-                                                            </ul>
-                                                            <p><strong>Learning Materials:</strong> Final project
-                                                                dataset, Project rubric, Additional resources for
-                                                                further learning</p>
-                                                        </div>
+
+                                                    <!-- Quiz Preview -->
+                                                    <div id="quizPreview" style="display: none;">
+                                                        <h4 id="quizTitle">Machine Learning Basics Quiz</h4>
+                                                        <p id="quizDescription">Test your understanding of fundamental
+                                                            machine learning concepts.</p>
+                                                        <form id="quizForm">
+                                                            <div id="quizQuestions">
+                                                                <div class="mb-3">
+                                                                    <p><strong>1. What is the primary goal of supervised
+                                                                            learning?</strong></p>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="radio"
+                                                                            name="q1" id="q1a" value="a">
+                                                                        <label class="form-check-label" for="q1a">To
+                                                                            cluster data points</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="radio"
+                                                                            name="q1" id="q1b" value="b">
+                                                                        <label class="form-check-label" for="q1b">To
+                                                                            predict outcomes based on input
+                                                                            features</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="radio"
+                                                                            name="q1" id="q1c" value="c">
+                                                                        <label class="form-check-label" for="q1c">To
+                                                                            reduce dimensionality</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <p><strong>2. Which of the following is NOT a type
+                                                                            of machine learning?</strong></p>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="radio"
+                                                                            name="q2" id="q2a" value="a">
+                                                                        <label class="form-check-label"
+                                                                            for="q2a">Supervised learning</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="radio"
+                                                                            name="q2" id="q2b" value="b">
+                                                                        <label class="form-check-label"
+                                                                            for="q2b">Unsupervised learning</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="radio"
+                                                                            name="q2" id="q2c" value="c">
+                                                                        <label class="form-check-label"
+                                                                            for="q2c">Cognitive learning</label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <button type="submit" class="btn btn-primary mt-3">Submit
+                                                                Quiz</button>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
@@ -2743,7 +3122,12 @@
                                                     advanced topics in the later sections. Overall, I'm very satisfied
                                                     and feel much more confident in my React skills now.</p>
                                                 <hr>
-                                                <iframe width="560" height="315" src="https://www.youtube.com/embed/TfKOFRpqSME?si=xJ7qlCmqYCRUTpIu" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                                                <iframe width="560" height="315"
+                                                    src="https://www.youtube.com/embed/TfKOFRpqSME?si=xJ7qlCmqYCRUTpIu"
+                                                    title="YouTube video player" frameborder="0"
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                    referrerpolicy="strict-origin-when-cross-origin"
+                                                    allowfullscreen></iframe>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary"

@@ -15,4 +15,12 @@ class Module extends Model
         'description',
         'position',
     ];
+
+    public function course () {
+        return $this->belongsTo(Course::class, 'id_course');
+    }
+
+    public function lessons () {
+        return $this->hasMany(Lesson::class, 'id_module');
+    }
 }

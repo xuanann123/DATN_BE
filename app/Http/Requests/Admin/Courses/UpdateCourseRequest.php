@@ -22,7 +22,7 @@ class UpdateCourseRequest extends FormRequest
             'slug' => 'required|unique:courses,slug,' . $id . '|max:255',
             'description' => 'nullable|min:6|max:255',
             'sort_description' => 'nullable|min:6|max:255',
-            'learned' => 'nullable|min:6|max:255',
+            'learned' => 'nullable|min:6',
             'thumbnail' => 'nullable|image|max:5120',
             'id_category' => 'required|integer',
             'price' => 'numeric|min:0',
