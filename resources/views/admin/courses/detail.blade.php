@@ -3,8 +3,41 @@
     {{ $title }}
 @endsection
 
-
 @section('style-libs')
+    <style>
+        .drop-container {
+            position: relative;
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #dadada;
+            color: #444;
+            cursor: pointer;
+            transition: background .2s ease-in-out, border .2s ease-in-out;
+        }
+
+        .drop-container:hover {
+            background: #eee;
+            border-color: #dadada;
+        }
+
+        .drop-container:hover .drop-title {
+            color: #222;
+        }
+
+        .drop-title {
+            color: #444;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            transition: color .2s ease-in-out;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -221,7 +254,7 @@
                                                         <ul class="dropdown-menu"
                                                             aria-labelledby="addLessonDropdown{{ $loop->index + 1 }}">
                                                             <li><a class="dropdown-item" href="#"
-                                                                    data-bs-toggle="modal"
+                                                                    id="btn-add-lesson-video" data-bs-toggle="modal"
                                                                     data-bs-target="#addVideoLessonModal"
                                                                     data-module-id="{{ $module->id }}">Bài học video</a>
                                                             </li>
@@ -337,6 +370,51 @@
                     </div>
                 </div>
 
+                <!-- Add Video Lesson Modal -->
+                <div class="modal fade" id="addVideoLessonModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Bài học video</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="addTextLessonForm" method="POST" enctype="multipart/form-data"
+                                    action="{{ route('admin.lessons.store-lesson-video') }}">
+                                    @csrf
+                                    <input type="hidden" class="form-control" id="module-id-lesson-video"
+                                        name="id_module">
+                                    <div class="mb-3">
+                                        <label for="lesson-title" class="form-label">Tiêu đề bài học</label>
+                                        <input type="text" class="form-control" id="lesson-title" name="title"
+                                            required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="textContent" class="form-label">Mô tả video</label>
+                                        <textarea class="form-control" id="ckeditor-classic-video" name="description" rows="4"></textarea>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="video" class="form-label">Tải video lên</label>
+                                        <label for="video" class="drop-container" id="dropcontainer">
+                                            <span class="drop-title">Tải video lên</span>
+
+                                            <input type="file" id="video" accept="video/*" name="video"
+                                                required>
+                                        </label>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="submit" form="addTextLessonForm" class="btn btn-primary">Thêm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Add Text Lesson Modal -->
                 <div class="modal fade" id="addTextLessonModal" tabindex="-1">
                     <div class="modal-dialog">
@@ -423,9 +501,9 @@
     </div>
 @endsection
 @section('script-libs')
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('theme/admin/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js') }}"></script>
     <script src="{{ asset('theme/admin/assets/js/pages/project-create.init.js') }}"></script>
+
     <script>
         $('#addTextLessonModal').on('show.bs.modal', function(event) {
             var button = $(event.relatedTarget)
@@ -437,6 +515,24 @@
 
         document.getElementById('addTextLessonForm').addEventListener('submit', function() {
             document.querySelector('.nav-link[href="#course-content"]').click();
+        });
+    </script>
+
+    <script>
+        const elements = document.querySelectorAll('#btn-add-lesson-video');
+
+        console.log(elements);
+
+        elements.forEach(element => {
+            element.addEventListener('click', function() {
+
+                const moduleId = this.getAttribute('data-module-id');
+                const input = document.getElementById(
+                    'module-id-lesson-video');
+                if (input) {
+                    input.value = moduleId;
+                }
+            });
         });
     </script>
 @endsection

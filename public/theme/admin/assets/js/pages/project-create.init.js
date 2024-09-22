@@ -24,6 +24,13 @@ var previewTemplate,
             .catch((error) => {
                 console.error(error);
             }),
+        ClassicEditor.create(document.querySelector("#ckeditor-classic-video"))
+            .then((editor) => {
+                editor.ui.view.editable.element.style.height = "200px";
+            })
+            .catch((error) => {
+                console.error(error);
+            }),
         document.querySelector("#dropzone-preview-list"));
 dropzonePreviewNode &&
     ((dropzonePreviewNode.id = ""),
