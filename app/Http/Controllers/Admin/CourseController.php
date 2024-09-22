@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Support\Facades\Session;
+
 use App\Models\Course;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -75,6 +77,8 @@ class CourseController extends Controller
             'user',
             'modules.lessons'
         )->findOrFail($id);
+
+        Session::put('course_id', $id);
 
         $lecturesCount = $course->modules->sum(function ($module) {
             return $module->lessons->whereIn('content_type', ['document', 'video'])->count();

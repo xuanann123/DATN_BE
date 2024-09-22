@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\Admin\Auth\LoginRequest;
+use Illuminate\Support\Facades\Session;
 
 class AdminController extends Controller
 {
@@ -43,6 +44,7 @@ class AdminController extends Controller
     public function logout()
     {
         Auth::logout();
+        Session::flush();
         return redirect()->route('admin.login.index');
     }
 }
