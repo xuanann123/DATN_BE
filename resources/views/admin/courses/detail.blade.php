@@ -380,7 +380,7 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form id="addTextLessonForm" method="POST" enctype="multipart/form-data"
+                                <form id="addVideoLessonForm" method="POST" enctype="multipart/form-data"
                                     action="{{ route('admin.lessons.store-lesson-video') }}">
                                     @csrf
                                     <input type="hidden" class="form-control" id="module-id-lesson-video"
@@ -409,7 +409,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                <button type="submit" form="addTextLessonForm" class="btn btn-primary">Thêm</button>
+                                <button type="submit" form="addVideoLessonForm" class="btn btn-primary">Thêm</button>
                             </div>
                         </div>
                     </div>
@@ -425,7 +425,8 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form id="addTextLessonForm" method="POST" action="{{ route('admin.lessons.store') }}">
+                                <form id="addTextLessonForm" method="POST"
+                                    action="{{ route('admin.lessons.store-lesson-text') }}">
                                     @csrf
                                     <input type="hidden" name="id_module">
                                     <div class="mb-3">
@@ -592,6 +593,7 @@
 @section('script-libs')
     <script src="{{ asset('theme/admin/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js') }}"></script>
     <script src="{{ asset('theme/admin/assets/js/pages/project-create.init.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
         $('#addTextLessonModal').on('show.bs.modal', function(event) {
