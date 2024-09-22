@@ -263,10 +263,10 @@
                                                                     data-bs-target="#addTextLessonModal"
                                                                     data-module-id="{{ $module->id }}">Bài học text</a>
                                                             </li>
-                                                            <li><a class="dropdown-item" href="#"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#addQuizLessonModal"
-                                                                    data-module-id="{{ $module->id }}">Quiz</a></li>
+                                                            <li><a class="dropdown-item"
+                                                                    href="{{ route('admin.quizzes.index', $module->id) }}">Bài
+                                                                    tập quizzes</a>
+                                                            </li>
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -447,6 +447,95 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                                 <button type="submit" form="addTextLessonForm" class="btn btn-primary">Thêm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Quiz Lesson Modal -->
+                <div class="modal fade" id="addQuizLessonModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add Quiz</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+
+                                {{-- Khi thêm câu hỏi về quiz nó sẽ nhẩy ra ở đây --}}
+                                <form id="addQuizLessonForm">
+                                    <div class="mb-3">
+                                        <label for="quizTitle" class="form-label">Quiz Title</label>
+                                        <input type="text" class="form-control" id="quizTitle" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="quizDescription" class="form-label">Quiz
+                                            Description</label>
+                                        <textarea class="form-control" id="quizDescription" rows="3" required></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="quizDuration" class="form-label">Time Limit
+                                            (minutes)</label>
+                                        <input type="number" class="form-control" id="quizDuration" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Questions</label>
+                                        <div id="quizQuestions">
+                                            <div class="card mb-3">
+                                                <div class="card-body">
+                                                    <h6 class="card-title">Question 1</h6>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Question Text</label>
+                                                        <input type="text" class="form-control" name="question_1"
+                                                            required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Options</label>
+                                                        <div class="input-group mb-2">
+                                                            <div class="input-group-text">
+                                                                <input class="form-check-input mt-0" type="radio"
+                                                                    name="correct_answer_1" required>
+                                                            </div>
+                                                            <input type="text" class="form-control"
+                                                                placeholder="Option 1" name="option_1_1" required>
+                                                        </div>
+                                                        <div class="input-group mb-2">
+                                                            <div class="input-group-text">
+                                                                <input class="form-check-input mt-0" type="radio"
+                                                                    name="correct_answer_1" required>
+                                                            </div>
+                                                            <input type="text" class="form-control"
+                                                                placeholder="Option 2" name="option_1_2" required>
+                                                        </div>
+                                                        <div class="input-group mb-2">
+                                                            <div class="input-group-text">
+                                                                <input class="form-check-input mt-0" type="radio"
+                                                                    name="correct_answer_1" required>
+                                                            </div>
+                                                            <input type="text" class="form-control"
+                                                                placeholder="Option 3" name="option_1_3" required>
+                                                        </div>
+                                                        <div class="input-group mb-2">
+                                                            <div class="input-group-text">
+                                                                <input class="form-check-input mt-0" type="radio"
+                                                                    name="correct_answer_1" required>
+                                                            </div>
+                                                            <input type="text" class="form-control"
+                                                                placeholder="Option 4" name="option_1_4" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-secondary mt-2"
+                                            id="addQuestionBtn">Add Question</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" form="addQuizLessonForm" class="btn btn-primary">Add Quiz</button>
                             </div>
                         </div>
                     </div>

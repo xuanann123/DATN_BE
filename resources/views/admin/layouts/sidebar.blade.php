@@ -192,14 +192,14 @@
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('admin.approval.ratings.list') }}"
                         data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class="ri-star-fill"></i> <span> Đánh giá </span>
+                        <i class="ri-star-fill"></i> <span>Kiểm duyệt đánh giá </span>
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('admin.approval.courses.list') }}"
                         data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class="ri-book-open-line"></i> <span> Khóa học </span>
+                        <i class="ri-book-open-line"></i> <span>Kiểm duyệt Khóa học </span>
                     </a>
                 </li>
 

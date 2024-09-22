@@ -10,8 +10,13 @@ class Quiz extends Model
     use HasFactory;
 
     protected $fillable = [
+        'title',
         'id_module',
         'description',
         'total_points',
     ];
+    //Một quiz có nhiều question
+    public function questions() {
+        return $this->hasMany(Question::class, "id_quiz", "id");
+    }
 }

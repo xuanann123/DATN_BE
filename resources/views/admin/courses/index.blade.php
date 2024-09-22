@@ -124,7 +124,7 @@
                             </div>
                             <div class="d-flex mb-2">
                                 <div class="flex-shrink-0 me-3">
-                                    <div class="avatar-sm">
+                                    <div class="avatar-lg">
                                         <span class="avatar-title bg-danger-subtle rounded">
                                             <img src="{{ Storage::url($course->thumbnail) }}" alt=""
                                                 class="img-fluid px-1">

@@ -16,4 +16,8 @@ class Question extends Model
         'image_url',
         'points',
     ];
+    //Một question lại có nhiều option
+    public function options(){
+        return $this->hasMany(Option::class, "id_question", "id");
+    }
 }

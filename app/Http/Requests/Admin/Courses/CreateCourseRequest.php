@@ -19,7 +19,7 @@ class CreateCourseRequest extends FormRequest
             'name' => 'required|max:255',
             'code' => 'required|max:255|unique:courses,code',
             'slug' => 'required|unique:courses,slug|max:255',
-            'description' => 'nullable|min:6|max:255',
+            'description' => 'nullable|min:6',
             'sort_description' => 'nullable|min:6|max:255',
             'learned' => 'nullable|min:6|max:255',
             'thumbnail' => 'required|image|max:5120',

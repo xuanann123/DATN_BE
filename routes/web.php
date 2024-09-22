@@ -13,7 +13,12 @@ use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ApprovalCourseController;
+
+use App\Http\Controllers\Admin\QuizController;
+use App\Http\Controllers\QuestionController;
+
 use App\Http\Controllers\Admin\UploadVideoController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -72,16 +77,16 @@ Route::prefix("admin")
         Route::prefix("tags")
             ->as('tags.')
             ->group(function () {
-                Route::get("/", [TagController::class, 'index'])->name('index');
-                Route::get("/create", [TagController::class, 'create'])->name('create');
-                Route::post("/store", [TagController::class, 'store'])->name('store');
-                Route::get("/edit/{tag}", [TagController::class, 'edit'])->name('edit');
-                Route::put("/update/{tag}", [TagController::class, 'update'])->name('update');
-                Route::get("/destroy/{tag}", [TagController::class, 'destroy'])->name('destroy');
-                Route::get('action', [TagController::class, 'action'])->name('action');
-                Route::get('restore/{id}', [TagController::class, 'restore'])->name('restore');
-                Route::get('forceDelete/{id}', [TagController::class, 'forceDelete'])->name('forceDelete');
-            });
+            Route::get("/", [TagController::class, 'index'])->name('index');
+            Route::get("/create", [TagController::class, 'create'])->name('create');
+            Route::post("/store", [TagController::class, 'store'])->name('store');
+            Route::get("/edit/{tag}", [TagController::class, 'edit'])->name('edit');
+            Route::put("/update/{tag}", [TagController::class, 'update'])->name('update');
+            Route::get("/destroy/{tag}", [TagController::class, 'destroy'])->name('destroy');
+            Route::get('action', [TagController::class, 'action'])->name('action');
+            Route::get('restore/{id}', [TagController::class, 'restore'])->name('restore');
+            Route::get('forceDelete/{id}', [TagController::class, 'forceDelete'])->name('forceDelete');
+        });
 
 
 
@@ -116,7 +121,18 @@ Route::prefix("admin")
             ->as('modules.')
             ->group(function () {
                 Route::post('/store', [ModuleController::class, 'store'])->name('store');
+                Route::post('/{id}/add/quiz', [ModuleController::class, 'storeQuiz'])->name('add');
+
             });
+
+        //Route with quizzes
+        Route::prefix('quizzes')
+            ->as('quizzes.')
+            ->group(function () {
+            Route::get('{id}/', [QuizController::class, 'index'])->name('index');
+            //Lưu chữ chung dữ liệu vừa là question và cho option của question đó luôn.
+            Route::post('/{id}/questions-with-options', [QuestionController::class, 'storeWithOptions'])->name('store');
+        });
 
         Route::prefix('lessons')
             ->as('lessons.')
