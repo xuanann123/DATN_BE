@@ -293,7 +293,7 @@
 
                     <div class="mb-3">
                         <label class="form-label">Mô tả ngắn</label>
-                        <textarea name="sort_description" id="ckeditor-classic">{{ old('sort_description') }}</textarea>
+                        <textarea name="sort_description" class="form-control">{{ old('sort_description') }}</textarea>
                         <small class="help-block form-text text-danger">
                             @if ($errors->has('sort_description'))
                                 {{ $errors->first('sort_description') }}
