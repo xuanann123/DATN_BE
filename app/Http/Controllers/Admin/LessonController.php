@@ -17,16 +17,17 @@ class LessonController extends Controller
         // dd($request->all());
         $maxPosition = Lesson::where('id_module', $request->id_module)->max('position');
 
-        $lesson = Lesson::create([
+        $document = Document::create([
+            'content' => $request->content,
+        ]);
+
+        Lesson::create([
             'title' => $request->title,
             'id_module' => $request->id_module,
             'content_type' => 'document',
+            'lessonable_type' => 'document',
+            'lessonable_id' => $document->id,
             'position' => $maxPosition + 1
-        ]);
-
-        Document::create([
-            'id_lesson' => $lesson->id,
-            'content' => $request->content,
         ]);
 
         return redirect()->back()->with('success', 'Thêm bài học thành công !');
