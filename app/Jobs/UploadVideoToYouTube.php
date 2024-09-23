@@ -2,7 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Models\User;
 use App\Models\Video;
+use App\Notifications\VideoUploadedNotification;
 use Google\Client as GoogleClient;
 use Google\Service\YouTube;
 use Google\Http\MediaFileUpload;
@@ -99,5 +101,8 @@ class UploadVideoToYoutube implements ShouldQueue
             'content_type' => 'video',
             'position' => $newLessonVideo->id,
         ]);
+
+        $user = User::find(auth()->user()->id);
+        $user->notify(new VideoUploadedNotification($newLessonVideo));
     }
 }
