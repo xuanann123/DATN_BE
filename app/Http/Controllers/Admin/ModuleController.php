@@ -24,6 +24,7 @@ class ModuleController extends Controller
         return redirect()->back()->with('success', 'Thêm module thành công !');
     }
     public function storeQuiz(Request $request, string $id) {
+        
         $idModule = Module::findOrFail($id);
         // Validate input
         $request->validate([
