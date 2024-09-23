@@ -144,48 +144,57 @@
                                             <form action="{{ route('admin.quizzes.store', $module->quiz->id) }}"
                                                 method="POST">
                                                 @csrf
-                                                <!-- Phần thêm câu hỏi -->
-                                                <div class="row">
-                                                    <div class="col-md-10">
-                                                        <label for="question">Câu hỏi:</label>
-                                                        <input class="form-control" type="text" name="question" required>
-                                                    </div>
-                                                    <div class="col-md-2">
-                                                        <label  for="points">Điểm:</label>
-                                                        <input class="form-control" type="number" name="points"
-                                                            value="0">
-                                                    </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Thêm câu hỏi</label>
+                                                    <div id="quizQuestions">
+                                                        <div class="card mb-3">
+                                                            <div class="card-body">
+                                                                {{-- Câu hỏi 1 --}}
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Tiêu đề câu hỏi là gì
+                                                                        ?</label>
+                                                                    <input type="text" class="form-control"
+                                                                        name="questions[0][question]" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Loại câu hỏi:</label>
+                                                                    <select id="questionType" class="form-control"
+                                                                        name="questions[0][type]" required>
+                                                                        <option value="one_choice">One Choice</option>
+                                                                        <option value="multiple_choice">Multiple Choice
+                                                                        </option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="mb-3">
 
-                                                </div>
 
-                                                <!-- Phần thêm các tùy chọn -->
-                                                <div id="options">
-                                                    <div>
-                                                        <div class="d-flex justify-content-between mt-3">
-                                                            <label for="option">Option 1:</label>
+                                                                    <div class="mb-3" id="optionsContainer">
+                                                                        <label class="form-label">Những lựa chọn</label>
 
-                                                            <input type="checkbox" name="is_correct[]">
+                                                                        <div class="input-group mb-2">
+                                                                            <div class="input-group-text">
+                                                                                <input class="form-check-input mt-0"
+                                                                                    type="radio"
+                                                                                    name="questions[0][correct_answer]"
+                                                                                    value="0" >
+                                                                            </div>
+                                                                            <input type="text" class="form-control"
+                                                                                placeholder="Option 1"
+                                                                                name="questions[0][options][0]" required>
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                    <!-- Nút để thêm option mới -->
+                                                                    <button type="button" class="btn btn-primary btn-sm"
+                                                                        id="addOptionBtn">Thêm option</button>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <input class="form-control" type="text" name="options[]"
-                                                            required>
-                                                        {{-- <label class="form-control" for="is_correct">Correct?</label> --}}
-
                                                     </div>
-
-                                                    <div>
-                                                        <div class="d-flex justify-content-between mt-2 ">
-                                                            <label for="option">Option 2:</label>
-
-                                                            <input type="checkbox" name="is_correct[]">
-                                                        </div>
-                                                        <input class="form-control" type="text" name="options[]"
-                                                            required>
-                                                        {{-- <label class="form-control" for="is_correct">Correct?</label> --}}
-
-                                                    </div>
+                                                    <button type="submit" class="btn btn-sm btn-secondary mt-2"
+                                                        id="addQuestionBtn">Add Question</button>
                                                 </div>
-                                                <button type="submit" class="btn btn-primary mt-2">Thêm câu hỏi và lựa
-                                                    chọn</button>
                                             </form>
                                         @endif
 
@@ -193,8 +202,8 @@
                                 </div>
                             </div>
                             <div class="col-xl-6 col-lg-6">
-                                <div class="card">
-                                    <div class="card-header">
+                                <div class="card position-relative" style="max-height: 600px; overflow-y: scroll">
+                                    <div class="card-header fixed-top position-sticky">
                                         <h3 class="card-title mb-0">
                                             {{ $module->quiz ? 'Tiêu đề : ' . $module->quiz->title : 'Vui lòng thêm quiz để tải dữ liệu' }}
                                         </h3>
@@ -238,115 +247,52 @@
                         </div>
                     </div>
 
-                    <div class="modal fade" id="addSectionModal" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Add New Section</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form id="addSectionForm">
-                                        <div class="mb-3">
-                                            <label for="sectionTitle" class="form-label">Section
-                                                Title</label>
-                                            <input type="text" class="form-control" id="sectionTitle" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="sectionDuration" class="form-label">Duration
-                                                (hours)</label>
-                                            <input type="number" class="form-control" id="sectionDuration" required>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" form="addSectionForm" class="btn btn-primary">Add
-                                        Section</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Add Video Lesson Modal -->
-                    <div class="modal fade" id="addVideoLessonModal" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Add Video Lesson</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form id="addVideoLessonForm">
-                                        <div class="mb-3">
-                                            <label for="videoLessonTitle" class="form-label">Lesson
-                                                Title</label>
-                                            <input type="text" class="form-control" id="videoLessonTitle" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="videoUrl" class="form-label">Video URL</label>
-                                            <input type="url" class="form-control" id="videoUrl" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="videoDuration" class="form-label">Duration
-                                                (minutes)</label>
-                                            <input type="number" class="form-control" id="videoDuration" required>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" form="addVideoLessonForm" class="btn btn-primary">Add Video
-                                        Lesson</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Add Text Lesson Modal -->
-                    <div class="modal fade" id="addTextLessonModal" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Add Text Lesson</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form id="addTextLessonForm">
-                                        <div class="mb-3">
-                                            <label for="textLessonTitle" class="form-label">Lesson
-                                                Title</label>
-                                            <input type="text" class="form-control" id="textLessonTitle" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="textContent" class="form-label">Lesson
-                                                Content</label>
-                                            <textarea class="form-control" id="textContent" rows="5" required></textarea>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="textDuration" class="form-label">Estimated Reading
-                                                Time (minutes)</label>
-                                            <input type="number" class="form-control" id="textDuration" required>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" form="addTextLessonForm" class="btn btn-primary">Add Text
-                                        Lesson</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
                 </div>
             </div>
         </div>
-    @endsection
+    </div>
+@endsection
+
+
+@section('script-libs')
+    <script>
+        document.getElementById('questionType').addEventListener('change', function() {
+            var questionType = this.value;
+            var optionsContainer = document.getElementById('optionsContainer');
+            var inputs = optionsContainer.getElementsByClassName('form-check-input');
+
+            for (var i = 0; i < inputs.length; i++) {
+                // Thay đổi kiểu input dựa trên loại câu hỏi được chọn
+                if (questionType === 'one_choice') {
+                    inputs[i].setAttribute('type', 'radio');
+                    inputs[i].setAttribute('name', 'questions[0][correct_answer]');
+                } else {
+                    inputs[i].setAttribute('type', 'checkbox');
+                    inputs[i].setAttribute('name',
+                    'questions[0][correct_answer][]'); // Sử dụng mảng cho multiple choice
+                }
+            }
+        });
+
+        // Xử lý việc thêm một option mới khi bấm nút "Thêm option"
+        document.getElementById('addOptionBtn').addEventListener('click', function() {
+            var questionType = document.getElementById('questionType').value;
+            var optionsContainer = document.getElementById('optionsContainer');
+            var optionCount = optionsContainer.getElementsByClassName('input-group').length;
+
+            var newOption = document.createElement('div');
+            newOption.classList.add('input-group', 'mb-2');
+
+            var inputType = questionType === 'one_choice' ? 'radio' : 'checkbox';
+
+            newOption.innerHTML = `
+            <div class="input-group-text">
+                <input class="form-check-input mt-0" type="${inputType}" name="${inputType === 'radio' ? 'questions[0][correct_answer]' : 'questions[0][correct_answer][]'}" value="${optionCount}">
+            </div>
+            <input type="text" class="form-control" placeholder="Option ${optionCount + 1}" name="questions[0][options][${optionCount}]" required>
+        `;
+
+            optionsContainer.appendChild(newOption);
+        });
+    </script>
+@endsection
