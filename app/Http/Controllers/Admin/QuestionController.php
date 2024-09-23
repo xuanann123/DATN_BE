@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
+use App\Http\Controllers\Controller;
 use App\Models\Option;
 use App\Models\Question;
 use App\Models\Quiz;
