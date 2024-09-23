@@ -25,7 +25,7 @@ class UserController extends Controller
         return response()->json([
             'message' => 'Thông tin người dùng.',
             'data' => [
-                'user' => $user,
+                'user' => $user->makeHidden('profile'),
                 'profile' => $profile,
             ]
         ], 200);
@@ -68,7 +68,10 @@ class UserController extends Controller
             return response()->json([
                 'message' => 'Cập nhật thông tin cá nhân thành công.',
                 'code' => 0,
-                'data' => ['user' => $user, 'profile' => $user->profile],
+                'data' => [
+                    'user' => $user->makeHidden('profile'),
+                    'profile' => $user->profile
+                ],
                 'status' => 200,
             ], 200);
         } catch (Throwable $e) {

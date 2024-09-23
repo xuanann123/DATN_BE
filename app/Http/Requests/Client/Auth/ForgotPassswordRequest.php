@@ -18,4 +18,14 @@ class ForgotPassswordRequest extends BaseFormRequest
     {
         return true;
     }
+
+    public function messages()
+    {
+        return [
+            'email.required' => 'Email không để trống.',
+            'email.email' => 'Email không đúng định dạng.',
+            'email.exists' => 'Email không tồn tại trong hệ thống.',
+        ];
+    }
+
 }

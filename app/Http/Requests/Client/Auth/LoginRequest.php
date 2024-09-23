@@ -19,4 +19,14 @@ class LoginRequest extends BaseFormRequest
     {
         return true;
     }
+
+    public function messages()
+    {
+        return [
+            'email.required' => 'Email không để trống.',
+            'email.email' => 'Email không đúng định dạng.',
+            'password.required' => 'Mật khẩu không để trống.',
+            'password.string' => 'Mật khẩu phải là chuỗi.',
+        ];
+    }
 }
