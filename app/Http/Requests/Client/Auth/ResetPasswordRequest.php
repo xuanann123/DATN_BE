@@ -19,4 +19,16 @@ class ResetPasswordRequest extends BaseFormRequest
     {
         return true;
     }
+
+    public function messages()
+    {
+        return [
+            'otp_code.required' => 'Mã OTP không để trống.',
+            'new_password.required' => 'Mật khẩu mới không để trống.',
+            'new_password.string' => 'Mật khẩu mới phải là chuỗi.',
+            'new_password.min' => 'Mật khẩu mới phải có ít nhất 8 ký tự.',
+            'new_password.confirmed' => 'Mật khẩu xác nhận không khớp.',
+        ];
+    }
+
 }

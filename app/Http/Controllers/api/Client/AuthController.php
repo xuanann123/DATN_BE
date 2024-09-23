@@ -38,7 +38,7 @@ class AuthController extends Controller
             $user = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
-                'passworrd' => bcrypt($data['password']),
+                'password' => bcrypt($data['password']),
             ]);
 
             // insert OTP
@@ -56,14 +56,14 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Mã OTP đã được gửi tới email của bạn.',
                 'code' => 0,
-                'data' => ['otp_code' => $otpCode],
+                'data' => [],
                 'status' => 201,
             ], 201);
         } catch (Throwable $e) {
             DB::rollBack(); // err thì rollback db
             Log::error("Error: " . $e->getMessage());
             return response()->json([
-                'message' => 'Đã xảy ra lỗi trong quá trình đăng ký.',
+                'message' => $e->getMessage(),
                 'code' => 1,
                 'data' => [],
                 'status' => 500,
@@ -101,13 +101,25 @@ class AuthController extends Controller
 
             // tạo token đăng nhập
             $token = $user->createToken('main', expiresAt: now()->addMinutes('20160'))->plainTextToken;
+            $refreshToken = Str::random(60);
+
+            // save RT
+            $user->refreshTokens()->create([
+                'token' => $refreshToken,
+                'expires_at' => now()->addDays(30), // 1 month
+            ]);
+
+            $cookie = cookie('refresh_token', $refreshToken, 43200, null, null, false, true, false, null);
 
             return response()->json([
                 'message' => 'Xác thực thành công, bạn đã đăng nhập.',
                 'code' => 0,
-                'data' => ['user' => $user, 'token' => $token],
+                'data' => [
+                    'user' => $user,
+                    'access_token' => $token
+                ],
                 'status' => 200,
-            ], 200);
+            ], 200)->cookie($cookie);
         } catch (Throwable $e) {
             Log::error("Error: " . $e->getMessage());
             return response()->json([
@@ -149,7 +161,7 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Mã OTP đã được gửi lại, vui lòng kiểm tra email của bạn.',
                 'code' => 0,
-                'data' => ['otp_code' => $otpCode],
+                'data' => [],
                 'status' => 200,
             ], 200);
         } catch (Throwable $e) {
@@ -198,17 +210,18 @@ class AuthController extends Controller
                 'expires_at' => now()->addDays(30), // 1 month
             ]);
 
+            $cookie = cookie('refresh_token', $refreshToken, 43200, null, null, false, true, true, null);
+
             return response()->json([
                 'message' => 'Đăng nhập thành công.',
                 'code' => 0,
                 'data' => [
                     'access_token' => $token,
-                    'refresh_token' => $refreshToken,
-                    'user' => $user,
-                    'profile' => $user->profile
+                    'user' => $user->makeHidden('profile'),
+                    'profile' =>$user->profile
                 ],
                 'status' => 200,
-            ], 200);
+            ], 200)->cookie($cookie);
         } catch (Throwable $e) {
             Log::error("Error: " . $e->getMessage());
             return response()->json([
@@ -223,7 +236,7 @@ class AuthController extends Controller
     public function refreshToken(Request $request)
     {
         try {
-            $refreshToken = $request->input('refresh_token');
+            $refreshToken = $request->cookie('refresh_token');
 
             $token = RefreshToken::where('token', $refreshToken)->first();
 
@@ -249,15 +262,16 @@ class AuthController extends Controller
                 'expires_at' => now()->addDays(30)
             ]);
 
+            $cookie = cookie('refresh_token', $newRefreshToken, 43200, null, null, false, true, false, 'Strict');
+
             return response()->json([
                 'message' => 'Refresh token thành công.',
                 'code' => 0,
                 'data' => [
-                    'token' => $newToken,
-                    'refresh_token' => $newRefreshToken
+                    'access_token' => $newToken,
                 ],
                 'status' => 200,
-            ], 200);
+            ], 200)->cookie($cookie);
         } catch (Throwable $e) {
             Log::error("Error: " . $e->getMessage());
             return response()->json([
@@ -303,7 +317,7 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Mã OTP đặt lại mật khẩu đã được gửi về email của bạn.',
                 'code' => 0,
-                'data' => ['otp_code' => $otpCode],
+                'data' => [],
                 'status' => 200,
             ], 200);
         } catch (Throwable $e) {
@@ -337,12 +351,9 @@ class AuthController extends Controller
             }
 
             return response()->json([
-                'message' => 'Mã OTP hợp lệ.',
+                'message' => 'Mã OTP hợp lệ, vui lòng đặt lại mật khẩu của bạn.',
                 'code' => 0,
-                'data' => [
-                    'email' => $user->email,
-                    'otp_code' => $otpCode->otp_code
-                ],
+                'data' => [],
                 'status' => 200,
             ], 200);
         } catch (Throwable $e) {
@@ -416,8 +427,8 @@ class AuthController extends Controller
                 'message' => 'Đăng xuất thành công.',
                 'code' => 0,
                 'data' => [],
-                'status' => 204,
-            ], 204);
+                'status' => 200,
+            ], 200);
         } catch (Throwable $e) {
             Log::error("Error: " . $e->getMessage());
             return response()->json([

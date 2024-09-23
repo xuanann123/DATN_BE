@@ -27,4 +27,15 @@ class VerifyOtpRequest extends BaseFormRequest
             'email' => 'required|email',
         ];
     }
+
+    public function messages()
+    {
+        return [
+            'otp_code.required' => 'Mã OTP không để trống.',
+            'otp_code.digits' => 'Mã OTP phải có 6 chữ số.',
+            'email.required' => 'Email không để trống.',
+            'email.email' => 'Email không đúng định dạng.',
+        ];
+    }
+
 }
