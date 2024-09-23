@@ -122,8 +122,7 @@
 
                         <ul class="nav nav-tabs-custom border-bottom-0" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link active fw-semibold" data-bs-toggle="tab" href="#course-overview"
-                                    role="tab">
+                                <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#course-overview" role="tab">
                                     Tổng quan
                                 </a>
                             </li>
@@ -142,7 +141,7 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="tab-content text-muted">
-                <div class="tab-pane fade show active" id="course-overview" role="tabpanel">
+                <div class="tab-pane fade" id="course-overview" role="tabpanel">
                     <div class="row">
                         <div class="col-xl-9 col-lg-8">
                             <div class="card">
@@ -230,29 +229,28 @@
                                 @foreach ($course->modules->sortBy('position') as $module)
                                     <!-- module -->
                                     <div class="accordion-item">
-                                        <h2 class="accordion-header" id="module{{ $loop->index + 1 }}Header">
+                                        <h2 class="accordion-header" id="module{{ $module->id }}Header">
                                             <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#module{{ $loop->index + 1 }}Collapse"
-                                                aria-expanded="true"
-                                                aria-controls="module{{ $loop->index + 1 }}Collapse">
-                                                Chương {{ $loop->index + 1 }}: {{ $module->title }}
+                                                data-bs-target="#module{{ $module->id }}Collapse" aria-expanded="true"
+                                                aria-controls="module{{ $module->id }}Collapse">
+                                                <b class="fw-bold">Chương {{ $loop->index + 1 }}</b>:
+                                                {{ $module->title }}
                                             </button>
                                         </h2>
-                                        <div id="module{{ $loop->index + 1 }}Collapse"
-                                            class="accordion-collapse collapse"
-                                            aria-labelledby="module{{ $loop->index + 1 }}Header"
+                                        <div id="module{{ $module->id }}Collapse" class="accordion-collapse collapse"
+                                            aria-labelledby="module{{ $module->id }}Header"
                                             data-bs-parent="#courseContentAccordion">
                                             <div class="accordion-body">
                                                 <div class="d-flex align-items-center justify-content-between mb-3">
-                                                    <h6 class="mb-0">Thời gian: Tạm thời chưa có</h6>
+                                                    <h6 class="mb-0"><b>Mô tả: </b>{{ $module->description }}</h6>
                                                     <div class="dropdown">
                                                         <button class="btn btn-sm btn-primary dropdown-toggle"
-                                                            type="button" id="addLessonDropdown{{ $loop->index + 1 }}"
+                                                            type="button" id="addLessonDropdown{{ $module->id }}"
                                                             data-bs-toggle="dropdown" aria-expanded="false">
                                                             <i class="ri-add-line align-bottom"></i> Thêm bài học
                                                         </button>
                                                         <ul class="dropdown-menu"
-                                                            aria-labelledby="addLessonDropdown{{ $loop->index + 1 }}">
+                                                            aria-labelledby="addLessonDropdown{{ $module->id }}">
                                                             <li><a class="dropdown-item" href="#"
                                                                     id="btn-add-lesson-video" data-bs-toggle="modal"
                                                                     data-bs-target="#addVideoLessonModal"
@@ -350,15 +348,17 @@
                                     <input type="hidden" name="id_course" value="{{ $course->id }}">
                                     <div class="mb-3">
                                         <label for="moduleTitle" class="form-label">Tiêu Đề Module</label>
-                                        <input type="text" class="form-control" name="title" required>
+                                        <input type="text" class="form-control" name="title"
+                                            placeholder="Nhập tiêu đề chương {{ $maxModulePosition + 1 }}...">
                                     </div>
                                     <div class="mb-3">
                                         <label for="moduleDescription" class="form-label">Mô Tả</label>
                                         <textarea class="form-control" name="description" rows="3"></textarea>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="modulePosition" class="form-label">Vị Trí</label>
-                                        <input type="number" class="form-control" name="position" min="1">
+                                        <label for="modulePosition">Vị Trí</label>
+                                        <span class="form-control bg-primary-subtle">{{ $maxModulePosition + 1 }}</span>
+                                        <input type="hidden" name="position" value="{{ $maxModulePosition + 1 }}">
                                     </div>
                                 </form>
                             </div>
@@ -431,12 +431,11 @@
                                     <input type="hidden" name="id_module">
                                     <div class="mb-3">
                                         <label for="textLessonTitle" class="form-label">Tiêu đề bài học</label>
-                                        <input type="text" class="form-control" id="textLessonTitle" name="title"
-                                            required>
+                                        <input type="text" class="form-control" id="textLessonTitle" name="title">
                                     </div>
                                     <div class="mb-3">
                                         <label for="textContent" class="form-label">Nội dung</label>
-                                        <textarea class="form-control" id="ckeditor-classic" name="content" rows="5"></textarea>
+                                        <textarea class="form-control" id="ckeditor-classic" name="content"></textarea>
                                     </div>
                                     {{-- <div class="mb-3">
                                         <label for="textDuration" class="form-label">Estimated Reading
@@ -543,45 +542,19 @@
                 </div>
 
                 <!-- Preview Lesson Modal -->
-                <div class="modal fade" id="viewLesson" tabindex="-1" aria-labelledby="viewLesson" aria-hidden="true">
+                <div class="modal fade" id="previewLessonModal" tabindex="-1" aria-labelledby="previewLessonModal"
+                    aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="viewLesson">Evaluation Details</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        <div class="modal-content border-0 shadow-lg">
+                            <div class="modal-header bg-primary-subtle">
+                                <h5 class="modal-title mb-3" id="previewLessonModalLabel">Lesson Preview</h5>
+                                <button type="button" class="btn-close mb-2" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
-                            <div class="modal-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <p><strong>Course:</strong> React Fundamentals</p>
-                                        <p><strong>Student:</strong> John Doe</p>
-                                        <p><strong>Date:</strong> 02 Jan, 2023</p>
-                                        <p><strong>Rating:</strong> <span class="badge bg-success">4.5
-                                                <i class="ri-star-fill"></i></span></p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <p><strong>Course Type:</strong> Online</p>
-                                        <p><strong>Instructor:</strong> Jane Smith</p>
-                                    </div>
-                                </div>
-                                <hr>
-                                <h6>Content:</h6>
-                                <p>Great course! The content was well-structured and easy to follow. The
-                                    instructor explained complex concepts in a very understandable way.
-                                    I particularly enjoyed the practical exercises and real-world
-                                    examples. However, I think the course could benefit from more
-                                    advanced topics in the later sections. Overall, I'm very satisfied
-                                    and feel much more confident in my React skills now.</p>
-                                <hr>
-                                <iframe width="560" height="315"
-                                    src="https://www.youtube.com/embed/TfKOFRpqSME?si=xJ7qlCmqYCRUTpIu"
-                                    title="YouTube video player" frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                            <div class="modal-body p-4">
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <div class="modal-footer border-top-0">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
                             </div>
                         </div>
                     </div>
@@ -596,6 +569,65 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
+        // select tab default
+        $(document).ready(function() {
+            $('a[data-bs-toggle="tab"]').on('show.bs.tab', function(e) {
+                var activeTab = $(e.target).attr('href')
+                localStorage.setItem('activeTab', activeTab)
+            })
+
+            var activeTab = localStorage.getItem('activeTab')
+            if (activeTab) {
+                var tabElement = $('a[href="' + activeTab + '"]')
+                tabElement.tab('show')
+            } else {
+                $('a[href="#course-overview"]').tab('show')
+            }
+        })
+        // auto select module
+        $(document).ready(function() {
+            $(document).on('show.bs.collapse', '.accordion-collapse', function() {
+                var moduleId = $(this).attr('id');
+                localStorage.setItem('activeModule', moduleId);
+            });
+
+            var activeModule = localStorage.getItem('activeModule');
+            if (activeModule) {
+                $('#' + activeModule).collapse('show');
+            }
+        })
+
+        // add module
+        $(document).ready(function() {
+            $('#addModuleForm').on('submit', function(event) {
+                event.preventDefault();
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        alert(response.message);
+                        location.reload()
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 422) {
+                            let errors = xhr.responseJSON.errors;
+                            $('.error-message').remove();
+
+                            $.each(errors, function(key, value) {
+                                let inputField = $('[name="' + key + '"]');
+                                inputField.after(
+                                    '<div class="error-message text-danger">' +
+                                    value[0] + '</div>');
+                            });
+                        }
+                    }
+                });
+            });
+        });
+
+        // get id_module
         $('#addTextLessonModal').on('show.bs.modal', function(event) {
             var button = $(event.relatedTarget)
             var moduleId = button.data('module-id')
@@ -604,9 +636,63 @@
             modal.find('input[name="id_module"]').val(moduleId)
         })
 
-        document.getElementById('addTextLessonForm').addEventListener('submit', function() {
-            document.querySelector('.nav-link[href="#course-content"]').click();
+        // add text lesson
+        $(document).ready(function() {
+            $('#addTextLessonForm').on('submit', function(event) {
+                event.preventDefault();
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        alert(response.message);
+                        location.reload()
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 422) {
+                            let errors = xhr.responseJSON.errors;
+                            $('.error-message').remove();
+
+                            $.each(errors, function(key, value) {
+                                let inputField = $('[name="' + key + '"]');
+                                inputField.after(
+                                    '<div class="error-message text-danger">' +
+                                    value[0] + '</div>');
+                            });
+                        }
+                    }
+                });
+            });
         });
+
+        // preview lesson
+        $(document).ready(function() {
+            $('[data-bs-target="#previewLessonModal"]').on('click', function() {
+                var lessonId = $(this).data('lesson-id')
+
+                $.ajax({
+                    url: '/admin/lessons/get-lesson-details/' + lessonId,
+                    method: 'GET',
+                    success: function(data) {
+                        $('#previewLessonModalLabel').text(data.title)
+
+                        // lesson text
+                        if (data.lesson_type === 'document') {
+                            $('#previewLessonModal .modal-body').html(`
+                                <p>${data.content}</p>
+                            `)
+                        }
+                    }
+                })
+            })
+
+            // close
+            $('#previewLessonModal').on('hidden.bs.modal', function() {
+                $(this).find('.modal-title').text('')
+                $(this).find('.modal-body').html('')
+            })
+        })
     </script>
 
     <script>

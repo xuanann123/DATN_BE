@@ -21,10 +21,15 @@ class ModuleController extends Controller
             'position' => $request->position,
         ]);
 
-        return redirect()->back()->with('success', 'Thêm module thành công !');
+        return response()->json([
+            'message' => 'Thêm bài học thành công!',
+            'code' => 0,
+            'data' => [],
+            'status' => 200,
+        ], 200);
     }
     public function storeQuiz(Request $request, string $id) {
-        
+
         $idModule = Module::findOrFail($id);
         // Validate input
         $request->validate([

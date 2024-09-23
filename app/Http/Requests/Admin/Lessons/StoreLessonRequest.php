@@ -27,4 +27,15 @@ class StoreLessonRequest extends FormRequest
             'content' => 'required',
         ];
     }
+
+    public function messages()
+    {
+        return [
+            'id_module.required' => 'Không có id_module ?',
+            'id_module.exists' => 'id_module không tồn tại',
+            'title.required' => 'Vui lòng nhập tiêu đề.',
+            'title.max' => 'Tiêu đề không được quá 255 kí tự.',
+            'content.required' => 'Vui lòng nhập nội dung.',
+        ];
+    }
 }

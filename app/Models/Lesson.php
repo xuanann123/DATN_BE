@@ -30,8 +30,4 @@ class Lesson extends Model
     {
         return $this->belongsTo(Module::class, 'id_module');
     }
-
-    public function document() {
-        return $this->hasOne(Document::class, 'id_lesson');
-    }
 }
