@@ -138,6 +138,7 @@ Route::prefix("admin")
             ->as('lessons.')
             ->group(function () {
                 Route::post('/store-lesson-text', [LessonController::class, 'store'])->name('store-lesson-text');
+                Route::get('/get-lesson-details/{id}', [LessonController::class, 'show'])->name('get-lesson-details');
 
 
                 Route::get('/auth/youtube', [UploadVideoController::class, 'redirectToGoogle'])->name('youtube.auth');

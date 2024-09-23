@@ -24,7 +24,7 @@ class StoreModuleRequest extends FormRequest
         return [
             'id_course' => 'required|exists:courses,id',
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'description' => 'required|string',
             'position' => 'required|integer',
         ];
     }

@@ -115,8 +115,9 @@ class AuthController extends Controller
                 'message' => 'Xác thực thành công, bạn đã đăng nhập.',
                 'code' => 0,
                 'data' => [
-                    'user' => $user,
-                    'access_token' => $token
+                    'access_token' => $token,
+                    'user' => $user->makeHidden('profile'),
+                    'profile' => $user->profile()
                 ],
                 'status' => 200,
             ], 200)->cookie($cookie);

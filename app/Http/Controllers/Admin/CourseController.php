@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Admin\Courses\CreateCourseRequest;
 use App\Http\Requests\Admin\Courses\UpdateCourseRequest;
+use App\Models\Module;
 
 class CourseController extends Controller
 {
@@ -80,6 +81,8 @@ class CourseController extends Controller
 
         Session::put('course_id', $id);
 
+        $maxModulePosition = Module::where('id_course', $course->id)->max('position');
+
         $lecturesCount = $course->modules->sum(function ($module) {
             return $module->lessons->whereIn('content_type', ['document', 'video'])->count();
         });
@@ -88,7 +91,7 @@ class CourseController extends Controller
             return $module->lessons->where('content_type', 'quiz')->count();
         });
 
-        return view('admin.courses.detail', compact('title', 'course', 'lecturesCount', 'quizzesCount'));
+        return view('admin.courses.detail', compact('title', 'course', 'lecturesCount', 'quizzesCount', 'maxModulePosition'));
     }
 
     public function edit(string $id)

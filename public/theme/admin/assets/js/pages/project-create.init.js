@@ -5,7 +5,7 @@ var previewTemplate,
         (ckeditorClassic &&
             ClassicEditor.create(document.querySelector("#ckeditor-classic"))
                 .then(function (e) {
-                    e.ui.view.editable.element.style.height = "50px";
+                    // e.ui.view.editable.element.style.height = "auto";
                 })
                 .catch(function (e) {
                     console.error(e);

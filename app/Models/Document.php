@@ -12,7 +12,6 @@ class Document extends Model
     protected $fillable = [
         'title',
         'description',
-        'id_lesson',
         'content'
     ];
 
@@ -21,7 +20,8 @@ class Document extends Model
     //     return $this->morphMany(Lesson::class, 'lessonable');
     // }
 
-    public function lesson () {
-        return $this->belongsTo(Lesson::class, 'id_lesson');
+    public function lesson()
+    {
+        return $this->morphOne(Lesson::class, 'lessonable');
     }
 }
