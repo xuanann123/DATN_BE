@@ -19,7 +19,11 @@ abstract class BaseFormRequest extends FormRequest
 
         $formattedErrors = [];
         foreach ($errors as $field => $messages) {
-            $formattedErrors[$field] = $messages;
+            foreach ($messages as $message) {
+                $formattedErrors[] = [
+                    $field => $message
+                ];
+            }
         }
 
         throw new HttpResponseException(response()->json([

@@ -181,15 +181,44 @@ class AuthController extends Controller
         try {
             $credentials = $request->validated();
 
-            if (!Auth::attempt($credentials)) {
+            $errors = [];
+
+            $user = User::where('email', $credentials['email'])->first();
+
+            // check mail ton tai
+            if (!$user) {
+                $errors[] = [
+                    'email' => 'Email không tồn tại trong hệ thống.'
+                ];
+            }
+
+            // check mat khau
+            if ($user && !Hash::check($credentials['password'], $user->password)) {
+                $errors[] = [
+                    'password'=> 'Mật khẩu không chính xác.'
+                ];
+            }
+
+            if (!empty($errors)) {
                 return response()->json([
-                    'message' => 'Email hoặc mật khẩu không chính xác.',
+                    'message' => 'Đã xảy ra lỗi xác thực',
+                    'errors' => $errors,
                     'code' => 1,
                     'data' => [],
                     'status' => 401,
                 ], 401);
             }
 
+            // if (!Auth::attempt($credentials)) {
+            //     return response()->json([
+            //         'message' => 'Email hoặc mật khẩu không chính xác.',
+            //         'code' => 1,
+            //         'data' => [],
+            //         'status' => 401,
+            //     ], 401);
+            // }
+
+            Auth::login($user);
             $user = Auth::user();
 
             if (!$user->email_verified_at) {
