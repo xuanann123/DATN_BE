@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\TagController;
@@ -88,8 +89,6 @@ Route::prefix("admin")
             Route::get('forceDelete/{id}', [TagController::class, 'forceDelete'])->name('forceDelete');
         });
 
-
-
         Route::resource('vouchers', VoucherController::class)->except('show');
         //Về phần user thì sao nhỉ
         Route::prefix('users')
@@ -105,6 +104,13 @@ Route::prefix("admin")
             Route::get("/detail/{user}", [UserController::class, 'detail'])->name('detail');
             Route::get("/restore/{id}", [UserController::class, 'restore'])->name('restore');
             Route::get("/forceDelete/{id}", [UserController::class, 'forceDelete'])->name('forceDelete');
+            Route::prefix('profile')
+                ->as('profile.')
+                ->group(function () {
+                    Route::get("/", [ProfileController::class, 'index'])->name('index');
+                    Route::get("/edit", [ProfileController::class, 'edit'])->name('edit');
+                    Route::post("/update", [ProfileController::class, 'updateInforBasic'])->name('update.basic');
+                });
         });
         Route::prefix('courses')
             ->as('courses.')
@@ -122,9 +128,7 @@ Route::prefix("admin")
             ->group(function () {
                 Route::post('/store', [ModuleController::class, 'store'])->name('store');
                 Route::post('/{id}/add/quiz', [ModuleController::class, 'storeQuiz'])->name('add');
-
             });
-
         //Route with quizzes
         Route::prefix('quizzes')
             ->as('quizzes.')

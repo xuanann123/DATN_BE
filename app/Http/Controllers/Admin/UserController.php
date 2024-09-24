@@ -63,4 +63,6 @@ class UserController extends Controller
         }
         return redirect()->route("admin.users.list")->with('status', "Thêm người dùng thành công");
     }
+
+    
 }
