@@ -196,8 +196,8 @@ class AuthController extends Controller
                     'message' => 'Đã xảy ra lỗi xác thực',
                     'errors' => $errors,
                     'data' => [],
-                    'status' => 401,
-                ], 401);
+                    'status' => 422,
+                ], 422);
             }
 
             // if (!Auth::attempt($credentials)) {
@@ -426,13 +426,19 @@ class AuthController extends Controller
     {
         try {
             $user = $request->user();
+
+            // xóa RT
+            $refreshToken = $request->cookie('refresh_token');
+            RefreshToken::where('token', $refreshToken)->delete();
+
+            // xóa AT
             $user->currentAccessToken()->delete();
 
             return response()->json([
                 'message' => 'Đăng xuất thành công.',
                 'data' => [],
                 'status' => 200,
-            ], 200);
+            ], 200)->withCookie(cookie('refresh_token', '', -1));
         } catch (Throwable $e) {
             Log::error("Error: " . $e->getMessage());
             return response()->json([

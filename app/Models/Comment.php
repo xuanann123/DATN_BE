@@ -15,4 +15,17 @@ class Comment extends Model
         'content',
         'parent_id',
     ];
+
+    public function commentable()
+    {
+        return $this->morphTo();
+    }
+
+    public function parent () {
+        return $this->belongsTo(Comment::class, 'parent_id');
+    }
+
+    public function chilren () {
+        return $this->hasMany(Comment::class, 'parent_id');
+    }
 }
