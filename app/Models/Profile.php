@@ -17,9 +17,12 @@ class Profile extends Model
         'experience',
         'bio',
     ];
-
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
+    }
+    public function education()
+    {
+        return $this->hasOne(Education::class, 'id_profile');
     }
 }

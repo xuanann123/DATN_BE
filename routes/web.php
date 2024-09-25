@@ -110,6 +110,9 @@ Route::prefix("admin")
                     Route::get("/", [ProfileController::class, 'index'])->name('index');
                     Route::get("/edit", [ProfileController::class, 'edit'])->name('edit');
                     Route::post("/update", [ProfileController::class, 'updateInforBasic'])->name('update.basic');
+                    Route::post("/update/infor", [ProfileController::class, 'updateInforNormal'])->name('update.normal');
+                    Route::post("/update/experience", [ProfileController::class, 'updateExperience'])->name('update.experience');
+                    Route::post("/update/password", [ProfileController::class, 'updatePassword'])->name('update.password');
                 });
         });
         Route::prefix('courses')
@@ -137,7 +140,6 @@ Route::prefix("admin")
             //Lưu chữ chung dữ liệu vừa là question và cho option của question đó luôn.
             Route::post('/{id}/questions-with-options', [QuestionController::class, 'storeWithOptions'])->name('store');
         });
-
         Route::prefix('lessons')
             ->as('lessons.')
             ->group(function () {
