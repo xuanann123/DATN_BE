@@ -24,18 +24,30 @@
         <div class="col-xxl-4">
             <div class="card mt-n5">
                 <div class="card-body p-4">
-                    <div class="text-center">
-                        <form action="{{ route('admin.users.profile.update.basic') }}" method="post" enctype="multipart/form-data">
+                    <div class="">
+                        <form action="{{ route('admin.users.profile.update.basic') }}" method="post"
+                            enctype="multipart/form-data">
                             @csrf
                             <div class="row">
-                                <div class="col-md-12">
-                                    <h5 class="fs-16 mb-3 align-left">Chỉnh thông tin cơ bản</h5>
+                                <div class="col-md-12 text-left">
+                                    <h6 class="fw-bold mb-1">Chỉnh thông tin cơ bản</h6>
+                                    <hr>
+
                                 </div>
-                                <div class="col-md-5">
+                                <div class="col-md-5 text-center">
                                     <div class="profile-user position-relative d-inline-block mx-auto mb-4">
-                                        <img src="{{ asset('theme/admin/assets/images/users/avatar-1.jpg') }}"
-                                            class="rounded-circle avatar-xl img-thumbnail user-profile-image"
-                                            alt="user-profile-image">
+                                        @php
+                                            $img = Auth::user()->avatar;
+                                        @endphp
+                                        @if ($img)
+                                            <img src="{{ Storage::url($img) }}"
+                                                class="rounded-circle avatar-xl img-thumbnail user-profile-image"
+                                                alt="user-profile-image">
+                                        @else
+                                            <img src="https://png.pngtree.com/png-clipart/20210608/ourlarge/pngtree-dark-gray-simple-avatar-png-image_3418404.jpg"
+                                                class="rounded-circle avatar-xl img-thumbnail user-profile-image"
+                                                alt="user-profile-image">
+                                        @endif
                                         <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
                                             <input id="profile-img-file-input" type="file" name="avatar"
                                                 class="profile-img-file-input">
@@ -48,11 +60,16 @@
                                     </div>
                                 </div>
                                 <div class="col-md-7">
-                                    <h5 class="fs-16 mb-2"><input type="text" class="form-control" name="name" id="firstnameInput"
-                                            placeholder="Nhập họ và tên" value="{{ Auth::user()->name }}">
+                                    <h5 class="fs-16"><input type="text" class="form-control" name="name"
+                                            id="firstnameInput" placeholder="Nhập họ và tên"
+                                            value="{{ old('name', Auth::user()->name) }}">
                                     </h5>
-                                    <h5 class="fs-16 mb-2"><input type="text" class="form-control" name="email" id="firstnameInput"
-                                            placeholder="Nhập họ và tên" value="{{ Auth::user()->email }}">
+                                    @error('name')
+                                        <span class="text-danger fs-10">{{ $message }}</span>
+                                    @enderror
+                                    <h5 class="fs-16 mt-1"><input type="text" class="form-control" name="email"
+                                            id="firstnameInput" placeholder="Nhập họ và tên"
+                                            value="{{ Auth::user()->email }}">
                                     </h5>
                                     <div class="hstack gap-2 justify-content-end">
                                         <button type="submit" class="btn btn-primary">Cập nhật</button>
@@ -70,11 +87,11 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-5">
                         <div class="flex-grow-1">
-                            <h5 class="card-title mb-0">Complete Your Profile</h5>
+                            <h5 class="card-title mb-0">Mức Độ Hoàn Thiện</h5>
                         </div>
                         <div class="flex-shrink-0">
                             <a href="javascript:void(0);" class="badge bg-light text-primary fs-12"><i
-                                    class="ri-edit-box-line align-bottom me-1"></i> Edit</a>
+                                    class="ri-edit-box-line align-bottom me-1"></i> Sửa</a>
                         </div>
                     </div>
                     <div class="progress animated-progress custom-progress progress-label">
@@ -93,22 +110,21 @@
                 <div class="card-header">
                     <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" data-bs-toggle="tab" href="#personalDetails" role="tab">
+                            <a class="nav-link  {{ request()->tab == 'personalDetails' ? 'active' : '' }}"
+                                data-bs-toggle="tab" href="#personalDetails" role="tab">
                                 <i class="fas fa-home"></i> Thông tin cơ bản
                             </a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#personalDetailsImprove" role="tab">
-                                <i class="fas fa-home"></i> Thông tin chuyên sâu
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#changePassword" role="tab">
+                            <a class="nav-link {{ request()->tab == 'changePassword' ? 'active' : '' }}"
+                                data-bs-toggle="tab" href="#changePassword" role="tab">
                                 <i class="far fa-user"></i> Đổi mật khẩu
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#experience" role="tab">
+                            <a class="nav-link {{ request()->tab == 'experience' ? 'active' : '' }}" data-bs-toggle="tab"
+                                href="#experience" role="tab">
                                 <i class="far fa-envelope"></i> Kinh nghiệm
                             </a>
                         </li>
@@ -121,23 +137,53 @@
                 </div>
                 <div class="card-body p-4">
                     <div class="tab-content">
-                        <div class="tab-pane active" id="personalDetails" role="tabpanel">
-                            <form action="javascript:void(0);">
+                        <div class="tab-pane {{ request()->tab == 'personalDetails' ? 'active' : '' }}"
+                            id="personalDetails" role="tabpanel">
+                            <form action="{{ route('admin.users.profile.update.normal') }}" method="post">
+                                @csrf
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <div class="mb-3">
-                                            <label for="firstnameInput" class="form-label">Họ và tên</label>
-                                            <input type="text" class="form-control" id="firstnameInput"
-                                                placeholder="Nhập họ và tên" value="{{ Auth::user()->name }}">
+                                            <label for="phoneInput" class="form-label">Số điện thoại</label>
+                                            {{-- Kiểm tra tồn tại giá trị hay không nếu có thì sẽ dùng không thì để trống  --}}
+                                            <input type="text" class="form-control" id="phoneInput" name="phone"
+                                                placeholder="Nhập số điện thoại"
+                                                value="{{ old('phone', Auth::user()->profile->phone ?? '') }}">
+                                            @error('phone')
+                                                <span class="text-danger"> {{ $message }} </span>
+                                            @enderror
                                         </div>
                                     </div>
+                                    <!--end col-->
+
                                     <div class="col-lg-12">
                                         <div class="mb-3">
-                                            <label for="emailInput" class="form-label">Địa chỉ email</label>
-                                            <input type="email" class="form-control bg-success" id="emailInput"
-                                                value="{{ Auth::user()->email }}" readonly>
+                                            <label for="addressInput" class="form-label">Địa chỉ</label>
+                                            <input type="text" class="form-control" id="addressInput" name="address"
+                                                placeholder="Nhập địa chỉ"
+                                                value="{{ old('address', Auth::user()->profile->address ?? '') }}">
                                         </div>
                                     </div>
+                                    <!--end col-->
+
+                                    <div class="col-lg-12">
+                                        <div class="mb-3">
+                                            <label for="experienceInput" class="form-label">Kinh nghiệm</label>
+                                            <input type="text" class="form-control" id="experienceInput"
+                                                placeholder="Mô tả kinh nghiệm làm việc" name="experience"
+                                                value="{{ old('experience', Auth::user()->profile->experience ?? '') }}">
+                                        </div>
+                                    </div>
+                                    <!--end col-->
+
+                                    <div class="col-lg-12">
+                                        <div class="mb-3">
+                                            <label for="bioInput" class="form-label">Giới thiệu</label>
+                                            <textarea class="form-control" id="bioInput" rows="4" placeholder="Viết giới thiệu ngắn gọn về bản thân"
+                                                name="bio">{{ old('bio', Auth::user()->profile->bio ?? '') }} </textarea>
+                                        </div>
+                                    </div>
+                                    <!--end col-->
                                     <div class="col-lg-12">
                                         <div class="hstack gap-2 justify-content-end">
                                             <button type="submit" class="btn btn-primary">Cập nhật</button>
@@ -149,261 +195,143 @@
                                 <!--end row-->
                             </form>
                         </div>
-                        <div class="tab-pane" id="personalDetailsImprove" role="tabpanel">
-                            <form action="javascript:void(0);">
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="mb-3">
-                                            <label for="firstnameInput" class="form-label">Họ và tên</label>
-                                            <input type="text" class="form-control" id="firstnameInput"
-                                                placeholder="Nhập họ và tên" value="{{ Auth::user()->name }}">
-                                        </div>
-                                    </div>
 
-
-                                    <!--end col-->
-                                    <div class="col-lg-12">
-                                        <div class="mb-3">
-                                            <label for="emailInput" class="form-label">Địa chỉ email</label>
-                                            <input type="email" class="form-control" id="emailInput"
-                                                value="{{ Auth::user()->email }}">
-                                        </div>
-                                    </div>
-                                    <!--end col-->
-                                    <div class="col-lg-12">
-                                        <div class="hstack gap-2 justify-content-end">
-                                            <button type="submit" class="btn btn-primary">Cập nhật</button>
-                                            <button type="button" class="btn btn-soft-success">Huỷ</button>
-                                        </div>
-                                    </div>
-                                    <!--end col-->
-                                </div>
-                                <!--end row-->
-                            </form>
-                        </div>
-                        <!--end tab-pane-->
-                        <div class="tab-pane" id="changePassword" role="tabpanel">
-                            <form action="javascript:void(0);">
+                        <div class="tab-pane {{ request()->tab == 'changePassword' ? 'active' : '' }}"
+                            id="changePassword" role="tabpanel">
+                            <form action="{{ route('admin.users.profile.update.password') }}" method="post">
+                                @csrf
                                 <div class="row g-2">
                                     <div class="col-lg-4">
                                         <div>
-                                            <label for="oldpasswordInput" class="form-label">Old Password*</label>
+                                            <label for="oldpasswordInput" class="form-label">Mật khẩu cũ*</label>
                                             <input type="password" class="form-control" id="oldpasswordInput"
-                                                placeholder="Enter current password">
+                                                name="oldPassword" placeholder="Nhập mật khẩu cũ"
+                                                value="{{ old('oldPassword') }}">
+                                            <span class="text-danger">{{ $errors->first('oldPassword') }}</span>
                                         </div>
                                     </div>
+
                                     <!--end col-->
                                     <div class="col-lg-4">
                                         <div>
-                                            <label for="newpasswordInput" class="form-label">New Password*</label>
+                                            <label for="newpasswordInput" class="form-label">Mật khẩu mới*</label>
                                             <input type="password" class="form-control" id="newpasswordInput"
-                                                placeholder="Enter new password">
+                                                name="newPassword" placeholder="Nhập mật khẩu mới"
+                                                value="{{ old('newPassword') }}">
+                                            <span class="text-danger">{{ $errors->first('newPassword') }}</span>
                                         </div>
                                     </div>
                                     <!--end col-->
                                     <div class="col-lg-4">
                                         <div>
-                                            <label for="confirmpasswordInput" class="form-label">Confirm Password*</label>
+                                            <label for="confirmpasswordInput" class="form-label">Nhập lại mật khẩu
+                                                mới*</label>
                                             <input type="password" class="form-control" id="confirmpasswordInput"
-                                                placeholder="Confirm password">
+                                                name="confirmPassword" placeholder="Nhập lại mật khẩu mới"
+                                                value=" {{ old('confirmPassword') }}">
+                                            <span class="text-danger">{{ $errors->first('confirmPassword') }}</span>
                                         </div>
                                     </div>
                                     <!--end col-->
                                     <div class="col-lg-12">
                                         <div class="mb-3">
                                             <a href="javascript:void(0);"
-                                                class="link-primary text-decoration-underline">Forgot Password ?</a>
+                                                class="link-primary text-decoration-underline">Quên mật khẩu ?</a>
                                         </div>
                                     </div>
                                     <!--end col-->
                                     <div class="col-lg-12">
                                         <div class="text-end">
-                                            <button type="submit" class="btn btn-success">Change Password</button>
+                                            <button type="submit" class="btn btn-success">Đổi mật khẩu</button>
                                         </div>
                                     </div>
                                     <!--end col-->
                                 </div>
                                 <!--end row-->
                             </form>
-                            <div class="mt-4 mb-3 border-bottom pb-2">
-                                <div class="float-end">
-                                    <a href="javascript:void(0);" class="link-primary">All Logout</a>
-                                </div>
-                                <h5 class="card-title">Login History</h5>
-                            </div>
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="flex-shrink-0 avatar-sm">
-                                    <div class="avatar-title bg-light text-primary rounded-3 fs-18">
-                                        <i class="ri-smartphone-line"></i>
-                                    </div>
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6>iPhone 12 Pro</h6>
-                                    <p class="text-muted mb-0">Los Angeles, United States - March 16 at 2:47PM</p>
-                                </div>
-                                <div>
-                                    <a href="javascript:void(0);">Logout</a>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="flex-shrink-0 avatar-sm">
-                                    <div class="avatar-title bg-light text-primary rounded-3 fs-18">
-                                        <i class="ri-tablet-line"></i>
-                                    </div>
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6>Apple iPad Pro</h6>
-                                    <p class="text-muted mb-0">Washington, United States - November 06 at 10:43AM</p>
-                                </div>
-                                <div>
-                                    <a href="javascript:void(0);">Logout</a>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="flex-shrink-0 avatar-sm">
-                                    <div class="avatar-title bg-light text-primary rounded-3 fs-18">
-                                        <i class="ri-smartphone-line"></i>
-                                    </div>
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6>Galaxy S21 Ultra 5G</h6>
-                                    <p class="text-muted mb-0">Conneticut, United States - June 12 at 3:24PM</p>
-                                </div>
-                                <div>
-                                    <a href="javascript:void(0);">Logout</a>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0 avatar-sm">
-                                    <div class="avatar-title bg-light text-primary rounded-3 fs-18">
-                                        <i class="ri-macbook-line"></i>
-                                    </div>
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <h6>Dell Inspiron 14</h6>
-                                    <p class="text-muted mb-0">Phoenix, United States - July 26 at 8:10AM</p>
-                                </div>
-                                <div>
-                                    <a href="javascript:void(0);">Logout</a>
-                                </div>
-                            </div>
                         </div>
                         <!--end tab-pane-->
-                        <div class="tab-pane" id="experience" role="tabpanel">
-                            <form>
+                        <div class="tab-pane {{ request()->tab == 'experience' ? 'active' : '' }}" id="experience"
+                            role="tabpanel">
+                            <form action="{{ route('admin.users.profile.update.experience') }}" method="post">
+                                @csrf
                                 <div id="newlink">
                                     <div id="1">
                                         <div class="row">
                                             <div class="col-lg-12">
                                                 <div class="mb-3">
-                                                    <label for="jobTitle" class="form-label">Job Title</label>
+                                                    <label for="jobTitle" class="form-label">Tên trường học/tổ
+                                                        chức</label>
                                                     <input type="text" class="form-control" id="jobTitle"
-                                                        placeholder="Job title" value="Lead Designer / Developer">
-                                                </div>
-                                            </div>
-                                            <!--end col-->
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    <label for="companyName" class="form-label">Company Name</label>
-                                                    <input type="text" class="form-control" id="companyName"
-                                                        placeholder="Company name" value="Themesbrand">
-                                                </div>
-                                            </div>
-                                            <!--end col-->
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    <label for="experienceYear" class="form-label">Experience
-                                                        Years</label>
-                                                    <div class="row">
-                                                        <div class="col-lg-5">
-                                                            <select class="form-control" data-choices
-                                                                data-choices-search-false name="experienceYear"
-                                                                id="experienceYear">
-                                                                <option value="">Select years</option>
-                                                                <option value="Choice 1">2001</option>
-                                                                <option value="Choice 2">2002</option>
-                                                                <option value="Choice 3">2003</option>
-                                                                <option value="Choice 4">2004</option>
-                                                                <option value="Choice 5">2005</option>
-                                                                <option value="Choice 6">2006</option>
-                                                                <option value="Choice 7">2007</option>
-                                                                <option value="Choice 8">2008</option>
-                                                                <option value="Choice 9">2009</option>
-                                                                <option value="Choice 10">2010</option>
-                                                                <option value="Choice 11">2011</option>
-                                                                <option value="Choice 12">2012</option>
-                                                                <option value="Choice 13">2013</option>
-                                                                <option value="Choice 14">2014</option>
-                                                                <option value="Choice 15">2015</option>
-                                                                <option value="Choice 16">2016</option>
-                                                                <option value="Choice 17" selected>2017</option>
-                                                                <option value="Choice 18">2018</option>
-                                                                <option value="Choice 19">2019</option>
-                                                                <option value="Choice 20">2020</option>
-                                                                <option value="Choice 21">2021</option>
-                                                                <option value="Choice 22">2022</option>
-                                                            </select>
-                                                        </div>
-                                                        <!--end col-->
-                                                        <div class="col-auto align-self-center">
-                                                            to
-                                                        </div>
-                                                        <!--end col-->
-                                                        <div class="col-lg-5">
-                                                            <select class="form-control" data-choices
-                                                                data-choices-search-false name="choices-single-default2">
-                                                                <option value="">Select years</option>
-                                                                <option value="Choice 1">2001</option>
-                                                                <option value="Choice 2">2002</option>
-                                                                <option value="Choice 3">2003</option>
-                                                                <option value="Choice 4">2004</option>
-                                                                <option value="Choice 5">2005</option>
-                                                                <option value="Choice 6">2006</option>
-                                                                <option value="Choice 7">2007</option>
-                                                                <option value="Choice 8">2008</option>
-                                                                <option value="Choice 9">2009</option>
-                                                                <option value="Choice 10">2010</option>
-                                                                <option value="Choice 11">2011</option>
-                                                                <option value="Choice 12">2012</option>
-                                                                <option value="Choice 13">2013</option>
-                                                                <option value="Choice 14">2014</option>
-                                                                <option value="Choice 15">2015</option>
-                                                                <option value="Choice 16">2016</option>
-                                                                <option value="Choice 17">2017</option>
-                                                                <option value="Choice 18">2018</option>
-                                                                <option value="Choice 19">2019</option>
-                                                                <option value="Choice 20" selected>2020</option>
-                                                                <option value="Choice 21">2021</option>
-                                                                <option value="Choice 22">2022</option>
-                                                            </select>
-                                                        </div>
-                                                        <!--end col-->
-                                                    </div>
-                                                    <!--end row-->
+                                                        name="institution_name" placeholder="Tên tổ chức của bạn là gì ?"
+                                                        value="{{ old('institution_name', $profile->education->institution_name ?? '') }}">
+                                                    @error('institution_name')
+                                                        <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
                                                 </div>
                                             </div>
                                             <!--end col-->
                                             <div class="col-lg-12">
                                                 <div class="mb-3">
-                                                    <label for="jobDescription" class="form-label">Job Description</label>
-                                                    <textarea class="form-control" id="jobDescription" rows="3" placeholder="Enter description">You always want to make sure that your fonts work well together and try to limit the number of fonts you use to three or less. Experiment and play around with the fonts that you already have in the software you're working with reputable font websites. </textarea>
+                                                    <label for="degree" class="form-label">Bằng cấp</label>
+                                                    <input type="text" class="form-control" id="degree"
+                                                        name="degree" placeholder="Hiện tại bạn đang có bằng cấp nào ?"
+                                                        value="{{ old('degree', $profile->education->degree ?? '') }}">
+                                                    @error('degree')
+                                                        <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
                                                 </div>
                                             </div>
-                                            <!--end col-->
-                                            <div class="hstack gap-2 justify-content-end">
-                                                <a class="btn btn-success" href="javascript:deleteEl(1)">Delete</a>
+
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <label for="major" class="form-label">Chuyên ngành</label>
+                                                    <input type="text" class="form-control" id="major"
+                                                        name="major" placeholder="Chuyên ngành của bạn là gì ? "
+                                                        value="{{ old('major', $profile->education->major ?? '') }}">
+                                                    @error('major')
+                                                        <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
                                             </div>
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <label for="start_date" class="form-label">Kinh nghiệm bao
+                                                        lâu</label>
+                                                    <div class="row">
+                                                        <div class="col-lg-5">
+                                                            <input type="date" class="form-control" id="start_date"
+                                                                name="start_date" placeholder="Thời gian bắt đầu"
+                                                                value="{{ old('start_date', $profile->education->start_date ?? '') }}">
+                                                            @error('start_date')
+                                                                <span class="text-danger">{{ $message }}</span>
+                                                            @enderror
+                                                        </div>
+                                                        <!--end col-->
+                                                        <div class="col-auto align-self-center">
+                                                            đến
+                                                        </div>
+                                                        <!--end col-->
+                                                        <div class="col-lg-5">
+                                                            <input type="date" class="form-control" id="end_date"
+                                                                name="end_date" placeholder="Thời gian kết thúc"
+                                                                value="{{ old('end_date', $profile->education->end_date ?? '') }}">
+                                                            @error('end_date')
+                                                                <span class="text-danger">{{ $message }}</span>
+                                                            @enderror
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </div>
-                                        <!--end row-->
                                     </div>
                                 </div>
                                 <div id="newForm" style="display: none;">
-
                                 </div>
                                 <div class="col-lg-12">
-                                    <div class="hstack gap-2">
-                                        <button type="submit" class="btn btn-success">Update</button>
-                                        <a href="javascript:new_link()" class="btn btn-primary">Add New</a>
+                                    <div class="hstack gap-2 d-flex float-end">
+                                        <button type="submit" class="btn btn-success">Cập nhật</button>
                                     </div>
                                 </div>
                                 <!--end col-->
@@ -556,4 +484,27 @@
 
 @section('script-libs')
     <script src="{{ asset('theme/admin/assets/js/pages/profile-setting.init.js') }}"></script>
+
+    <script>
+        //Sẽ lưu lại tab session lên URL giúp từ request lấy xuống cho oke
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lấy tab từ session
+            let currentTab = '{{ session('tab') }}';
+            if (currentTab) {
+                // Nếu có tab từ session, kích hoạt tab đó
+                let tabElement = document.querySelector(`.nav-link[href='#${currentTab}']`);
+                if (tabElement) {
+                    let bootstrapTab = new bootstrap.Tab(tabElement);
+                    bootstrapTab.show();
+                }
+            }
+            // Khi chuyển tab, thêm param 'tab' vào URL
+            document.querySelectorAll('.nav-link').forEach(function(tabLink) {
+                tabLink.addEventListener('click', function() {
+                    let href = this.getAttribute('href').substring(1); // Lấy id tab
+                    history.replaceState(null, null, `?tab=${href}`);
+                });
+            });
+        });
+    </script>
 @endsection

@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Education extends Model
 {
     use HasFactory;
-
     protected $fillable = [
         'id_profile',
         'institution_name',
@@ -17,4 +16,9 @@ class Education extends Model
         'start_date',
         'end_date',
     ];
+    //Thuộc về một profile
+    public function profile()
+    {
+        return $this->belongsTo(Profile::class, 'id_profile');
+    }
 }
