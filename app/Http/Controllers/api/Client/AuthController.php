@@ -55,7 +55,6 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => 'Mã OTP đã được gửi tới email của bạn.',
-                'code' => 0,
                 'data' => [],
                 'status' => 201,
             ], 201);
@@ -64,7 +63,6 @@ class AuthController extends Controller
             Log::error("Error: " . $e->getMessage());
             return response()->json([
                 'message' => $e->getMessage(),
-                'code' => 1,
                 'data' => [],
                 'status' => 500,
             ], 500);
@@ -87,7 +85,6 @@ class AuthController extends Controller
             if (!$otp || $otp->isExpired()) {
                 return response()->json([
                     'message' => 'Mã OTP không hợp lệ hoặc đã hết hạn.',
-                    'code' => 1,
                     'data' => [],
                     'status' => 400,
                 ], 400);
@@ -113,7 +110,6 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => 'Xác thực thành công, bạn đã đăng nhập.',
-                'code' => 0,
                 'data' => [
                     'access_token' => $token,
                     'user' => $user->makeHidden('profile'),
@@ -125,7 +121,6 @@ class AuthController extends Controller
             Log::error("Error: " . $e->getMessage());
             return response()->json([
                 'message' => 'Đã xảy ra lỗi trong quá trình xác thực.',
-                'code' => 1,
                 'data' => [],
                 'status' => 500,
             ], 500);
@@ -140,7 +135,6 @@ class AuthController extends Controller
             if (!$user) {
                 return response()->json([
                     'message' => 'Người dùng không tồn tại.',
-                    'code' => 1,
                     'data' => [],
                     'status' => 404,
                 ], 404);
@@ -161,7 +155,6 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => 'Mã OTP đã được gửi lại, vui lòng kiểm tra email của bạn.',
-                'code' => 0,
                 'data' => [],
                 'status' => 200,
             ], 200);
@@ -169,7 +162,6 @@ class AuthController extends Controller
             Log::error("Error: " . $e->getMessage());
             return response()->json([
                 'message' => 'Đã xảy ra lỗi khi gửi lại mã OTP.',
-                'code' => 1,
                 'data' => [],
                 'status' => 500,
             ], 500);
@@ -203,7 +195,6 @@ class AuthController extends Controller
                 return response()->json([
                     'message' => 'Đã xảy ra lỗi xác thực',
                     'errors' => $errors,
-                    'code' => 1,
                     'data' => [],
                     'status' => 401,
                 ], 401);
@@ -212,7 +203,7 @@ class AuthController extends Controller
             // if (!Auth::attempt($credentials)) {
             //     return response()->json([
             //         'message' => 'Email hoặc mật khẩu không chính xác.',
-            //         'code' => 1,
+
             //         'data' => [],
             //         'status' => 401,
             //     ], 401);
@@ -224,7 +215,6 @@ class AuthController extends Controller
             if (!$user->email_verified_at) {
                 return response()->json([
                     'message' => 'Vui lòng xác nhận email trước khi đăng nhập.',
-                    'code' => 1,
                     'data' => [],
                     'status' => 403,
                 ], 403);
@@ -244,7 +234,6 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => 'Đăng nhập thành công.',
-                'code' => 0,
                 'data' => [
                     'access_token' => $token,
                     'user' => $user->makeHidden('profile'),
@@ -256,7 +245,6 @@ class AuthController extends Controller
             Log::error("Error: " . $e->getMessage());
             return response()->json([
                 'message' => 'Đã xảy ra lỗi trong quá trình đăng nhập.',
-                'code' => 1,
                 'data' => [],
                 'status' => 500,
             ], 500);
@@ -273,7 +261,6 @@ class AuthController extends Controller
             if (!$token || $token->expires_at < now()) {
                 return response()->json([
                     'message' => 'Refresh token không hợp lệ hoặc đã hết hạn.',
-                    'code' => 1,
                     'data' => [],
                     'status' => 400
                 ], 400);
@@ -296,7 +283,6 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => 'Refresh token thành công.',
-                'code' => 0,
                 'data' => [
                     'access_token' => $newToken,
                 ],
@@ -309,7 +295,6 @@ class AuthController extends Controller
                     'msg' => 'Đã xảy ra lỗi khi làm mới token.',
                     'errors' => $e->getMessage()
                 ],
-                'code' => 1,
                 'data' => [],
                 'status' => 500,
             ], 500);
@@ -326,7 +311,6 @@ class AuthController extends Controller
             if (!$user) {
                 return response()->json([
                     'message' => 'Người dùng không tồn tại.',
-                    'code' => 1,
                     'data' => [],
                     'status' => 404,
                 ], 404);
@@ -346,7 +330,6 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => 'Mã OTP đặt lại mật khẩu đã được gửi về email của bạn.',
-                'code' => 0,
                 'data' => [],
                 'status' => 200,
             ], 200);
@@ -354,7 +337,6 @@ class AuthController extends Controller
             Log::error("Error: " . $e->getMessage());
             return response()->json([
                 'message' => 'Đã xảy ra lỗi trong quá trình gửi email.',
-                'code' => 1,
                 'data' => [],
                 'status' => 500,
             ], 500);
@@ -374,7 +356,6 @@ class AuthController extends Controller
             if (!$otpCode || $otpCode->isExpired()) {
                 return response()->json([
                     'message' => 'Mã OTP không hợp lệ hoặc đã hết hạn.',
-                    'code' => 1,
                     'data' => [],
                     'status' => 400,
                 ], 400);
@@ -382,7 +363,6 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => 'Mã OTP hợp lệ, vui lòng đặt lại mật khẩu của bạn.',
-                'code' => 0,
                 'data' => [],
                 'status' => 200,
             ], 200);
@@ -390,7 +370,6 @@ class AuthController extends Controller
             Log::error("Error: " . $e->getMessage());
             return response()->json([
                 'message' => 'Đã xảy ra lỗi khi kiểm tra mã OTP.',
-                'code' => 1,
                 'data' => [],
                 'status' => 500,
             ], 500);
@@ -405,7 +384,6 @@ class AuthController extends Controller
             if (!$user) {
                 return response()->json([
                     'message' => 'Không tìm thấy người dùng với email này.',
-                    'code' => 1,
                     'data' => [],
                     'status' => 404,
                 ], 404);
@@ -418,7 +396,6 @@ class AuthController extends Controller
             if (!$otpCode || $otpCode->isExpired()) {
                 return response()->json([
                     'message' => 'Mã OTP không hợp lệ hoặc đã hết hạn.',
-                    'code' => 1,
                     'data' => [],
                     'status' => 400,
                 ], 400);
@@ -431,7 +408,6 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => 'Đặt lại mật khẩu thành công!',
-                'code' => 0,
                 'data' => [],
                 'status' => 200,
             ], 200);
@@ -439,7 +415,6 @@ class AuthController extends Controller
             Log::error("Error: " . $e->getMessage());
             return response()->json([
                 'message' => 'Đã xảy ra lỗi trong quá trình đặt lại mật khẩu.',
-                'code' => 1,
                 'data' => [],
                 'status' => 500,
             ], 500);
@@ -455,7 +430,6 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => 'Đăng xuất thành công.',
-                'code' => 0,
                 'data' => [],
                 'status' => 200,
             ], 200);
@@ -463,7 +437,6 @@ class AuthController extends Controller
             Log::error("Error: " . $e->getMessage());
             return response()->json([
                 'message' => 'Đã xảy ra lỗi trong quá trình đăng xuất.',
-                'code' => 1,
                 'data' => [],
                 'status' => 500,
             ], 500);
