@@ -46,8 +46,10 @@ class CourseController extends Controller
         return view('admin.courses.create', compact('title', 'options'));
     }
 
-    public function store(CreateCourseRequest $request)
+    public function store(Request $request)
     {
+        //CreateCourseRequest
+        dd($request->all());
         $data = $request->except('thumbnail');
         $data['is_free'] = $request->price != 0 ? 0 : 1;
         $data['id_user'] = auth()->id();

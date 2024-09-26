@@ -634,11 +634,14 @@
                         @else
                             <img class="rounded-circle header-profile-user" src="https://png.pngtree.com/png-clipart/20210608/ourlarge/pngtree-dark-gray-simple-avatar-png-image_3418404.jpg" alt="Header Avatar">
                         @endif
+
                             <span class="text-start ms-xl-2">
                                 <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{ Auth::user()->name }}</span>
                                 <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text">Founder</span>
                             </span>
                         </span>
+                        
+                        
                     </button>
                     <div class="dropdown-menu dropdown-menu-end">
                         <!-- item-->
