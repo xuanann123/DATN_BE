@@ -30,7 +30,7 @@ class AdminController extends Controller
         // check login
         if (Auth::attempt($credentials)) {
             // check admin
-            if (Auth::user()->user_type == 'admin') {
+            if (Auth::user()->user_type == 'admin' && Auth::user()->is_active == 1) {
                 return redirect()->route('admin.dashboard');
             } else {
                 Auth::logout();

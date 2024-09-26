@@ -178,7 +178,7 @@
                                 <a href="{{ route('admin.courses.list') }}" class="nav-link" data-key="t-one-page">
                                     Danh sách chứng chỉ</a>
                             </li>
-                       
+
 
                         </ul>
                     </div>
@@ -208,17 +208,19 @@
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarStudent" data-bs-toggle="collapse" role="button"
                         aria-expanded="false" aria-controls="sidebarStudent">
-                        <i class="ri-account-circle-line"></i> <span data-key="t-base-ui">Quản lý học sinh viên</span>
+                        <i class="ri-account-circle-line"></i> <span data-key="t-base-ui">Quản lý thành viên</span>
                     </a>
                     <div class="collapse menu-dropdown mega-dropdown-menu" id="sidebarStudent">
                         <div class="row">
                             <div class="col-lg-4">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="ui-alerts.html" class="nav-link" data-key="t-alerts">Thêm mới</a>
+                                        <a href="{{ route('admin.users.list') }}" class="nav-link"
+                                            data-key="t-badges">Danh sách</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="ui-badges.html" class="nav-link" data-key="t-badges">Danh sách</a>
+                                        <a href="{{ route('admin.users.create') }}" class="nav-link"
+                                            data-key="t-alerts">Thêm mới</a>
                                     </li>
                                 </ul>
                             </div>
@@ -227,24 +229,6 @@
                     </div>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarTeacher" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false" aria-controls="sidebarTeacher">
-                        <i class="ri-angularjs-line"></i> <span data-key="t-base-ui">Quản lý giảng viên</span>
-                    </a>
-                    <div class="collapse menu-dropdown mega-dropdown-menu" id="sidebarTeacher">
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="ui-alerts.html" class="nav-link" data-key="t-alerts">Thêm mới</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="ui-badges.html" class="nav-link" data-key="t-badges">Danh sách</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarPermission" data-bs-toggle="collapse" role="button"
                         aria-expanded="false" aria-controls="sidebarPermission">
@@ -266,16 +250,10 @@
 
                     </div>
                 </li>
+            </ul>
         </div>
-        </li>
-
-
-
-
-        </ul>
+        <!-- Sidebar -->
     </div>
-    <!-- Sidebar -->
-</div>
 
-<div class="sidebar-background"></div>
+    <div class="sidebar-background"></div>
 </div>
