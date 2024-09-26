@@ -1,16 +1,16 @@
 @extends('admin.layouts.master')
 @section('title')
-    Quản lý người dùng
+    {{ $title }}
 @endsection
 @section('content')
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                <h4 class="mb-sm-0">Quản lý người dùng</h4>
+                <h4 class="mb-sm-0"> {{ $title }}</h4>
 
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="javascript: void(0);">Quản lý tài người</a></li>
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">{{ $title }}</a></li>
                         <li class="breadcrumb-item active">Danh sách</li>
                     </ol>
                 </div>
@@ -82,7 +82,7 @@
                                 <div class="col-sm-auto d-flex  justify-content-end gap-2 h-100">
                                     <select class="form-select" name="act">
                                         <option value="0">Chọn thao tác trên nhiều bản ghi</option>
-                                        
+
                                     </select>
                                     <button type="submit" class="btn btn-secondary">Done</button>
                                 </div>
@@ -108,103 +108,82 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @if ($data->count() > 0)
-                                    @php
-                                        $t = 0;
-                                    @endphp
-                                    @foreach ($data as $item)
-                                        @php
-                                            $t++;
-                                        @endphp
-                                        <tr>
-
-                                            <th scope="row">
-                                                <div class="form-check">
-                                                    <input class="form-check-input checkbox" type="checkbox"
-                                                        name="list_check[]" value="{{ $item->id }}">
-                                                </div>
-                                            </th>
-                                            <td>{{ $t }}</td>
-
-                                            <td>
-                                                @php
-                                                    $url = Storage::url($item->image);
-                                                @endphp
-                                                <div>
-                                                    <a class="d-flex gap-2 align-items-center"
-                                                        href="{{ route('admin.users.detail', $item->id) }}">
-                                                        <div class="flex-shrink-0">
-                                                            @if ($item->image)
-                                                                <img src="{{ $url }}" alt=""
-                                                                class="avatar-xs rounded-circle" />
-                                                            @else
-                                                                 <img src="{{ url("image/notimage.webp") }}" alt=""
-                                                                class="avatar-xs rounded-circle" />
-                                                            @endif
-                                                            
-                                                        </div>
-                                                        <div class="flex-grow-1">
-                                                            {{ $item->name }}
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                            <td><span class="badge bg-info-subtle text-info">{{ $item->email }}</span>
-                                            </td>
-                                            <td>
-                                                
-                                                 <span
-                                                                class="badge bg-danger">hiihihi</span></a>
-                                                 
-                                            
-                                            </td>
-
-                                            <td>{{ $item->created_at }}</td>
-                                            <td>
-                                                <div class="dropdown d-inline-block">
-                                                    <button class="btn btn-soft-secondary btn-sm dropdown" type="button"
-                                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <i class="ri-more-fill align-middle"></i>
-                                                    </button>
-                                                
-                                                        <ul class="dropdown-menu dropdown-menu-end">
-                                                          
-                                                                <li><a href="{{ route('admin.users.detail', $item->id) }}"
-                                                                        class="dropdown-item"><i
-                                                                            class="ri-eye-fill align-bottom me-2 text-muted"></i>
-                                                                        View</a>
-                                                                </li>
-                                                            
-                                                                <li><a href="{{ route('admin.users.edit', $item->id) }}"
-                                                                        class="dropdown-item edit-item-btn"><i
-                                                                            class="ri-pencil-fill align-bottom me-2 text-muted"></i>
-                                                                        Edit</a></li>
-                                                                @if (Auth::id() != $item->id)
-                                                                    <li>
-                                                                        <a onclick='return confirm("Bạn có muốn xoá đi người dùng {{ $item->name }} không ?")'
-                                                                            href="{{ route('admin.users.destroy', $item->id) }}"
-                                                                            class="dropdown-item remove-item-btn">
-                                                                            <i
-                                                                                class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
-                                                                            Delete
-                                                                        </a>
-                                                                    </li>
-                                                                @endif
-                                                           
-                                                        </ul>
-                                                   
-
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                @else
+                                @foreach ($data as $item)
                                     <tr>
-                                        <td colspan="7">Không tồi tại tài khoản User nào trong hệ thống</td>
+
+                                        <th scope="row">
+                                            <div class="form-check">
+                                                <input class="form-check-input checkbox" type="checkbox" name="list_check[]"
+                                                    value="{{ $item->id }}">
+                                            </div>
+                                        </th>
+                                        <td>{{ $item->id }}</td>
+
+                                        <td>
+                                            <div>
+                                                <a class="d-flex gap-2 align-items-center"
+                                                    href="{{ route('admin.users.detail', $item->id) }}">
+                                                    <div class="flex-shrink-0">
+                                                        @if ($item->avatar && Storage::disk('public')->exists($item->avatar))
+                                                            <img src="{{ Storage::url($item->avatar) }}" alt=""
+                                                                class="avatar-xs rounded-circle" />
+                                                        @else
+                                                            <img src="https://bookvexe.vn/wp-content/uploads/2023/04/chon-loc-25-avatar-facebook-mac-dinh-chat-nhat_2.jpg"
+                                                                alt="" class="avatar-xs rounded-circle" />
+                                                        @endif
+
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        {{ $item->name }}
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </td>
+                                        <td><span class="badge bg-info-subtle text-info">{{ $item->email }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-danger">{{ $item->user_type }}</span></a>
+                                        </td>
+
+                                        <td>{{ $item->created_at }}</td>
+                                        <td>
+                                            <div class="dropdown d-inline-block">
+                                                <button class="btn btn-soft-secondary btn-sm dropdown" type="button"
+                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="ri-more-fill align-middle"></i>
+                                                </button>
+
+                                                <ul class="dropdown-menu dropdown-menu-end">
+
+                                                    <li><a href="{{ route('admin.users.detail', $item->id) }}"
+                                                            class="dropdown-item"><i
+                                                                class="ri-eye-fill align-bottom me-2 text-muted"></i>
+                                                            Chi tiết</a>
+                                                    </li>
+
+                                                    <li><a href="{{ route('admin.users.edit', $item->id) }}"
+                                                            class="dropdown-item edit-item-btn"><i
+                                                                class="ri-pencil-fill align-bottom me-2 text-muted"></i>
+                                                            Sửa</a></li>
+
+                                                    <li>
+                                                        <form action="{{ route('admin.users.delete', $item->id) }}"
+                                                            method="post">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            @if (Auth::id() != $item->id)
+                                                                <button class="dropdown-item remove-item-btn"
+                                                                    onclick="return confirm('Xác nhận xóa người dùng {{ $item->name }}?')"><i
+                                                                        class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
+                                                                    Xóa</button>
+                                                            @endif
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
                                     </tr>
-                                @endif
-
-
+                                @endforeach
                             </tbody>
                         </table>
                         <script>

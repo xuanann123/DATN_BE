@@ -13,6 +13,7 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasApiTokens, HasFactory, Notifiable;
     const TYPE_ADMIN = 'admin';
     const TYPE_MEMBER = 'member';
+    const TYPE_TEACHER = 'teacher';
     /**
      * The attributes that are mass assignable.
      *
