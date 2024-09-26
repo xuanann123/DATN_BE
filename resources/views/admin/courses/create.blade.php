@@ -343,6 +343,20 @@
                             @endif
                         </small>
                     </div>
+                    <div class="mb-3">
+                        <label for="id_category" class="form-label">Chọn tags cho khoá học</label>
+                        <div>
+                            <div class="mb-3 position-relative">
+                                <input type="text" class="form-control" id="inputField" placeholder="Nhập tên ..." />
+                                <input type="hidden" id="tagStorage" name="tagStorage" value="" />
+                                <!-- Ô input ẩn để lưu trữ tag -->
+                                <div id="suggestions" class="border rounded bg-white shadow"
+                                    style="display: none; position: absolute; z-index: 10;"></div>
+                                <!-- Container cho gợi ý -->
+                            </div>
+                            <div id="tagContainer" class="mt-2" style="border: 1px solid rgb(209, 203, 203); padding: 5px"></div> <!-- Container để hiển thị các tag đã nhập -->
+                        </div>
+                    </div>
 
                     <div class="mb-3">
                         <label for="is_active" class="form-label">Trạng thái</label> <br>
@@ -390,6 +404,43 @@
     </form>
     <!-- end row -->
 @endsection
+@section('style-libs')
+    <style>
+        .suggestion-item {
+            padding: 5px 10px;
+            /* Padding cho item gợi ý */
+            cursor: pointer;
+        }
+
+        .suggestion-item:hover {
+            background-color: #987676;
+            /* Màu nền khi hover */
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: #007bff;
+            /* Màu nền cho tag */
+            color: rgb(255, 255, 255);
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 5px;
+            position: relative;
+        }
+
+        .remove-tag {
+            cursor: pointer;
+            margin-left: 8px;
+            color: white;
+            background-color: #dc3545;
+            /* Màu đỏ cho nút xóa */
+            border: none;
+            border-radius: 3px;
+            padding: 2px 5px;
+            font-size: 12px;
+        }
+    </style>
+@endsection
 @section('script-libs')
     <!-- ckeditor -->
     <script src="{{ asset('theme/admin/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js') }}"></script>
@@ -435,6 +486,101 @@
 
                 reader.readAsDataURL(file);
             }
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Mảng chứa các giá trị gợi ý
+            const myArray = @json($tags);
+            // Khởi tạo mảng để lưu trữ các tag đã chọn
+            let tagsArray = [];
+
+            // Lắng nghe sự kiện khi người dùng nhập vào ô input
+            $('#inputField').on('input', function() {
+                const inputVal = $(this).val().toLowerCase(); // Lấy giá trị và chuyển thành chữ thường
+                $('#suggestions').empty(); // Xóa các gợi ý cũ
+
+                // Kiểm tra và hiển thị gợi ý
+                if (inputVal) {
+                    Object.keys(myArray).forEach(key => {
+                        const value = myArray[key].toLowerCase();
+                        if (value.includes(inputVal)) {
+                            $('#suggestions').append(
+                                `<div class="suggestion-item p-2 w-100" data-key="${key}">${myArray[key]}</div>`
+                            );
+                        }
+                    });
+                    $('#suggestions').show(); // Hiện gợi ý
+                } else {
+                    $('#suggestions').hide(); // Ẩn gợi ý nếu ô input rỗng
+                }
+            });
+
+            // Lắng nghe sự kiện nhấn phím trên ô input
+            $('#inputField').on('keypress', function(event) {
+                // Kiểm tra nếu phím nhấn là Enter
+                if (event.which === 13) {
+                    event.preventDefault(); // Ngăn chặn hành động mặc định của Enter
+
+                    const tag = $(this).val().trim(); // Lấy giá trị ô input và loại bỏ khoảng trắng
+
+                    if (tag && !tagsArray.includes(tag)) {
+                        // Thêm tag vào mảng nếu không trống và không trùng lặp
+                        tagsArray.push(tag);
+
+                        // Cập nhật hiển thị các tag
+                        updateTagDisplay();
+
+                        $(this).val(''); // Xóa giá trị ô input
+                        $('#suggestions').hide(); // Ẩn gợi ý
+                    }
+                }
+            });
+
+            // Lắng nghe sự kiện click vào gợi ý
+            $('#suggestions').on('click', '.suggestion-item', function() {
+                const selectedKey = $(this).data('key'); // Lấy key của gợi ý đã chọn
+                const selectedValue = myArray[selectedKey]; // Lấy giá trị từ myArray
+
+                // Thêm giá trị vào mảng tagsArray nếu chưa có
+                if (!tagsArray.includes(selectedValue)) {
+                    tagsArray.push(selectedValue);
+                    updateTagDisplay();
+                }
+
+                $('#inputField').val(''); // Xóa giá trị trong ô input sau khi chọn
+                $('#suggestions').hide(); // Ẩn gợi ý
+            });
+
+            // Hàm cập nhật hiển thị giá trị cho ô input lưu trữ và div chứa tag
+            function updateTagDisplay() {
+                $('#tagStorage').val(tagsArray.join(',')); // Cập nhật giá trị của ô input lưu trữ
+                $('#tagContainer').empty(); // Xóa các tag cũ
+                tagsArray.forEach((tag, index) => {
+                    $('#tagContainer').append(`
+            <div class="tag d-inline-flex align-items-center me-2 mb-2 border-rounded border-danger border-1">
+                <span class="me-2">${tag}</span>
+                <button class="btn btn-danger btn-sm remove-tag" data-index="${index}" aria-label="Xóa tag">×</button>
+            </div>
+        `);
+                });
+                $('#inputField').val(tagsArray.join(', ')); // Cập nhật giá trị của ô input chính
+            }
+
+            // Lắng nghe sự kiện click vào nút xóa
+            $('#tagContainer').on('click', '.remove-tag', function() {
+                const index = $(this).data('index'); // Lấy index của tag cần xóa
+                tagsArray.splice(index, 1); // Xóa tag khỏi mảng
+                updateTagDisplay(); // Cập nhật hiển thị
+            });
+
+            // Ẩn gợi ý khi nhấn ra ngoài
+            $(document).click(function(event) {
+                if (!$(event.target).closest('#inputField').length) {
+                    $('#suggestions').hide();
+                }
+            });
         });
     </script>
 @endsection

@@ -11,8 +11,6 @@ class CreateCourseRequest extends FormRequest
     {
         return true;
     }
-
-
     public function rules()
     {
         return [
@@ -21,14 +19,13 @@ class CreateCourseRequest extends FormRequest
             'slug' => 'required|unique:courses,slug|max:255',
             'description' => 'nullable|min:6',
             'sort_description' => 'nullable|min:6|max:255',
-            'learned' => 'nullable|min:6|max:255',
+            'learned' => 'nullable|min:6',
             'thumbnail' => 'required|image|max:5120',
             'id_category' => 'required|integer',
             'price' => 'numeric|min:0',
             'price_sale' => 'numeric|min:0',
         ];
     }
-
     public function messages()
     {
         return [

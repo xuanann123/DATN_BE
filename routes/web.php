@@ -95,25 +95,27 @@ Route::prefix("admin")
         Route::prefix('users')
             ->as('users.')
             ->group(function () {
-                Route::get("/", [UserController::class, 'index'])->name('list');
-                Route::get("/create", [UserController::class, 'create'])->name('create');
-                Route::post("/store", [UserController::class, 'store'])->name('store');
-                Route::delete("/delete/{user}", [UserController::class, 'delete'])->name('delete');
-                Route::get("/action", [UserController::class, 'action'])->name('action');
-                Route::get("/edit/{user}", [UserController::class, 'edit'])->name('edit');
-                Route::put("/update/{user}", [UserController::class, 'update'])->name('update');
-                Route::put("/change-password/{user}", [UserController::class, 'changePassword'])->name('change-password');
-                Route::get("/detail/{user}", [UserController::class, 'detail'])->name('detail');
-                Route::get("/restore/{id}", [UserController::class, 'restore'])->name('restore');
-                Route::get("/forceDelete/{id}", [UserController::class, 'forceDelete'])->name('forceDelete');
-                Route::prefix('profile')
-                    ->as('profile.')
-                    ->group(function () {
-                        Route::get("/", [ProfileController::class, 'index'])->name('index');
-                        Route::get("/edit", [ProfileController::class, 'edit'])->name('edit');
-                        Route::post("/update", [ProfileController::class, 'updateInforBasic'])->name('update.basic');
-                    });
-            });
+            Route::get("/", [UserController::class, 'index'])->name('list');
+            Route::get("/create", [UserController::class, 'create'])->name('create');
+            Route::post("/store", [UserController::class, 'store'])->name('store');
+            Route::get("/destroy/{user}", [UserController::class, 'destroy'])->name('destroy');
+            Route::get("/action", [UserController::class, 'action'])->name('action');
+            Route::get("/edit/{user}", [UserController::class, 'edit'])->name('edit');
+            Route::put("/update/{user}", [UserController::class, 'update'])->name('update');
+            Route::get("/detail/{user}", [UserController::class, 'detail'])->name('detail');
+            Route::get("/restore/{id}", [UserController::class, 'restore'])->name('restore');
+            Route::get("/forceDelete/{id}", [UserController::class, 'forceDelete'])->name('forceDelete');
+            Route::prefix('profile')
+                ->as('profile.')
+                ->group(function () {
+                    Route::get("/", [ProfileController::class, 'index'])->name('index');
+                    Route::get("/edit", [ProfileController::class, 'edit'])->name('edit');
+                    Route::post("/update", [ProfileController::class, 'updateInforBasic'])->name('update.basic');
+                    Route::post("/update/infor", [ProfileController::class, 'updateInforNormal'])->name('update.normal');
+                    Route::post("/update/experience", [ProfileController::class, 'updateExperience'])->name('update.experience');
+                    Route::post("/update/password", [ProfileController::class, 'updatePassword'])->name('update.password');
+                });
+        });
         Route::prefix('courses')
             ->as('courses.')
             ->group(function () {
@@ -135,10 +137,11 @@ Route::prefix("admin")
         Route::prefix('quizzes')
             ->as('quizzes.')
             ->group(function () {
-                Route::get('{id}/', [QuizController::class, 'index'])->name('index');
-                //Lưu chữ chung dữ liệu vừa là question và cho option của question đó luôn.
-                Route::post('/{id}/questions-with-options', [QuestionController::class, 'storeWithOptions'])->name('store');
-            });
+
+            Route::get('{id}/', [QuizController::class, 'index'])->name('index');
+            //Lưu chữ chung dữ liệu vừa là question và cho option của question đó luôn.
+            Route::post('/{id}/questions-with-options', [QuestionController::class, 'storeWithOptions'])->name('store');
+        });
 
         Route::prefix('lessons')
             ->as('lessons.')

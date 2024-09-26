@@ -41,4 +41,8 @@ class Course extends Model
     public function modules () {
         return $this->hasMany(Module::class, 'id_course');
     }
+    //Một khoá học có nhiều tags
+    public function tags() {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
 }

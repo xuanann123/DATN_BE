@@ -57,6 +57,7 @@
         </div><!-- /.modal -->
         @include('admin.layouts.sidebar')
         <!-- Left Sidebar End -->
+        
         <!-- Vertical Overlay-->
         <div class="vertical-overlay"></div>
         <!-- ============================================================== -->
