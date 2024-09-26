@@ -17,6 +17,10 @@ class Tag extends Model
     //Một tags thuộc về nhiều bài học
     public function courses()
     {
-        return $this->belongsToMany(Course::class, 'course_tags');
+        return $this->morphedByMany(Course::class, 'taggable');
+    }
+
+    public function posts () {
+        return $this->morphedByMany(Post::class, 'taggable');
     }
 }

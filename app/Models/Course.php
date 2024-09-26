@@ -43,6 +43,6 @@ class Course extends Model
     }
     //Một khoá học có nhiều tags
     public function tags() {
-        return $this->belongsToMany(Tag::class, 'course_tags');
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 }
