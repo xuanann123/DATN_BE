@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Admin\Courses\CreateCourseRequest;
 use App\Http\Requests\Admin\Courses\UpdateCourseRequest;
 use App\Models\Module;
+use App\Models\Tag;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class CourseController extends Controller
 {
@@ -41,35 +44,56 @@ class CourseController extends Controller
     public function create()
     {
         $title = 'Thêm mới khóa học';
+
         $categories = Category::whereNull('parent_id')->with('children')->get();
         $options = $this->getCategoryOptions($categories);
-        return view('admin.courses.create', compact('title', 'options'));
+        $tags = Tag::query()->pluck('name', 'id')->toArray();
+
+        return view('admin.courses.create', compact('title', 'options', 'tags'));
     }
 
-    public function store(Request $request)
+    public function store(CreateCourseRequest $request)
     {
-        //CreateCourseRequest
-        dd($request->all());
         $data = $request->except('thumbnail');
         $data['is_free'] = $request->price != 0 ? 0 : 1;
         $data['id_user'] = auth()->id();
+        $tagStorage = $request->tagStorage;
+        $data['tags'] = explode(',', $tagStorage);
+        $tagIds = [];
+        try {
 
+            DB::beginTransaction();
+            //Xử lý hình ảnh
+            if ($request->thumbnail && $request->hasFile('thumbnail')) {
+                $image = $request->file('thumbnail');
+                $newNameImage = 'course_' . time() . '.' . $image->getClientOriginalExtension();
+                $pathImage = Storage::putFileAs('courses', $image, $newNameImage);
+                $data['thumbnail'] = $pathImage;
+            }
 
-        if ($request->thumbnail && $request->hasFile('thumbnail')) {
-            $image = $request->file('thumbnail');
-            $newNameImage = 'course_' . time() . '.' . $image->getClientOriginalExtension();
-            $pathImage = Storage::putFileAs('courses', $image, $newNameImage);
-
-            $data['thumbnail'] = $pathImage;
-        }
-
-        $newCourse = Course::query()->create($data);
-
-        if (!$newCourse) {
+            //Xử lý khoá học
+            $newCourse = Course::query()->create($data);
+            //Xử lý tags
+            foreach ($data['tags'] as $tag) {
+                $tag = trim($tag);
+                if (!empty($tag)) {
+                    $tag = Tag::firstOrCreate([
+                        'name' => $tag,
+                        'slug' => Str::slug($tag),
+                    ]);
+                    $tagIds[] = $tag->id;
+                }
+            }
+            $newCourse->tags()->sync($tagIds);
+            DB::commit();
+            return redirect()->route('admin.courses.list')->with(['message' => 'Thêm mới thành công!']);
+        } catch (\Throwable $th) {
+            if(Storage::disk('public')->exists($data['thumbnail'])) {
+                Storage::disk('public')->delete($data['thumbnail']);
+            }
+            DB::rollBack();
             return redirect()->route('admin.courses.list')->with(['error' => 'Thêm mới không thành công!']);
         }
-
-        return redirect()->route('admin.courses.list')->with(['message' => 'Thêm mới thành công!']);
     }
 
     public function detail($id)

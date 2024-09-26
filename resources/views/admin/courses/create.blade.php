@@ -356,8 +356,6 @@
                             </div>
                             <div id="tagContainer" class="mt-2" style="border: 1px solid rgb(209, 203, 203); padding: 5px"></div> <!-- Container để hiển thị các tag đã nhập -->
                         </div>
-
-
                     </div>
 
                     <div class="mb-3">
@@ -494,11 +492,7 @@
     <script>
         $(document).ready(function() {
             // Mảng chứa các giá trị gợi ý
-            const myArray = {
-                1: "Xuân An",
-                2: "Xuân Trường"
-            };
-
+            const myArray = @json($tags);
             // Khởi tạo mảng để lưu trữ các tag đã chọn
             let tagsArray = [];
 
@@ -513,7 +507,7 @@
                         const value = myArray[key].toLowerCase();
                         if (value.includes(inputVal)) {
                             $('#suggestions').append(
-                                `<div class="suggestion-item" data-key="${key}">${myArray[key]}</div>`
+                                `<div class="suggestion-item p-2 w-100" data-key="${key}">${myArray[key]}</div>`
                             );
                         }
                     });
