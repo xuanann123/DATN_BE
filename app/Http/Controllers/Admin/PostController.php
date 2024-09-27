@@ -35,9 +35,11 @@ class PostController extends Controller
                     $subQuery->where('name', 'LIKE', "%{$searchQuery}%");
                 });
 
-        })->orderBy('id')->paginate(2);
+        })->orderBy('id')->paginate(2)->appends(['search' => $searchQuery]);
 
-        return view('admin.posts.index', compact('title', 'posts', 'searchQuery'));
+        $totalDelPosts = Post::onlyTrashed()->count();
+
+        return view('admin.posts.index', compact('title', 'posts', 'searchQuery', 'totalDelPosts'));
     }
 
     /**
@@ -160,11 +162,35 @@ class PostController extends Controller
         return redirect()->route('admin.posts.index')->with('success', 'Bài viết đã được chuyển vào thùng rác');
     }
 
-    public function trash() {
+    public function trash(Request $request)
+    {
         $title = 'Bài viết đã xóa';
+        $searchQuery = $request->search;
 
-        $posts = Post::query()->onlyTrashed()->orderBy('deleted_at', 'desc')->paginate(3);
+        $postsQuery = Post::onlyTrashed();
 
-        return view('admin.posts.index', compact('title', 'posts'));
+        if ($searchQuery) {
+
+            $postsQuery->where(function ($query) use ($searchQuery) {
+                $query->whereFullText('title', $searchQuery)
+                    ->orWhereFullText('description', $searchQuery)
+                    ->orWhereFullText('content', $searchQuery)
+                    ->orWhere('title', 'LIKE', "%{$searchQuery}%")
+                    ->orWhere('description', 'LIKE', "%{$searchQuery}%")
+                    ->orWhere('content', 'LIKE', "%{$searchQuery}%")
+                    ->orWhereHas('categories', function ($subQuery) use ($searchQuery) {
+                        $subQuery->where('name', 'LIKE', "%{$searchQuery}%");
+                    })
+                    ->orWhereHas('tags', function ($subQuery) use ($searchQuery) {
+                        $subQuery->where('name', 'LIKE', "%{$searchQuery}%");
+                    });
+            });
+        }
+
+        $posts = $postsQuery->orderBy('deleted_at', 'desc')
+                        ->paginate(3)
+                        ->appends(['search' => $searchQuery]);
+
+        return view('admin.posts.index', compact('title', 'posts', 'searchQuery'));
     }
 }

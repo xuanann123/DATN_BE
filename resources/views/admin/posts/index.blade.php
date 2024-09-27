@@ -34,18 +34,26 @@
                 <a href="{{ route('admin.posts.create') }}" class="btn btn-success"><i
                         class="ri-add-line align-bottom me-1"></i>Thêm mới</a>
                 <div>
-                    <button type="button" class="btn btn-danger btn-label waves-effect waves-light">
-                        <i class="bx bxs-trash label-icon"></i>
-                        Thùng rác <span class="badge bg-danger-subtle text-danger">2</span>
-                    </button>
+                    @if (request()->url() === route('admin.posts.trash'))
+                        <a href="{{ route('admin.posts.index') }}" class="btn btn-primary">
+                            <i class="ri-arrow-left-line align-bottom me-1"></i>Quay lại
+                        </a>
+                    @else
+                        <a href="{{ route('admin.posts.trash') }}" type="button"
+                            class="btn btn-danger btn-label waves-effect waves-light">
+                            <i class="bx bxs-trash label-icon"></i>
+                            Thùng rác <span class="badge bg-danger-subtle text-danger">{{ $totalDelPosts }}</span>
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
         <div class="col-sm">
             <div class="d-flex justify-content-sm-end gap-2">
-                <form action="{{ route('admin.posts.index') }}" method="GET">
+                <form action="{{ request()->is('admin/posts/trash') ? route('admin.posts.trash') : route('admin.posts.index') }}" method="GET">
                     <div class="search-box ms-2">
-                        <input type="text" name="search" value="{{ old('search', $searchQuery) }}" class="form-control" placeholder="Search..." onkeydown="if(event.key === 'Enter'){ this.form.submit(); }">
+                        <input type="text" name="search" value="{{ old('search', $searchQuery) }}" class="form-control"
+                            placeholder="Search..." onkeydown="if(event.key === 'Enter'){ this.form.submit(); }">
                         <i class="ri-search-line search-icon"></i>
                     </div>
                 </form>
@@ -107,7 +115,8 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#" class="dropdown-item remove-item-btn" data-bs-toggle="modal" data-bs-target="#removePostModal">
+                                            <a href="#" class="dropdown-item remove-item-btn" data-bs-toggle="modal"
+                                                data-bs-target="#removePostModal">
                                                 <i class="ri-delete-bin-fill align-bottom me-2 text-danger"></i>
                                                 Xoá
                                             </a>
@@ -117,22 +126,29 @@
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="NotificationModalbtn-close"></button>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close" id="NotificationModalbtn-close"></button>
                                                 </div>
                                                 <div class="modal-body">
                                                     <div class="mt-2 text-center">
-                                                        <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
+                                                        <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json"
+                                                            trigger="loop" colors="primary:#f7b84b,secondary:#f06548"
+                                                            style="width:100px;height:100px"></lord-icon>
                                                         <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
                                                             <h4>Bỏ vào thùng rác ?</h4>
-                                                            <p class="text-muted mx-4 mb-0">Bạn chắc chắn muốn chuyển bài viết "{{ $post->title }}" vào thùng rác ?</p>
+                                                            <p class="text-muted mx-4 mb-0">Bạn chắc chắn muốn chuyển bài
+                                                                viết "{{ $post->title }}" vào thùng rác ?</p>
                                                         </div>
                                                     </div>
                                                     <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
-                                                        <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Đóng</button>
-                                                        <form action="{{ route('admin.posts.destroy', $post) }}" method="POST">
+                                                        <button type="button" class="btn w-sm btn-light"
+                                                            data-bs-dismiss="modal">Đóng</button>
+                                                        <form action="{{ route('admin.posts.destroy', $post) }}"
+                                                            method="POST">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="btn w-sm btn-danger" id="delete-notification">Xác nhận</button>
+                                                            <button type="submit" class="btn w-sm btn-danger"
+                                                                id="delete-notification">Xác nhận</button>
                                                         </form>
                                                     </div>
                                                 </div>
@@ -160,7 +176,8 @@
                         <div class="card-footer">
                             <div class="d-flex align-items-center">
                                 <div class="flex-grow-1">
-                                    <span class=""><i class="ri-time-line align-bottom me-1"></i> Thời gian xuất bản:
+                                    <span class=""><i class="ri-time-line align-bottom me-1"></i> Thời gian xuất
+                                        bản:
                                         {{ $post->published_at ? $post->published_at : 'Chưa có' }}</span>
                                 </div>
                                 <div class="flex-shrink-0">
