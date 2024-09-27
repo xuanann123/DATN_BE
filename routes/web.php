@@ -169,7 +169,7 @@ Route::prefix("admin")
         Route::prefix('posts')
             ->as('posts.')
             ->group(function () {
-
+                Route::get('/trash', [PostController::class, 'trash'])->name('trash');
             });
             Route::resource('posts', PostController::class);
     });
