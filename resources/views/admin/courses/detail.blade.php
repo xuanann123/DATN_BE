@@ -638,11 +638,14 @@
 
         // add text lesson
         $(document).ready(function() {
+
             $('#addTextLessonForm').on('submit', function(event) {
                 event.preventDefault();
+                var test = $(this).attr('action');
+                
 
                 $.ajax({
-                    url: $(this).attr('action'),
+                    url: test,
                     method: 'POST',
                     data: $(this).serialize(),
                     success: function(response) {
@@ -651,6 +654,8 @@
                     },
                     error: function(xhr) {
                         if (xhr.status === 422) {
+                            console.log(test);
+                            
                             let errors = xhr.responseJSON.errors;
                             $('.error-message').remove();
 

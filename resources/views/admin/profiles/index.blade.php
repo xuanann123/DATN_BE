@@ -32,8 +32,9 @@
                     @php
                         $profile = Auth::user()->profile;
                     @endphp
+                    
 
-                    <p class="text-white text-opacity-75">{{ $profile->education ? $profile->education->major : '' }}</p>
+                    <p class="text-white text-opacity-75">{{ $profile ? $profile->education->major : '' }}</p>
                     <div class="hstack text-white-50 gap-1">
                         <div class="me-2"><i
                                 class="ri-map-pin-user-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>
