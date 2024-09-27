@@ -57,7 +57,7 @@
         </div><!-- /.modal -->
         @include('admin.layouts.sidebar')
         <!-- Left Sidebar End -->
-        
+
         <!-- Vertical Overlay-->
         <div class="vertical-overlay"></div>
         <!-- ============================================================== -->
@@ -105,7 +105,7 @@
 
 
     <script>
-        const PATH_ROOT = 'http://php3.test/';
+        const PATH_ROOT = '/theme/admin/';
     </script>
     <!-- JAVASCRIPT -->
     <!-- JAVASCRIPT -->

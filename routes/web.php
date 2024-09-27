@@ -14,7 +14,7 @@ use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ApprovalCourseController;
-
+use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\QuizController;
 use App\Http\Controllers\Admin\QuestionController;
 
@@ -151,7 +151,7 @@ Route::prefix("admin")
                 Route::get('/callback', [UploadVideoController::class, 'handleGoogleCallback'])->name('youtube.callback');
                 Route::post('/store-lesson-video', [UploadVideoController::class, 'storeLessonVideo'])->name('store-lesson-video');
             });
-        Route::prefix('approval ')
+        Route::prefix('approval')
             ->as('approval.')
             ->group(function () {
                 Route::get('ratings/list', [RatingController::class, 'index'])->name('ratings.list');
@@ -162,6 +162,13 @@ Route::prefix("admin")
                         Route::get("/detail", [ApprovalCourseController::class, 'show'])->name('detail');
                     });
             });
+        // route post
+        Route::prefix('posts')
+            ->as('posts.')
+            ->group(function () {
+
+            });
+            Route::resource('posts', PostController::class);
     });
 
 
