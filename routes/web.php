@@ -49,16 +49,16 @@ Route::prefix("admin")
         Route::prefix("banners")
             ->as('banners.')
             ->group(function () {
-            Route::get("/", [BannerController::class, 'index'])->name('index');
-            Route::get("/create", [BannerController::class, 'create'])->name('create');
-            Route::post("/store", [BannerController::class, 'store'])->name('store');
-            Route::get("/edit/{banner}", [BannerController::class, 'edit'])->name('edit');
-            Route::put("/update/{banner}", [BannerController::class, 'update'])->name('update');
-            Route::get("/destroy/{banner}", [BannerController::class, 'destroy'])->name('destroy');
-            Route::get('action', [BannerController::class, 'action'])->name('action');
-            Route::get('restore/{id}', [BannerController::class, 'restore'])->name('restore');
-            Route::get('forceDelete/{id}', [BannerController::class, 'forceDelete'])->name('forceDelete');
-        });
+                Route::get("/", [BannerController::class, 'index'])->name('index');
+                Route::get("/create", [BannerController::class, 'create'])->name('create');
+                Route::post("/store", [BannerController::class, 'store'])->name('store');
+                Route::get("/edit/{banner}", [BannerController::class, 'edit'])->name('edit');
+                Route::put("/update/{banner}", [BannerController::class, 'update'])->name('update');
+                Route::get("/destroy/{banner}", [BannerController::class, 'destroy'])->name('destroy');
+                Route::get('action', [BannerController::class, 'action'])->name('action');
+                Route::get('restore/{id}', [BannerController::class, 'restore'])->name('restore');
+                Route::get('forceDelete/{id}', [BannerController::class, 'forceDelete'])->name('forceDelete');
+            });
 
 
         Route::prefix("categories")
@@ -78,18 +78,19 @@ Route::prefix("admin")
         Route::prefix("tags")
             ->as('tags.')
             ->group(function () {
-            Route::get("/", [TagController::class, 'index'])->name('index');
-            Route::get("/create", [TagController::class, 'create'])->name('create');
-            Route::post("/store", [TagController::class, 'store'])->name('store');
-            Route::get("/edit/{tag}", [TagController::class, 'edit'])->name('edit');
-            Route::put("/update/{tag}", [TagController::class, 'update'])->name('update');
-            Route::get("/destroy/{tag}", [TagController::class, 'destroy'])->name('destroy');
-            Route::get('action', [TagController::class, 'action'])->name('action');
-            Route::get('restore/{id}', [TagController::class, 'restore'])->name('restore');
-            Route::get('forceDelete/{id}', [TagController::class, 'forceDelete'])->name('forceDelete');
-        });
+                Route::get("/", [TagController::class, 'index'])->name('index');
+                Route::get("/create", [TagController::class, 'create'])->name('create');
+                Route::post("/store", [TagController::class, 'store'])->name('store');
+                Route::get("/edit/{tag}", [TagController::class, 'edit'])->name('edit');
+                Route::put("/update/{tag}", [TagController::class, 'update'])->name('update');
+                Route::get("/destroy/{tag}", [TagController::class, 'destroy'])->name('destroy');
+                Route::get('action', [TagController::class, 'action'])->name('action');
+                Route::get('restore/{id}', [TagController::class, 'restore'])->name('restore');
+                Route::get('forceDelete/{id}', [TagController::class, 'forceDelete'])->name('forceDelete');
+            });
 
         Route::resource('vouchers', VoucherController::class)->except('show');
+
         //Về phần user thì sao nhỉ
         Route::prefix('users')
             ->as('users.')
@@ -136,10 +137,12 @@ Route::prefix("admin")
         Route::prefix('quizzes')
             ->as('quizzes.')
             ->group(function () {
+
             Route::get('{id}/', [QuizController::class, 'index'])->name('index');
             //Lưu chữ chung dữ liệu vừa là question và cho option của question đó luôn.
             Route::post('/{id}/questions-with-options', [QuestionController::class, 'storeWithOptions'])->name('store');
         });
+
         Route::prefix('lessons')
             ->as('lessons.')
             ->group(function () {
