@@ -12,10 +12,16 @@ class Post extends Model
 
     protected $fillable = [
         'title',
+        'description',
         'content',
+        'slug',
         'thumbnail',
         'is_active',
         'id_banned',
+        'status',
+        'views',
+        'allow_comments',
+        'published_at',
         'user_id',
     ];
 
@@ -28,6 +34,6 @@ class Post extends Model
     }
 
     public function categories () {
-        return $this->belongsToMany(Category::class, 'post_category');
+        return $this->belongsToMany(Category::class, 'category_post');
     }
 }

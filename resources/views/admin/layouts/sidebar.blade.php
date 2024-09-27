@@ -196,8 +196,22 @@
                                 <a href="{{ route('admin.courses.list') }}" class="nav-link" data-key="t-one-page">
                                     Danh sách chứng chỉ</a>
                             </li>
+                        </ul>
+                    </div>
+                </li>
 
-
+                {{-- Bài viết --}}
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#sidebarPost" data-bs-toggle="collapse" role="button"
+                        aria-expanded="false" aria-controls="sidebarPost">
+                        <i class=" ri-newspaper-line"></i> <span>Bài viết</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarPost">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="{{ route('admin.posts.index') }}" class="nav-link" data-key="t-one-page">
+                                    Danh sách bài viết</a>
+                            </li>
                         </ul>
                     </div>
                 </li>
