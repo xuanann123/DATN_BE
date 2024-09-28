@@ -670,19 +670,29 @@
         $(document).ready(function() {
             $('[data-bs-target="#previewLessonModal"]').on('click', function() {
                 var lessonId = $(this).data('lesson-id')
+                console.log(lessonId);
 
                 $.ajax({
                     url: '/admin/lessons/get-lesson-details/' + lessonId,
                     method: 'GET',
                     success: function(data) {
                         $('#previewLessonModalLabel').text(data.title)
-
+                        console.log(data);
                         // lesson text
                         if (data.lesson_type === 'document') {
                             $('#previewLessonModal .modal-body').html(`
                                 <p>${data.content}</p>
                             `)
+                        } else if (data.lesson_type == 'video') {
+                            $('#previewLessonModal .modal-body').html(`
+                                <iframe width="100%" height="500px" src="https://www.youtube.com/embed/${data.video_youtube_id}" title="YouTube video player"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+                                </iframe>
+                            `)
                         }
+
                     }
                 })
             })
