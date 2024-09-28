@@ -70,6 +70,7 @@ class UploadVideoToYoutube implements ShouldQueue
                 $data = [
                     'title' => $this->videoData['title'],
                     'url' => 'https://www.youtube.com/watch?v=' . $status['id'],
+                    'video_youtube_id' => $status['id'],
                     'duration' => 10000,
                 ];
 
@@ -77,7 +78,6 @@ class UploadVideoToYoutube implements ShouldQueue
                 $description = $this->videoData['description'];
 
                 $this->addLessonVideo($data, $moduleId, $description);
-
             } else {
                 throw new \Exception('Video upload failed without a specific error.');
             }
