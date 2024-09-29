@@ -7,6 +7,7 @@ use App\Models\Document;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Lessons\StoreLessonRequest;
+use App\Models\Video;
 
 class LessonController extends Controller
 {
@@ -51,6 +52,14 @@ class LessonController extends Controller
                 'title' => $lesson->title,
                 'lesson_type' => 'document',
                 'content' => $lesson->lessonable->content
+            ]);
+        }
+
+        if ($lesson->lessonable_type == Video::class) {
+            return response()->json([
+                'title' => $lesson->title,
+                'lesson_type' => 'video',
+                'video_youtube_id' => $lesson->lessonable->video_youtube_id
             ]);
         }
     }
