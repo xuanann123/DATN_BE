@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class UploadVideoToYoutube implements ShouldQueue
@@ -32,7 +33,6 @@ class UploadVideoToYoutube implements ShouldQueue
     {
         $client = new GoogleClient();
         $client->setAccessToken($this->accessToken);
-
         $youtube = new YouTube($client);
 
         $video = new YouTube\Video();
@@ -42,13 +42,10 @@ class UploadVideoToYoutube implements ShouldQueue
         $video->getStatus()->setPrivacyStatus('public');
 
         $videoPath = $this->videoData['path'];
-
-
         $chunkSize = 1 * 1024 * 1024;
         $client->setDefer(true);
 
         $insertRequest = $youtube->videos->insert('status,snippet', $video);
-
         $media = new MediaFileUpload(
             $client,
             $insertRequest,
@@ -63,37 +60,43 @@ class UploadVideoToYoutube implements ShouldQueue
         $status = false;
         $handle = fopen($videoPath, "rb");
 
-        while (!$status && !feof($handle)) {
-            $chunk = fread($handle, $chunkSize);
-            $status = $media->nextChunk($chunk);
+        try {
+            while (!$status && !feof($handle)) {
+                $chunk = fread($handle, $chunkSize);
+                $status = $media->nextChunk($chunk);
+            }
+
+            if ($status instanceof YouTube\Video) {
+                $data = [
+                    'title' => $this->videoData['title'],
+                    'url' => 'https://www.youtube.com/watch?v=' . $status['id'],
+                    'video_youtube_id' => $status['id'],
+                    'duration' => 10000,
+                ];
+
+                $moduleId = $this->videoData['id_module'];
+                $description = $this->videoData['description'];
+
+                $this->addLessonVideo($data, $moduleId, $description);
+            } else {
+                throw new \Exception('Video upload failed without a specific error.');
+            }
+        } catch (\Exception $e) {
+            Log::error('Video upload failed: ' . $e->getMessage());
+            throw $e;
+        } finally {
+            fclose($handle);
+
+            Storage::disk('public')->delete('videos/' . basename($videoPath));
         }
 
-        fclose($handle);
-
         $client->setDefer(false);
-
-
-
-        $data = [
-            'title' => $this->videoData['title'],
-            'url' => 'https://www.youtube.com/watch?v=' . $status['id'],
-            'duration' => 10000,
-        ];
-
-        $moduleId = $this->videoData['id_module'];
-        $description = $this->videoData['description'];
-
-        $this->addLessonVideo($data, $moduleId, $description);
-
-        Storage::disk('public')->delete('videos/' . basename($videoPath));
     }
-
 
 
     public function addLessonVideo($data, $moduleId, $description)
     {
         $newLessonVideo = Video::query()->create($data);
-
         $newLessonVideo->lessons()->create([
             'id_module' => $moduleId,
             'title' => $data['title'],
@@ -101,7 +104,6 @@ class UploadVideoToYoutube implements ShouldQueue
             'content_type' => 'video',
             'position' => $newLessonVideo->id,
         ]);
-
         $user = User::find(auth()->user()->id);
         $user->notify(new VideoUploadedNotification($newLessonVideo));
     }

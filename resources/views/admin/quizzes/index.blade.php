@@ -81,12 +81,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        {{-- <div class="col-md-auto">
-                                            <div class="hstack gap-1 flex-wrap">
-                                                <button type="button" class="btn btn-danger">Reject</button>
-                                                <button type="button" class="btn btn-success">Approve</button>
-                                            </div>
-                                        </div> --}}
                                     </div>
                                 </div>
                             </div>
@@ -111,7 +105,7 @@
                 <div class="tab-content text-muted">
                     <div class="tab-pane fade show active" id="course-overview" role="tabpanel">
                         <div class="row">
-                            <div class="col-xl-6 col-lg-6">
+                            <div class="col-xl-5 col-lg-5">
                                 <div class="card">
                                     <div class="card-header">
                                         <h5 class="card-title mb-0">Định nghĩa câu hỏi</h5>
@@ -160,8 +154,8 @@
                                                                     <label class="form-label">Loại câu hỏi:</label>
                                                                     <select id="questionType" class="form-control"
                                                                         name="questions[0][type]" required>
-                                                                        <option value="one_choice">One Choice</option>
-                                                                        <option value="multiple_choice">Multiple Choice
+                                                                        <option value="one_choice">Chọn một câu</option>
+                                                                        <option value="multiple_choice">Chọn nhiều câu Choice
                                                                         </option>
                                                                     </select>
                                                                 </div>
@@ -176,10 +170,10 @@
                                                                                 <input class="form-check-input mt-0"
                                                                                     type="radio"
                                                                                     name="questions[0][correct_answer]"
-                                                                                    value="0" >
+                                                                                    value="0">
                                                                             </div>
                                                                             <input type="text" class="form-control"
-                                                                                placeholder="Option 1"
+                                                                                placeholder="Lựa chọn 1"
                                                                                 name="questions[0][options][0]" required>
                                                                         </div>
 
@@ -187,21 +181,20 @@
 
                                                                     <!-- Nút để thêm option mới -->
                                                                     <button type="button" class="btn btn-primary btn-sm"
-                                                                        id="addOptionBtn">Thêm option</button>
+                                                                        id="addOptionBtn">Thêm lựa chọn</button>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <button type="submit" class="btn btn-sm btn-secondary mt-2"
-                                                        id="addQuestionBtn">Add Question</button>
+                                                        id="addQuestionBtn">Thêm câu hỏi</button>
                                                 </div>
                                             </form>
                                         @endif
-
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xl-6 col-lg-6">
+                            <div class="col-xl-7 col-lg-7">
                                 <div class="card position-relative" style="max-height: 600px; overflow-y: scroll">
                                     <div class="card-header fixed-top position-sticky">
                                         <h3 class="card-title mb-0">
@@ -209,34 +202,48 @@
                                         </h3>
                                     </div>
                                     <div class="card-body">
-                                        {{-- <h6>Questions for Module {{ $module->title }}</h6> --}}
-
-                                        @foreach ($quizzes as $quiz)
+                                        @foreach ($quizzesModule as $quiz)
                                             <div class="quiz">
                                                 @php
                                                     $t = 0;
                                                 @endphp
-                                                @foreach ($quiz->questions as $question)
-                                                    @php
 
+                                                @foreach ($quiz->questions as $index => $question)
+                                                    @php
                                                         $t++;
                                                     @endphp
-                                                    <div class="question">
-                                                        <h6>Câu hỏi {{ $t }}: {{ $question->question }}
-                                                            ({{ $question->points }} points)
-                                                        </h6>
-
-                                                        <ul>
-                                                            @foreach ($question->options as $option)
-                                                                <li>
+                                                    <h6><b>Câu {{ $t }}</b> : {{ $question->question }}
+                                                        ({{ $question->points }} points)
+                                                    </h6>
+                                                    <ul class="list-unstyled">
+                                                        @foreach ($question->options as $index => $option)
+                                                            <li>
+                                                                @if ($question->type == 'radio')
+                                                                    <!-- Dạng câu hỏi chọn một -->
+                                                                    <input type="radio" name="answer"
+                                                                        value="{{ $option->id }}"
+                                                                        id="option{{ $option->id }}">
+                                                                @elseif ($question->type == 'checkbox')
+                                                                    <!-- Dạng câu hỏi chọn nhiều -->
+                                                                    <input type="checkbox" name="answers[]"
+                                                                        value="{{ $option->id }}"
+                                                                        id="option{{ $option->id }}">
+                                                                @endif
+                                                                <label for="option{{ $option->id }}">
+                                                                    @if ($option->is_correct)
+                                                                        <strong
+                                                                            class="py-1 px-2 bg-primary rounded-5 mt-3 text-white">{{ $prefixeChoice[$index] }}</strong>
+                                                                    @else
+                                                                        <strong class="py-1 px-2">{{ $prefixeChoice[$index] }}</strong>
+                                                                    @endif
                                                                     {{ $option->option }}
                                                                     @if ($option->is_correct)
                                                                         <strong>(đúng)</strong>
                                                                     @endif
-                                                                </li>
-                                                            @endforeach
-                                                        </ul>
-                                                    </div>
+                                                                </label>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
                                                 @endforeach
                                             </div>
                                         @endforeach
@@ -269,7 +276,7 @@
                 } else {
                     inputs[i].setAttribute('type', 'checkbox');
                     inputs[i].setAttribute('name',
-                    'questions[0][correct_answer][]'); // Sử dụng mảng cho multiple choice
+                        'questions[0][correct_answer][]'); // Sử dụng mảng cho multiple choice
                 }
             }
         });
@@ -289,7 +296,7 @@
             <div class="input-group-text">
                 <input class="form-check-input mt-0" type="${inputType}" name="${inputType === 'radio' ? 'questions[0][correct_answer]' : 'questions[0][correct_answer][]'}" value="${optionCount}">
             </div>
-            <input type="text" class="form-control" placeholder="Option ${optionCount + 1}" name="questions[0][options][${optionCount}]" required>
+            <input type="text" class="form-control" placeholder="Lựa chọn ${optionCount + 1}" name="questions[0][options][${optionCount}]" required>
         `;
 
             optionsContainer.appendChild(newOption);

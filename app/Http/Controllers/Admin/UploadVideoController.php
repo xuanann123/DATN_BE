@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Lessons\StoreLessonVideoRequest;
 use App\Jobs\UploadVideoToYoutube;
 use Google\Client as GoogleClient;
-use Google\Service\YouTube;
+//use Google\Service\YouTube;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -71,4 +71,5 @@ class UploadVideoController extends Controller
 
         return back()->with('success', 'Chúng tôi sẽ thông báo khi video đã sẵn sàng!');
     }
+
 }

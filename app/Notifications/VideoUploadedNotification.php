@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Auth;
 
 class VideoUploadedNotification extends Notification implements ShouldQueue
 {
@@ -19,13 +20,13 @@ class VideoUploadedNotification extends Notification implements ShouldQueue
     }
 
 
-    public function via(object $notifiable)
+    public function via($notifiable)
     {
         return ['mail'];
     }
 
 
-    public function toMail(object $notifiable)
+    public function toMail($notifiable)
     {
         return (new MailMessage)
             ->subject('Video Upload Successful')
