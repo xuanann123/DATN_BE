@@ -21,12 +21,7 @@ class ModuleController extends Controller
             'position' => $request->position,
         ]);
 
-        return response()->json([
-            'message' => 'Thêm bài học thành công!',
-            'code' => 0,
-            'data' => [],
-            'status' => 200,
-        ], 200);
+        return redirect()->back()->with('success', 'Thêm module thành công !');
     }
     public function storeQuiz(Request $request, string $id) {
 

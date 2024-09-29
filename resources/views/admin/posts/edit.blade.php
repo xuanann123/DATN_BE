@@ -52,14 +52,15 @@
                         <div class="mb-3">
                             <label class="form-label" for="post-title-input">Tiêu đề bài
                                 viết</label>
-                            <input type="text" name="title" id="title" value="{{ $post->title }}" class="form-control" id="post-title-input"
-                                placeholder="Nhập tiêu đề bài viết...">
+                            <input type="text" name="title" id="title" value="{{ old('title', $post->title) }}"
+                                class="form-control" id="post-title-input" placeholder="Nhập tiêu đề bài viết...">
                             <div class="invalid-feedback">Please enter a post title.</div>
                         </div>
                         <div class="mb-3">
                             <label for="slug" class="form-label">Đường dẫn thân thiện</label>
-                            <input type="text" class="form-control" id="slug" name="slug" value="{{ $post->slug }}"
-                                placeholder="duong-dan-than-thien" value="{{ old('slug') }}" readonly>
+                            <input type="text" class="form-control" id="slug" name="slug"
+                                value="{{ old('slug', $post->slug) }}" placeholder="duong-dan-than-thien"
+                                value="{{ old('slug') }}" readonly>
                             <small class="help-block form-text text-danger">
                                 @if ($errors->has('slug'))
                                     {{ $errors->first('slug') }}
@@ -75,18 +76,19 @@
                                         {{ $errors->first('thumbnail') }}
                                     @endif
                                 </small> <br>
-                                <img src="{{ $post->thumbnail ? Storage::url($post->thumbnail) : '' }}" style="" class="mb-3" id="show-image" width="200px">
+                                <img src="{{ $post->thumbnail ? Storage::url($post->thumbnail) : '' }}" style=""
+                                    class="mb-3" id="show-image" width="200px">
                             </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Mô tả bài viết</label>
                             <textarea name="description" id="ckeditor-classic-2" class="form-control" placeholder="Mô tả bài viết..."
-                                rows="8">{{ $post->description }}</textarea>
+                                rows="8">{{ old('description', $post->description) }}</textarea>
                             <div class="invalid-feedback">Please enter post content.</div>
                         </div>
                         <div>
                             <label class="form-label">Nội dung bài viết</label>
-                            <textarea name="content" id="ckeditor-classic" class="form-control" placeholder="Nội dung bài viết..." rows="8">{{ $post->content }}</textarea>
+                            <textarea name="content" id="ckeditor-classic" class="form-control" placeholder="Nội dung bài viết..." rows="8">{{ old('content', $post->content) }}</textarea>
                             <div class="invalid-feedback">Please enter post content.</div>
                         </div>
                     </div>
@@ -108,8 +110,11 @@
                             <div class="col-lg-6">
                                 <label for="post-visibility-input" class="form-label">Hiển thị</label>
                                 <select name="is_active" class="form-select w-75" id="post-visibility-input">
-                                    <option value="1" {{ $post->is_active === 1 ? 'selected' : '' }}>Công khai</option>
-                                    <option value="0" {{ $post->is_active === 0 ? 'selected' : '' }}>Riêng tư</option>
+                                    <option value="1" {{ old('is_active', $post->is_active) == 1 ? 'selected' : '' }}>
+                                        Công khai
+                                    </option>
+                                    <option value="0" {{ old('is_active', $post->is_active) == 0 ? 'selected' : '' }}>
+                                        Riêng tư</option>
                                 </select>
                             </div>
                             <div class="col-lg-6">
@@ -117,7 +122,8 @@
                                 <div class="form-check form-switch form-switch-lg form-switch-primary mt-1">
                                     <input type="hidden" name="allow_comments" value="0">
                                     <input class="form-check-input" name="allow_comments" type="checkbox" role="switch"
-                                        id="allow-comments-input" value="1" {{ $post->allow_comments === 1 ? 'checked' : '' }}>
+                                        id="allow-comments-input" value="1"
+                                        {{ old('allow_comments', $post->allow_comments) == 1 ? 'checked' : '' }}>
                                     <label class="form-check-label" for="allow-comments-input">Cho
                                         phép</label>
                                 </div>
@@ -126,9 +132,9 @@
                         <div>
                             <label for="datepicker-publish-input" class="form-label">Thời gian xuất
                                 bản</label>
-                            <input type="datetime-local" name="published_at" value="{{ $post->published_at ?? '' }}" id="datepicker-publish-input" class="form-control"
-                                placeholder="yy/mm/dd hh:mm" data-provider="flatpickr" data-date-format="Y/m/d"
-                                data-enable-time>
+                            <input type="datetime-local" name="published_at" value="{{ $post->published_at ?? '' }}"
+                                id="datepicker-publish-input" class="form-control" placeholder="yy/mm/dd hh:mm"
+                                data-provider="flatpickr" data-date-format="Y/m/d" data-enable-time>
                         </div>
                     </div>
                 </div>
@@ -139,10 +145,10 @@
                     </div>
                     <div class="card-body">
                         <span class="text-muted">Chọn danh mục</span>
-                        <select class="js-example-basic-multiple" name="categories[]" multiple="multiple">
+                        <select class="js-example-basic-multiple-2" name="categories[]" multiple="multiple">
                             @foreach ($categories as $category)
                                 <option value="{{ $category->id }}"
-                                    {{ in_array($category->id, $post->categories->pluck('id')->toArray()) ? 'selected' : '' }}>
+                                    {{ in_array($category->id, old('categories', $post->categories->pluck('id')->toArray())) ? 'selected' : '' }}>
                                     {{ $category->name }}
                                 </option>
                             @endforeach
@@ -159,7 +165,7 @@
                         <select class="js-example-basic-multiple" name="tags[]" multiple="multiple">
                             @foreach ($tags as $tag)
                                 <option value="{{ $tag->id }}"
-                                    {{ in_array($tag->id, $post->tags->pluck('id')->toArray()) ? 'selected' : '' }}>
+                                    {{ (in_array($tag->id, old('tags', $post->tags->pluck('id')->toArray())) ? 'selected' : '') ?? '' }}>
                                     {{ $tag->name }}
                                 </option>
                             @endforeach
@@ -169,12 +175,14 @@
                 <div class="row mt-4">
                     <div class="col-lg-12">
                         <div class="text-end mb-4">
-                            <button type="submit" name="status" value="draft"
-                                class="btn btn-secondary btn-label w-sm me-1">
-                                <i class="ri-arrow-go-back-fill label-icon align-middle rounded-pill fs-16 ms-2"></i>
-                                Quay lại
-                            </button>
-                            <button type="submit" name="status" value="published"
+                            <a href="{{ route('admin.posts.index') }}">
+                                <button type="button" name="status" value="draft"
+                                    class="btn btn-secondary btn-label w-sm me-1">
+                                    <i class="ri-arrow-go-back-fill label-icon align-middle rounded-pill fs-16 ms-2"></i>
+                                    Quay lại
+                                </button>
+                            </a>
+                            <button type="submit"
                                 class="btn btn-warning btn-label right w-sm">
                                 <i class="ri-check-double-line label-icon align-middle rounded-pill fs-16 ms-2"></i>
                                 Chỉnh sửa

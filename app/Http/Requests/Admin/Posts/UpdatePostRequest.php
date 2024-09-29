@@ -34,7 +34,7 @@ class UpdatePostRequest extends FormRequest
             'categories' => 'required|array',
             'categories.*' => 'exists:categories,id',
             'tags' => 'nullable|array',
-            'tags.*' => 'exists:tags,id',
+            'tags.*' => 'nullable',
         ];
     }
 }

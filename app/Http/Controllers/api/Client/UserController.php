@@ -27,7 +27,8 @@ class UserController extends Controller
             'data' => [
                 'user' => $user->makeHidden('profile'),
                 'profile' => $profile,
-            ]
+            ],
+            'status' => 200,
         ], 200);
     }
 
@@ -67,7 +68,6 @@ class UserController extends Controller
 
             return response()->json([
                 'message' => 'Cập nhật thông tin cá nhân thành công.',
-                'code' => 0,
                 'data' => [
                     'user' => $user->makeHidden('profile'),
                     'profile' => $user->profile
@@ -80,7 +80,6 @@ class UserController extends Controller
 
             return response()->json([
                 'message' => 'Đã xảy ra lỗi trong quá trình cập nhật thông tin.',
-                'code' => 1,
                 'data' => [],
                 'status' => 500,
             ], 500);
@@ -93,7 +92,11 @@ class UserController extends Controller
             $user = Auth::user();
 
             if (!Hash::check($request->current_password, $user->password)) {
-                return response()->json(['message' => 'Mật khẩu hiện tại không chính xác.'], 400);
+                return response()->json([
+                    'message' => 'Mật khẩu hiện tại không chính xác.',
+                    'data' => [],
+                    'status' => 400,
+                ], 400);
             }
 
             // update new password
@@ -101,7 +104,6 @@ class UserController extends Controller
 
             return response()->json([
                 'message' => 'Mật khẩu đã được thay đổi thành công.',
-                'code' => 0,
                 'data' => [],
                 'status' => 200,
             ], 200);
@@ -110,7 +112,6 @@ class UserController extends Controller
 
             return response()->json([
                 'message' => 'Đã xảy ra lỗi trong quá trình thay đổi mật khẩu.',
-                'code' => 1,
                 'data' => [],
                 'status' => 500,
             ], 500);

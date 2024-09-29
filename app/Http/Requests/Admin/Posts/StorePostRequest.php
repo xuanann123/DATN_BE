@@ -28,13 +28,13 @@ class StorePostRequest extends FormRequest
             'thumbnail' =>'required|image',
             'status' =>'',
             'published_at' =>'',
-            'is_active' =>'',
+            'is_active' =>'required',
             'allow_comments' =>'',
             'content' => 'required',
             'categories' => 'required|array',
             'categories.*' => 'exists:categories,id',
             'tags' => 'nullable|array',
-            'tags.*' => 'exists:tags,id',
+            'tags.*' => 'nullable',
         ];
     }
 }

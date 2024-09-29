@@ -170,6 +170,8 @@ Route::prefix("admin")
             ->as('posts.')
             ->group(function () {
                 Route::get('/trash', [PostController::class, 'trash'])->name('trash');
+                Route::post('/{id}/restore', [PostController::class, 'restore'])->name('restore');
+                Route::delete('/{id}/force-delete', [PostController::class, 'forceDelete'])->name('forceDelete');
             });
             Route::resource('posts', PostController::class);
     });

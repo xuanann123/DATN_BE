@@ -30,16 +30,7 @@ class LessonController extends Controller
             'position' => $maxPosition + 1
         ]);
 
-        return response()->json([
-            'message' => 'Thêm bài học thành công!',
-            'code' => 0,
-            'data' => [
-                'id_module' => $lesson->id_module,
-                'id' => $lesson->id,
-                'title' => $lesson->title,
-            ],
-            'status' => 200,
-        ], 200);
+        return redirect()->back()->with('success', 'Thêm bài học thành công !');
     }
 
     public function show($id)
