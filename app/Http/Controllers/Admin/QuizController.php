@@ -14,10 +14,19 @@ class QuizController extends Controller
         $module = Module::with(['quiz','course.user'])->findOrFail($id);
         // dd($module->quiz);
         $title = "Bài tập cuối chương";
-
-        //Lấy toàn bộ câu hỏi đổ sang bên phải như sau
-        $quizzes = Quiz::where('id_module', $id)->get();
-        return view('admin.quizzes.index', compact('title', "module", 'quizzes'));
+        $prefixeChoice = [
+            'A',
+            'B',
+            'C',
+            'D',
+            'E',
+            'F',
+            'G',
+            'H',
+        ];
+        //Lấy quiz của module
+        $quizzesModule = Quiz::where('id_module', $id)->get();
+        return view('admin.quizzes.index', compact('title', "module", 'quizzesModule', 'prefixeChoice'));
     }
     public function store(Request $request)
     {

@@ -181,10 +181,6 @@
                                                     <td class="fw-medium">Bài kiểm tra</td>
                                                     <td id="quiz-count">{{ $quizzesCount ?? 'Chưa có' }}</td>
                                                 </tr>
-                                                {{-- <tr>
-                                                    <td class="fw-medium">Skill Level</td>
-                                                    <td id="skill-level">Intermediate</td>
-                                                </tr> --}}
                                                 <tr>
                                                     <td class="fw-medium">Học viên</td>
                                                     <td id="course-language">Tạm thời chưa làm</td>
@@ -217,7 +213,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="tab-pane fade" id="course-content" role="tabpanel">
                     <div class="card">
                         <div class="card-body">
@@ -227,7 +222,6 @@
                                     $lessonCounter = 1;
                                 @endphp
                                 @foreach ($course->modules->sortBy('position') as $module)
-                                    <!-- module -->
                                     <div class="accordion-item">
                                         <h2 class="accordion-header" id="module{{ $module->id }}Header">
                                             <button class="accordion-button" type="button" data-bs-toggle="collapse"
@@ -290,7 +284,7 @@
                                                                         data-bs-target="#previewLessonModal"
                                                                         data-lesson-id="{{ $lesson->id }}"
                                                                         data-lesson-type="{{ $lesson->type }}">
-                                                                        <i class="ri-eye-line"></i> Preview
+                                                                        <i class="ri-eye-line"></i> <i>Xem trước</i>
                                                                     </button>
                                                                     <div class="dropdown d-inline-block">
                                                                         <button class="btn btn-sm btn-light"
@@ -300,20 +294,61 @@
                                                                         <ul class="dropdown-menu">
                                                                             <li><a class="dropdown-item" href="#"
                                                                                     data-bs-toggle="modal"
-                                                                                    data-bs-target="#editLessonModal">Edit</a>
+                                                                                    data-bs-target="#editLessonModal">Sửa</a>
                                                                             </li>
                                                                             <li><a class="dropdown-item text-danger"
-                                                                                    href="#">Delete</a></li>
+                                                                                    href="#">Xoá</a></li>
                                                                         </ul>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div class="card-body">
-                                                                <p class="mb-0">Duration: {{ $lesson->duration }}
-                                                                    minutes</p>
+                                                                <i class="mb-0 fs-11">Thời gian: {{ $lesson->duration }}
+                                                                    phút</i>
                                                             </div>
                                                         </div>
                                                     @endforeach
+                                                    @if ($module->quiz)
+                                                        @php
+                                                            $quiz = $module->quiz;
+                                                        @endphp
+                                                        <div class="card border mb-2">
+                                                            <div
+                                                                class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                                <h6 class="mb-0">
+
+                                                                    <b>Bài tập:</b> {{ $quiz->title }} (<i class="mb-0 fs-11">{{$quiz->questions->count() }} câu</i>)
+                                                                </h6>
+                                                                <div>
+                                                                    <button class="btn btn-sm btn-light me-2"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#previewQuizModal"
+                                                                        data-quiz-id="{{ $quiz->id }}"
+                                                                        data-quiz-type="{{ $quiz->type }}">
+                                                                        <i class="ri-eye-line"></i> <i>Xem trước</i>
+                                                                    </button>
+                                                                    <div class="dropdown d-inline-block">
+                                                                        <button class="btn btn-sm btn-light"
+                                                                            type="button" data-bs-toggle="dropdown">
+                                                                            <i class="ri-more-2-fill"></i>
+                                                                        </button>
+                                                                        <ul class="dropdown-menu">
+                                                                            <li><a class="dropdown-item" href="#"
+                                                                                    data-bs-toggle="modal"
+                                                                                    data-bs-target="#editLessonModal">Sữa</a>
+                                                                            </li>
+                                                                            <li><a class="dropdown-item text-danger"
+                                                                                    href="#">
+                                                                                    Xoá</a></li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                       
+                                                        </div>
+                                                    @else
+                                                        <i>Không có bài tập</i>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
@@ -642,7 +677,7 @@
             $('#addTextLessonForm').on('submit', function(event) {
                 event.preventDefault();
                 var test = $(this).attr('action');
-                
+
 
                 $.ajax({
                     url: test,
@@ -655,7 +690,7 @@
                     error: function(xhr) {
                         if (xhr.status === 422) {
                             console.log(test);
-                            
+
                             let errors = xhr.responseJSON.errors;
                             $('.error-message').remove();
 
