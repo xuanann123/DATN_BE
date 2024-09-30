@@ -151,7 +151,7 @@
                                         </h6>
                                         <div id="course-description">{!! $course->description !!}</div>
 
-                                        <div class="pt-3 border-top border-top-dashed mt-4">
+                                        <div class="pt-3 border-top border-top-dashed mt-4" data-simplebar style="max-height: 500px">
                                             {!! $course->learned !!}
                                         </div>
                                     </div>
@@ -344,7 +344,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                       
+
                                                         </div>
                                                     @else
                                                         <i>Không có bài tập</i>
@@ -719,7 +719,7 @@
                         // lesson text
                         if (data.lesson_type === 'document') {
                             $('#previewLessonModal .modal-body').html(`
-                                <p>${data.content}</p>
+                                <div data-simplebar style="max-height: 450px; max-width: 100%">${data.content}</div>
                             `)
                         } else if (data.lesson_type == 'video') {
                             $('#previewLessonModal .modal-body').html(`

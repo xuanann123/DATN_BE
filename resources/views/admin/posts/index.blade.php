@@ -31,8 +31,11 @@
     <div class="row g-4 mb-3">
         <div class="col-sm-auto">
             <div class="d-flex justify-content-between gap-3">
-                <a href="{{ route('admin.posts.create') }}" class="btn btn-success"><i
-                        class="ri-add-line align-bottom me-1"></i>Thêm mới</a>
+                <a href="{{ route('admin.posts.create') }}" type="button"
+                    class="btn btn-success btn-label waves-effect waves-light">
+                    <i class="ri-add-circle-line label-icon"></i>
+                    Tạo bài viết</span>
+                </a>
                 <div>
                     @if (request()->url() === route('admin.posts.trash'))
                         <a href="{{ route('admin.posts.index') }}" class="btn btn-primary">
@@ -111,8 +114,16 @@
                                             class="avatar-sm rounded">
                                     </div>
                                     <div class="flex-grow-1 ms-3">
-                                        <h5 class="fs-16 mb-1 fw-bold"><a href="#"
-                                                class="text-dark">{{ $post->title }}</a>
+                                        <h5 class="fs-16 mb-1 fw-bold">
+                                            <a href="{{ route('admin.posts.show', $post->id) }}"
+                                                class="text-dark">{{ $post->title }}
+                                            </a>
+                                            @if ($post->is_active === 1)
+                                                <span class="badge badge-gradient-danger ms-2">Công khai</span>
+                                            @else
+                                                <span class="badge badge-gradient-warning ms-2">Riêng tư</span>
+                                            @endif
+
                                         </h5>
                                         Tác giả: <span class="badge rounded-pill border border-danger text-danger">
                                             <p class="mb-0">{{ $post->user->name }}</p>
@@ -146,21 +157,79 @@
                                                     </a>
                                                 </li>
                                             @else
-                                                <li>
-                                                    <a href="{{ route('admin.posts.edit', $post) }}"
-                                                        class="dropdown-item edit-item-btn">
-                                                        <i class="ri-pencil-fill align-bottom me-2 text-warning"></i>
-                                                        Sửa
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="#" class="dropdown-item remove-item-btn"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#removePostModal{{ $post->id }}">
-                                                        <i class="ri-delete-bin-fill align-bottom me-2 text-danger"></i>
-                                                        Xoá
-                                                    </a>
-                                                </li>
+                                                @if (Auth::user()->id !== $post->user_id)
+                                                    @if ($post->is_banned === 0)
+                                                        <li>
+                                                            <form action="{{ route('admin.posts.disable', $post->id) }}"
+                                                                method="POST" class="dropdown-item edit-item-btn">
+                                                                @csrf
+                                                                <button type="submit"
+                                                                    style="background: none; border: none; padding: 0;">
+                                                                    <i
+                                                                        class="ri-lock-fill align-bottom me-2 text-warning"></i>
+                                                                    Vô hiệu hóa
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                    @else
+                                                        <li>
+                                                            <form action="{{ route('admin.posts.enable', $post->id) }}"
+                                                                method="POST" class="dropdown-item edit-item-btn">
+                                                                @csrf
+                                                                <button type="submit"
+                                                                    style="background: none; border: none; padding: 0;">
+                                                                    <i
+                                                                        class="ri-lock-unlock-fill align-bottom me-2 text-warning"></i>
+                                                                    Kích hoạt
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                    @endif
+                                                @else
+                                                    <li>
+                                                        <a href="{{ route('admin.posts.edit', $post) }}"
+                                                            class="dropdown-item edit-item-btn">
+                                                            <i class="ri-pencil-fill align-bottom me-2 text-warning"></i>
+                                                            Sửa
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#" class="dropdown-item remove-item-btn"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#removePostModal{{ $post->id }}">
+                                                            <i
+                                                                class="ri-delete-bin-fill align-bottom me-2 text-danger"></i>
+                                                            Xoá
+                                                        </a>
+                                                    </li>
+                                                    @if ($post->is_banned === 0)
+                                                        <li>
+                                                            <form action="{{ route('admin.posts.disable', $post->id) }}"
+                                                                method="POST" class="dropdown-item edit-item-btn">
+                                                                @csrf
+                                                                <button type="submit"
+                                                                    style="background: none; border: none; padding: 0;">
+                                                                    <i
+                                                                        class="ri-lock-fill align-bottom me-2 text-warning"></i>
+                                                                    Vô hiệu hóa
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                    @else
+                                                        <li>
+                                                            <form action="{{ route('admin.posts.enable', $post->id) }}"
+                                                                method="POST" class="dropdown-item edit-item-btn">
+                                                                @csrf
+                                                                <button type="submit"
+                                                                    style="background: none; border: none; padding: 0;">
+                                                                    <i
+                                                                        class="ri-lock-unlock-fill align-bottom me-2 text-warning"></i>
+                                                                    Kích hoạt
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                    @endif
+                                                @endif
                                             @endif
                                         </ul>
                                         <div id="removePostModal{{ $post->id }}" class="modal fade zoomIn"

@@ -17,7 +17,7 @@ class Post extends Model
         'slug',
         'thumbnail',
         'is_active',
-        'id_banned',
+        'is_banned',
         'status',
         'views',
         'allow_comments',
