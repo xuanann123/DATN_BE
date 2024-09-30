@@ -169,6 +169,8 @@ Route::prefix("admin")
         Route::prefix('posts')
             ->as('posts.')
             ->group(function () {
+                Route::post('/{id}/disable', [PostController::class, 'disable'])->name('disable');
+                Route::post('/{id}/enable', [PostController::class, 'enable'])->name('enable');
                 Route::get('/trash', [PostController::class, 'trash'])->name('trash');
                 Route::post('/{id}/restore', [PostController::class, 'restore'])->name('restore');
                 Route::delete('/{id}/force-delete', [PostController::class, 'forceDelete'])->name('forceDelete');

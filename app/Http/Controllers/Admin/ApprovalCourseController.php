@@ -10,12 +10,12 @@ class ApprovalCourseController extends Controller
     public function index()
     {
         $title = 'Phê duyệt khóa học';
-        return view('admin.course_censor.list', compact('title'));
+        return view('admin.course_censors.list', compact('title'));
     }
 
     public function show()
     {
         $title = 'Phê duyệt khóa học';
-        return view('admin.course_censor.detail', compact('title'));
+        return view('admin.course_censors.detail', compact('title'));
     }
 }

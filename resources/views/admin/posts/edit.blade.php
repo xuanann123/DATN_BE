@@ -31,16 +31,6 @@
     </div>
     <!-- end page title -->
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
     <form action="{{ route('admin.posts.update', $post) }}" method="POST" id="createpost-form" autocomplete="off"
         class="needs-validation" enctype="multipart/form-data" novalidate>
         @csrf
@@ -53,12 +43,16 @@
                             <label class="form-label" for="post-title-input">Tiêu đề bài
                                 viết</label>
                             <input type="text" name="title" id="title" value="{{ old('title', $post->title) }}"
-                                class="form-control" id="post-title-input" placeholder="Nhập tiêu đề bài viết...">
-                            <div class="invalid-feedback">Please enter a post title.</div>
+                                class="form-control @error('title') is-invalid @enderror" id="post-title-input" placeholder="Nhập tiêu đề bài viết...">
+                            <small class="help-block form-text text-danger mt-3">
+                                @if ($errors->has('title'))
+                                    {{ $errors->first('title') }}
+                                @endif
+                            </small>
                         </div>
                         <div class="mb-3">
                             <label for="slug" class="form-label">Đường dẫn thân thiện</label>
-                            <input type="text" class="form-control" id="slug" name="slug"
+                            <input type="text" class="form-control @error('slug') is-invalid @enderror" id="slug" name="slug"
                                 value="{{ old('slug', $post->slug) }}" placeholder="duong-dan-than-thien"
                                 value="{{ old('slug') }}" readonly>
                             <small class="help-block form-text text-danger">
@@ -70,7 +64,7 @@
                         <div class="">
                             <div class="">
                                 <label class="form-label" for="post-title-input">Ảnh bìa bài viết</label>
-                                <input class="form-control" id="thumbnail" name="thumbnail" type="file" accept="image/*">
+                                <input class="form-control @error('thumbnail') is-invalid @enderror" id="thumbnail" name="thumbnail" type="file" accept="image/*">
                                 <small class="help-block form-text text-danger">
                                     @if ($errors->has('thumbnail'))
                                         {{ $errors->first('thumbnail') }}
@@ -82,14 +76,22 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Mô tả bài viết</label>
-                            <textarea name="description" id="ckeditor-classic-2" class="form-control" placeholder="Mô tả bài viết..."
+                            <textarea name="description" id="ckeditor-classic-2" class="form-control @error('description') is-invalid @enderror" placeholder="Mô tả bài viết..."
                                 rows="8">{{ old('description', $post->description) }}</textarea>
-                            <div class="invalid-feedback">Please enter post content.</div>
+                                <small class="help-block form-text text-danger mt-3">
+                                    @if ($errors->has('description'))
+                                        {{ $errors->first('description') }}
+                                    @endif
+                                </small>
                         </div>
                         <div>
                             <label class="form-label">Nội dung bài viết</label>
-                            <textarea name="content" id="ckeditor-classic" class="form-control" placeholder="Nội dung bài viết..." rows="8">{{ old('content', $post->content) }}</textarea>
-                            <div class="invalid-feedback">Please enter post content.</div>
+                            <textarea name="content" id="ckeditor-classic" class="form-control @error('content') is-invalid @enderror" placeholder="Nội dung bài viết..." rows="8">{{ old('content', $post->content) }}</textarea>
+                            <small class="help-block form-text text-danger mt-3">
+                                @if ($errors->has('content'))
+                                    {{ $errors->first('content') }}
+                                @endif
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -153,6 +155,11 @@
                                 </option>
                             @endforeach
                         </select>
+                        <small class="help-block form-text text-danger mt-3">
+                            @if ($errors->has('categories'))
+                                {{ $errors->first('categories') }}
+                            @endif
+                        </small>
                     </div>
                 </div>
 
@@ -182,8 +189,7 @@
                                     Quay lại
                                 </button>
                             </a>
-                            <button type="submit"
-                                class="btn btn-warning btn-label right w-sm">
+                            <button type="submit" class="btn btn-warning btn-label right w-sm">
                                 <i class="ri-check-double-line label-icon align-middle rounded-pill fs-16 ms-2"></i>
                                 Chỉnh sửa
                             </button>
