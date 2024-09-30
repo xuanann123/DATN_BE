@@ -137,10 +137,10 @@ Route::prefix("admin")
         Route::prefix('quizzes')
             ->as('quizzes.')
             ->group(function () {
-
             Route::get('{id}/', [QuizController::class, 'index'])->name('index');
             //Lưu chữ chung dữ liệu vừa là question và cho option của question đó luôn.
             Route::post('/{id}/questions-with-options', [QuestionController::class, 'storeWithOptions'])->name('store');
+            Route::get('/get-quiz/{id}', [QuestionController::class, 'show'])->name('get-quiz');
         });
 
         Route::prefix('lessons')

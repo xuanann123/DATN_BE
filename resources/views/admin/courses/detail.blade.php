@@ -317,7 +317,9 @@
                                                                 class="card-header bg-light d-flex justify-content-between align-items-center">
                                                                 <h6 class="mb-0">
 
-                                                                    <b>Bài tập:</b> {{ $quiz->title }} (<i class="mb-0 fs-11">{{$quiz->questions->count() }} câu</i>)
+                                                                    <b>Bài tập:</b> {{ $quiz->title }} (<i
+                                                                        class="mb-0 fs-11">{{ $quiz->questions->count() }}
+                                                                        câu</i>)
                                                                 </h6>
                                                                 <div>
                                                                     <button class="btn btn-sm btn-light me-2"
@@ -344,7 +346,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                       
+
                                                         </div>
                                                     @else
                                                         <i>Không có bài tập</i>
@@ -594,6 +596,27 @@
                         </div>
                     </div>
                 </div>
+                {{-- Preview Quiz --}}
+                <div class="modal fade" id="previewQuizModal" tabindex="-1" aria-labelledby="previewQuizModal"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content border-0 shadow-lg">
+                            <div class="modal-header bg-primary-subtle">
+                                <h5 class="modal-title mb-3" id="previewQuizModalLabel">Lesson Preview</h5>
+                                <button type="button" class="btn-close mb-2" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body p-4">
+                            </div>
+                            <div class="modal-footer border-top-0">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
             </div>
         </div>
     </div>
@@ -730,7 +753,35 @@
                                 </iframe>
                             `)
                         }
+                    }
+                })
+            })
 
+
+
+            // close
+            $('#previewLessonModal').on('hidden.bs.modal', function() {
+                $(this).find('.modal-title').text('')
+                $(this).find('.modal-body').html('')
+            })
+        })
+        //preview quiz
+        $(document).ready(function() {
+            $('[data-bs-target="#previewQuizModal"]').on('click', function() {
+                var quizId = $(this).data('quiz-id')
+                console.log(quizId);
+
+                $.ajax({
+                    url: 'http://127.0.0.1:8000/admin/quizzes/get-quiz/' + quizId,
+                    method: 'GET',
+                    success: function(data) {
+                        // $('#previewQuizModalLabel').text(data.title)
+                        console.log(data);
+                    },
+                    error: function(data) {
+                        if (data.status == 500) {
+                            console.log(data.error);
+                        }
                     }
                 })
             })
