@@ -21,8 +21,11 @@ class PostController extends Controller
     public function index(Request $request)
     {
         $title = 'Danh sách bài viết';
+        //Tìm kiếm bài viết
         $searchQuery = $request->search;
+        //Lọc bài viết
         $statusFilter = $request->status;
+        //Lọc theo thời gian
         $timeFilter = $request->time_filter;
 
         $posts = Post::when($searchQuery, function ($query) use ($searchQuery) {

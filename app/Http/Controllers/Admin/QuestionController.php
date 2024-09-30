@@ -54,4 +54,21 @@ class QuestionController extends Controller
         }
         return false;
     }
+    public function show($id)
+    {
+
+        try {
+            $quiz = Quiz::findOrFail($id);
+            $questions = $quiz->questions;
+           
+            return response()->json([
+                'title' => $quiz->title,
+                'description' => $quiz->description,
+                'questions' => $quiz->questions,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage(), 'status' => 500]);
+        }
+
+    }
 }
