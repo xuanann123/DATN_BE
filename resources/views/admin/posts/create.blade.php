@@ -31,16 +31,6 @@
     </div>
     <!-- end page title -->
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
     <form action="{{ route('admin.posts.store') }}" method="POST" id="createpost-form" autocomplete="off"
         class="needs-validation" enctype="multipart/form-data" novalidate>
         @csrf
@@ -51,41 +41,46 @@
                         <div class="mb-3">
                             <label class="form-label" for="post-title-input">Tiêu đề bài
                                 viết</label>
-                            <input type="text" name="title" id="title" class="form-control" id="post-title-input"
-                                placeholder="Nhập tiêu đề bài viết...">
-                            <div class="invalid-feedback">Please enter a post title.</div>
+                            <input type="text" name="title" id="title"
+                                class="form-control @error('title') is-invalid @enderror" id="post-title-input"
+                                placeholder="Nhập tiêu đề bài viết..." value="{{ old('title') }}">
+                            <small class="help-block form-text text-danger mt-3">
+                                @if ($errors->has('title'))
+                                    {{ $errors->first('title') }}
+                                @endif
+                            </small>
                         </div>
                         <div class="mb-3">
                             <label for="slug" class="form-label">Đường dẫn thân thiện</label>
-                            <input type="text" class="form-control" id="slug" name="slug"
-                                placeholder="duong-dan-than-thien" value="{{ old('slug') }}" readonly>
+                            <input type="text" class="form-control @error('slug') is-invalid @enderror" id="slug"
+                                name="slug" placeholder="duong-dan-than-thien" value="{{ old('slug') }}" readonly>
                             <small class="help-block form-text text-danger">
                                 @if ($errors->has('slug'))
                                     {{ $errors->first('slug') }}
                                 @endif
                             </small>
                         </div>
-                        <div class="">
-                            <div class="">
-                                <label class="form-label" for="post-title-input">Ảnh bìa bài viết</label>
-                                <input class="form-control" id="thumbnail" name="thumbnail" type="file" accept="image/*">
-                                <small class="help-block form-text text-danger">
-                                    @if ($errors->has('thumbnail'))
-                                        {{ $errors->first('thumbnail') }}
-                                    @endif
-                                </small> <br>
-                                <img src="" style="display: none" class="mb-3" id="show-image" width="200px">
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="post-title-input">Ảnh bìa bài viết</label>
+                            <input class="form-control @error('thumbnail') is-invalid @enderror" id="thumbnail"
+                                name="thumbnail" type="file" accept="image/*">
+                            <img src="" style="display: none" class="mb-3 mt-3" id="show-image" width="200px">
+                            <small class="help-block form-text text-danger">
+                                @if ($errors->has('thumbnail'))
+                                    {{ $errors->first('thumbnail') }}
+                                @endif
+                            </small>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Mô tả bài viết</label>
-                            <textarea name="description" id="ckeditor-classic-2" class="form-control" placeholder="Mô tả bài viết..."
-                                rows="8"></textarea>
+                            <textarea name="description" id="ckeditor-classic-2" class="form-control @error('description') is-invalid @enderror"
+                                placeholder="Mô tả bài viết..." rows="8">{{ old('description') }}</textarea>
                             <div class="invalid-feedback">Please enter post content.</div>
                         </div>
                         <div>
                             <label class="form-label">Nội dung bài viết</label>
-                            <textarea name="content" id="ckeditor-classic" class="form-control" placeholder="Nội dung bài viết..." rows="8"></textarea>
+                            <textarea name="content" id="ckeditor-classic" class="form-control @error('content') is-invalid @enderror"
+                                placeholder="Nội dung bài viết..." rows="8">{{ old('content') }}</textarea>
                             <div class="invalid-feedback">Please enter post content.</div>
                         </div>
                     </div>
@@ -107,8 +102,8 @@
                             <div class="col-lg-6">
                                 <label for="post-visibility-input" class="form-label">Hiển thị</label>
                                 <select name="is_active" class="form-select w-75" id="post-visibility-input">
-                                    <option value="1" selected>Công khai</option>
-                                    <option value="0">Riêng tư</option>
+                                    <option value="1">Công khai</option>
+                                    <option value="0" {{ old('is_active') == 0 ? 'selected' : '' }}>Riêng tư</option>
                                 </select>
                             </div>
                             <div class="col-lg-6">
@@ -116,7 +111,8 @@
                                 <div class="form-check form-switch form-switch-lg form-switch-primary mt-1">
                                     <input type="hidden" name="allow_comments" value="0">
                                     <input class="form-check-input" name="allow_comments" type="checkbox" role="switch"
-                                        id="allow-comments-input" value="1" {{ old('allow_comments') == 1 ? 'checked' : '' }}>
+                                        id="allow-comments-input" value="1"
+                                        {{ old('allow_comments') == 1 ? 'checked' : '' }}>
                                     <label class="form-check-label" for="allow-comments-input">Cho
                                         phép</label>
                                 </div>
@@ -125,9 +121,14 @@
                         <div>
                             <label for="datepicker-publish-input" class="form-label">Thời gian xuất
                                 bản</label>
-                            <input type="datetime-local" name="published_at" id="datepicker-publish-input" class="form-control"
-                                placeholder="yy/mm/dd hh:mm" data-provider="flatpickr" data-date-format="Y/m/d"
-                                data-enable-time>
+                            <div class="input-group">
+                                <input type="datetime-local" name="published_at" id="datepicker-publish-input"
+                                class="form-control" placeholder="yy/mm/dd hh:mm" data-provider="flatpickr"
+                                data-date-format="Y/m/d" data-enable-time value="{{ old('published_at') }}">
+                                <div class="input-group-text bg-primary border-primary text-white">
+                                    <i class="ri-calendar-2-line"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -138,11 +139,19 @@
                     </div>
                     <div class="card-body">
                         <span class="text-muted">Chọn danh mục</span>
-                        <select class="js-example-basic-multiple" name="categories[]" multiple="multiple">
+                        <select class="js-example-basic-multiple-2 form-control" name="categories[]" multiple="multiple">
                             @foreach ($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                <option value="{{ $category->id }}"
+                                    {{ in_array($category->id, old('categories', [])) ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
                             @endforeach
                         </select>
+                        <small class="help-block form-text text-danger">
+                            @if ($errors->has('categories'))
+                                {{ $errors->first('categories') }}
+                            @endif
+                        </small> <br>
                     </div>
                 </div>
 
@@ -151,10 +160,20 @@
                         <h5 class="card-title mb-0">Tags</h5>
                     </div>
                     <div class="card-body">
-                        <span class="text-muted">Chọn tags</span>
-                        <select class="js-example-basic-multiple" name="tags[]" multiple="multiple">
+                        <span class="text-muted">Chọn tags ("," hoặc dấu cách để ngăn cách nhau)</span>
+                        <select class="js-example-basic-multiple" name="tags[]" multiple="multiple" value>
                             @foreach ($tags as $tag)
-                                <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                <option value="{{ $tag->id }}"
+                                    {{ in_array($tag->id, old('tags', [])) ? 'selected' : '' }}>
+                                    {{ $tag->name }}
+                                </option>
+                            @endforeach
+                            @foreach (old('tags', []) as $oldTag)
+                                @if (!in_array($oldTag, $tags->pluck('id')->toArray()) && !empty($oldTag))
+                                    <option value="{{ $oldTag }}" selected>
+                                        {{ $oldTag }}
+                                    </option>
+                                @endif
                             @endforeach
                         </select>
                     </div>
@@ -218,7 +237,7 @@
 
     <script>
         document.getElementById('title').addEventListener('input', function() {
-            let nameValue = this.value;
+            let nameValue = this.value
 
             function removeAccents(str) {
                 return str

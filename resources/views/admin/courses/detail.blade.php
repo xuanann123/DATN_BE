@@ -53,7 +53,7 @@
                                         <div class="avatar-md">
                                             <div class="avatar-title bg-white rounded-circle">
                                                 <img src="{{ Storage::url($course->thumbnail) }}" alt=""
-                                                    class="rounded-circle img-fluid">
+                                                    class="rounded-circle img-fluid h-100">
                                             </div>
                                         </div>
                                     </div>
@@ -369,8 +369,8 @@
 
 
                 <!-- Modal Thêm Module -->
-                <div class="modal fade" id="addModuleModal" tabindex="-1">
-                    <div class="modal-dialog">
+                <div class="modal fade mt-5" id="addModuleModal" tabindex="-1">
+                    <div class="modal-dialog mt-5">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title">Thêm Module Mới</h5>
@@ -391,8 +391,8 @@
                                         <textarea class="form-control" name="description" rows="3"></textarea>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="modulePosition">Vị Trí</label>
-                                        <span class="form-control bg-primary-subtle">{{ $maxModulePosition + 1 }}</span>
+                                        {{-- <label for="modulePosition">Vị Trí</label>
+                                        <span class="form-control bg-primary-subtle">{{ $maxModulePosition + 1 }}</span> --}}
                                         <input type="hidden" name="position" value="{{ $maxModulePosition + 1 }}">
                                     </div>
                                 </form>
@@ -622,45 +622,45 @@
         // auto select module
         $(document).ready(function() {
             $(document).on('show.bs.collapse', '.accordion-collapse', function() {
-                var moduleId = $(this).attr('id');
-                localStorage.setItem('activeModule', moduleId);
-            });
+                var moduleId = $(this).attr('id')
+                localStorage.setItem('activeModule', moduleId)
+            })
 
-            var activeModule = localStorage.getItem('activeModule');
+            var activeModule = localStorage.getItem('activeModule')
             if (activeModule) {
-                $('#' + activeModule).collapse('show');
+                $('#' + activeModule).collapse('show')
             }
         })
 
         // add module
         $(document).ready(function() {
             $('#addModuleForm').on('submit', function(event) {
-                event.preventDefault();
+                event.preventDefault()
 
                 $.ajax({
                     url: $(this).attr('action'),
                     method: 'POST',
                     data: $(this).serialize(),
                     success: function(response) {
-                        alert(response.message);
+                        localStorage.removeItem('activeModule')
                         location.reload()
                     },
                     error: function(xhr) {
                         if (xhr.status === 422) {
-                            let errors = xhr.responseJSON.errors;
-                            $('.error-message').remove();
+                            let errors = xhr.responseJSON.errors
+                            $('.error-message').remove()
 
                             $.each(errors, function(key, value) {
-                                let inputField = $('[name="' + key + '"]');
+                                let inputField = $('[name="' + key + '"]')
                                 inputField.after(
                                     '<div class="error-message text-danger">' +
-                                    value[0] + '</div>');
-                            });
+                                    value[0] + '</div>')
+                            })
                         }
                     }
-                });
-            });
-        });
+                })
+            })
+        })
 
         // get id_module
         $('#addTextLessonModal').on('show.bs.modal', function(event) {
@@ -678,13 +678,11 @@
                 event.preventDefault();
                 var test = $(this).attr('action');
 
-
                 $.ajax({
                     url: test,
                     method: 'POST',
                     data: $(this).serialize(),
                     success: function(response) {
-                        alert(response.message);
                         location.reload()
                     },
                     error: function(xhr) {
@@ -695,16 +693,16 @@
                             $('.error-message').remove();
 
                             $.each(errors, function(key, value) {
-                                let inputField = $('[name="' + key + '"]');
+                                let inputField = $('[name="' + key + '"]')
                                 inputField.after(
                                     '<div class="error-message text-danger">' +
-                                    value[0] + '</div>');
-                            });
+                                    value[0] + '</div>')
+                            })
                         }
                     }
-                });
-            });
-        });
+                })
+            })
+        })
 
         // preview lesson
         $(document).ready(function() {

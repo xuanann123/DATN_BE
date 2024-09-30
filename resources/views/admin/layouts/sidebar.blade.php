@@ -212,6 +212,10 @@
                                 <a href="{{ route('admin.posts.index') }}" class="nav-link" data-key="t-one-page">
                                     Danh sách bài viết</a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.posts.create') }}" class="nav-link" data-key="t-one-page">
+                                    Thêm mới bài viết</a>
+                            </li>
                         </ul>
                     </div>
                 </li>

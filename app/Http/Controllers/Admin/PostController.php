@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Post;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Posts\StorePostRequest;
-use App\Http\Requests\Admin\Posts\UpdatePostRequest;
-use App\Models\Category;
 use App\Models\Tag;
+use App\Models\Post;
+use App\Models\Category;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\Admin\Posts\StorePostRequest;
+use App\Http\Requests\Admin\Posts\UpdatePostRequest;
 
 class PostController extends Controller
 {
@@ -21,6 +22,9 @@ class PostController extends Controller
     {
         $title = 'Danh sách bài viết';
         $searchQuery = $request->search;
+        $statusFilter = $request->status;
+        $timeFilter = $request->time_filter;
+
         $posts = Post::when($searchQuery, function ($query) use ($searchQuery) {
             $query->whereFullText('title', $searchQuery)
                 ->orWhereFullText('description', $searchQuery)
@@ -35,11 +39,44 @@ class PostController extends Controller
                     $subQuery->where('name', 'LIKE', "%{$searchQuery}%");
                 });
 
-        })->orderBy('id')->paginate(2)->appends(['search' => $searchQuery]);
+        })
+            ->when($statusFilter && $statusFilter != 'all', function ($query) use ($statusFilter) {
+                $query->where('status', $statusFilter);
+            })
+            ->when($timeFilter && $timeFilter !== 'all', function ($query) use ($timeFilter) {
+                $date = now();
+                switch ($timeFilter) {
+                    case 'today':
+                        $query->whereDate('created_at', $date);
+                        break;
+                    case 'yesterday':
+                        $query->whereDate('created_at', $date->subDay());
+                        break;
+                    case 'this_week':
+                        $query->whereBetween('created_at', [
+                            $date->startOfWeek()->toDateTimeString(),
+                            $date->endOfWeek()->toDateTimeString()
+                        ]);
+                        break;
+                    case 'this_month':
+                        $query->whereMonth('created_at', $date->month);
+                        break;
+                    case 'this_year':
+                        $query->whereYear('created_at', $date->year);
+                        break;
+                }
+            })
+            ->orderBy('id')
+            ->paginate(3)
+            ->appends([
+                'search' => $searchQuery,
+                'status' => $statusFilter,
+                'time_filter' => $timeFilter
+            ]);
 
         $totalDelPosts = Post::onlyTrashed()->count();
 
-        return view('admin.posts.index', compact('title', 'posts', 'searchQuery', 'totalDelPosts'));
+        return view('admin.posts.index', compact('title', 'posts', 'searchQuery', 'statusFilter', 'timeFilter', 'totalDelPosts'));
     }
 
     /**
@@ -84,8 +121,32 @@ class PostController extends Controller
         $post->categories()->sync($data['categories']);
 
         // tags
-        if (isset($data['tags'])) {
-            $post->tags()->sync($data['tags']);
+        if (isset($data['tags']) && is_array($data['tags'])) {
+            foreach ($data['tags'] as $tag) {
+                $tag = trim($tag);
+                if (!empty($tag)) {
+                    $existTag = Tag::firstWhere('id', $tag);
+                    if ($existTag) {
+                        $tagIds[] = $existTag->id;
+                    } else {
+                        $newTags[] = $tag;
+                    }
+                }
+            }
+
+            if (!empty($newTags)) {
+                foreach ($newTags as $newTag) {
+                    $tagModel = Tag::create([
+                        'name' => $newTag,
+                        'slug' => Str::slug($newTag)
+                    ]);
+                    $tagIds[] = $tagModel->id;
+                }
+            }
+        }
+
+        if (!empty($tagIds)) {
+            $post->tags()->sync($tagIds);
         }
 
         return redirect()->route('admin.posts.index')->with('success', 'Thêm mới bài viết thành công !');
@@ -130,10 +191,6 @@ class PostController extends Controller
             $data['thumbnail'] = $pathImage;
         }
 
-        if ($request->status === 'published') {
-            $data['published_at'] = now();
-        }
-
         if (Auth::user()) {
             $data['user_id'] = auth()->id();
         }
@@ -144,8 +201,38 @@ class PostController extends Controller
         $post->categories()->sync($data['categories']);
 
         // tags
-        if (isset($data['tags'])) {
-            $post->tags()->sync($data['tags']);
+        // xoa tags
+        if (empty($data['tags'])) {
+            $data['tags'] = '';
+            $post->tags()->sync([]);
+        }
+        // update tags
+        if (isset($data['tags']) && is_array($data['tags'])) {
+            foreach ($data['tags'] as $tag) {
+                $tag = trim($tag);
+                if (!empty($tag)) {
+                    $existTag = Tag::firstWhere('id', $tag);
+                    if ($existTag) {
+                        $tagIds[] = $existTag->id;
+                    } else {
+                        $newTags[] = $tag;
+                    }
+                }
+            }
+
+            if (!empty($newTags)) {
+                foreach ($newTags as $newTag) {
+                    $tagModel = Tag::create([
+                        'name' => $newTag,
+                        'slug' => Str::slug($newTag)
+                    ]);
+                    $tagIds[] = $tagModel->id;
+                }
+            }
+        }
+
+        if (!empty($tagIds)) {
+            $post->tags()->sync($tagIds);
         }
 
         return redirect()->route('admin.posts.index')->with('success', 'Chỉnh sửa bài viết thành công !');
@@ -166,11 +253,11 @@ class PostController extends Controller
     {
         $title = 'Bài viết đã xóa';
         $searchQuery = $request->search;
+        $statusFilter = $request->status;
 
         $postsQuery = Post::onlyTrashed();
 
         if ($searchQuery) {
-
             $postsQuery->where(function ($query) use ($searchQuery) {
                 $query->whereFullText('title', $searchQuery)
                     ->orWhereFullText('description', $searchQuery)
@@ -187,10 +274,32 @@ class PostController extends Controller
             });
         }
 
-        $posts = $postsQuery->orderBy('deleted_at', 'desc')
-                        ->paginate(3)
-                        ->appends(['search' => $searchQuery]);
+        $posts = $postsQuery
+            ->when($statusFilter && $statusFilter != 'all', function ($query) use ($statusFilter) {
+                $query->where('status', $statusFilter);
+            })
+            ->orderBy('deleted_at', 'desc')
+            ->paginate(3)
+            ->appends(['search' => $searchQuery]);
 
-        return view('admin.posts.index', compact('title', 'posts', 'searchQuery'));
+        return view('admin.posts.index', compact('title', 'posts', 'searchQuery', 'statusFilter'));
+    }
+
+    public function restore($id)
+    {
+        $post = Post::onlyTrashed()->findOrFail($id);
+        $post->restore();
+
+        return redirect()->route('admin.posts.index')->with('success', 'Khôi phục bài viết thành công !');
+    }
+
+    public function forceDelete($id)
+    {
+        $post = Post::onlyTrashed()->findOrFail($id);
+        $post->categories()->sync([]);
+        $post->tags()->sync([]);
+        $post->forceDelete();
+
+        return redirect()->route('admin.posts.index')->with('success', 'Đã xóa bài viết vĩnh viễn !');
     }
 }
