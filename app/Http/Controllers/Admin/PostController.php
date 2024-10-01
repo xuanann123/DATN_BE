@@ -22,64 +22,23 @@ class PostController extends Controller
     public function index(Request $request)
     {
         $title = 'Danh sách bài viết';
-        //Tìm kiếm bài viết
+        // key search
         $searchQuery = $request->search;
-        //Lọc bài viết
+        // thong tin trang thai tu request
         $statusFilter = $request->status;
-        //Lọc theo thời gian
+        // thong tin thoi gian tu request
         $timeFilter = $request->time_filter;
 
-        $posts = Post::when($searchQuery, function ($query) use ($searchQuery) {
-            $query->whereFullText('title', $searchQuery)
-                ->orWhereFullText('description', $searchQuery)
-                ->orWhereFullText('content', $searchQuery)
-                ->orWhere('title', 'LIKE', "%{$searchQuery}%")
-                ->orWhere('description', 'LIKE', "%{$searchQuery}%")
-                ->orWhere('content', 'LIKE', "%{$searchQuery}%")
-                ->orWhereHas('categories', function ($subQuery) use ($searchQuery) {
-                    $subQuery->where('name', 'LIKE', "%{$searchQuery}%");
-                })
-                ->orWhereHas('tags', function ($subQuery) use ($searchQuery) {
-                    $subQuery->where('name', 'LIKE', "%{$searchQuery}%");
-                });
-
-        })
-            ->when($statusFilter && $statusFilter != 'all', function ($query) use ($statusFilter) {
-                if ($statusFilter == 'private') {
-                    $query->where('is_banned', 1);
-                } else {
-                    $query->where('status', $statusFilter);
-                }
-            })
-            ->when($timeFilter && $timeFilter !== 'all', function ($query) use ($timeFilter) {
-                $date = now();
-                switch ($timeFilter) {
-                    case 'today':
-                        $query->whereDate('created_at', $date);
-                        break;
-                    case 'yesterday':
-                        $query->whereDate('created_at', $date->subDay());
-                        break;
-                    case 'this_week':
-                        $query->whereBetween('created_at', [
-                            $date->startOfWeek()->toDateTimeString(),
-                            $date->endOfWeek()->toDateTimeString()
-                        ]);
-                        break;
-                    case 'this_month':
-                        $query->whereMonth('created_at', $date->month);
-                        break;
-                    case 'this_year':
-                        $query->whereYear('created_at', $date->year);
-                        break;
-                }
-            })
+        $posts = Post::query()
+            ->search($searchQuery) // tim kiem
+            ->statusFilter($statusFilter) // loc theo trang thai
+            ->timeFilter($timeFilter) // loc theo thoi gian
             ->orderBy('id')
             ->paginate(3)
             ->appends([
                 'search' => $searchQuery,
                 'status' => $statusFilter,
-                'time_filter' => $timeFilter
+                'time_filter' => $timeFilter,
             ]);
 
         $totalDelPosts = Post::onlyTrashed()->where('user_id', auth()->id())->count();
