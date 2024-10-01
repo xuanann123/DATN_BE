@@ -28,4 +28,11 @@ class Category extends Model
     {
         return $this->hasMany(Category::class, 'parent_id');
     }
+    public function scopeSearch($query, $keyword)
+    {
+        if ($keyword) {
+            return $query->whereFullText(['name', 'description'], $keyword)->orWhere('name', 'LIKE', "%{$keyword}%")->orWhere('description', 'LIKE', "%{$keyword}%");
+        }
+        return $query;
+    }
 }

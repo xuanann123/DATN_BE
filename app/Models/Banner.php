@@ -26,7 +26,7 @@ class Banner extends Model
     public function scopeSearch($query, $keyword)
     {
         if ($keyword) {
-            return $query->whereFullText(['title', 'content'], $keyword);
+            return $query->whereFullText(['title', 'content'], $keyword)->orWhere('title', 'LIKE', "%{$keyword}%")->orWhere('content', 'LIKE', "%{$keyword}%");
         }
         return $query;
     }

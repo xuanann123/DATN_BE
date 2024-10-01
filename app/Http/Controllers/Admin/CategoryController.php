@@ -42,16 +42,13 @@ class CategoryController extends Controller
                 ],
                 default => null
             };
-        })->where('name', 'like', "%$keyword%")->latest("id")->paginate(10);
-
+        })->search($keyword)->latest("id")->paginate(10);
         $count = [
             'all' => Category::count(),
             'active' => Category::where('is_active', 1)->count(),
             'inactive' => Category::where('is_active', 0)->count(),
             'trash' => Category::onlyTrashed()->count(),
         ];
-        //Danh sách trước khi chưa tối ưu
-        // $categories = Category::with('parent:id,name')->orderbyDesc('id')->paginate(10);
         return view('admin.categories.index', compact('categories', 'title', 'listAct', 'count'));
     }
 
