@@ -49,16 +49,18 @@ Route::prefix("admin")
         Route::prefix("banners")
             ->as('banners.')
             ->group(function () {
-                Route::get("/", [BannerController::class, 'index'])->name('index');
-                Route::get("/create", [BannerController::class, 'create'])->name('create');
-                Route::post("/store", [BannerController::class, 'store'])->name('store');
-                Route::get("/edit/{banner}", [BannerController::class, 'edit'])->name('edit');
-                Route::put("/update/{banner}", [BannerController::class, 'update'])->name('update');
-                Route::get("/destroy/{banner}", [BannerController::class, 'destroy'])->name('destroy');
-                Route::get('action', [BannerController::class, 'action'])->name('action');
-                Route::get('restore/{id}', [BannerController::class, 'restore'])->name('restore');
-                Route::get('forceDelete/{id}', [BannerController::class, 'forceDelete'])->name('forceDelete');
-            });
+
+            Route::get("/", [BannerController::class, 'index'])->name('index');
+            Route::get("show", [BannerController::class, 'show'])->name('show');
+            Route::get("/create", [BannerController::class, 'create'])->name('create');
+            Route::post("/store", [BannerController::class, 'store'])->name('store');
+            Route::get("/edit/{banner}", [BannerController::class, 'edit'])->name('edit');
+            Route::put("/update/{banner}", [BannerController::class, 'update'])->name('update');
+            Route::get("/destroy/{banner}", [BannerController::class, 'destroy'])->name('destroy');
+            Route::get('action', [BannerController::class, 'action'])->name('action');
+            Route::get('restore/{id}', [BannerController::class, 'restore'])->name('restore');
+            Route::get('forceDelete/{id}', [BannerController::class, 'forceDelete'])->name('forceDelete');
+        });
 
 
         Route::prefix("categories")
@@ -78,16 +80,16 @@ Route::prefix("admin")
         Route::prefix("tags")
             ->as('tags.')
             ->group(function () {
-                Route::get("/", [TagController::class, 'index'])->name('index');
-                Route::get("/create", [TagController::class, 'create'])->name('create');
-                Route::post("/store", [TagController::class, 'store'])->name('store');
-                Route::get("/edit/{tag}", [TagController::class, 'edit'])->name('edit');
-                Route::put("/update/{tag}", [TagController::class, 'update'])->name('update');
-                Route::get("/destroy/{tag}", [TagController::class, 'destroy'])->name('destroy');
-                Route::get('action', [TagController::class, 'action'])->name('action');
-                Route::get('restore/{id}', [TagController::class, 'restore'])->name('restore');
-                Route::get('forceDelete/{id}', [TagController::class, 'forceDelete'])->name('forceDelete');
-            });
+            Route::get("/", [TagController::class, 'index'])->name('index');
+            Route::get("/create", [TagController::class, 'create'])->name('create');
+            Route::post("/store", [TagController::class, 'store'])->name('store');
+            Route::get("/edit/{tag}", [TagController::class, 'edit'])->name('edit');
+            Route::put("/update/{tag}", [TagController::class, 'update'])->name('update');
+            Route::get("/destroy/{tag}", [TagController::class, 'destroy'])->name('destroy');
+            Route::get('action', [TagController::class, 'action'])->name('action');
+            Route::get('restore/{id}', [TagController::class, 'restore'])->name('restore');
+            Route::get('forceDelete/{id}', [TagController::class, 'forceDelete'])->name('forceDelete');
+        });
 
         Route::resource('vouchers', VoucherController::class)->except('show');
 
@@ -169,13 +171,13 @@ Route::prefix("admin")
         Route::prefix('posts')
             ->as('posts.')
             ->group(function () {
-                Route::post('/{id}/disable', [PostController::class, 'disable'])->name('disable');
-                Route::post('/{id}/enable', [PostController::class, 'enable'])->name('enable');
-                Route::get('/trash', [PostController::class, 'trash'])->name('trash');
-                Route::post('/{id}/restore', [PostController::class, 'restore'])->name('restore');
-                Route::delete('/{id}/force-delete', [PostController::class, 'forceDelete'])->name('forceDelete');
-            });
-            Route::resource('posts', PostController::class);
+            Route::post('/{id}/disable', [PostController::class, 'disable'])->name('disable');
+            Route::post('/{id}/enable', [PostController::class, 'enable'])->name('enable');
+            Route::get('/trash', [PostController::class, 'trash'])->name('trash');
+            Route::post('/{id}/restore', [PostController::class, 'restore'])->name('restore');
+            Route::delete('/{id}/force-delete', [PostController::class, 'forceDelete'])->name('forceDelete');
+        });
+        Route::resource('posts', PostController::class);
     });
 
 

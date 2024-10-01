@@ -60,7 +60,8 @@
                     </div>
                     <div class="col-sm-auto d-flex ms-2">
                         <form action="{{ route('admin.banners.index') }}" method="GET" class="d-flex gap-2">
-                            <input type="text" class="form-control ml-2" placeholder="Tìm kiếm ..." name="keyword" value="{{ request()->input('keyword') }}">
+                            <input type="text" class="form-control ml-2" placeholder="Tìm kiếm ..." name="keyword"
+                                value="{{ request()->input('keyword') }}">
                             <input type="hidden" name="status" value="{{ request()->input('status') }}">
                             <button class="btn btn-outline-primary ms-2" type="submit">
                                 <i class="ri-search-line"></i>
@@ -181,13 +182,95 @@
                         {{ $banners->links() }}
                     </div>
                 </div>
+                <div class="card-footer">
+                    <!-- Nút để kích hoạt modal -->
+                    <button class="btn btn-sm btn-light me-2" data-bs-toggle="modal"
+                        data-bs-target="#previewBannersModal">
+                        <i class="ri-eye-line"></i> <i>Xem trước</i>
+                    </button>
 
+                    <div class="modal fade" id="previewBannersModal" tabindex="-1"
+                        aria-labelledby="previewBannersModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content border-0 shadow-lg">
+                                <div class="modal-header bg-primary-subtle">
+                                    <h5 class="modal-title mb-3" id="previewBannersModalLabel">Banners Preview</h5>
+                                    <button type="button" class="btn-close mb-2" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body p-4">
+                                    <!-- With Crossfade Animation -->
+                                    <div id="carouselExampleFade" class="carousel slide carousel-fade"
+                                        data-ride="carousel">
+                                        <div class="carousel-indicators">
+
+                                        </div>
+                                        <div class="carousel-inner" id="showBannerHTML">
+
+                                        </div>
+                                        <a class="carousel-control-prev" href="#carouselExampleFade" role="button"
+                                            data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                        <a class="carousel-control-next" href="#carouselExampleFade" role="button"
+                                            data-bs-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="modal-footer border-top-0">
+                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div><!--end col-->
     </div><!--end row-->
 @endsection
 
 @section('script-libs')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('[data-bs-target="#previewBannersModal"]').on('click', function() {
+                console.log("ok rồi đó");
+                $.ajax({
+                    url: 'http://127.0.0.1:8000/admin/banners/show',
+                    method: 'GET',
+                    success: function(data) {
+                        let showBanners = $('#showBannerHTML');
+                        data.forEach(function(banner, index) {
+                            let isActive = index === 0 ? 'active' : '';
+                            showBanners.append(`
+                                <div class="carousel-item ${isActive}">
+                                             <img class="d-block img-fluid mx-auto" height="300px" src="http://127.0.0.1:8000/storage/${banner.image}" alt="First slide">
+                                </div>
+                           `);
+
+                            let indicatorHtml = `
+                        <button type="button" data-bs-target="#carouselExampleFade" data-bs-slide-to="${index}" class="${isActive}" aria-current="${isActive ? 'true' : ''}" aria-label="Slide ${index + 1}"></button>
+                    `;
+                            $('.carousel-indicators').append(indicatorHtml);
+                        })
+                    },
+                    error: function(data) {
+                        if (data.status == 500) {
+                            console.log(data.error);
+                        }
+                    }
+                })
+            });
+            // close
+            $('#previewBannersModal').on('hidden.bs.modal', function() {
+                $(this).find('.modal-title').text('')
+                $(this).find('.modal-body').html('')
+            })
+        })
+    </script>
     <script>
         document.getElementById('selectAll').addEventListener('change', function() {
             var checkboxes = document.querySelectorAll('.checkbox');
@@ -197,10 +280,9 @@
         });
     </script>
     <!--datatable js-->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    {{-- integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> --}}
     {{-- <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script> --}}
-    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    {{-- <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
@@ -211,5 +293,5 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
-    <script src="{{ asset('theme/admin/assets/js/pages/datatables.init.js') }}"></script>
+    <script src="{{ asset('theme/admin/assets/js/pages/datatables.init.js') }}"></script> --}}
 @endsection

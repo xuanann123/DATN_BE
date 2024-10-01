@@ -195,4 +195,11 @@ class BannerController extends Controller
         $banner->forceDelete();
         return redirect()->route('admin.banners.index')->with(['success' => 'Xoá thành công']);
     }
+    public function show()
+    {
+    
+        //Lấy toàn bộ ảnh banner 
+        $banners = Banner::query()->where('is_active', 1)->orderByDesc('position')->get();
+        return response()->json($banners);
+    }
 }
