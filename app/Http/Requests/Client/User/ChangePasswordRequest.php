@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Client\User;
 
+use App\Http\Requests\BaseFormRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ChangePasswordRequest extends FormRequest
+class ChangePasswordRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,6 +25,16 @@ class ChangePasswordRequest extends FormRequest
         return [
             'current_password' => 'required|string',
             'new_password' => 'required|string|min:8|confirmed',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'current_password.required' => 'Bạn phải nhập mật khẩu hiện tại.',
+            'new_password.required' => 'Bạn phải nhập mật khẩu mới.',
+            'new_password.min' => 'Mật khẩu mới phải có ít nhất 8 ký tự.',
+            'new_password.confirmed' => 'Mật khẩu xác nhận không khớp.',
         ];
     }
 }
