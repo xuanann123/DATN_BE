@@ -59,9 +59,12 @@
                         <i class="ri-image-2-line"></i> <span>Dashboards</span>
                     </a>
                 </li>
-                <li class="menu-title"><span data-key="t-menu">Quản lý giao diện</span></li>
+               
 
-                <li class="nav-item">
+            
+                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý nội dung</span>
+                </li>
+                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarBanners" data-bs-toggle="collapse" role="button"
                         aria-expanded="false" aria-controls="sidebarBanners">
                         <i class="ri-image-2-line"></i> <span>Banners</span>
@@ -78,36 +81,6 @@
                             </li>
                         </ul>
                     </div>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarLayouts" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false" aria-controls="sidebarLayouts">
-                        <i class="ri-layout-3-line"></i> <span data-key="t-layouts">Layouts</span> <span
-                            class="badge badge-pill bg-danger" data-key="t-hot">Hot</span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="sidebarLayouts">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="layouts-horizontal.html" class="nav-link"
-                                    data-key="t-horizontal">Horizontal</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="layouts-detached.html" class="nav-link" data-key="t-detached">Detached</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="layouts-two-column.html" class="nav-link" data-key="t-two-column">Two
-                                    Column</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="layouts-vertical-hovered.html" class="nav-link"
-                                    data-key="t-hovered">Hovered</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li> <!-- end Dashboard Menu -->
-
-                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý nội dung</span>
                 </li>
 
                 <li class="nav-item">
