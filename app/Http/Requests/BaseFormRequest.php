@@ -29,7 +29,6 @@ abstract class BaseFormRequest extends FormRequest
         throw new HttpResponseException(response()->json([
             'message' => 'Lỗi trường thông tin',
             'errors' => $formattedErrors,
-            'code' => 1,
             'data' => [],
             'status' => 422,
         ], 422));

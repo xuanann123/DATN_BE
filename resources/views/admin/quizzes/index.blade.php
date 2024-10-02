@@ -155,7 +155,8 @@
                                                                     <select id="questionType" class="form-control"
                                                                         name="questions[0][type]" required>
                                                                         <option value="one_choice">Chọn một câu</option>
-                                                                        <option value="multiple_choice">Chọn nhiều câu Choice
+                                                                        <option value="multiple_choice">Chọn nhiều câu
+                                                                            Choice
                                                                         </option>
                                                                     </select>
                                                                 </div>
@@ -175,6 +176,9 @@
                                                                             <input type="text" class="form-control"
                                                                                 placeholder="Lựa chọn 1"
                                                                                 name="questions[0][options][0]" required>
+                                                                            <button type="button" id="btn-delete"
+                                                                                class="btn btn-danger btn-icon waves-effect waves-light"><i
+                                                                                    class="bx bx-trash"></i></button>
                                                                         </div>
 
                                                                     </div>
@@ -234,7 +238,8 @@
                                                                         <strong
                                                                             class="py-1 px-2 bg-primary rounded-5 mt-3 text-white">{{ $prefixeChoice[$index] }}</strong>
                                                                     @else
-                                                                        <strong class="py-1 px-2">{{ $prefixeChoice[$index] }}</strong>
+                                                                        <strong
+                                                                            class="py-1 px-2">{{ $prefixeChoice[$index] }}</strong>
                                                                     @endif
                                                                     {{ $option->option }}
                                                                     @if ($option->is_correct)
@@ -262,44 +267,69 @@
 
 
 @section('script-libs')
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script>
-        document.getElementById('questionType').addEventListener('change', function() {
-            var questionType = this.value;
-            var optionsContainer = document.getElementById('optionsContainer');
-            var inputs = optionsContainer.getElementsByClassName('form-check-input');
+        // hàm ẩn-hiện nút xóa
+        function updateDeleteButtons() {
+            var optionCount = $('#optionsContainer .input-group').length;
 
-            for (var i = 0; i < inputs.length; i++) {
-                // Thay đổi kiểu input dựa trên loại câu hỏi được chọn
-                if (questionType === 'one_choice') {
-                    inputs[i].setAttribute('type', 'radio');
-                    inputs[i].setAttribute('name', 'questions[0][correct_answer]');
-                } else {
-                    inputs[i].setAttribute('type', 'checkbox');
-                    inputs[i].setAttribute('name',
-                        'questions[0][correct_answer][]'); // Sử dụng mảng cho multiple choice
-                }
+            if (optionCount > 1) {
+                $('#optionsContainer #btn-delete').show()
+            } else {
+                $('#optionsContainer #btn-delete').hide()
             }
-        });
+        }
 
-        // Xử lý việc thêm một option mới khi bấm nút "Thêm option"
-        document.getElementById('addOptionBtn').addEventListener('click', function() {
-            var questionType = document.getElementById('questionType').value;
-            var optionsContainer = document.getElementById('optionsContainer');
-            var optionCount = optionsContainer.getElementsByClassName('input-group').length;
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDeleteButtons()
 
-            var newOption = document.createElement('div');
-            newOption.classList.add('input-group', 'mb-2');
+            document.getElementById('questionType').addEventListener('change', function() {
+                var questionType = this.value;
+                var optionsContainer = document.getElementById('optionsContainer');
+                var inputs = optionsContainer.getElementsByClassName('form-check-input');
 
-            var inputType = questionType === 'one_choice' ? 'radio' : 'checkbox';
+                for (var i = 0; i < inputs.length; i++) {
+                    // Thay đổi kiểu input dựa trên loại câu hỏi được chọn
+                    if (questionType === 'one_choice') {
+                        inputs[i].setAttribute('type', 'radio');
+                        inputs[i].setAttribute('name', 'questions[0][correct_answer]');
+                    } else {
+                        inputs[i].setAttribute('type', 'checkbox');
+                        inputs[i].setAttribute('name',
+                            'questions[0][correct_answer][]'); // Sử dụng mảng cho multiple choice
+                    }
+                }
+            });
 
-            newOption.innerHTML = `
-            <div class="input-group-text">
-                <input class="form-check-input mt-0" type="${inputType}" name="${inputType === 'radio' ? 'questions[0][correct_answer]' : 'questions[0][correct_answer][]'}" value="${optionCount}">
-            </div>
-            <input type="text" class="form-control" placeholder="Lựa chọn ${optionCount + 1}" name="questions[0][options][${optionCount}]" required>
-        `;
+            // Xử lý việc thêm một option mới khi bấm nút "Thêm option"
+            document.getElementById('addOptionBtn').addEventListener('click', function() {
+                var questionType = document.getElementById('questionType').value;
+                var optionsContainer = document.getElementById('optionsContainer');
+                var optionCount = optionsContainer.getElementsByClassName('input-group').length;
 
-            optionsContainer.appendChild(newOption);
-        });
+                var newOption = document.createElement('div');
+
+                newOption.classList.add('input-group', 'mb-2');
+
+                var inputType = questionType === 'one_choice' ? 'radio' : 'checkbox';
+
+                newOption.innerHTML = `
+                    <div class="input-group-text">
+                        <input class="form-check-input mt-0" type="${inputType}" name="${inputType === 'radio' ? 'questions[0][correct_answer]' : 'questions[0][correct_answer][]'}" value="${optionCount}">
+                    </div>
+                    <input type="text" class="form-control" placeholder="Lựa chọn ${optionCount + 1}" name="questions[0][options][${optionCount}]" required>
+                    <button type="button" id="btn-delete" class="btn btn-danger btn-icon waves-effect waves-light"><i class="bx bx-trash"></i></button>
+                `;
+
+                optionsContainer.appendChild(newOption);
+
+                updateDeleteButtons()
+            });
+
+            $('#optionsContainer').on('click', '#btn-delete', function() {
+                $(this).closest('.input-group').remove()
+                updateDeleteButtons()
+            })
+        })
     </script>
 @endsection

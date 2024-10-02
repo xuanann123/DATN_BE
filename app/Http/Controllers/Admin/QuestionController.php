@@ -58,16 +58,18 @@ class QuestionController extends Controller
     {
 
         try {
-            $quiz = Quiz::findOrFail($id);
-            $questions = $quiz->questions;
-           
+            $quiz = Quiz::with(['questions.options'])->findOrFail($id);
+
             return response()->json([
                 'title' => $quiz->title,
                 'description' => $quiz->description,
                 'questions' => $quiz->questions,
             ]);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage(), 'status' => 500]);
+            return response()->json([
+                'error' => $e->getMessage(),
+                'status' => 500
+            ]);
         }
 
     }

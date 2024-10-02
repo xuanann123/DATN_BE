@@ -151,7 +151,8 @@
                                         </h6>
                                         <div id="course-description">{!! $course->description !!}</div>
 
-                                        <div class="pt-3 border-top border-top-dashed mt-4" data-simplebar style="max-height: 500px">
+                                        <div class="pt-3 border-top border-top-dashed mt-4" data-simplebar
+                                            style="max-height: 500px">
                                             {!! $course->learned !!}
                                         </div>
                                     </div>
@@ -602,11 +603,12 @@
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content border-0 shadow-lg">
                             <div class="modal-header bg-primary-subtle">
-                                <h5 class="modal-title mb-3" id="previewQuizModalLabel">Lesson Preview</h5>
+                                <h4 class="modal-title mb-3" id="previewQuizModalLabel">Lesson Preview</h4>
                                 <button type="button" class="btn-close mb-2" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body p-4">
+
                             </div>
                             <div class="modal-footer border-top-0">
                                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
@@ -756,9 +758,6 @@
                     }
                 })
             })
-
-
-
             // close
             $('#previewLessonModal').on('hidden.bs.modal', function() {
                 $(this).find('.modal-title').text('')
@@ -772,11 +771,45 @@
                 console.log(quizId);
 
                 $.ajax({
-                    url: 'http://127.0.0.1:8000/admin/quizzes/get-quiz/' + quizId,
+                    url: '/admin/quizzes/get-quiz/' + quizId,
                     method: 'GET',
                     success: function(data) {
-                        // $('#previewQuizModalLabel').text(data.title)
+                        $('#previewQuizModalLabel').text(data.title)
                         console.log(data);
+
+                        var questionHtml = `<div data-simplebar style="max-height: 450px; max-width: 100%">`
+                        data.questions.forEach(function(question, index) {
+                            questionHtml += `
+                            <div class="mb-3">
+                                <h5><strong>Câu hỏi ${index + 1}: ${question.question}</strong></h5>
+                                <ul class="list-unstyled">`
+
+                            question.options.forEach(function(option, optionIndex) {
+                                questionHtml += `
+                                <div class="input-group mb-2">
+                                    <div class="input-group-text ${option.is_correct ? 'border-success' : ''}">
+                                        <input class="form-check-input mt-0 ${option.is_correct ? 'bg-success border-success' : ''}"
+                                            type="${ question.type === 'one_choice' ? 'radio' : 'checkbox' }" name="answer${index}"
+                                            name="answer${index}"
+                                            value="${option.id}"
+                                            id="option${option.id}"
+                                            ${option.is_correct ? 'checked' : ''}
+                                            disable
+                                            >
+                                    </div>
+                                    <input type="text" class="form-control ${option.is_correct ? 'border-success text-success' : ''}"
+                                        placeholder=""
+                                        name="answer${index}"
+                                        value="${option.option}">
+                                </div>`
+                            })
+
+                            questionHtml += `</ul></div>`
+                        })
+
+                        questionHtml += `</div>`
+
+                        $('#previewQuizModal .modal-body').html(questionHtml);
                     },
                     error: function(data) {
                         if (data.status == 500) {

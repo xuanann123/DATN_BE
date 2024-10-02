@@ -58,6 +58,13 @@ class UserController extends Controller
                 $user->update(['avatar' => null]);
             }
 
+            // update name
+            if ($request->has('name')) {
+                $user->update([
+                    'name' => $request->name
+                ]);
+            }
+
             // Update profile
             $user->profile()->updateOrCreate(
                 ['id_user' => $user->id],
