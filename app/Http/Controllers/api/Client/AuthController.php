@@ -187,7 +187,7 @@ class AuthController extends Controller
             // check mat khau
             if ($user && !Hash::check($credentials['password'], $user->password)) {
                 $errors[] = [
-                    'password'=> 'Mật khẩu không chính xác.'
+                    'password' => 'Mật khẩu không chính xác.'
                 ];
             }
 
@@ -237,7 +237,7 @@ class AuthController extends Controller
                 'data' => [
                     'access_token' => $token,
                     'user' => $user->makeHidden('profile'),
-                    'profile' =>$user->profile
+                    'profile' => $user->profile
                 ],
                 'status' => 200,
             ], 200)->cookie($cookie);
@@ -361,9 +361,21 @@ class AuthController extends Controller
                 ], 400);
             }
 
+            // check dung otp thi xoa otp cu di ok
+            $otpCode->delete();
+
+            // tao password reset token
+            $token = Str::random(60);
+            DB::table('password_reset_tokens')->updateOrInsert(
+                ['email' => $user->email],
+                ['token' => $token, 'created_at' => now()]
+            );
+
             return response()->json([
                 'message' => 'Mã OTP hợp lệ, vui lòng đặt lại mật khẩu của bạn.',
-                'data' => [],
+                'data' => [
+                    'token' => $token
+                ],
                 'status' => 200,
             ], 200);
         } catch (Throwable $e) {
@@ -379,7 +391,17 @@ class AuthController extends Controller
     public function resetPassword(ResetPasswordRequest $request)
     {
         try {
-            $user = User::where('email', $request->email)->first();
+            // check password reset token
+            $prToken = DB::table('password_reset_tokens')->where('token', $request->token)->first();
+            if(!$prToken || Carbon::parse($prToken->created_at)->addMinutes(15)->isPast()) {
+                return response()->json([
+                    'message' => 'Yêu cầu đặt lại mật khẩu không hợp lệ hoặc đã hết hạn',
+                    'data' => [],
+                    'status' => 400
+                ], 400);
+            }
+
+            $user = User::where('email', $prToken->email)->first();
 
             if (!$user) {
                 return response()->json([
@@ -389,22 +411,11 @@ class AuthController extends Controller
                 ], 404);
             }
 
-            $otpCode = OtpCode::where('otp_code', $request->otp_code)
-                ->where('user_id', $user->id)
-                ->first();
-
-            if (!$otpCode || $otpCode->isExpired()) {
-                return response()->json([
-                    'message' => 'Mã OTP không hợp lệ hoặc đã hết hạn.',
-                    'data' => [],
-                    'status' => 400,
-                ], 400);
-            }
-
             // update password
             $user->update(['password' => bcrypt($request->new_password)]);
 
-            $otpCode->delete();
+            // del prToken
+            DB::table('password_reset_tokens')->where('email', $prToken->email)->delete();
 
             return response()->json([
                 'message' => 'Đặt lại mật khẩu thành công!',

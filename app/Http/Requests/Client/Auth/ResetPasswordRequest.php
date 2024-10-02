@@ -10,7 +10,7 @@ class ResetPasswordRequest extends BaseFormRequest
     public function rules()
     {
         return [
-            'otp_code' => 'required',
+            'token' => '',
             'new_password' => 'required|string|min:8|confirmed',
         ];
     }
@@ -23,7 +23,6 @@ class ResetPasswordRequest extends BaseFormRequest
     public function messages()
     {
         return [
-            'otp_code.required' => 'Mã OTP không để trống.',
             'new_password.required' => 'Mật khẩu mới không để trống.',
             'new_password.string' => 'Mật khẩu mới phải là chuỗi.',
             'new_password.min' => 'Mật khẩu mới phải có ít nhất 8 ký tự.',
