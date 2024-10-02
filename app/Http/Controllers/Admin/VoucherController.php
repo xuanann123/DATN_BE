@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\VoucherCreated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Vouchers\CreateVoucherRequest;
 use App\Http\Requests\Admin\Vouchers\UpdateVoucherRequest;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class VoucherController extends Controller
 {
@@ -67,15 +69,19 @@ class VoucherController extends Controller
         if (!$request->is_active) {
             $data['is_active'] = 0;
         }
+        try {
+            $newVoucher = Voucher::query()->create($data);
 
-        $newVoucher = Voucher::query()->create($data);
 
-        if (!$newVoucher) {
-            return redirect()->route('admin.vouchers.index')->with(['error' => 'Thêm mới thất bại!']);
+            broadcast(new VoucherCreated($newVoucher))->toOthers();
+            return redirect()->route('admin.vouchers.index')->with(['message' => 'Thêm mới thành công!']);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
         }
 
-        return redirect()->route('admin.vouchers.index')->with(['message' => 'Thêm mới thành công!']);
     }
+
 
 
     public function edit(string $id)

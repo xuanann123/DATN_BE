@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ApprovalCourseController;
+use App\Http\Controllers\Admin\ChatController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\QuizController;
 use App\Http\Controllers\Admin\QuestionController;
@@ -178,6 +179,13 @@ Route::prefix("admin")
             Route::delete('/{id}/force-delete', [PostController::class, 'forceDelete'])->name('forceDelete');
         });
         Route::resource('posts', PostController::class);
+        Route::prefix('chat')
+            ->as('chat.')
+            ->group(function () {
+                Route::get('/', [ChatController::class, 'index'])->name('index');
+            
+             
+            });
     });
 
 

@@ -22,7 +22,6 @@
         }
     </style>
 @endsection
-
 @section('content')
     <div class="row">
         <div class="col-12">
@@ -38,25 +37,9 @@
             </div>
         </div>
     </div>
-    <!-- end page title -->
-
-    @if (session('message'))
-        <div class="alert alert-success" role="alert">
-            {{ session('message') }}
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="alert alert-error" role="alert">
-            {{ session('error') }}
-        </div>
-    @endif
-
 
     <div class="row">
         <div class="col-lg-12">
-
-
             <div class="row">
                 <div class="col-md-12 mb-3 mx-auto">
                     <div class="float-end">
