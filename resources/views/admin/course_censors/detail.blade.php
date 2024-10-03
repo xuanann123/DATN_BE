@@ -24,35 +24,105 @@
                                     <div class="col-md-auto">
                                         <div class="avatar-md">
                                             <div class="avatar-title bg-white rounded-circle">
-                                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrY7dJj0QnImGcypj9oBdr9u9joHrxgaKY_g&s" alt="" class="avatar-xs">
+                                                <img src="{{ Storage::url($course->thumbnail) }}" alt=""
+                                                    class="rounded-circle img-fluid h-100">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md">
-                                        <div>
-                                            <h4 class="fw-bold" id="course-title">Introduction to
-                                                Machine Learning</h4>
+                                        <div class="">
+                                            <h4 class="fw-bold" id="course-title">{{ $course->name }}</h4>
                                             <div class="hstack gap-3 flex-wrap">
-                                                <div><i class="ri-building-line align-bottom me-1"></i>
-                                                    <span id="instructor-name">John Doe</span>
+                                                <div><i class="ri-user-2-fill align-bottom me-1"></i>
+                                                    <span id="instructor-name">{{ $course->user->name }}</span>
                                                 </div>
                                                 <div class="vr"></div>
-                                                <div>Category : <span class="fw-medium" id="course-category">Computer
-                                                        Science</span>
+                                                <div>Mã khóa học : <span class="fw-medium"
+                                                        id="course-code">{{ $course->code }}</span>
                                                 </div>
                                                 <div class="vr"></div>
-                                                <div>Submitted : <span class="fw-medium" id="submitted-date">15 May,
-                                                        2023</span></div>
+                                                <div>Danh mục : <span class="fw-medium"
+                                                        id="course-category">{{ $course->category->name }}</span>
+                                                </div>
                                                 <div class="vr"></div>
-                                                <div class="badge rounded-pill bg-warning" id="course-status">Pending</div>
+                                                <div>Ngày tạo : <span class="fw-medium"
+                                                        id="submitted-date">{{ $course->created_at->format('d-m-Y') }}</span>
+                                                </div>
+                                                <div class="vr"></div>
+                                                <div>Trạng thái: <span
+                                                        class="badge rounded-pill
+                                                    {{ $course->status == 'pending'
+                                                        ? 'bg-warning'
+                                                        : ($course->status == 'approved'
+                                                            ? 'bg-success'
+                                                            : ($course->status == 'rejected'
+                                                                ? 'bg-danger'
+                                                                : '')) }}">
+                                                        {{ $course->status == 'pending'
+                                                            ? 'Chờ phê duyệt'
+                                                            : ($course->status == 'approved'
+                                                                ? 'Đã phê duyệt'
+                                                                : ($course->status == 'rejected'
+                                                                    ? 'Đã từ chối'
+                                                                    : '')) }}</span>
+                                                </div>
+                                                <div>Hiển thị:
+                                                    <span
+                                                        class="badge {{ $course->is_active ? 'bg-success-subtle badge-border text-success' : 'bg-danger-subtle badge-border text-danger' }}"
+                                                        id="course-is-active">
+                                                        {{ $course->is_active ? 'Có' : 'Không' }}
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <form
+                                                        action="{{ route('admin.approval.courses.approve', $course->id) }}"
+                                                        method="post">
+                                                        @csrf
+                                                        <input type="hidden" name="id" id=""
+                                                            value="{{ $course->id }}">
+
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-auto">
-                                        <div class="hstack gap-1 flex-wrap">
-                                            <button type="button" class="btn btn-danger">Reject</button>
-                                            <button type="button" class="btn btn-success">Approve</button>
-                                        </div>
+                                        <form action="{{ route('admin.approval.courses.approve', $course->id) }}"
+                                            method="post">
+                                            @csrf
+                                            <input type="hidden" name="id" id=""
+                                                value="{{ $course->id }}">
+                                            @if ($course->status === 'approved')
+                                                <button type="submit" name="disable"
+                                                    class="btn btn-warning btn-label waves-effect waves-light fs-12">
+                                                    <i class="ri-lock-fill label-icon align-middle fs-16 me-2"></i>
+                                                    Vô hiệu hóa
+                                                </button>
+                                            @endif
+                                            @if ($course->status === 'rejected')
+                                                <button type="submit" name="enable"
+                                                    class="btn btn-info btn-label waves-effect waves-light fs-12">
+                                                    <i class="ri-lock-unlock-fill label-icon align-middle fs-16 me-2"></i>
+                                                    Kích hoạt
+                                                </button>
+                                            @endif
+                                        </form>
+                                    </div>
+                                    <div class="col-md-auto">
+                                        <form action="{{ route('admin.approval.courses.approve', $course->id) }}"
+                                            method="post">
+                                            @csrf
+                                            <input type="hidden" name="id" id=""
+                                                value="{{ $course->id }}">
+                                            @if ($course->status === 'pending')
+                                                <div class="hstack gap-1 flex-wrap">
+                                                    <button type="submit" name="reject" class="btn btn-danger">Từ
+                                                        chối</button>
+                                                    <button type="submit" name="approval" class="btn btn-success">Chấp
+                                                        thuận</button>
+                                                </div>
+                                            @endif
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -62,12 +132,12 @@
                             <li class="nav-item">
                                 <a class="nav-link active fw-semibold" data-bs-toggle="tab" href="#course-overview"
                                     role="tab">
-                                    Overview
+                                    Tổng quan
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#course-content" role="tab">
-                                    Content
+                                    Nội dung
                                 </a>
                             </li>
                         </ul>
@@ -86,46 +156,13 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div class="text-muted">
-                                        <h6 class="mb-3 fw-semibold text-uppercase">Course Description
+                                        <h6 class="mb-3 fw-semibold text-uppercase">Mô tả
                                         </h6>
-                                        <p id="course-description">This course provides a comprehensive
-                                            introduction to machine learning concepts and techniques.
-                                            Students will learn the fundamentals of machine learning,
-                                            including supervised and unsupervised learning, feature
-                                            engineering, and model evaluation. Through hands-on projects
-                                            and real-world case studies, students will gain practical
-                                            experience in applying machine learning algorithms to solve
-                                            complex problems.</p>
+                                        <div id="course-description">{!! $course->description !!}</div>
 
-                                        <div class="pt-3 border-top border-top-dashed mt-4">
-                                            <h6 class="mb-3 fw-semibold text-uppercase">What You'll
-                                                Learn</h6>
-                                            <ul class="ps-4 vstack gap-2" id="learning-objectives">
-                                                <li>Understand the core principles and algorithms of
-                                                    machine learning</li>
-                                                <li>Implement and apply popular machine learning
-                                                    techniques using Python</li>
-                                                <li>Preprocess and prepare data for machine learning
-                                                    tasks</li>
-                                                <li>Evaluate and fine-tune machine learning models</li>
-                                                <li>Develop skills to tackle real-world machine learning
-                                                    problems</li>
-                                                <li>Gain hands-on experience with popular machine
-                                                    learning libraries such as scikit-learn and
-                                                    TensorFlow</li>
-                                            </ul>
-                                        </div>
-
-                                        <div class="pt-3 border-top border-top-dashed mt-4">
-                                            <h6 class="mb-3 fw-semibold text-uppercase">Requirements
-                                            </h6>
-                                            <ul class="ps-4 vstack gap-2" id="course-requirements">
-                                                <li>Basic understanding of programming concepts</li>
-                                                <li>Familiarity with Python programming language</li>
-                                                <li>Basic knowledge of linear algebra and statistics
-                                                </li>
-                                                <li>A computer with Python 3.7+ installed</li>
-                                            </ul>
+                                        <div class="pt-3 border-top border-top-dashed mt-4" data-simplebar
+                                            style="max-height: 500px">
+                                            {!! $course->learned !!}
                                         </div>
                                     </div>
                                 </div>
@@ -134,39 +171,49 @@
                         <div class="col-xl-3 col-lg-4">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5 class="card-title mb-0">Course Details</h5>
+                                    <h5 class="card-title mb-0">Tổng quan khóa học</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive table-card">
                                         <table class="table table-borderless align-middle mb-0">
                                             <tbody>
                                                 <tr>
-                                                    <td class="fw-medium">Duration</td>
-                                                    <td id="course-duration">8 weeks</td>
+                                                    <td class="fw-medium">Thời gian</td>
+                                                    <td id="course-duration">
+                                                        {{ $course->duration ? $course->duration . ' tuần' : 'Chưa xác định' }}
+                                                    </td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="fw-medium">Lectures</td>
-                                                    <td id="lecture-count">24</td>
+                                                    <td class="fw-medium">Bài giảng</td>
+                                                    <td id="lecture-count">{{ $lecturesCount ?? 'Chưa có' }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="fw-medium">Quizzes</td>
-                                                    <td id="quiz-count">8</td>
+                                                    <td class="fw-medium">Bài kiểm tra</td>
+                                                    <td id="quiz-count">{{ $quizzesCount ?? 'Chưa có' }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="fw-medium">Assignments</td>
-                                                    <td id="assignment-count">4</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="fw-medium">Skill Level</td>
-                                                    <td id="skill-level">Intermediate</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="fw-medium">Language</td>
-                                                    <td id="course-language">English</td>
+                                                    <td class="fw-medium">Học viên</td>
+                                                    <td id="course-language">Tạm thời chưa làm</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="fw-medium">Price</td>
-                                                    <td id="course-price">$79.99</td>
+                                                    <td>
+                                                        @if ($course->is_free)
+                                                            <span class="badge bg-success">Free</span>
+                                                        @else
+                                                            @if ($course->price_sale)
+                                                                <span
+                                                                    class="text-decoration-line-through">{{ number_format($course->price, 0) }}</span>
+                                                                <span
+                                                                    class="text-danger">{{ number_format($course->price_sale, 0) }}</span>
+                                                                <i class="ri-bit-coin-line"></i>
+                                                            @else
+                                                                <span
+                                                                    class="text-danger">{{ number_format($course->price, 0) }}</span>
+                                                                <i class="ri-bit-coin-line"></i>
+                                                            @endif
+                                                        @endif
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -180,257 +227,132 @@
                 <div class="tab-pane fade" id="course-content" role="tabpanel">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title mb-3">Course Content</h5>
-                            <div class="accordion" id="courseContentAccordion">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="week1Header">
-                                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                            data-bs-target="#week1Collapse" aria-expanded="true"
-                                            aria-controls="week1Collapse">
-                                            Week 1: Introduction to Machine Learning (3 hours)
-                                        </button>
-                                    </h2>
-                                    <div id="week1Collapse" class="accordion-collapse collapse show"
-                                        aria-labelledby="week1Header" data-bs-parent="#courseContentAccordion">
-                                        <div class="accordion-body">
-                                            <ul class="list-unstyled vstack gap-2">
-                                                <li><a href="" data-bs-toggle="modal"
-                                                        data-bs-target="#viewLesson">1.1 What is Machine
-                                                        Learning? (30 minutes, bấm vào đây là preview
-                                                        nhé)</a></li>
-                                                <li>1.2 Types of Machine Learning (45 minutes)</li>
-                                                <li>1.3 Applications of Machine Learning (45 minutes)
-                                                </li>
-                                                <li>1.4 Setting up the Python Environment (30 minutes)
-                                                </li>
-                                                <li>1.5 Introduction to NumPy and Pandas (30 minutes)
-                                                </li>
-                                            </ul>
-                                            <p><strong>Learning Materials:</strong> Lecture slides,
-                                                Python environment setup guide, NumPy and Pandas cheat
-                                                sheets</p>
+                            <div class="accordion custom-accordionwithicon custom-accordion-border accordion-border-box"
+                                id="courseContentAccordion">
+                                @php
+                                    $lessonCounter = 1;
+                                @endphp
+                                @foreach ($course->modules->sortBy('position') as $module)
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="module{{ $module->id }}Header">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#module{{ $module->id }}Collapse" aria-expanded="true"
+                                                aria-controls="module{{ $module->id }}Collapse">
+                                                <b class="fw-bold">Chương {{ $loop->index + 1 }}</b>:
+                                                {{ $module->title }}
+                                            </button>
+                                        </h2>
+                                        <div id="module{{ $module->id }}Collapse" class="accordion-collapse collapse"
+                                            aria-labelledby="module{{ $module->id }}Header"
+                                            data-bs-parent="#courseContentAccordion">
+                                            <div class="accordion-body">
+                                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                                    <h6 class="mb-0"><b>Mô tả: </b>{{ $module->description }}</h6>
+                                                </div>
+                                                <div class="lesson-list">
+                                                    @foreach ($module->lessons->sortBy('position') as $lesson)
+                                                        <div class="card border mb-2">
+                                                            <div
+                                                                class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                                <h6 class="mb-0">
+                                                                    @if ($lesson->content_type === 'video')
+                                                                        <i class="ri-video-line text-primary me-2"></i>
+                                                                    @elseif($lesson->content_type === 'document')
+                                                                        <i class="ri-file-text-line text-success me-2"></i>
+                                                                    @elseif($lesson->content_type === 'quiz')
+                                                                        <i
+                                                                            class="ri-questionnaire-fill text-warning me-2"></i>
+                                                                    @endif
+                                                                    {{ $lessonCounter++ }}. {{ $lesson->title }}
+                                                                </h6>
+                                                                <div>
+                                                                    <button class="btn btn-sm btn-light me-2"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#previewLessonModal"
+                                                                        data-lesson-id="{{ $lesson->id }}"
+                                                                        data-lesson-type="{{ $lesson->type }}">
+                                                                        <i class="ri-eye-line"></i> <i>Xem trước</i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <i class="mb-0 fs-11">Thời gian: {{ $lesson->duration }}
+                                                                    phút</i>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                    @if ($module->quiz)
+                                                        @php
+                                                            $quiz = $module->quiz;
+                                                        @endphp
+                                                        <div class="card border mb-2">
+                                                            <div
+                                                                class="card-header bg-light d-flex justify-content-between align-items-center">
+                                                                <h6 class="mb-0">
+
+                                                                    <b>Bài tập:</b> {{ $quiz->title }} (<i
+                                                                        class="mb-0 fs-11">{{ $quiz->questions->count() }}
+                                                                        câu</i>)
+                                                                </h6>
+                                                                <div>
+                                                                    <button class="btn btn-sm btn-light me-2"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#previewQuizModal"
+                                                                        data-quiz-id="{{ $quiz->id }}"
+                                                                        data-quiz-type="{{ $quiz->type }}">
+                                                                        <i class="ri-eye-line"></i> <i>Xem trước</i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    @else
+                                                        <i>Không có bài tập</i>
+                                                    @endif
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="week2Header">
-                                        <button class="accordion-button collapsed" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#week2Collapse"
-                                            aria-expanded="false" aria-controls="week2Collapse">
-                                            Week 2: Data Preprocessing and Exploratory Data Analysis (4
-                                            hours)
-                                        </button>
-                                    </h2>
-                                    <div id="week2Collapse" class="accordion-collapse collapse"
-                                        aria-labelledby="week2Header" data-bs-parent="#courseContentAccordion">
-                                        <div class="accordion-body">
-                                            <ul class="list-unstyled vstack gap-2">
-                                                <li>2.1 Data Cleaning and Handling Missing Values (60
-                                                    minutes)</li>
-                                                <li>2.2 Feature Scaling and Normalization (45 minutes)
-                                                </li>
-                                                <li>2.3 Handling Categorical Data (45 minutes)</li>
-                                                <li>2.4 Exploratory Data Analysis Techniques (60
-                                                    minutes)</li>
-                                                <li>2.5 Data Visualization with Matplotlib and Seaborn
-                                                    (30 minutes)</li>
-                                            </ul>
-                                            <p><strong>Learning Materials:</strong> Lecture slides, Data
-                                                preprocessing notebook, EDA case study dataset</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="week3Header">
-                                        <button class="accordion-button collapsed" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#week3Collapse"
-                                            aria-expanded="false" aria-controls="week3Collapse">
-                                            Week 3: Supervised Learning - Regression (4 hours)
-                                        </button>
-                                    </h2>
-                                    <div id="week3Collapse" class="accordion-collapse collapse"
-                                        aria-labelledby="week3Header" data-bs-parent="#courseContentAccordion">
-                                        <div class="accordion-body">
-                                            <ul class="list-unstyled vstack gap-2">
-                                                <li>3.1 Introduction to Regression (30 minutes)</li>
-                                                <li>3.2 Linear Regression (60 minutes)</li>
-                                                <li>3.3 Polynomial Regression (45 minutes)</li>
-                                                <li>3.4 Regularization Techniques: Ridge and Lasso (60
-                                                    minutes)</li>
-                                                <li>3.5 Evaluating Regression Models (45 minutes)</li>
-                                            </ul>
-                                            <p><strong>Learning Materials:</strong> Lecture slides,
-                                                Regression algorithms notebook, Housing price dataset
-                                                for practice</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="week4Header">
-                                        <button class="accordion-button collapsed" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#week4Collapse"
-                                            aria-expanded="false" aria-controls="week4Collapse">
-                                            Week 4: Supervised Learning - Classification (4 hours)
-                                        </button>
-                                    </h2>
-                                    <div id="week4Collapse" class="accordion-collapse collapse"
-                                        aria-labelledby="week4Header" data-bs-parent="#courseContentAccordion">
-                                        <div class="accordion-body">
-                                            <ul class="list-unstyled vstack gap-2">
-                                                <li>4.1 Introduction to Classification (30 minutes)</li>
-                                                <li>4.2 Logistic Regression (60 minutes)</li>
-                                                <li>4.3 Decision Trees (45 minutes)</li>
-                                                <li>4.4 Support Vector Machines (60 minutes)</li>
-                                                <li>4.5 Evaluating Classification Models (45 minutes)
-                                                </li>
-                                            </ul>
-                                            <p><strong>Learning Materials:</strong> Lecture slides,
-                                                Classification algorithms notebook, Iris dataset for
-                                                practice</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="week5Header">
-                                        <button class="accordion-button collapsed" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#week5Collapse"
-                                            aria-expanded="false" aria-controls="week5Collapse">
-                                            Week 5: Unsupervised Learning (3 hours)
-                                        </button>
-                                    </h2>
-                                    <div id="week5Collapse" class="accordion-collapse collapse"
-                                        aria-labelledby="week5Header" data-bs-parent="#courseContentAccordion">
-                                        <div class="accordion-body">
-                                            <ul class="list-unstyled vstack gap-2">
-                                                <li>5.1 Introduction to Unsupervised Learning (30
-                                                    minutes)</li>
-                                                <li>5.2 K-Means Clustering (60 minutes)</li>
-                                                <li>5.3 Hierarchical Clustering (45 minutes)</li>
-                                                <li>5.4 Principal Component Analysis (PCA) (45 minutes)
-                                                </li>
-                                            </ul>
-                                            <p><strong>Learning Materials:</strong> Lecture slides,
-                                                Unsupervised learning notebook, Customer segmentation
-                                                dataset</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="week6Header">
-                                        <button class="accordion-button collapsed" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#week6Collapse"
-                                            aria-expanded="false" aria-controls="week6Collapse">
-                                            Week 6: Ensemble Methods (3 hours)
-                                        </button>
-                                    </h2>
-                                    <div id="week6Collapse" class="accordion-collapse collapse"
-                                        aria-labelledby="week6Header" data-bs-parent="#courseContentAccordion">
-                                        <div class="accordion-body">
-                                            <ul class="list-unstyled vstack gap-2">
-                                                <li>6.1 Introduction to Ensemble Methods (30 minutes)
-                                                </li>
-                                                <li>6.2 Bagging and Random Forests (60 minutes)</li>
-                                                <li>6.3 Boosting: AdaBoost and Gradient Boosting (60
-                                                    minutes)</li>
-                                                <li>6.4 Stacking (30 minutes)</li>
-                                            </ul>
-                                            <p><strong>Learning Materials:</strong> Lecture slides,
-                                                Ensemble methods notebook, Credit risk dataset</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="week7Header">
-                                        <button class="accordion-button collapsed" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#week7Collapse"
-                                            aria-expanded="false" aria-controls="week7Collapse">
-                                            Week 7: Model Evaluation and Hyperparameter Tuning (3 hours)
-                                        </button>
-                                    </h2>
-                                    <div id="week7Collapse" class="accordion-collapse collapse"
-                                        aria-labelledby="week7Header" data-bs-parent="#courseContentAccordion">
-                                        <div class="accordion-body">
-                                            <ul class="list-unstyled vstack gap-2">
-                                                <li>7.1 Cross-validation Techniques (45 minutes)</li>
-                                                <li>7.2 Bias-Variance Tradeoff (30 minutes)</li>
-                                                <li>7.3 Hyperparameter Tuning: Grid Search and Random
-                                                    Search (60 minutes)</li>
-                                                <li>7.4 Model Selection and Evaluation Metrics (45
-                                                    minutes)</li>
-                                            </ul>
-                                            <p><strong>Learning Materials:</strong> Lecture slides,
-                                                Model evaluation notebook, Hyperparameter tuning case
-                                                study</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="week8Header">
-                                        <button class="accordion-button collapsed" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#week8Collapse"
-                                            aria-expanded="false" aria-controls="week8Collapse">
-                                            Week 8: Final Project and Course Wrap-up (4 hours)
-                                        </button>
-                                    </h2>
-                                    <div id="week8Collapse" class="accordion-collapse collapse"
-                                        aria-labelledby="week8Header" data-bs-parent="#courseContentAccordion">
-                                        <div class="accordion-body">
-                                            <ul class="list-unstyled vstack gap-2">
-                                                <li>8.1 Final Project Overview and Guidelines (30
-                                                    minutes)</li>
-                                                <li>8.2 Working on the Final Project (180 minutes)</li>
-                                                <li>8.3 Course Recap and Future Learning Paths (30
-                                                    minutes)</li>
-                                            </ul>
-                                            <p><strong>Learning Materials:</strong> Final project
-                                                dataset, Project rubric, Additional resources for
-                                                further learning</p>
-                                        </div>
-                                    </div>
-                                </div>
+                                @endforeach
+
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal fade" id="viewLesson" tabindex="-1" aria-labelledby="viewLesson" aria-hidden="true">
+
+                <!-- Preview Lesson Modal -->
+                <div class="modal fade" id="previewLessonModal" tabindex="-1" aria-labelledby="previewLessonModal"
+                    aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="viewLesson">Evaluation Details</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        <div class="modal-content border-0 shadow-lg">
+                            <div class="modal-header bg-primary-subtle">
+                                <h5 class="modal-title mb-3" id="previewLessonModalLabel">Lesson Preview</h5>
+                                <button type="button" class="btn-close mb-2" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
-                            <div class="modal-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <p><strong>Course:</strong> React Fundamentals</p>
-                                        <p><strong>Student:</strong> John Doe</p>
-                                        <p><strong>Date:</strong> 02 Jan, 2023</p>
-                                        <p><strong>Rating:</strong> <span class="badge bg-success">4.5
-                                                <i class="ri-star-fill"></i></span></p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <p><strong>Course Type:</strong> Online</p>
-                                        <p><strong>Instructor:</strong> Jane Smith</p>
-                                    </div>
-                                </div>
-                                <hr>
-                                <h6>Content:</h6>
-                                <p>Great course! The content was well-structured and easy to follow. The
-                                    instructor explained complex concepts in a very understandable way.
-                                    I particularly enjoyed the practical exercises and real-world
-                                    examples. However, I think the course could benefit from more
-                                    advanced topics in the later sections. Overall, I'm very satisfied
-                                    and feel much more confident in my React skills now.</p>
-                                <hr>
-                                <iframe width="560" height="315"
-                                    src="https://www.youtube.com/embed/TfKOFRpqSME?si=xJ7qlCmqYCRUTpIu"
-                                    title="YouTube video player" frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                            <div class="modal-body p-4">
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <div class="modal-footer border-top-0">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{-- Preview Quiz --}}
+                <div class="modal fade" id="previewQuizModal" tabindex="-1" aria-labelledby="previewQuizModal"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content border-0 shadow-lg">
+                            <div class="modal-header bg-primary-subtle">
+                                <h4 class="modal-title mb-3" id="previewQuizModalLabel">Lesson Preview</h4>
+                                <button type="button" class="btn-close mb-2" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body p-4">
+
+                            </div>
+                            <div class="modal-footer border-top-0">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
                             </div>
                         </div>
                     </div>
@@ -446,4 +368,104 @@
 
     <!--crypto-orders init-->
     <script src="{{ asset('theme/admin/assets/js/pages/crypto-orders.init.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // preview lesson
+        $(document).ready(function() {
+            $('[data-bs-target="#previewLessonModal"]').on('click', function() {
+                var lessonId = $(this).data('lesson-id')
+                console.log(lessonId);
+
+                $.ajax({
+                    url: '/admin/lessons/get-lesson-details/' + lessonId,
+                    method: 'GET',
+                    success: function(data) {
+                        $('#previewLessonModalLabel').text(data.title)
+                        console.log(data);
+                        // lesson text
+                        if (data.lesson_type === 'document') {
+                            $('#previewLessonModal .modal-body').html(`
+                                <div data-simplebar style="max-height: 450px; max-width: 100%">${data.content}</div>
+                            `)
+                        } else if (data.lesson_type == 'video') {
+                            $('#previewLessonModal .modal-body').html(`
+                                <iframe width="100%" height="500px" src="https://www.youtube.com/embed/${data.video_youtube_id}" title="YouTube video player"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+                                </iframe>
+                            `)
+                        }
+                    }
+                })
+            })
+            // close
+            $('#previewLessonModal').on('hidden.bs.modal', function() {
+                $(this).find('.modal-title').text('')
+                $(this).find('.modal-body').html('')
+            })
+        })
+        //preview quiz
+        $(document).ready(function() {
+            $('[data-bs-target="#previewQuizModal"]').on('click', function() {
+                var quizId = $(this).data('quiz-id')
+                console.log(quizId);
+
+                $.ajax({
+                    url: '/admin/quizzes/get-quiz/' + quizId,
+                    method: 'GET',
+                    success: function(data) {
+                        $('#previewQuizModalLabel').text(data.title)
+                        console.log(data);
+
+                        var questionHtml =
+                            `<div data-simplebar style="max-height: 450px; max-width: 100%">`
+                        data.questions.forEach(function(question, index) {
+                            questionHtml += `
+                            <div class="mb-3">
+                                <h5><strong>Câu hỏi ${index + 1}: ${question.question}</strong></h5>
+                                <ul class="list-unstyled">`
+
+                            question.options.forEach(function(option, optionIndex) {
+                                questionHtml += `
+                                <div class="input-group mb-2">
+                                    <div class="input-group-text ${option.is_correct ? 'border-success' : ''}">
+                                        <input class="form-check-input mt-0 ${option.is_correct ? 'bg-success border-success' : ''}"
+                                            type="${ question.type === 'one_choice' ? 'radio' : 'checkbox' }" name="answer${index}"
+                                            name="answer${index}"
+                                            value="${option.id}"
+                                            id="option${option.id}"
+                                            ${option.is_correct ? 'checked' : ''}
+                                            disable
+                                            >
+                                    </div>
+                                    <input type="text" class="form-control ${option.is_correct ? 'border-success text-success' : ''}"
+                                        placeholder=""
+                                        name="answer${index}"
+                                        value="${option.option}">
+                                </div>`
+                            })
+
+                            questionHtml += `</ul></div>`
+                        })
+
+                        questionHtml += `</div>`
+
+                        $('#previewQuizModal .modal-body').html(questionHtml);
+                    },
+                    error: function(data) {
+                        if (data.status == 500) {
+                            console.log(data.error);
+                        }
+                    }
+                })
+            })
+
+            // close
+            $('#previewLessonModal').on('hidden.bs.modal', function() {
+                $(this).find('.modal-title').text('')
+                $(this).find('.modal-body').html('')
+            })
+        })
+    </script>
 @endsection
