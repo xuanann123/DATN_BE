@@ -88,7 +88,7 @@ class CourseController extends Controller
             DB::commit();
             return redirect()->route('admin.courses.list')->with(['message' => 'Thêm mới thành công!']);
         } catch (\Throwable $th) {
-            if(Storage::disk('public')->exists($data['thumbnail'])) {
+            if (Storage::disk('public')->exists($data['thumbnail'])) {
                 Storage::disk('public')->delete($data['thumbnail']);
             }
             DB::rollBack();
@@ -181,5 +181,26 @@ class CourseController extends Controller
         $course->delete();
 
         return back()->with(['message' => 'Xóa thành công!']);
+    }
+
+    public function submit(Request $request)
+    {
+        $course = Course::query()->findOrFail($request->id);
+
+        $act = $request->has('submit') ? 'submit' : ($request->has('enable') ? 'enable' : ($request->has('disable') ? 'disable' : null));
+
+        match ($act) {
+            'submit' => [
+                $course->submited_at = now(),
+                $course->status = 'pending'
+            ],
+            'enable' => $course->is_active = 1,
+            'disable' => $course->is_active = 0,
+            default => null
+        };
+
+        $course->save();
+
+        return redirect()->back()->with('success', 'Cập nhật thành công.');
     }
 }
