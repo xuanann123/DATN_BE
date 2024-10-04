@@ -953,6 +953,7 @@
                 $('.btn-span-add').css({
                     'display': 'none'
                 });
+                $('.btn-submit-lesson-video').prop('disabled', true);
             });
         });
     </script>
