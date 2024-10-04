@@ -4,6 +4,7 @@
 @endsection
 
 @section('style-libs')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         .drop-container {
             position: relative;
@@ -39,6 +40,10 @@
         }
 
         .box-input-url {
+            display: none;
+        }
+
+        .is_loading {
             display: none;
         }
     </style>
@@ -483,7 +488,14 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                <button type="submit" form="addVideoLessonForm" class="btn btn-primary">Thêm</button>
+                                <button type="submit" form="addVideoLessonForm"
+                                    class="btn btn-primary btn-submit-lesson-video">
+                                    <span class="is_loading">
+                                        <i class="fa fa-circle-o-notch fa-spin"></i><span class="mx-1">Đang tải
+                                            lên</span>
+                                    </span>
+                                    <span class="btn-span-add">Thêm</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -886,7 +898,9 @@
         });
     </script>
 
+
     <script>
+        // Xử lí ẩn hiện input khi chọn upload video hay nhập url;
         const uploadOption = document.getElementById('upload-video-option');
         const urlOption = document.getElementById('url-video-option');
         const boxUrl = document.getElementById('box-url');
@@ -927,6 +941,19 @@
 
                 reader.readAsDataURL(file);
             }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('#addVideoLessonForm').on('submit', function() {
+                $('.is_loading').css({
+                    'display': 'block'
+                });
+                $('.btn-span-add').css({
+                    'display': 'none'
+                });
+            });
         });
     </script>
 @endsection
