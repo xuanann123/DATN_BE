@@ -51,17 +51,17 @@ Route::prefix("admin")
             ->as('banners.')
             ->group(function () {
 
-            Route::get("/", [BannerController::class, 'index'])->name('index');
-            Route::get("show", [BannerController::class, 'show'])->name('show');
-            Route::get("/create", [BannerController::class, 'create'])->name('create');
-            Route::post("/store", [BannerController::class, 'store'])->name('store');
-            Route::get("/edit/{banner}", [BannerController::class, 'edit'])->name('edit');
-            Route::put("/update/{banner}", [BannerController::class, 'update'])->name('update');
-            Route::get("/destroy/{banner}", [BannerController::class, 'destroy'])->name('destroy');
-            Route::get('action', [BannerController::class, 'action'])->name('action');
-            Route::get('restore/{id}', [BannerController::class, 'restore'])->name('restore');
-            Route::get('forceDelete/{id}', [BannerController::class, 'forceDelete'])->name('forceDelete');
-        });
+                Route::get("/", [BannerController::class, 'index'])->name('index');
+                Route::get("show", [BannerController::class, 'show'])->name('show');
+                Route::get("/create", [BannerController::class, 'create'])->name('create');
+                Route::post("/store", [BannerController::class, 'store'])->name('store');
+                Route::get("/edit/{banner}", [BannerController::class, 'edit'])->name('edit');
+                Route::put("/update/{banner}", [BannerController::class, 'update'])->name('update');
+                Route::get("/destroy/{banner}", [BannerController::class, 'destroy'])->name('destroy');
+                Route::get('action', [BannerController::class, 'action'])->name('action');
+                Route::get('restore/{id}', [BannerController::class, 'restore'])->name('restore');
+                Route::get('forceDelete/{id}', [BannerController::class, 'forceDelete'])->name('forceDelete');
+            });
 
 
         Route::prefix("categories")
@@ -81,16 +81,16 @@ Route::prefix("admin")
         Route::prefix("tags")
             ->as('tags.')
             ->group(function () {
-            Route::get("/", [TagController::class, 'index'])->name('index');
-            Route::get("/create", [TagController::class, 'create'])->name('create');
-            Route::post("/store", [TagController::class, 'store'])->name('store');
-            Route::get("/edit/{tag}", [TagController::class, 'edit'])->name('edit');
-            Route::put("/update/{tag}", [TagController::class, 'update'])->name('update');
-            Route::get("/destroy/{tag}", [TagController::class, 'destroy'])->name('destroy');
-            Route::get('action', [TagController::class, 'action'])->name('action');
-            Route::get('restore/{id}', [TagController::class, 'restore'])->name('restore');
-            Route::get('forceDelete/{id}', [TagController::class, 'forceDelete'])->name('forceDelete');
-        });
+                Route::get("/", [TagController::class, 'index'])->name('index');
+                Route::get("/create", [TagController::class, 'create'])->name('create');
+                Route::post("/store", [TagController::class, 'store'])->name('store');
+                Route::get("/edit/{tag}", [TagController::class, 'edit'])->name('edit');
+                Route::put("/update/{tag}", [TagController::class, 'update'])->name('update');
+                Route::get("/destroy/{tag}", [TagController::class, 'destroy'])->name('destroy');
+                Route::get('action', [TagController::class, 'action'])->name('action');
+                Route::get('restore/{id}', [TagController::class, 'restore'])->name('restore');
+                Route::get('forceDelete/{id}', [TagController::class, 'forceDelete'])->name('forceDelete');
+            });
 
         Route::resource('vouchers', VoucherController::class)->except('show');
 
@@ -98,27 +98,27 @@ Route::prefix("admin")
         Route::prefix('users')
             ->as('users.')
             ->group(function () {
-            Route::get("/", [UserController::class, 'index'])->name('list');
-            Route::get("/create", [UserController::class, 'create'])->name('create');
-            Route::post("/store", [UserController::class, 'store'])->name('store');
-            Route::get("/destroy/{user}", [UserController::class, 'destroy'])->name('destroy');
-            Route::get("/action", [UserController::class, 'action'])->name('action');
-            Route::get("/edit/{user}", [UserController::class, 'edit'])->name('edit');
-            Route::put("/update/{user}", [UserController::class, 'update'])->name('update');
-            Route::get("/detail/{user}", [UserController::class, 'detail'])->name('detail');
-            Route::get("/restore/{id}", [UserController::class, 'restore'])->name('restore');
-            Route::get("/forceDelete/{id}", [UserController::class, 'forceDelete'])->name('forceDelete');
-            Route::prefix('profile')
-                ->as('profile.')
-                ->group(function () {
-                    Route::get("/", [ProfileController::class, 'index'])->name('index');
-                    Route::get("/edit", [ProfileController::class, 'edit'])->name('edit');
-                    Route::post("/update", [ProfileController::class, 'updateInforBasic'])->name('update.basic');
-                    Route::post("/update/infor", [ProfileController::class, 'updateInforNormal'])->name('update.normal');
-                    Route::post("/update/experience", [ProfileController::class, 'updateExperience'])->name('update.experience');
-                    Route::post("/update/password", [ProfileController::class, 'updatePassword'])->name('update.password');
-                });
-        });
+                Route::get("/", [UserController::class, 'index'])->name('list');
+                Route::get("/create", [UserController::class, 'create'])->name('create');
+                Route::post("/store", [UserController::class, 'store'])->name('store');
+                Route::get("/destroy/{user}", [UserController::class, 'destroy'])->name('destroy');
+                Route::get("/action", [UserController::class, 'action'])->name('action');
+                Route::get("/edit/{user}", [UserController::class, 'edit'])->name('edit');
+                Route::put("/update/{user}", [UserController::class, 'update'])->name('update');
+                Route::get("/detail/{user}", [UserController::class, 'detail'])->name('detail');
+                Route::get("/restore/{id}", [UserController::class, 'restore'])->name('restore');
+                Route::get("/forceDelete/{id}", [UserController::class, 'forceDelete'])->name('forceDelete');
+                Route::prefix('profile')
+                    ->as('profile.')
+                    ->group(function () {
+                        Route::get("/", [ProfileController::class, 'index'])->name('index');
+                        Route::get("/edit", [ProfileController::class, 'edit'])->name('edit');
+                        Route::post("/update", [ProfileController::class, 'updateInforBasic'])->name('update.basic');
+                        Route::post("/update/infor", [ProfileController::class, 'updateInforNormal'])->name('update.normal');
+                        Route::post("/update/experience", [ProfileController::class, 'updateExperience'])->name('update.experience');
+                        Route::post("/update/password", [ProfileController::class, 'updatePassword'])->name('update.password');
+                    });
+            });
         Route::prefix('courses')
             ->as('courses.')
             ->group(function () {
@@ -140,11 +140,11 @@ Route::prefix("admin")
         Route::prefix('quizzes')
             ->as('quizzes.')
             ->group(function () {
-            Route::get('{id}/', [QuizController::class, 'index'])->name('index');
-            //Lưu chữ chung dữ liệu vừa là question và cho option của question đó luôn.
-            Route::post('/{id}/questions-with-options', [QuestionController::class, 'storeWithOptions'])->name('store');
-            Route::get('/get-quiz/{id}', [QuestionController::class, 'show'])->name('get-quiz');
-        });
+                Route::get('{id}/', [QuizController::class, 'index'])->name('index');
+                //Lưu chữ chung dữ liệu vừa là question và cho option của question đó luôn.
+                Route::post('/{id}/questions-with-options', [QuestionController::class, 'storeWithOptions'])->name('store');
+                Route::get('/get-quiz/{id}', [QuestionController::class, 'show'])->name('get-quiz');
+            });
 
         Route::prefix('lessons')
             ->as('lessons.')
@@ -153,8 +153,8 @@ Route::prefix("admin")
                 Route::get('/get-lesson-details/{id}', [LessonController::class, 'show'])->name('get-lesson-details');
 
 
-                Route::get('/auth/youtube', [UploadVideoController::class, 'redirectToGoogle'])->name('youtube.auth');
-                Route::get('/callback', [UploadVideoController::class, 'handleGoogleCallback'])->name('youtube.callback');
+                // Route::get('/auth/youtube', [UploadVideoController::class, 'redirectToGoogle'])->name('youtube.auth');
+                // Route::get('/callback', [UploadVideoController::class, 'handleGoogleCallback'])->name('youtube.callback');
                 Route::post('/store-lesson-video', [UploadVideoController::class, 'storeLessonVideo'])->name('store-lesson-video');
             });
         Route::prefix('approval')
@@ -172,21 +172,19 @@ Route::prefix("admin")
         Route::prefix('posts')
             ->as('posts.')
             ->group(function () {
-            Route::post('/{id}/disable', [PostController::class, 'disable'])->name('disable');
-            Route::post('/{id}/enable', [PostController::class, 'enable'])->name('enable');
-            Route::get('/trash', [PostController::class, 'trash'])->name('trash');
-            Route::post('/{id}/restore', [PostController::class, 'restore'])->name('restore');
-            Route::delete('/{id}/force-delete', [PostController::class, 'forceDelete'])->name('forceDelete');
-        });
+                Route::post('/{id}/disable', [PostController::class, 'disable'])->name('disable');
+                Route::post('/{id}/enable', [PostController::class, 'enable'])->name('enable');
+                Route::get('/trash', [PostController::class, 'trash'])->name('trash');
+                Route::post('/{id}/restore', [PostController::class, 'restore'])->name('restore');
+                Route::delete('/{id}/force-delete', [PostController::class, 'forceDelete'])->name('forceDelete');
+            });
         Route::resource('posts', PostController::class);
         Route::prefix('chat')
             ->as('chat.')
             ->group(function () {
                 Route::get('/', [ChatController::class, 'index'])->name('index');
-            
-             
             });
     });
 
 
-Route::get('/callback', [UploadVideoController::class, 'handleGoogleCallback'])->name('youtube.callback');
+// Route::get('/callback', [UploadVideoController::class, 'handleGoogleCallback'])->name('youtube.callback');

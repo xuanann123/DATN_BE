@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Lessons\StoreLessonRequest;
 use App\Models\Video;
+use Illuminate\Support\Facades\Storage;
 
 class LessonController extends Controller
 {
@@ -50,6 +51,8 @@ class LessonController extends Controller
             return response()->json([
                 'title' => $lesson->title,
                 'lesson_type' => 'video',
+                'type' => $lesson->lessonable->type,
+                'url' => Storage::url($lesson->lessonable->url),
                 'video_youtube_id' => $lesson->lessonable->video_youtube_id
             ]);
         }

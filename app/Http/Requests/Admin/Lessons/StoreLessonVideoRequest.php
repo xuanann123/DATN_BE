@@ -14,9 +14,20 @@ class StoreLessonVideoRequest extends FormRequest
 
     public function rules(): array
     {
+        if ($this->input('check') == 'upload') {
+            $upload = 'required';
+            $url = 'nullable';
+        } else {
+            $upload = 'nullable';
+            $url = 'required';
+        }
         return [
             'title' => 'required|string|max:255',
-            'video' => 'required|mimes:mp4,mov,avi,flv',
+            'video' => $upload . '|mimes:mp4,mov,avi,flv',
+            'url' => [
+                $url,
+                'regex:/^(https?\:\/\/)?(www\.youtube\.com\/watch\?v=|youtu\.be\/)[\w-]+$/',
+            ],
         ];
     }
 
@@ -29,6 +40,8 @@ class StoreLessonVideoRequest extends FormRequest
 
             'video.required' => 'Vui lòng tải lên một video.',
             'video.mimes' => 'Video phải có định dạng: mp4, mov, avi, hoặc flv.',
+            'url.required' => 'Vui lòng nhập url video',
+            'url.regex' => 'Vui lòng nhập đúng url video của youtube'
         ];
     }
 }
