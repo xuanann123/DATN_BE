@@ -187,6 +187,9 @@ Route::prefix("admin")
             ->group(function () {
                 Route::get('/', [ChatController::class, 'index'])->name('index');
                 Route::post('/message', [ChatController::class, 'messageReceived'])->name('message');
+                //auto load tin nhắn
+                Route::get('/api', [ChatController::class, 'fetchMessages'])->name('api');
+                Route::post('/greet/{receiver}', [ChatController::class, 'greetReceived'])->name('greet');
 
             });
     });

@@ -6,6 +6,11 @@
 
 @section('style-libs')
     <link rel="stylesheet" href="{{ asset('theme/admin/assets/libs/glightbox/css/glightbox.min.css') }}">
+    <style>
+        #userList>li {
+            cursor: pointer;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -64,7 +69,6 @@
                         </div>
 
                         <div class="chat-message-list">
-
                             <ul class="list-unstyled chat-list chat-user-list" id="userList">
 
                             </ul>
@@ -87,9 +91,9 @@
 
                         <div class="chat-message-list">
 
-                            <ul class="list-unstyled chat-list chat-user-list mb-0" id="channelList">
+                            <ul class="list-unstyled chat-list chat-user-list mb-0">
                                 <li class="active">
-                                    <a href="javascript: void(0);">
+                                    <a>
                                         <div class="d-flex align-items-center">
                                             <div class="flex-shrink-0 chat-user-img online align-self-center me-2 ms-0">
                                                 <div class="avatar-xxs"> <img
@@ -98,7 +102,7 @@
                                                         class="user-status"></span> </div>
                                             </div>
                                             <div class="flex-grow-1 overflow-hidden">
-                                                <p class="text-truncate mb-0">Kênh Chat Chung</p>
+                                                <p class="text-truncate mb-0">Kênh Chat Hệ Thống</p>
                                             </div>
                                         </div>
                                     </a>
@@ -110,7 +114,16 @@
                 </div>
                 <div class="tab-pane" id="contacts" role="tabpanel">
                     <div class="chat-room-list pt-3" data-simplebar>
-                        <div class="sort-contact">
+                        <div class="d-flex align-items-center px-4 mb-2">
+                            <div class="flex-grow-1">
+                                <h4 class="mb-0 fs-11 text-muted text-uppercase">Danh sách thành viên hoạt động</h4>
+                            </div>
+
+                        </div>
+                        <div class="chat-message-list">
+                            <ul class="list-unstyled chat-list chat-user-list" id="userList">
+
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -126,7 +139,6 @@
                 <div class="w-100 overflow-hidden position-relative">
                     <!-- conversation user -->
                     <div class="position-relative">
-
 
                         <div class="position-relative" id="users-chat">
                             <div class="p-3 user-chat-topbar">
@@ -152,7 +164,7 @@
                                                                 aria-controls="userProfileCanvasExample">#Kênh Chat Hệ
                                                                 Thống</a></h5>
                                                         <p class="text-truncate text-muted fs-14 mb-0 userStatus">
-                                                            <small>Bao nhiêu thành viên đang online ?</small>
+                                                            <small id="countMember"></small>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -400,57 +412,37 @@
             </div>
         </div>
     </div>
-    <!-- end chat-wrapper -->
-    {{-- <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">CHAT</div>
-            <div class="card-body">
-                <div class="row p-2">
-                    <div class="col-10">
-                        <div class="row">
-                            <div class="col-12 border rounded-lg p-3">
-                                <ul class="list-unstyled overflow-auto" id="messages" style="min-height: 45vh">
-                                </ul>
-                            </div>
-                        </div>
-                        <form>
-                            <div class="row py-3">
-                                <div class="col-10">
-                                    <input type="text" id="message" name="message" class="form-control">
-                                </div>
-                                <div class="col-2">
-                                    <button id="send" class="btn btn-primary w-100">Gửi</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="col-2">
-                        <p><strong>Người dùng online</strong></p>
-                        <ul id="users" class="list-unstyled overflow-auto text-info" style="min-height: 45vh">
-
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> --}}
 @endsection
 
 @section('script-libs')
     <script type="module">
         const messagesElement = document.getElementById('messages');
         const userElement = document.getElementById('userList');
-
+        const countMember = document.getElementById("countMember");
+        //Hiển thị tin nhắn ngay sau khi tài trang lần đầu
+        document.addEventListener('DOMContentLoaded', function() {
+            window.axios.get('chat/api')
+                .then(response => {
+                    const messages = response.data.messages;
+                    messages.forEach(message => {
+                        displayMessage(message); // Hàm hiển thị tin nhắn
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching messages:', error);
+                });
+        });
         //Dùng presense
         Echo.join('chat')
             //Hiển thị danh sách người dùng
             .here((users) => {
+                //Hiển thị tin nhắn nhóm từ trước đã lưu trên database
+                countMember.innerText = users.length + " thành viên đang online";
                 users.forEach((user) => {
                     // Tạo các phần tử HTML tương ứng
-
                     // Tạo thẻ li
                     const li = document.createElement('li');
-
+                    li.setAttribute('onclick', `greetUser(${user.id})`);
                     // Tạo thẻ div chính cho bố cục
                     const mainDiv = document.createElement('div');
                     mainDiv.classList.add('d-flex', 'align-items-center');
@@ -470,7 +462,8 @@
 
 
                     if (user.avatar == null) {
-                        img.src ='https://png.pngtree.com/png-clipart/20210608/ourlarge/pngtree-dark-gray-simple-avatar-png-image_3418404.jpg';
+                        img.src =
+                            'https://png.pngtree.com/png-clipart/20210608/ourlarge/pngtree-dark-gray-simple-avatar-png-image_3418404.jpg';
                         img.alt = user.name;
                         img.classList.add('rounded-circle', 'img-fluid', 'userprofile');
                     } else {
@@ -519,7 +512,7 @@
             })
             .joining((user) => {
                 const li = document.createElement('li');
-
+                li.setAttribute('onclick', `greetUser(${user.id})`);
                 // Tạo thẻ div chính cho bố cục
                 const mainDiv = document.createElement('div');
                 mainDiv.classList.add('d-flex', 'align-items-center');
@@ -592,68 +585,75 @@
                 const element = document.getElementById(user.id);
                 element.parentNode.removeChild(element);
             }).listen('MessageSent', (event) => {
-                const li = document.createElement('li');
-                li.setAttribute('id', event.user.id);
-                //Lấy id hiện tại
-                const currentUserId = document.getElementById('currentUser').getAttribute('data-user-id');
-                //Log thử xem có dữ liệu ủa người dùng hay khong
-                // console.log(currentUserId.id);
-                // Kiểm tra nếu người gửi là bạn, thì thêm class 'right', ngược lại là 'left'
-                if (event.user.id == currentUserId) {
-                    li.classList.add('chat-list', 'right');
-                } else {
-                    li.classList.add('chat-list', 'left');
-                }
-
-                // Tạo cấu trúc nội dung của tin nhắn
-                const conversationDiv = document.createElement('div');
-                conversationDiv.classList.add('conversation-list');
-
-                const avatarDiv = document.createElement('div');
-                avatarDiv.classList.add('chat-avatar');
-                const avatarImg = document.createElement('img');
-//Xử lý ảnh nếu rỗng thông tin người dùng
-                if (event.user.avatar == null) {
-                    avatarImg.src =
-                        'https://png.pngtree.com/png-clipart/20210608/ourlarge/pngtree-dark-gray-simple-avatar-png-image_3418404.jpg';
-                    avatarImg.alt = event.user.name;
-                    avatarImg.classList.add('rounded-circle', 'img-fluid', 'userprofile');
-                } else {
-                    avatarImg.src = '{{ asset('storage') }}' + '/' + event.user.avatar; // Đường dẫn avatar từ API
-                    avatarImg.alt = event.user.name;
-                    avatarImg.classList.add('rounded-circle', 'img-fluid', 'userprofile');
-                }
-
-                avatarDiv.appendChild(avatarImg);
-
-                const userChatContent = document.createElement('div');
-                userChatContent.classList.add('user-chat-content');
-
-                const ctextWrap = document.createElement('div');
-                ctextWrap.classList.add('ctext-wrap');
-
-                const ctextWrapContent = document.createElement('div');
-                ctextWrapContent.classList.add('ctext-wrap-content');
-                ctextWrapContent.id = event.message_id; // Gán id của tin nhắn để theo dõi
-
-                const messageParagraph = document.createElement('p');
-                messageParagraph.classList.add('mb-0', 'ctext-content');
-                messageParagraph.innerText = event.message; // Nội dung tin nhắn
-
-                // Gắn các phần tử con vào đúng vị trí
-                ctextWrapContent.appendChild(messageParagraph);
-                ctextWrap.appendChild(ctextWrapContent);
-                userChatContent.appendChild(ctextWrap);
-                conversationDiv.appendChild(avatarDiv);
-                conversationDiv.appendChild(userChatContent);
-
-                li.appendChild(conversationDiv);
-
-
-
-                // Thêm thẻ li vào danh sách tin nhắn
-                messagesElement.appendChild(li);
+                //Hiển thị tin tắn
+                displayMessage(event);
             });
+
+        function displayMessage(event) {
+            const li = document.createElement('li');
+            li.setAttribute('id', event.message_id);
+
+            // Lấy id người dùng hiện tại từ thẻ HTML có id="currentUser"
+            const currentUserId = document.getElementById('currentUser').getAttribute('data-user-id');
+
+            // Kiểm tra nếu người gửi là bạn, thì thêm class 'right', ngược lại là 'left'
+            if (event.user.id == currentUserId) {
+                li.classList.add('chat-list', 'right');
+            } else {
+                li.classList.add('chat-list', 'left');
+            }
+            // Tạo cấu trúc nội dung của tin nhắn
+            const conversationDiv = document.createElement('div');
+            conversationDiv.classList.add('conversation-list');
+
+            // Phần avatar
+            const avatarDiv = document.createElement('div');
+            avatarDiv.classList.add('chat-avatar');
+            const avatarImg = document.createElement('img');
+
+            // Kiểm tra nếu user không có avatar, thì sử dụng ảnh mặc định
+            if (!event.user.avatar) {
+                avatarImg.src =
+                    'https://png.pngtree.com/png-clipart/20210608/ourlarge/pngtree-dark-gray-simple-avatar-png-image_3418404.jpg';
+            } else {
+                avatarImg.src = '{{ asset('storage') }}' + '/' + event.user.avatar;
+            }
+
+            avatarImg.alt = event.user.name;
+            avatarImg.classList.add('rounded-circle', 'img-fluid', 'userprofile');
+            avatarDiv.appendChild(avatarImg);
+
+            // Phần nội dung tin nhắn
+            const userChatContent = document.createElement('div');
+            userChatContent.classList.add('user-chat-content');
+
+            const ctextWrap = document.createElement('div');
+            ctextWrap.classList.add('ctext-wrap');
+
+            const ctextWrapContent = document.createElement('div');
+            ctextWrapContent.classList.add('ctext-wrap-content');
+            ctextWrapContent.id = event.message_id;
+
+            const messageParagraph = document.createElement('p');
+            messageParagraph.classList.add('mb-0', 'ctext-content');
+            messageParagraph.innerText = event.message;
+
+            // Gắn các phần tử vào nhau
+            ctextWrapContent.appendChild(messageParagraph);
+            ctextWrap.appendChild(ctextWrapContent);
+            userChatContent.appendChild(ctextWrap);
+            conversationDiv.appendChild(avatarDiv);
+            conversationDiv.appendChild(userChatContent);
+            li.appendChild(conversationDiv);
+
+            // Thêm thẻ li vào danh sách tin nhắn
+            const messagesElement = document.getElementById('messages'); // Đảm bảo bạn có id này trong HTML
+            messagesElement.appendChild(li);
+
+            // Cuộn xuống cuối tin nhắn
+            messagesElement.scrollTop = messagesElement.scrollHeight;
+
+        }
     </script>
     <script type="module">
         //Lấy ô input này ra để lấy giá trị của nó
@@ -670,6 +670,64 @@
             //Khi gửi xong đặt lại giá trị set lại rỗng
             messageElement.value = '';
         });
+    </script>
+    <script>
+        //Sự kiện click vào li trên kênh chat
+        function greetUser(id) {
+            window.axios.post('chat/greet' + '/' + id);
+
+        }
+    </script>
+    <script type="module">
+        const notificationMessElement = document.getElementById('notificationMess');
+        const messagesElement = document.getElementById('messages');
+        //Lắng nghe sự kiện rồi kích hoạt
+        Echo.private('chat.greet.{{ Auth::user()->id }}')
+            .listen('GreetingSent', (event) => {
+                // Tạo thẻ div cho thông báo
+                const notificationItem = document.createElement('div');
+                notificationItem.classList.add('text-reset', 'notification-item', 'd-block', 'dropdown-item');
+                if (event.user.avatar == null) {
+                    event.user.avatar =
+                        'https://png.pngtree.com/png-clipart/20210608/ourlarge/pngtree-dark-gray-simple-avatar-png-image_3418404.jpg';
+                } else {
+                    event.user.avatar = '{{ asset('storage') }}' + '/' + event.user.avatar;
+                }
+
+                notificationItem.innerHTML = `
+  <div class="text-reset notification-item d-block dropdown-item position-relative">
+      <div class="d-flex">
+          <img src="${event.user.avatar}"
+              class="me-3 rounded-circle avatar-xs flex-shrink-0" alt="user-pic">
+          <div class="flex-grow-1">
+              <a href="#!" class="stretched-link">
+                  <h6 class="mt-0 mb-1 fs-13 fw-semibold">${event.user.name}</h6>
+              </a>
+              <div class="fs-13 text-muted">
+                  <p class="mb-1"> ${event.message}🔔.</p>
+              </div>
+              <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
+                  <span><i class="mdi mdi-clock-outline"></i> ${event.timeAgo || 'just now'}</span>
+              </p>
+          </div>
+          <div class="px-2 fs-15">
+              <div class="form-check notification-check">
+                  <input class="form-check-input" type="checkbox" value="" id="messages-notification-check${event.id}">
+                  <label class="form-check-label" for="messages-notification-check${event.id}"></label>
+              </div>
+          </div>
+      </div>
+  </div>                
+`;
+                const viewMessageInChat =
+                    `<div class=" text-center  text-primary" role="alert" ><i>${event.message}</i></div>`;
+
+                notificationMessElement.appendChild(notificationItem);
+                messagesElement.innerHTML += viewMessageInChat;
+
+               
+
+            });
     </script>
     <!-- glightbox js -->
     <script src="{{ asset('theme/admin/assets/libs/glightbox/js/glightbox.min.js') }}"></script>
