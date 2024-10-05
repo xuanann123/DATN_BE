@@ -21,3 +21,14 @@ Broadcast::channel('vouchers', function () {
     //Vì là kênh công khai nên auto trả về true
     return true;
 });
+//Yêu cầu phải login
+Broadcast::channel('chat', function ($user) {
+    if ($user) {
+        return [
+            'name' => $user->name,
+            'id' => $user->id,
+            'avatar' => $user->avatar
+        ];
+    }
+    return false;
+});

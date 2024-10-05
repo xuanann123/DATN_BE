@@ -186,7 +186,7 @@ Route::prefix("admin")
             ->as('chat.')
             ->group(function () {
                 Route::get('/', [ChatController::class, 'index'])->name('index');
-
+                Route::post('/message', [ChatController::class, 'messageReceived'])->name('message');
 
             });
     });
