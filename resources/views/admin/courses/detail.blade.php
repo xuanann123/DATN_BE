@@ -109,20 +109,43 @@
                                                 </div>
                                                 <div>Hiển thị:
                                                     <span
-                                                        class="badge {{ $course->is_active ? 'bg-success-subtle badge-border text-success' : 'bg-danger-subtle badge-border text-danger' }}"
+                                                        class="badge {{ $course->is_active === 1 ? 'bg-success-subtle badge-border text-success' : 'bg-danger-subtle badge-border text-danger' }}"
                                                         id="course-is-active">
-                                                        {{ $course->is_active ? 'Có' : 'Không' }}
+                                                        {{ $course->is_active === 1 ? 'Có' : 'Không' }}
                                                     </span>
                                                 </div>
+                                                <div class="col-md-auto">
+                                                    <form action="{{ route('admin.courses.submit', $course->id) }}" method="post">
+                                                        @csrf
+                                                        <input type="hidden" name="id" value="{{ $course->id }}">
+                                                        <div class="hstack gap-1 flex-wrap">
+                                                            @if (is_null($course->submited_at))
+                                                                <button type="submit" name="submit"
+                                                                    class="btn btn-success btn-label waves-effect waves-light">
+                                                                    <i
+                                                                        class="ri-check-double-line label-icon align-middle fs-16 me-2"></i>
+                                                                    Xuất bản
+                                                                </button>
+                                                            @elseif ($course->is_active === 1)
+                                                                <button type="submit" name="disable"
+                                                                    class="btn btn-danger btn-label waves-effect waves-light">
+                                                                    <i
+                                                                        class="ri-eye-off-line label-icon align-middle fs-16 me-2"></i>
+                                                                    Ẩn
+                                                                </button>
+                                                            @elseif ($course->is_active === 0)
+                                                                <button type="submit" name="enable"
+                                                                    class="btn btn-info btn-label waves-effect waves-light">
+                                                                    <i
+                                                                        class="ri-eye-line label-icon align-middle fs-16 me-2"></i>
+                                                                    Hiện
+                                                                </button>
+                                                            @endif
+                                                        </div>
+                                                    </form>
+                                                </div>
+
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-auto">
-                                        <div class="hstack gap-1 flex-wrap">
-                                            <button type="button"
-                                                class="btn btn-success btn-label waves-effect waves-light"><i
-                                                    class="ri-check-double-line label-icon align-middle fs-16 me-2"></i>
-                                                Xuất bản</button>
                                         </div>
                                     </div>
                                 </div>

@@ -129,6 +129,7 @@ Route::prefix("admin")
                 Route::delete('/delete/{id}', [CourseController::class, 'delete'])->name('delete');
                 Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('edit');
                 Route::put('/update/{id}', [CourseController::class, 'update'])->name('update');
+                Route::post('/submit/{id}', [CourseController::class, 'submit'])->name('submit');
             });
         Route::prefix('modules')
             ->as('modules.')
@@ -165,7 +166,9 @@ Route::prefix("admin")
                     ->as('courses.')
                     ->group(function () {
                         Route::get("/", [ApprovalCourseController::class, 'index'])->name('list');
-                        Route::get("/detail", [ApprovalCourseController::class, 'show'])->name('detail');
+                        Route::get("/action", [ApprovalCourseController::class, 'action'])->name('action');
+                        Route::get("/{id}", [ApprovalCourseController::class, 'show'])->name('detail');
+                        Route::post("/{id}/approve", [ApprovalCourseController::class, 'approve'])->name('approve');
                     });
             });
         // route post
@@ -183,6 +186,12 @@ Route::prefix("admin")
             ->as('chat.')
             ->group(function () {
                 Route::get('/', [ChatController::class, 'index'])->name('index');
+                Route::post('/message', [ChatController::class, 'messageReceived'])->name('message');
+                //auto load tin nhắn
+                Route::get('/api', [ChatController::class, 'fetchMessages'])->name('api');
+                Route::post('/greet/{receiver}', [ChatController::class, 'greetReceived'])->name('greet');
+
+
             });
     });
 

@@ -577,6 +577,7 @@
             ],
             "time": "2023-10-12T05:21:21+00:00"
         },
+       
         {
             "name": "graham-campbell/result-type",
             "version": "v1.1.3",
