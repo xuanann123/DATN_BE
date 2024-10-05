@@ -4,6 +4,7 @@
 @endsection
 
 @section('style-libs')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         .drop-container {
             position: relative;
@@ -36,6 +37,14 @@
             font-weight: bold;
             text-align: center;
             transition: color .2s ease-in-out;
+        }
+
+        .box-input-url {
+            display: none;
+        }
+
+        .is_loading {
+            display: none;
         }
     </style>
 @endsection
@@ -327,7 +336,8 @@
                                                                 </div>
                                                             </div>
                                                             <div class="card-body">
-                                                                <i class="mb-0 fs-11">Thời gian: {{ $lesson->duration }}
+                                                                <i class="mb-0 fs-11">Thời gian:
+                                                                    {{ ceil($lesson->lessonable->duration / 60) }}
                                                                     phút</i>
                                                             </div>
                                                         </div>
@@ -399,7 +409,7 @@
                     <div class="modal-dialog mt-5">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Thêm Module Mới</h5>
+                                <h5 class="modal-title">Thêm Chương Mới</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Đóng"></button>
                             </div>
@@ -408,7 +418,7 @@
                                     @csrf
                                     <input type="hidden" name="id_course" value="{{ $course->id }}">
                                     <div class="mb-3">
-                                        <label for="moduleTitle" class="form-label">Tiêu Đề Module</label>
+                                        <label for="moduleTitle" class="form-label">Tiêu Đề chương</label>
                                         <input type="text" class="form-control" name="title"
                                             placeholder="Nhập tiêu đề chương {{ $maxModulePosition + 1 }}...">
                                     </div>
@@ -425,7 +435,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                <button type="submit" form="addModuleForm" class="btn btn-primary">Thêm Module</button>
+                                <button type="submit" form="addModuleForm" class="btn btn-primary">Thêm chương</button>
                             </div>
                         </div>
                     </div>
@@ -448,8 +458,12 @@
                                         name="id_module">
                                     <div class="mb-3">
                                         <label for="lesson-title" class="form-label">Tiêu đề bài học</label>
-                                        <input type="text" class="form-control" id="lesson-title" name="title"
-                                            required>
+                                        <input type="text" class="form-control" id="lesson-title" name="title">
+                                        <small class="help-block form-text text-danger">
+                                            @if ($errors->has('title'))
+                                                {{ $errors->first('title') }}
+                                            @endif
+                                        </small>
                                     </div>
 
                                     <div class="mb-3">
@@ -458,19 +472,53 @@
                                     </div>
 
                                     <div class="mb-3">
+                                        <label>
+                                            <input type="radio" checked name="check" value="upload"
+                                                id="upload-video-option">
+                                            <span class="mx-1">Tải video lên</span>
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="check" value="url" id="url-video-option">
+                                            <span class="mx-1">Nhập url</span>
+                                        </label>
+                                    </div>
+
+                                    <div class="mb-3 box-input-url" id="box-url" style="display: none;">
+                                        <label for="lesson-title" class="form-label">Nhập url video</label>
+                                        <input type="text" class="form-control" id="url-video"
+                                            value="{{ old('url') }}" name="url">
+                                        <small class="help-block form-text text-danger">
+                                            @if ($errors->has('url'))
+                                                {{ $errors->first('url') }}
+                                            @endif
+                                        </small>
+                                    </div>
+
+                                    <div class="mb-3 box-upload-video" id="box-upload">
                                         <label for="video" class="form-label">Tải video lên</label>
                                         <label for="video" class="drop-container" id="dropcontainer">
                                             <span class="drop-title">Tải video lên</span>
-
-                                            <input type="file" id="video" accept="video/*" name="video"
-                                                required>
+                                            <input type="file" id="video" accept="video/*" name="video">
+                                            <small class="help-block form-text text-danger">
+                                                @if ($errors->has('video'))
+                                                    {{ $errors->first('video') }}
+                                                @endif
+                                            </small>
                                         </label>
                                     </div>
+                                    <input type="hidden" name="duration" id="duration">
                                 </form>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                <button type="submit" form="addVideoLessonForm" class="btn btn-primary">Thêm</button>
+                                <button type="submit" form="addVideoLessonForm"
+                                    class="btn btn-primary btn-submit-lesson-video">
+                                    <span class="is_loading">
+                                        <i class="fa fa-circle-o-notch fa-spin"></i><span class="mx-1">Đang tải
+                                            lên</span>
+                                    </span>
+                                    <span class="btn-span-add">Thêm</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -498,11 +546,7 @@
                                         <label for="textContent" class="form-label">Nội dung</label>
                                         <textarea class="form-control" id="ckeditor-classic" name="content"></textarea>
                                     </div>
-                                    {{-- <div class="mb-3">
-                                        <label for="textDuration" class="form-label">Estimated Reading
-                                            Time (minutes)</label>
-                                        <input type="number" class="form-control" id="textDuration" required>
-                                    </div> --}}
+
                                 </form>
                             </div>
                             <div class="modal-footer">
@@ -615,7 +659,7 @@
                             <div class="modal-body p-4">
                             </div>
                             <div class="modal-footer border-top-0">
-                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Đóng</button>
                             </div>
                         </div>
                     </div>
@@ -640,11 +684,10 @@
                     </div>
                 </div>
 
-
-
             </div>
         </div>
     </div>
+
 @endsection
 @section('script-libs')
     <script src="{{ asset('theme/admin/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js') }}"></script>
@@ -769,13 +812,22 @@
                             $('#previewLessonModal .modal-body').html(`
                                 <div data-simplebar style="max-height: 450px; max-width: 100%">${data.content}</div>
                             `)
-                        } else if (data.lesson_type == 'video') {
+                        } else if (data.lesson_type == 'video' && data.type != 'upload') {
                             $('#previewLessonModal .modal-body').html(`
                                 <iframe width="100%" height="500px" src="https://www.youtube.com/embed/${data.video_youtube_id}" title="YouTube video player"
                                     frameborder="0"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
                                 </iframe>
+                            `)
+                        } else if (data.lesson_type === 'video' && data.type == 'upload') {
+                            $('#previewLessonModal .modal-body').html(`
+                                <video width="100%" height="auto" controls>
+                                    <source
+                                        src="${data.url}"
+                                        type="video/mp4">
+                                    Trình duyệt của bạn không hỗ trợ video.
+                                </video>
                             `)
                         }
                     }
@@ -865,6 +917,66 @@
                 if (input) {
                     input.value = moduleId;
                 }
+            });
+        });
+    </script>
+
+
+    <script>
+        // Xử lí ẩn hiện input khi chọn upload video hay nhập url;
+        const uploadOption = document.getElementById('upload-video-option');
+        const urlOption = document.getElementById('url-video-option');
+        const boxUrl = document.getElementById('box-url');
+        const boxUpload = document.getElementById('box-upload');
+
+        function handleRadioChange() {
+            if (urlOption.checked) {
+                boxUrl.style.display = 'block';
+                boxUpload.style.display = 'none';
+            } else {
+                boxUrl.style.display = 'none';
+                boxUpload.style.display = 'block';
+            }
+        }
+
+        uploadOption.addEventListener('change', handleRadioChange);
+        urlOption.addEventListener('change', handleRadioChange);
+
+        handleRadioChange();
+    </script>
+
+    <script>
+        // Lấy thời lượng video
+        $('#video').on('change', function(event) {
+            var file = event.target.files[0];
+            if (file) {
+                var video = $('<video></video>')[0];
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                    video.src = e.target.result;
+                    $(video).on('loadedmetadata', function() {
+                        var durationInSeconds = Math.floor(video.duration);
+
+                        $('#duration').val(durationInSeconds);
+                    });
+                };
+
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('#addVideoLessonForm').on('submit', function() {
+                $('.is_loading').css({
+                    'display': 'block'
+                });
+                $('.btn-span-add').css({
+                    'display': 'none'
+                });
+                $('.btn-submit-lesson-video').prop('disabled', true);
             });
         });
     </script>

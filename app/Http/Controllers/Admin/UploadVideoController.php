@@ -4,72 +4,89 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Lessons\StoreLessonVideoRequest;
-use App\Jobs\UploadVideoToYoutube;
-use Google\Client as GoogleClient;
-//use Google\Service\YouTube;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
+use App\Models\Video;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class UploadVideoController extends Controller
 {
-    protected $client;
-
-    public function __construct()
-    {
-        $this->client = new GoogleClient();
-        $this->client->setClientId(env('GOOGLE_CLIENT_ID'));
-        $this->client->setClientSecret(env('GOOGLE_CLIENT_SECRET'));
-        $this->client->setRedirectUri(env('GOOGLE_REDIRECT_URI'));
-        $this->client->addScope([
-            'https://www.googleapis.com/auth/youtube.upload',
-            'https://www.googleapis.com/auth/youtube.force-ssl'
-        ]);
-    }
-
-    public function redirectToGoogle()
-    {
-        $authUrl = $this->client->createAuthUrl();
-        return redirect()->away($authUrl);
-    }
-
-    public function handleGoogleCallback(Request $request)
-    {
-        $code = $request->input('code');
-
-        if ($code) {
-            $this->client->fetchAccessTokenWithAuthCode($code);
-            $accessToken = $this->client->getAccessToken();
-
-            session([
-                'youtube_access_token' => $accessToken,
-            ]);
-
-            return redirect()->route('admin.courses.detail', ['id' => Session::get('course_id')]);
-        }
-
-        return redirect()->route('admin.lessons.youtube.auth')->with('error', 'Unable to authenticate');
-    }
-
     public function storeLessonVideo(StoreLessonVideoRequest $request)
     {
-
-        if (!session()->has('youtube_access_token')) {
-            return redirect()->route('admin.lessons.youtube.auth')->with('error', 'Authentication required');
-        }
-
-        $videoPath = $request->file('video')->store('videos', 'public');
-
-        $videoData = [
-            'id_module' => $request->input('id_module'),
-            'title' => $request->input('title'),
-            'description' => $request->input('description'),
-            'path' => storage_path('app/public/' . $videoPath),
+        $data = [
+            'title' => $request->title,
+            'type' => $request->check,
         ];
 
+        $moduleId = $request->id_module;
+        $description = $request->description;
 
-        UploadVideoToYoutube::dispatch($videoData, session('youtube_access_token'));
+        if ($request->check && $request->check == 'upload') {
+            $file = $request->file('video');
+            $stream = fopen($file->getRealPath(), 'r+');
+            $fileName = 'videos/' . time() . '_' . $file->getClientOriginalName();
+            Storage::disk('public')->put($fileName, $stream);
+            fclose($stream);
+            $data['url'] = $fileName;
+            $data['duration'] = $request->duration;
+        } else {
+            $data['url'] = $request->url;
 
-        return back()->with('success', 'Chúng tôi sẽ thông báo khi video đã sẵn sàng!');
+            $parsedUrl = parse_url($request->url);
+
+            if (isset($parsedUrl['query'])) {
+                parse_str($parsedUrl['query'], $queryParams);
+
+                if (isset($queryParams['v'])) {
+                    $data['video_youtube_id'] = $queryParams['v'];
+                    $data['duration'] = $this->getVideoDuration($queryParams['v']);
+                }
+            }
+        }
+
+
+        $newLessonVideo = $this->addLessonVideo($data, $moduleId, $description);
+        if (!$newLessonVideo) {
+            return back()->with('error', 'Thêm bài học không thành công!');
+        }
+
+        return back()->with('success', 'Thêm bài học thành công!');
     }
 
+    public function addLessonVideo($data, $moduleId, $description)
+    {
+        $newLessonVideo = Video::query()->create($data);
+        $newLessonVideo->lessons()->create([
+            'id_module' => $moduleId,
+            'title' => $data['title'],
+            'description' => $description,
+            'content_type' => 'video',
+            'position' => $newLessonVideo->id,
+        ]);
+        return $newLessonVideo;
+    }
+
+    public function getVideoDuration($videoId)
+    {
+        $apiKey = env('YOUTUBE_API_KEY');
+
+        $apiUrl = "https://www.googleapis.com/youtube/v3/videos?id={$videoId}&part=contentDetails&key={$apiKey}";
+
+        $response = Http::get($apiUrl);
+
+        $data = $response->json();
+
+        if (!empty($data['items'])) {
+            $duration = $data['items'][0]['contentDetails']['duration'];
+
+            $seconds = $this->convertDurationToSeconds($duration);
+
+            return $seconds;
+        }
+    }
+
+    private function convertDurationToSeconds($duration)
+    {
+        $interval = new \DateInterval($duration);
+        return ($interval->h * 3600) + ($interval->i * 60) + $interval->s;
+    }
 }
