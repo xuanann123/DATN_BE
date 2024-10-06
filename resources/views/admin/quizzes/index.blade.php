@@ -136,7 +136,7 @@
                                             </form>
                                         @else
                                             <form action="{{ route('admin.quizzes.store', $module->quiz->id) }}"
-                                                method="POST">
+                                                method="POST" enctype="multipart/form-data">
                                                 @csrf
                                                 <div class="mb-3">
                                                     <label class="form-label">Thêm câu hỏi</label>
@@ -147,8 +147,24 @@
                                                                 <div class="mb-3">
                                                                     <label class="form-label">Tiêu đề câu hỏi là gì
                                                                         ?</label>
-                                                                    <input type="text" class="form-control"
-                                                                        name="questions[0][question]" required>
+                                                                    <div class="input-group">
+                                                                        <input type="text" class="form-control"
+                                                                            name="questions[0][question]" required>
+                                                                        <button type="button"
+                                                                            class="btn btn-soft-primary btn-icon waves-effect waves-light"
+                                                                            onclick="addImageInput(this)"
+                                                                            title="Thêm hình ảnh">
+                                                                            <i class="ri-image-add-line"></i>
+                                                                        </button>
+                                                                        <input type="file" class="form-control d-none"
+                                                                            name="questions[0][image]" accept="image/*"
+                                                                            onchange="previewImage(this)">
+                                                                    </div>
+                                                                    <div class="text-center border-dashed mt-2 d-none">
+                                                                        <img class="rounded img-thumbnail"
+                                                                            src="https://platinumlist.net/guide/wp-content/uploads/2023/03/IMG-worlds-of-adventure.webp"
+                                                                            style="max-height: 150px;">
+                                                                    </div>
                                                                 </div>
                                                                 <div class="mb-3">
                                                                     <label class="form-label">Loại câu hỏi:</label>
@@ -175,10 +191,65 @@
                                                                             </div>
                                                                             <input type="text" class="form-control"
                                                                                 placeholder="Lựa chọn 1"
-                                                                                name="questions[0][options][0]" required>
+                                                                                name="questions[0][options][0][text]"
+                                                                                required>
+                                                                            <button type="button"
+                                                                                class="btn btn-soft-primary btn-icon waves-effect waves-light"
+                                                                                onclick="addImageInput(this)"
+                                                                                title="Thêm hình ảnh">
+                                                                                <i class="ri-image-add-line"></i>
+                                                                            </button>
+                                                                            <input type="file"
+                                                                                class="form-control d-none"
+                                                                                name="questions[0][options][0][image]"
+                                                                                accept="image/*"
+                                                                                onchange="previewImage(this)">
                                                                             <button type="button" id="btn-delete"
-                                                                                class="btn btn-danger btn-icon waves-effect waves-light"><i
-                                                                                    class="bx bx-trash"></i></button>
+                                                                                class="btn btn-ghost-danger btn-icon waves-effect waves-light"
+                                                                                style="background: none; border: none; padding: 0;"
+                                                                                title="Xóa lựa chọn"><i
+                                                                                    class="bx bx-trash fs-5"></i></button>
+                                                                        </div>
+                                                                        <div
+                                                                            class="text-center border-dashed mt-2 mb-2 d-none">
+                                                                            <img class="rounded img-thumbnail"
+                                                                                src="https://platinumlist.net/guide/wp-content/uploads/2023/03/IMG-worlds-of-adventure.webp"
+                                                                                style="max-height: 150px;">
+                                                                        </div>
+                                                                        <div class="input-group mb-2">
+                                                                            <div class="input-group-text">
+                                                                                <input class="form-check-input mt-0"
+                                                                                    type="radio"
+                                                                                    name="questions[0][correct_answer]"
+                                                                                    value="1">
+                                                                            </div>
+                                                                            <input type="text" class="form-control"
+                                                                                placeholder="Lựa chọn 2"
+                                                                                name="questions[0][options][1][text]"
+                                                                                required>
+                                                                            <button type="button"
+                                                                                class="btn btn-soft-primary btn-icon waves-effect waves-light"
+                                                                                onclick="addImageInput(this)"
+                                                                                title="Thêm hình ảnh">
+                                                                                <i class="ri-image-add-line"></i>
+                                                                            </button>
+                                                                            <input type="file"
+                                                                                class="form-control d-none"
+                                                                                name="questions[0][options][1][image]"
+                                                                                accept="image/*"
+                                                                                onchange="previewImage(this)">
+                                                                            <button type="button" id="btn-delete"
+                                                                                class="btn btn-ghost-danger btn-icon waves-effect waves-light"
+                                                                                style="background: none; border: none; padding: 0;"
+                                                                                title="Xóa lựa chọn">
+                                                                                <i class="bx bx-trash fs-5"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                        <div
+                                                                            class="text-center border-dashed mt-2 mb-2 d-none">
+                                                                            <img class="rounded img-thumbnail"
+                                                                                src="https://platinumlist.net/guide/wp-content/uploads/2023/03/IMG-worlds-of-adventure.webp"
+                                                                                style="max-height: 150px;">
                                                                         </div>
 
                                                                     </div>
@@ -219,6 +290,13 @@
                                                     <h6><b>Câu {{ $t }}</b> : {{ $question->question }}
                                                         ({{ $question->points }} points)
                                                     </h6>
+                                                    @if (!empty($question->image_url))
+                                                        <div class="text-center border-dashed mb-3">
+                                                            <img class="rounded img-thumbnail"
+                                                                src="{{ Storage::url($question->image_url) }}"
+                                                                style="max-height: 150px;">
+                                                        </div>
+                                                    @endif
                                                     <ul class="list-unstyled">
                                                         @foreach ($question->options as $index => $option)
                                                             <li>
@@ -246,6 +324,13 @@
                                                                         <strong>(đúng)</strong>
                                                                     @endif
                                                                 </label>
+                                                                @if (!empty($option->image_url))
+                                                                    <div class="text-center border-dashed mb-3">
+                                                                        <img class="rounded img-thumbnail"
+                                                                            src="{{ Storage::url($option->image_url) }}"
+                                                                            style="max-height: 150px;">
+                                                                    </div>
+                                                                @endif
                                                             </li>
                                                         @endforeach
                                                     </ul>
@@ -273,10 +358,30 @@
         function updateDeleteButtons() {
             var optionCount = $('#optionsContainer .input-group').length;
 
-            if (optionCount > 1) {
+            if (optionCount > 2) {
                 $('#optionsContainer #btn-delete').show()
             } else {
                 $('#optionsContainer #btn-delete').hide()
+            }
+        }
+
+        function addImageInput(button) {
+            var fileInput = $(button).next('input[type="file"]')
+            fileInput.click()
+        }
+
+        function previewImage(input) {
+            var file = input.files[0]
+            if (file) {
+                var reader = new FileReader()
+                reader.onload = function(e) {
+                    var imgPreview = input.closest('.input-group').nextElementSibling.querySelector('img')
+                    var previewContainer = input.closest('.input-group').nextElementSibling
+
+                    imgPreview.src = e.target.result
+                    previewContainer.classList.remove('d-none')
+                }
+                reader.readAsDataURL(file)
             }
         }
 
@@ -309,16 +414,31 @@
 
                 var newOption = document.createElement('div');
 
-                newOption.classList.add('input-group', 'mb-2');
+                // newOption.classList.add('input-group', 'mb-2');
 
                 var inputType = questionType === 'one_choice' ? 'radio' : 'checkbox';
 
                 newOption.innerHTML = `
-                    <div class="input-group-text">
-                        <input class="form-check-input mt-0" type="${inputType}" name="${inputType === 'radio' ? 'questions[0][correct_answer]' : 'questions[0][correct_answer][]'}" value="${optionCount}">
+                    <div class="input-group mb-2">
+                        <div class="input-group-text">
+                            <input class="form-check-input mt-0" type="${inputType}" name="${inputType === 'radio' ? 'questions[0][correct_answer]' : 'questions[0][correct_answer][]'}" value="${optionCount}">
+                        </div>
+                        <input type="text" class="form-control" placeholder="Lựa chọn ${optionCount + 1}" name="questions[0][options][${optionCount}][text]" required>
+                        <button type="button"
+                            class="btn btn-soft-primary btn-icon waves-effect waves-light"
+                            onclick="addImageInput(this)"
+                            title="Thêm hình ảnh">
+                            <i class="ri-image-add-line"></i>
+                        </button>
+                        <input type="file" class="form-control d-none" name="questions[0][options][${optionCount}][image]" accept="image/*" onchange="previewImage(this)">
+                        <button type="button" id="btn-delete" class="btn btn-ghost-danger btn-icon waves-effect waves-light" style="background: none; border: none; padding: 0;"
+                        title="Xóa lựa chọn">
+                            <i class="bx bx-trash fs-5"></i>
+                        </button>
                     </div>
-                    <input type="text" class="form-control" placeholder="Lựa chọn ${optionCount + 1}" name="questions[0][options][${optionCount}]" required>
-                    <button type="button" id="btn-delete" class="btn btn-danger btn-icon waves-effect waves-light"><i class="bx bx-trash"></i></button>
+                    <div class="text-center border-dashed mt-2 mb-2 d-none">
+                        <img class="rounded img-thumbnail" src="" style="max-height: 150px;">
+                    </div>
                 `;
 
                 optionsContainer.appendChild(newOption);
@@ -327,7 +447,12 @@
             });
 
             $('#optionsContainer').on('click', '#btn-delete', function() {
-                $(this).closest('.input-group').remove()
+                var inputGroup = $(this).closest('.input-group')
+                var imgContainer = inputGroup.next('.text-center')
+
+
+                inputGroup.remove()
+                imgContainer.remove()
                 updateDeleteButtons()
             })
         })

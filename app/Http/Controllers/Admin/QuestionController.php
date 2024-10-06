@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-use App\Http\Controllers\Controller;
+use App\Models\Quiz;
 use App\Models\Option;
 use App\Models\Question;
-use App\Models\Quiz;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 class QuestionController extends Controller
 {
@@ -16,22 +17,27 @@ class QuestionController extends Controller
         try {
             DB::beginTransaction();
             //Duyệt qua vòng lập cấu hỏi sẽ có những bảng ghi những câu hỏi đó là gì
-            foreach ($request->questions as $questionData) {
+            foreach ($request->questions as $questionIndex => $questionData) {
                 // Tạo câu hỏi trong bảng Question thêm nội dung câu hỏi của bài quiz nào
                 $quizQuestion = Question::create([
                     'id_quiz' => $id,  // Thêm quiz_id nếu cần
                     'question' => $questionData['question'],
                     'type' => $questionData['type'],
                     'points' => 1,
+                    'image_url' => $this->uploadImage($questionData['image'] ?? NULL, 'questions')
                 ]);
                 // 1 vòng lập nữa đi duyệt quảng option ra tiếp chúng ta được danh sách lựa chọn
                 // Lưu các tùy chọn (options) cho câu hỏi
-                foreach ($questionData['options'] as $index => $optionText) {
+                foreach ($questionData['options'] as $optionIndex => $optionData) {
+                    $optionText = is_array($optionData) ? $optionData['text'] : $optionData;
+                    $optionImage = $request->file("questions.{$questionIndex}.options.{$optionIndex}.image") ?? null;
+                    // dd($optionImage);
                     Option::create([
                         'id_question' => $quizQuestion->id,
                         'option' => $optionText,
+                        'image_url' => $this->uploadImage($optionImage, 'options'),
                         // Duyệt qua index và check theo value của correct_answer để biết cái nào đúng or sai
-                        'is_correct' => $this->isCorrectAnswer($questionData, $index),  // Đánh dấu đáp án đúng
+                        'is_correct' => $this->isCorrectAnswer($questionData, $optionIndex),  // Đánh dấu đáp án đúng
                     ]);
                 }
             }
@@ -72,5 +78,14 @@ class QuestionController extends Controller
             ]);
         }
 
+    }
+
+    private function uploadImage($image, $type)
+    {
+        if ($image && $image->isValid()) {
+            $newNameImage = $type . '_' . time() . '.' . $image->getClientOriginalExtension();
+            return Storage::putFileAs('images/' . $type, $image, $newNameImage);
+        }
+        return null;
     }
 }
