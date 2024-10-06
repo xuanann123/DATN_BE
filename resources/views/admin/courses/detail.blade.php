@@ -396,7 +396,7 @@
                             <!-- Add Section Button -->
                             <div class="text-center mt-4">
                                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModuleModal">
-                                    <i class="ri-add-line align-bottom"></i> Thêm Module
+                                    <i class="ri-add-line align-bottom"></i> Thêm Chương
                                 </button>
                             </div>
                         </div>

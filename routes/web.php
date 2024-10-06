@@ -190,8 +190,6 @@ Route::prefix("admin")
                 //auto load tin nhắn
                 Route::get('/api', [ChatController::class, 'fetchMessages'])->name('api');
                 Route::post('/greet/{receiver}', [ChatController::class, 'greetReceived'])->name('greet');
-
-
             });
     });
 
