@@ -4,6 +4,7 @@ use App\Http\Controllers\api\Client\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\Client\BannerController;
+use App\Http\Controllers\api\Client\PostController;
 use App\Http\Controllers\api\Client\UserController;
 use App\Http\Middleware\VerifyCsrfToken;
 use PHPUnit\Framework\Attributes\Group;
@@ -43,5 +44,16 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 });
 
-
+# ===================== ROUTE FOR BANNERS ===========================
 Route::get('/banners', [BannerController::class, 'getBanners']);
+# ===================== ROUTE FOR POSTS ===========================
+Route::prefix('posts')->group(function () {
+    Route::get('', [PostController::class, 'getPosts']);
+    Route::post('', [PostController::class, 'store']);
+    Route::get('/{id}', [PostController::class, 'show']);
+    Route::put('/{id}', [PostController::class, 'update']);
+    Route::delete('/{id}', [PostController::class, 'destroy']);
+});
+//Lay danh sach bai viet
+
+
