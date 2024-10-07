@@ -53,6 +53,8 @@ Route::prefix('posts')->group(function () {
     Route::get('/{id}', [PostController::class, 'show']);
     Route::put('/{id}', [PostController::class, 'update']);
     Route::delete('/{id}', [PostController::class, 'destroy']);
+    //Lấy danh sách bài viết theo người tạo
+    Route::get('/user/{id}', [PostController::class, 'getPostsByUser']);
 });
 //Lay danh sach bai viet
 

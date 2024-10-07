@@ -57,11 +57,13 @@ class CourseController extends Controller
         $data = $request->except('thumbnail');
         $data['is_free'] = $request->price != 0 ? 0 : 1;
         $data['id_user'] = auth()->id();
+        //Lây toàn bộ thẻ tags
         $tagStorage = $request->tagStorage;
+        //Chuyển chuỗi thành mảng
         $data['tags'] = explode(',', $tagStorage);
+        //tạo một mảng lưu trữ
         $tagIds = [];
         try {
-
             DB::beginTransaction();
             //Xử lý hình ảnh
             if ($request->thumbnail && $request->hasFile('thumbnail')) {
@@ -75,6 +77,7 @@ class CourseController extends Controller
             $newCourse = Course::query()->create($data);
             //Xử lý tags
             foreach ($data['tags'] as $tag) {
+                //Xoá trắng khoảng trắng dữ liệu
                 $tag = trim($tag);
                 if (!empty($tag)) {
                     $tag = Tag::firstOrCreate([

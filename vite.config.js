@@ -9,7 +9,6 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/js/public.js',
                 'resources/js/chat/presence.js',
-                'resources/js/chat/private.js',
             ],
             refresh: true,
         }),

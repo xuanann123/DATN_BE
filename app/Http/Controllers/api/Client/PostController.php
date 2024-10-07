@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Posts\StorePostRequest;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -31,7 +32,6 @@ class PostController extends Controller
                 'allow_comments',
                 'is_banned'
             )->get();
-            //Chuẩn hoá dữ liệu
             $dataPosts = $listPost->map(function ($post) {
                 return [
                     'id' => $post->id,
@@ -48,29 +48,31 @@ class PostController extends Controller
                     'published_at' => $post->published_at,
                 ];
             });
-            // Kiểm tra nếu danh sách bài viết rỗng
             if ($listPost->isEmpty()) {
                 return response()->json([
-                    'status' => 'success',
+                    'status' => 200,
                     'message' => 'Không có bài viết nào',
                     'data' => []
                 ], 200);
             }
+            //200 lấy dữ liệu thành công
             return response()->json([
-                'status' => 'success',
+                'status' => 200,
                 'message' => 'Lấy danh sách bài viết thành công',
                 'data' => $dataPosts
             ], 200);
         } catch (\Exception $e) {
+            //Lỗi server 
             return response()->json([
-                'status' => 'failed',
+                'status' => '500',
                 'message' => 'Đã xảy ra lỗi khi lấy danh sách bài viết',
                 'error' => $e->getMessage()
-            ], 500);
+            ], status: 500);
         }
     }
     public function store(StorePostRequest $request)
     {
+        dd($request->all());
         DB::beginTransaction();
         try {
             $data = $request->validated();
@@ -86,18 +88,17 @@ class PostController extends Controller
             if ($request->status === 'published') {
                 $data['published_at'] = now();
             }
-
             if (Auth::user()) {
                 $data['user_id'] = auth()->id();
             }
-
             // create post
             $post = Post::create($data);
 
             // categories
             $post->categories()->sync($data['categories']);
-
             // tags
+        
+            
             if (isset($data['tags']) && is_array($data['tags'])) {
                 foreach ($data['tags'] as $tag) {
                     $tag = trim($tag);
@@ -194,7 +195,7 @@ class PostController extends Controller
         DB::beginTransaction();
         try {
             //Xoá tags
-            if($post->tags()->count() > 0){
+            if ($post->tags()->count() > 0) {
                 $post->tags()->detach();
             }
             //Xoá bài viêts
@@ -213,6 +214,24 @@ class PostController extends Controller
         }
 
 
+    }
+
+    public function getPostsByUser($id)
+    {
+        $user = User::findOrFail($id);
+        $posts = Post::where('user_id', $user->id)->get();
+        if ($posts->isEmpty()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Không có bài viết nào',
+                'data' => []
+            ], 404);
+        }
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Danh sách bài viết của user',
+            'data' => $posts
+        ], 200);
     }
 
 }

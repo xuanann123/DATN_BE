@@ -65,4 +65,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Course::class, 'id_user');
     }
+    //Một user có nhiều bài viết
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
 }
