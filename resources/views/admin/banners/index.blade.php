@@ -200,7 +200,7 @@
                                 </div>
                                 <div class="modal-body p-4">
                                     <!-- With Crossfade Animation -->
-                                    <div id="carouselExampleFade" class="carousel slide carousel-fade"
+                                    <div id="carouselExampleFade" class="carousel slide carousel-dark"
                                         data-ride="carousel">
                                         <div class="carousel-indicators">
 
@@ -247,7 +247,7 @@
                             let isActive = index === 0 ? 'active' : '';
                             showBanners.append(`
                                 <div class="carousel-item ${isActive}">
-                                             <img class="d-block img-fluid mx-auto" height="300px" src="http://127.0.0.1:8000/storage/${banner.image}" alt="First slide">
+                                             <img class="d-block img-fluid mx-auto" src="http://127.0.0.1:8000/storage/${banner.image}" alt="First slide">
                                 </div>
                            `);
 

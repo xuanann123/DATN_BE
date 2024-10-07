@@ -167,7 +167,7 @@
                                                             Sửa</a></li>
 
                                                     <li>
-                                                        <form action="{{ route('admin.users.delete', $item->id) }}"
+                                                        <form action=""
                                                             method="post">
                                                             @csrf
                                                             @method('DELETE')
