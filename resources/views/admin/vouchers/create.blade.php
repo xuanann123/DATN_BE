@@ -235,10 +235,10 @@
                                     <div class="mb-3">
                                         <label for="code" class="form-label">Loại voucher</label>
                                         <select name="type" id="type" class="form-control">
-                                            <option value="">Select type voucher</option>
+                                            <option value="">Chọn loại giảm giá</option>
                                             <option {{ old('type') == 'Percent' ? 'selected' : '' }} value="percent">
-                                                Percent</option>
-                                            <option {{ old('type') == 'Fixed' ? 'selected' : '' }} value="fixed">Fixed
+                                                Phần trăm</option>
+                                            <option {{ old('type') == 'Fixed' ? 'selected' : '' }} value="fixed">Giá tiền
                                             </option>
                                         </select>
                                         <small class="help-block form-text text-danger">
@@ -252,8 +252,11 @@
                                 <div class="col-xl-6">
                                     <div class="mb-3">
                                         <label for="discount" class="form-label">Số phần trăm/xu giảm</label>
-                                        <input type="text" value="{{ old('discount') }}" id="discount" name="discount"
+                                        <div class="input-group">
+                                            <input type="number" value="{{ old('discount') }}" id="discount" name="discount"
                                             placeholder="Discount" class="form-control">
+                                            <span class="input-group-text" id="unit">%</span>
+                                        </div>
                                         <small class="help-block form-text text-danger">
                                             @if ($errors->has('discount'))
                                                 {{ $errors->first('discount') }}
@@ -384,4 +387,19 @@
 @section('script-libs')
     <script src="theme/admin/assets/libs/cleave.js/cleave.min.js"></script>
     <script src="theme/admin/assets/js/pages/form-masks.init.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#type').change(function () {
+                const unitElement = $('#unit')
+                const discountInput = $('#discount')
+                if ($(this).val() === 'percent') {
+                    unitElement.text('%')
+                } else if ($(this).val() === 'fixed') {
+                    unitElement.text('coin')
+                }
+                discountInput.val('')
+            });
+        });
+    </script>
 @endsection

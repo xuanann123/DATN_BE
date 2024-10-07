@@ -24,6 +24,16 @@ var previewTemplate,
             .catch((error) => {
                 console.error(error);
             }),
+        ClassicEditor.create(document.querySelector("#ckeditor-classic-lesson-text"))
+            .then((editor) => {
+                editor.ui.view.editable.element.style.height = "330px"
+                editor.ui.view.editable.element.addEventListener('focus', () => {
+                    editor.ui.view.editable.element.style.height = '330px';
+                });
+            })
+            .catch((error) => {
+                console.error(error);
+            }),
         ClassicEditor.create(document.querySelector("#ckeditor-classic-video"))
             .then((editor) => {
                 editor.ui.view.editable.element.style.height = "200px";

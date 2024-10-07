@@ -4,6 +4,7 @@
 @endsection
 @section('style-libs')
     <link href="{{ asset('theme/admin/assets/libs/dropzone/dropzone.css') }}" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         .switch {
             /* switch */
@@ -347,14 +348,23 @@
                         <label for="id_category" class="form-label">Chọn tags cho khoá học</label>
                         <div>
                             <div class="mb-3 position-relative">
-                                <input type="text" class="form-control" id="inputField" placeholder="Nhập tên ..." />
-                                <input type="hidden" id="tagStorage" name="tagStorage" value="" />
-                                <!-- Ô input ẩn để lưu trữ tag -->
-                                <div id="suggestions" class="border rounded bg-white shadow"
-                                    style="display: none; position: absolute; z-index: 10;"></div>
-                                <!-- Container cho gợi ý -->
+                                <span class="text-muted">Chọn tags ("," hoặc dấu cách để ngăn cách nhau)</span>
+                                <select class="js-example-basic-multiple" name="tags[]" multiple="multiple" value>
+                                    @foreach ($tags as $id => $name)
+                                        <option value="{{ $name }}"
+                                            {{ in_array($name, old('tags', [])) ? 'selected' : '' }}>
+                                            {{ $name }}
+                                        </option>
+                                    @endforeach
+                                    @foreach (old('tags', []) as $oldTag)
+                                        @if (!in_array($oldTag, $tags) && !empty($oldTag))
+                                            <option value="{{ $oldTag }}" selected>
+                                                {{ $oldTag }}
+                                            </option>
+                                        @endif
+                                    @endforeach
+                                </select>
                             </div>
-                            <div id="tagContainer" class="mt-2" style="border: 1px solid rgb(209, 203, 203); padding: 5px"></div> <!-- Container để hiển thị các tag đã nhập -->
                         </div>
                     </div>
 
@@ -442,6 +452,8 @@
     </style>
 @endsection
 @section('script-libs')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <!-- ckeditor -->
     <script src="{{ asset('theme/admin/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js') }}"></script>
 
@@ -449,6 +461,10 @@
     <script src="{{ asset('theme/admin/assets/libs/dropzone/dropzone-min.js') }}"></script>
     <!-- project-create init -->
     <script src="{{ asset('theme/admin/assets/js/pages/project-create.init.js') }}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script src="{{ asset('theme/admin/assets/js/pages/select2.init.js') }}"></script>
 
     <script>
         document.getElementById('name').addEventListener('input', function() {
@@ -488,7 +504,7 @@
             }
         });
     </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
     <script>
         $(document).ready(function() {
             // Mảng chứa các giá trị gợi ý

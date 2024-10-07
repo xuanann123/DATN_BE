@@ -125,14 +125,17 @@
                                                     <textarea class="form-control" id="quizDescription" name="description" rows="3" required></textarea>
                                                 </div>
 
-                                                <div class="mb-3">
+                                                {{-- <div class="mb-3">
                                                     <label for="quizDuration" class="form-label">Tổng điểm
                                                         (points)</label>
                                                     <input type="number" class="form-control" id="quizDuration"
                                                         name="total_points" required>
-                                                </div>
-
-                                                <button type="submit" class="btn btn-primary">Add Quiz</button>
+                                                </div> --}}
+                                                <a href="{{ route('admin.courses.detail', $module->course->id) }}"
+                                                    class="me-1 btn btn-secondary">
+                                                    Quay lại
+                                                </a>
+                                                <button type="submit" class="btn btn-success">Thêm bài tập</button>
                                             </form>
                                         @else
                                             <form action="{{ route('admin.quizzes.store', $module->quiz->id) }}"
@@ -261,7 +264,11 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <button type="submit" class="btn btn-sm btn-secondary mt-2"
+                                                    <a href="{{ route('admin.courses.detail', $module->course->id) }}"
+                                                        class="me-1 btn btn-sm btn-secondary">
+                                                        Quay lại
+                                                    </a>
+                                                    <button type="submit" class="btn btn-sm btn-success"
                                                         id="addQuestionBtn">Thêm câu hỏi</button>
                                                 </div>
                                             </form>

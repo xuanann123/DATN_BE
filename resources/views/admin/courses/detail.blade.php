@@ -69,56 +69,54 @@
                                     <div class="col-md">
                                         <div>
                                             <h4 class="fw-bold" id="course-title">{{ $course->name }}</h4>
-                                            <div class="hstack gap-3 flex-wrap">
-                                                <div><i class="ri-user-2-fill align-bottom me-1"></i>
-                                                    <span id="instructor-name">{{ $course->user->name }}</span>
-                                                </div>
-                                                <div class="vr"></div>
-                                                <div>Mã khóa học : <span class="fw-medium"
-                                                        id="course-code">{{ $course->code }}</span>
-                                                </div>
-                                                <div class="vr"></div>
-                                                <div>Danh mục : <span class="fw-medium"
-                                                        id="course-category">{{ $course->category->name }}</span>
-                                                </div>
-                                                <div class="vr"></div>
-                                                <div>Ngày tạo : <span class="fw-medium"
-                                                        id="submitted-date">{{ $course->created_at->format('d-m-Y') }}</span>
-                                                </div>
-                                                <div class="vr"></div>
-                                                <div>Trạng thái: <span
-                                                        class="badge rounded-pill
-                                                    {{ $course->status == 'draft'
-                                                        ? 'bg-primary'
-                                                        : ($course->status == 'pending'
-                                                            ? 'bg-warning'
-                                                            : ($course->status == 'approved'
-                                                                ? 'bg-success'
-                                                                : ($course->status == 'rejected'
-                                                                    ? 'bg-danger'
-                                                                    : ''))) }}">
+                                            <div class="hstack ">
+                                                <div class="col-11 hstack gap-3 flex-wrap">
+                                                    <div><i class="ri-user-2-fill align-bottom me-1"></i>
+                                                        <span id="instructor-name">{{ $course->user->name }}</span>
+                                                    </div>
+                                                    <div>Mã khóa học : <span class="fw-medium"
+                                                            id="course-code">{{ $course->code }}</span>
+                                                    </div>
+                                                    <div>Danh mục : <span class="fw-medium"
+                                                            id="course-category">{{ $course->category->name }}</span>
+                                                    </div>
+                                                    <div>Ngày tạo : <span class="fw-medium"
+                                                            id="submitted-date">{{ $course->created_at->format('d-m-Y') }}</span>
+                                                    </div>
+                                                    <div>Trạng thái: <span
+                                                            class="badge rounded-pill
                                                         {{ $course->status == 'draft'
-                                                            ? 'Bản nháp'
+                                                            ? 'bg-primary'
                                                             : ($course->status == 'pending'
-                                                                ? 'Chờ phê duyệt'
+                                                                ? 'bg-warning'
                                                                 : ($course->status == 'approved'
-                                                                    ? 'Đã phê duyệt'
+                                                                    ? 'bg-success'
                                                                     : ($course->status == 'rejected'
-                                                                        ? 'Đã từ chối'
-                                                                        : ''))) }}</span>
+                                                                        ? 'bg-danger'
+                                                                        : ''))) }}">
+                                                            {{ $course->status == 'draft'
+                                                                ? 'Bản nháp'
+                                                                : ($course->status == 'pending'
+                                                                    ? 'Chờ phê duyệt'
+                                                                    : ($course->status == 'approved'
+                                                                        ? 'Đã phê duyệt'
+                                                                        : ($course->status == 'rejected'
+                                                                            ? 'Đã từ chối'
+                                                                            : ''))) }}</span>
+                                                    </div>
+                                                    <div>Hiển thị:
+                                                        <span
+                                                            class="badge {{ $course->is_active === 1 ? 'bg-success-subtle badge-border text-success' : 'bg-danger-subtle badge-border text-danger' }}"
+                                                            id="course-is-active">
+                                                            {{ $course->is_active === 1 ? 'Có' : 'Không' }}
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                                <div>Hiển thị:
-                                                    <span
-                                                        class="badge {{ $course->is_active === 1 ? 'bg-success-subtle badge-border text-success' : 'bg-danger-subtle badge-border text-danger' }}"
-                                                        id="course-is-active">
-                                                        {{ $course->is_active === 1 ? 'Có' : 'Không' }}
-                                                    </span>
-                                                </div>
-                                                <div class="col-md-auto">
+                                                <div class="col-1 justify-content-end d-flex">
                                                     <form action="{{ route('admin.courses.submit', $course->id) }}" method="post">
                                                         @csrf
                                                         <input type="hidden" name="id" value="{{ $course->id }}">
-                                                        <div class="hstack gap-1 flex-wrap">
+                                                        <div class="">
                                                             @if (is_null($course->submited_at))
                                                                 <button type="submit" name="submit"
                                                                     class="btn btn-success btn-label waves-effect waves-light">
@@ -526,7 +524,7 @@
 
                 <!-- Add Text Lesson Modal -->
                 <div class="modal fade" id="addTextLessonModal" tabindex="-1">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-xl">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title">Bài học text</h5>
@@ -544,7 +542,10 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="textContent" class="form-label">Nội dung</label>
-                                        <textarea class="form-control" id="ckeditor-classic" name="content"></textarea>
+                                        <div data-simplebar style="max-height: 370px; max-width: 100%;">
+                                            <textarea class="form-control" id="ckeditor-classic-lesson-text" name="content">
+                                            </textarea>
+                                        </div>
                                     </div>
 
                                 </form>
@@ -649,7 +650,7 @@
                 <!-- Preview Lesson Modal -->
                 <div class="modal fade" id="previewLessonModal" tabindex="-1" aria-labelledby="previewLessonModal"
                     aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-dialog modal-dialog-centered modal-xl">
                         <div class="modal-content border-0 shadow-lg">
                             <div class="modal-header bg-primary-subtle">
                                 <h5 class="modal-title mb-3" id="previewLessonModalLabel">Lesson Preview</h5>
