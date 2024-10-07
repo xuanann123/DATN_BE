@@ -128,7 +128,7 @@
                                                             <img src="{{ Storage::url($item->avatar) }}" alt=""
                                                                 class="avatar-xs rounded-circle" />
                                                         @else
-                                                            <img src="https://bookvexe.vn/wp-content/uploads/2023/04/chon-loc-25-avatar-facebook-mac-dinh-chat-nhat_2.jpg"
+                                                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNL_ZnOTpXSvhf1UaK7beHey2BX42U6solRA&s"
                                                                 alt="" class="avatar-xs rounded-circle" />
                                                         @endif
 
@@ -167,7 +167,7 @@
                                                             Sửa</a></li>
 
                                                     <li>
-                                                        <form action="{{ route('admin.users.delete', $item->id) }}"
+                                                        <form action="{{ route('admin.users.destroy', $item->id) }}"
                                                             method="post">
                                                             @csrf
                                                             @method('DELETE')
