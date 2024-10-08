@@ -4413,17 +4413,17 @@ code {
 }
 
 :root[data-sidebar=dark] {
-    --vz-vertical-menu-bg: #ffffff;
-    --vz-vertical-menu-border: #ffffff;
-    --vz-vertical-menu-item-color: rgb(117, 97, 97);
+    --vz-vertical-menu-bg: #05A5F0;
+    --vz-vertical-menu-border: #05A5F0;
+    --vz-vertical-menu-item-color: #ffffff;
     --vz-vertical-menu-item-bg: rgba(255, 255, 255, 0.15);
-    --vz-vertical-menu-item-hover-color: #0d1a92;
-    --vz-vertical-menu-item-active-color: #260067;
+    --vz-vertical-menu-item-hover-color: #5AC8FA;
+    --vz-vertical-menu-item-active-color: #0288D1;
     --vz-vertical-menu-item-active-bg: rgba(255, 255, 255, 0.15);
-    --vz-vertical-menu-sub-item-color: rgb(117, 97, 97);
-    --vz-vertical-menu-sub-item-hover-color: #0d1a92;
-    --vz-vertical-menu-sub-item-active-color: #260067;
-    --vz-vertical-menu-title-color: #838fb9;
+    --vz-vertical-menu-sub-item-color: #fff;
+    --vz-vertical-menu-sub-item-hover-color: #5AC8FA;
+    --vz-vertical-menu-sub-item-active-color: #0288D1;
+    --vz-vertical-menu-title-color: #ffffff;
     --vz-twocolumn-menu-iconview-bg: #435590;
     --vz-vertical-menu-box-shadow: 0 2px 4px rgba(15, 34, 58, 0.12);
     --vz-vertical-menu-dropdown-box-shadow: 0 2px 4px rgba(15, 34, 58, 0.12)
@@ -4553,7 +4553,7 @@ code {
 }
 
 [data-bs-theme=dark] {
-    --vz-vertical-menu-bg: #fff;
+    --vz-vertical-menu-bg: #05A5F0;
     --vz-vertical-menu-border: #fff;
     --vz-vertical-menu-item-color: #6d7080;
     --vz-vertical-menu-item-bg: rgba(64, 81, 137, 0.15);
