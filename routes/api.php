@@ -42,6 +42,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/change-password', [UserController::class, 'changePassword']);
     });
     // Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+    // post
+    Route::prefix('posts')->group(function () {
+        Route::post('', [PostController::class, 'store']);
+        Route::put('/{post}', [PostController::class, 'update']);
+        Route::delete('/{post}', [PostController::class, 'destroy']);
+    });
 });
 
 # ===================== ROUTE FOR BANNERS ===========================
@@ -49,10 +55,7 @@ Route::get('/banners', [BannerController::class, 'getBanners']);
 # ===================== ROUTE FOR POSTS ===========================
 Route::prefix('posts')->group(function () {
     Route::get('', [PostController::class, 'getPosts']);
-    Route::post('', [PostController::class, 'store']);
     Route::get('/{id}', [PostController::class, 'show']);
-    Route::put('/{id}', [PostController::class, 'update']);
-    Route::delete('/{id}', [PostController::class, 'destroy']);
 });
 //Lay danh sach bai viet
 

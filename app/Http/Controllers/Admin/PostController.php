@@ -185,7 +185,7 @@ class PostController extends Controller
                         $tagIds[] = $tag->id;
                     }
                 }
-    
+
                 // dd($da);
                 $post->tags()->sync($tagIds);
             }
