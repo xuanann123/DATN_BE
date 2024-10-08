@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Quiz;
 use App\Models\Option;
 use App\Models\Question;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -16,6 +17,8 @@ class QuestionController extends Controller
         // dd($request->all());
         try {
             DB::beginTransaction();
+            $optionText = [];
+            $optionImage = [];
             //Duyệt qua vòng lập cấu hỏi sẽ có những bảng ghi những câu hỏi đó là gì
             foreach ($request->questions as $questionIndex => $questionData) {
                 // Tạo câu hỏi trong bảng Question thêm nội dung câu hỏi của bài quiz nào
@@ -26,13 +29,14 @@ class QuestionController extends Controller
                     'points' => 1,
                     'image_url' => $this->uploadImage($questionData['image'] ?? NULL, 'questions')
                 ]);
+                // dd($questionData['options']);
                 // 1 vòng lập nữa đi duyệt quảng option ra tiếp chúng ta được danh sách lựa chọn
                 // Lưu các tùy chọn (options) cho câu hỏi
                 foreach ($questionData['options'] as $optionIndex => $optionData) {
                     $optionText = is_array($optionData) ? $optionData['text'] : $optionData;
                     $optionImage = $request->file("questions.{$questionIndex}.options.{$optionIndex}.image") ?? null;
-                    // dd($optionImage);
-                    Option::create([
+
+                    $options = Option::create([
                         'id_question' => $quizQuestion->id,
                         'option' => $optionText,
                         'image_url' => $this->uploadImage($optionImage, 'options'),
@@ -83,7 +87,7 @@ class QuestionController extends Controller
     private function uploadImage($image, $type)
     {
         if ($image && $image->isValid()) {
-            $newNameImage = $type . '_' . time() . '.' . $image->getClientOriginalExtension();
+            $newNameImage = $type . '_' . Str::uuid() . '.' . $image->getClientOriginalExtension();
             return Storage::putFileAs('images/' . $type, $image, $newNameImage);
         }
         return null;
