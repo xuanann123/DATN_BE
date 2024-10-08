@@ -115,7 +115,8 @@
                                                     </span>
                                                 </div>
                                                 <div class="col-md-auto">
-                                                    <form action="{{ route('admin.courses.submit', $course->id) }}" method="post">
+                                                    <form action="{{ route('admin.courses.submit', $course->id) }}"
+                                                        method="post">
                                                         @csrf
                                                         <input type="hidden" name="id" value="{{ $course->id }}">
                                                         <div class="hstack gap-1 flex-wrap">
@@ -459,10 +460,10 @@
                                     <div class="mb-3">
                                         <label for="lesson-title" class="form-label">Tiêu đề bài học</label>
                                         <input type="text" class="form-control" id="lesson-title" name="title">
-                                        <small class="help-block form-text text-danger">
-                                            @if ($errors->has('title'))
+                                        <small id="title_err" class="help-block form-text text-danger err">
+                                            {{-- @if ($errors->has('title'))
                                                 {{ $errors->first('title') }}
-                                            @endif
+                                            @endif --}}
                                         </small>
                                     </div>
 
@@ -484,13 +485,13 @@
                                     </div>
 
                                     <div class="mb-3 box-input-url" id="box-url" style="display: none;">
-                                        <label for="lesson-title" class="form-label">Nhập url video</label>
+                                        <label for="lesson-title" class="form-label">Nhập id video</label>
                                         <input type="text" class="form-control" id="url-video"
-                                            value="{{ old('url') }}" name="url">
-                                        <small class="help-block form-text text-danger">
-                                            @if ($errors->has('url'))
+                                            name="video_youtube_id">
+                                        <small class="help-block form-text text-danger err" id="video_youtube_id_err">
+                                            {{-- @if ($errors->has('url'))
                                                 {{ $errors->first('url') }}
-                                            @endif
+                                            @endif --}}
                                         </small>
                                     </div>
 
@@ -499,10 +500,10 @@
                                         <label for="video" class="drop-container" id="dropcontainer">
                                             <span class="drop-title">Tải video lên</span>
                                             <input type="file" id="video" accept="video/*" name="video">
-                                            <small class="help-block form-text text-danger">
-                                                @if ($errors->has('video'))
+                                            <small class="help-block form-text text-danger err" id="video_err">
+                                                {{-- @if ($errors->has('video'))
                                                     {{ $errors->first('video') }}
-                                                @endif
+                                                @endif --}}
                                             </small>
                                         </label>
                                     </div>
@@ -510,7 +511,8 @@
                                 </form>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" class="btn btn-secondary btn-close-modal-lesson-video"
+                                    data-bs-dismiss="modal">Đóng</button>
                                 <button type="submit" form="addVideoLessonForm"
                                     class="btn btn-primary btn-submit-lesson-video">
                                     <span class="is_loading">
@@ -806,7 +808,7 @@
                     method: 'GET',
                     success: function(data) {
                         $('#previewLessonModalLabel').text(data.title)
-                        console.log(data);
+                        // console.log(data);
                         // lesson text
                         if (data.lesson_type === 'document') {
                             $('#previewLessonModal .modal-body').html(`
@@ -969,7 +971,7 @@
 
     <script>
         $(document).ready(function() {
-            $('#addVideoLessonForm').on('submit', function() {
+            $('#addVideoLessonForm').on('submit', function(e) {
                 $('.is_loading').css({
                     'display': 'block'
                 });
@@ -977,6 +979,39 @@
                     'display': 'none'
                 });
                 $('.btn-submit-lesson-video').prop('disabled', true);
+
+                e.preventDefault();
+
+                const formData = new FormData(e.target);
+
+                $('.err').text('');
+
+                $.ajax({
+                    url: $(e.target).attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: (response) => {
+                        location.reload()
+                    },
+                    error: (error) => {
+                        // console.log(error);
+                        if (error.responseJSON && error.responseJSON.errors) {
+                            let errors = error.responseJSON.errors;
+                            for (let key in errors) {
+                                $('#' + key + '_err').text(errors[key][0]);
+                            }
+                        } else {
+                            console.error("Error occurred, but no error data returned.");
+                        }
+                    },
+                    complete: () => {
+                        $('.is_loading').hide();
+                        $('.btn-span-add').show();
+                        $('.btn-submit-lesson-video').prop('disabled', false);
+                    }
+                });
             });
         });
     </script>
