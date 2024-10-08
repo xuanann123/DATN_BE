@@ -8,6 +8,7 @@ use App\Http\Controllers\api\Client\PostController;
 use App\Http\Controllers\api\Client\UserController;
 use App\Http\Middleware\VerifyCsrfToken;
 use PHPUnit\Framework\Attributes\Group;
+use App\Http\Controllers\api\Client\TeacherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,8 @@ Route::middleware('auth:sanctum')->group(function () {
 # ===================== ROUTE FOR BANNERS ===========================
 Route::get('/banners', [BannerController::class, 'getBanners']);
 # ===================== ROUTE FOR POSTS ===========================
+
+//Lay danh sach bai viet
 Route::prefix('posts')->group(function () {
     Route::get('', [PostController::class, 'getPosts']);
     Route::post('', [PostController::class, 'store']);
@@ -54,6 +57,13 @@ Route::prefix('posts')->group(function () {
     Route::put('/{id}', [PostController::class, 'update']);
     Route::delete('/{id}', [PostController::class, 'destroy']);
 });
-//Lay danh sach bai viet
+
+// Danh sach teacher
+Route::prefix('teachers')->group(function () {
+    // Danh sach teacher
+    Route::get('/', [TeacherController::class, 'getTeachers']);
+    // Danh sách khóa học của một teacher cụ thể
+    Route::get('/list-courses/{id}', [TeacherController::class, 'getCoursesIsTeacher']);
+});
 
 
