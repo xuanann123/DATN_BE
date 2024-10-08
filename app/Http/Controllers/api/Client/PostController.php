@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\api\Client;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Posts\StorePostRequest;
+use App\Http\Requests\Client\Posts\StorePostRequest;
+use App\Http\Requests\Client\Posts\UpdatePostRequest;
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
@@ -90,7 +91,6 @@ class PostController extends Controller
             if (Auth::user()) {
                 $data['user_id'] = auth()->id();
             }
-
             // create post
             $post = Post::create($data);
 
@@ -168,24 +168,67 @@ class PostController extends Controller
             ], 404);
         }
     }
-
     //Cấp nhật bài viết
-    // public function update(Request $request, Post $post)
-    // {
-    //     if (!$post) {
-    //         return response()->json([
-    //             'status' => 'failed',
-    //             'message' => 'Không tìm thấy bài viết',
-    //         ], 404);
-    //     }
-    //     $data = $request->all();
-    //     $post->update($data);
-    //     return response()->json([
-    //         'status' => 'success',
-    //         'message' => 'Hiển thị thông tin bài viết',
-    //         'data' => $post
-    //     ], 200);
-    // }
+    public function update(UpdatePostRequest $request, Post $post)
+    {
+        DB::beginTransaction();
+        try {
+            $data = $request->validated();
+
+            if ($request->thumbnail && $request->hasFile('thumbnail')) {
+                if ($post->thumbnail) {
+                    Storage::delete($post->thumbnail);
+                }
+                $image = $request->file('thumbnail');
+                $newNameImage = 'banner_' . time() . '.' . $image->getClientOriginalExtension();
+                $pathImage = Storage::putFileAs('banners', $image, $newNameImage);
+                $data['thumbnail'] = $pathImage;
+            }
+
+            if (Auth::user()) {
+                $data['user_id'] = auth()->id();
+            }
+            $post->update($data);
+
+            // categories
+            $post->categories()->sync($data['categories']);
+            
+            if (empty($data['tags'])) {
+                $data['tags'] = '';
+                $post->tags()->sync([]);
+            }
+
+            // update tags
+            if (isset($data['tags']) && is_array($data['tags'])) {
+                foreach ($data['tags'] as $tag) {
+                    $tag = trim($tag);
+                    if (!empty($tag)) {
+                        $tag = Tag::firstOrCreate([
+                            'name' => $tag,
+                            'slug' => Str::slug($tag),
+                        ]);
+                        $tagIds[] = $tag->id;
+                    }
+                }
+
+                // dd($da);
+                $post->tags()->sync($tagIds);
+            }
+            DB::commit();
+            return response()->json([
+                'status' => 200,
+                'message' => 'Cập nhật bài viết',
+                'data' => $post
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status' => 500,
+                'message' => 'Đã xảy ra lỗi khi cập nhật bài viết',
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
 
     //Xóa bài viết
     public function destroy(Post $post)

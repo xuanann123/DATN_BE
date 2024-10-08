@@ -15,24 +15,30 @@
                 <span class="ms-2" style="font-size: 30px; color: rgb(255, 255, 255); font-weight: 500">Coursea</span>
             </span>
             <span class="logo-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="41" viewBox="0 0 40 41" fill="none">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M26.8908 13.2172L20 7.15434L0 24.7514V0.5H40V8.41127C40 14.4741 31.7647 17.5055 26.8908 13.2172ZM13.1092 27.7828L20 33.8457L40 16.2486V40.5H0V32.5888C0 26.5259 8.23529 23.4945 13.1092 27.7828Z"
-                        fill="#FFBB54" />
-                </svg>
-                <span class="ms-2" style="font-size: 30px; color: rgb(255, 255, 255); font-weight: 500">Coursea</span>
+               <span class="logo-sm">
+                <img src="{{ asset("theme/admin/assets/images/Union_Yellow.png") }}" alt="" height="22">
+            </span>
+            <span class="logo-lg">
+                <img src="{{ asset("theme/admin/assets/images/logo-white-text.png") }}" alt="" width="180" height="auto">
+            </span>
             </span>
         </a>
         <a href="{{ route('admin.dashboard') }}" class="logo logo-light">
             <span class="logo-sm">
+                <img src="{{ asset("theme/admin/assets/images/Union_Yellow.png") }}" alt="" height="22">
+            </span>
+            <span class="logo-lg">
+                <img src="{{ asset("theme/admin/assets/images/logo-white-text.png") }}" alt="" width="180" height="auto">
+            </span>
+            {{-- <span class="logo-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="auto" viewBox="0 0 40 41"
                     fill="none">
                     <path fill-rule="evenodd" clip-rule="evenodd"
                         d="M26.8908 13.2172L20 7.15434L0 24.7514V0.5H40V8.41127C40 14.4741 31.7647 17.5055 26.8908 13.2172ZM13.1092 27.7828L20 33.8457L40 16.2486V40.5H0V32.5888C0 26.5259 8.23529 23.4945 13.1092 27.7828Z"
                         fill="#FFBB54" />
                 </svg>
-            </span>
-            <span class="logo-lg d-flex align-items-center">
+            </span> --}}
+            {{-- <span class="logo-lg d-flex align-items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="auto" viewBox="0 0 40 41"
                     fill="none">
                     <path fill-rule="evenodd" clip-rule="evenodd"
@@ -40,7 +46,7 @@
                         fill="#04A4F4" />
                 </svg>
                 <span class="ms-2" style="font-size: 30px; color: rgb(27, 26, 26); font-weight: 500">Coursea</span>
-            </span>
+            </span> --}}
         </a>
         <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover"
             id="vertical-hover">
@@ -59,12 +65,12 @@
                         <i class="ri-image-2-line"></i> <span>Dashboards</span>
                     </a>
                 </li>
-               
 
-            
+
+
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý nội dung</span>
                 </li>
-                 <li class="nav-item">
+                <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarBanners" data-bs-toggle="collapse" role="button"
                         aria-expanded="false" aria-controls="sidebarBanners">
                         <i class="ri-image-2-line"></i> <span>Banners</span>
@@ -91,8 +97,7 @@
                     <div class="collapse menu-dropdown" id="sidebarCategories">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="{{ route('admin.categories.index') }}" class="nav-link"
-                                    data-key="t-one-page">
+                                <a href="{{ route('admin.categories.index') }}" class="nav-link" data-key="t-one-page">
                                     Danh sách danh mục</a>
                             </li>
                             <li class="nav-item">
