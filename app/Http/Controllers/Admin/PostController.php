@@ -89,34 +89,19 @@ class PostController extends Controller
             // categories
             $post->categories()->sync($data['categories']);
 
-            // tags
-            if (isset($data['tags']) && is_array($data['tags'])) {
-                foreach ($data['tags'] as $tag) {
-                    $tag = trim($tag);
-                    if (!empty($tag)) {
-                        $existTag = Tag::firstWhere('id', $tag);
-                        if ($existTag) {
-                            $tagIds[] = $existTag->id;
-                        } else {
-                            $newTags[] = $tag;
-                        }
-                    }
-                }
-
-                if (!empty($newTags)) {
-                    foreach ($newTags as $newTag) {
-                        $tagModel = Tag::create([
-                            'name' => $newTag,
-                            'slug' => Str::slug($newTag)
-                        ]);
-                        $tagIds[] = $tagModel->id;
-                    }
+            foreach ($data['tags'] as $tag) {
+                $tag = trim($tag);
+                if (!empty($tag)) {
+                    $tag = Tag::firstOrCreate([
+                        'name' => $tag,
+                        'slug' => Str::slug($tag),
+                    ]);
+                    $tagIds[] = $tag->id;
                 }
             }
 
-            if (!empty($tagIds)) {
-                $post->tags()->sync($tagIds);
-            }
+            // dd($da);
+            $post->tags()->sync($tagIds);
 
             DB::commit();
 
@@ -193,27 +178,15 @@ class PostController extends Controller
                 foreach ($data['tags'] as $tag) {
                     $tag = trim($tag);
                     if (!empty($tag)) {
-                        $existTag = Tag::firstWhere('id', $tag);
-                        if ($existTag) {
-                            $tagIds[] = $existTag->id;
-                        } else {
-                            $newTags[] = $tag;
-                        }
-                    }
-                }
-
-                if (!empty($newTags)) {
-                    foreach ($newTags as $newTag) {
-                        $tagModel = Tag::create([
-                            'name' => $newTag,
-                            'slug' => Str::slug($newTag)
+                        $tag = Tag::firstOrCreate([
+                            'name' => $tag,
+                            'slug' => Str::slug($tag),
                         ]);
-                        $tagIds[] = $tagModel->id;
+                        $tagIds[] = $tag->id;
                     }
                 }
-            }
 
-            if (!empty($tagIds)) {
+                // dd($da);
                 $post->tags()->sync($tagIds);
             }
 
