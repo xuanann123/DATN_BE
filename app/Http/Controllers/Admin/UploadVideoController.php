@@ -29,20 +29,9 @@ class UploadVideoController extends Controller
             $data['url'] = $fileName;
             $data['duration'] = $request->duration;
         } else {
-            $data['url'] = $request->url;
-
-            $parsedUrl = parse_url($request->url);
-
-            if (isset($parsedUrl['query'])) {
-                parse_str($parsedUrl['query'], $queryParams);
-
-                if (isset($queryParams['v'])) {
-                    $data['video_youtube_id'] = $queryParams['v'];
-                    $data['duration'] = $this->getVideoDuration($queryParams['v']);
-                }
-            }
+            $data['video_youtube_id'] = $request->video_youtube_id;
+            $data['duration'] = $this->getVideoDuration($request->video_youtube_id);
         }
-
 
         $newLessonVideo = $this->addLessonVideo($data, $moduleId, $description);
         if (!$newLessonVideo) {
