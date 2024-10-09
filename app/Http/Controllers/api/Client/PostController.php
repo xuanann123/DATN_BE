@@ -97,7 +97,7 @@ class PostController extends Controller
             $post = Post::create($data);
 
             // categories
-            $post->categories()->sync($data['categoriesc']);
+            $post->categories()->sync($data['categories']);
 
             // tags
             if (isset($data['tags']) && is_array($data['tags'])) {
@@ -302,6 +302,118 @@ class PostController extends Controller
         }
 
 
+    }
+    public function myListPost() {
+        try {
+            $listPosts = Post::where('is_active', '=', 1)->select(
+                'id',
+                'user_id',
+                'title',
+                'slug',
+                'description',
+                'thumbnail',
+                'content',
+                'views',
+                'published_at',
+                'status',
+                'allow_comments',
+                'is_banned'
+            )->where('user_id', '=',  auth()->id())->get();
+            //Chuẩn hoá dữ liệu
+            $dataPosts = $listPosts->map(function ($post) {
+                return [
+                    'id' => $post->id,
+                    'user_id' => $post->user_id,
+                    'title' => $post->title,
+                    'slug' => $post->slug,
+                    'description' => $post->description,
+                    'thumbnail' => url(Storage::url($post->thumbnail)),
+                    'content' => $post->content,
+                    'views' => $post->views,
+                    'status' => $post->status,
+                    'allow_comments' => $post->allow_comments,
+                    'is_banned' => $post->is_banned,
+                    'published_at' => $post->published_at,
+                    'categories' => $post->categories,
+                    'tags' => $post->tags
+                ];
+            });
+            // Kiểm tra nếu danh sách bài viết rỗng
+            if ($listPosts->isEmpty()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Không có bài viết nào',
+                    'data' => []
+                ], 200);
+            }
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Lấy danh sách bài viết thành công',
+                'data' => $dataPosts
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Đã xảy ra lỗi khi lấy danh sách bài viết',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function getListPostByUser(string $id) {
+        try {
+            $listPosts = Post::where('is_active', '=', 1)->select(
+                'id',
+                'user_id',
+                'title',
+                'slug',
+                'description',
+                'thumbnail',
+                'content',
+                'views',
+                'published_at',
+                'status',
+                'allow_comments',
+                'is_banned'
+            )->where('user_id', '=',  $id)->get();
+            //Chuẩn hoá dữ liệu
+            $dataPosts = $listPosts->map(function ($post) {
+                return [
+                    'id' => $post->id,
+                    'user_id' => $post->user_id,
+                    'title' => $post->title,
+                    'slug' => $post->slug,
+                    'description' => $post->description,
+                    'thumbnail' => url(Storage::url($post->thumbnail)),
+                    'content' => $post->content,
+                    'views' => $post->views,
+                    'status' => $post->status,
+                    'allow_comments' => $post->allow_comments,
+                    'is_banned' => $post->is_banned,
+                    'published_at' => $post->published_at,
+                    'categories' => $post->categories,
+                    'tags' => $post->tags
+                ];
+            });
+            // Kiểm tra nếu danh sách bài viết rỗng
+            if ($listPosts->isEmpty()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Không có bài viết nào',
+                    'data' => []
+                ], 200);
+            }
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Lấy danh sách bài viết thành công',
+                'data' => $dataPosts
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Đã xảy ra lỗi khi lấy danh sách bài viết',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
 }
