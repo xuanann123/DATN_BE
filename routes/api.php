@@ -1,13 +1,14 @@
 <?php
 
-use App\Http\Controllers\api\Client\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\api\Client\BannerController;
+use PHPUnit\Framework\Attributes\Group;
+use App\Http\Middleware\VerifyCsrfToken;
+use App\Http\Controllers\api\Client\CourseController;
+use App\Http\Controllers\api\Client\AuthController;
 use App\Http\Controllers\api\Client\PostController;
 use App\Http\Controllers\api\Client\UserController;
-use App\Http\Middleware\VerifyCsrfToken;
-use PHPUnit\Framework\Attributes\Group;
+use App\Http\Controllers\api\Client\BannerController;
 use App\Http\Controllers\api\Client\TeacherController;
 
 /*
@@ -42,6 +43,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/profile', [UserController::class, 'updateProfile']);
         Route::post('/change-password', [UserController::class, 'changePassword']);
     });
+
+    Route::prefix('teacher')->group(function () {
+        Route::post('/course', [CourseController::class, 'storeNewCourse']);
+        Route::prefix('manage')->group(function () {
+            Route::put('/{course}/target-student', [CourseController::class, 'updateTargetStudent']);
+        });
+    });
+
     // Route::post('/reset-password', [AuthController::class, 'resetPassword']);
     // post
     Route::prefix('posts')->group(function () {
