@@ -33,17 +33,28 @@ Route::prefix('auth')->group(function () {
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 });
 
+//Xác thực cần đăng nhập để thao tác
 Route::middleware('auth:sanctum')->group(function () {
+
+# ===================== ROUTE FOR AUTH ===========================
+
     Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
     });
+
+# ===================== ROUTE FOR USERS ===========================
+
     Route::prefix('user')->group(function () {
         Route::get('/profile', [UserController::class, 'show']);
         Route::post('/profile', [UserController::class, 'updateProfile']);
         Route::post('/change-password', [UserController::class, 'changePassword']);
+        Route::get('/posts', [PostController::class, 'myListPost']);
+        Route::get('/posts/{id}', [PostController::class, 'getListPostByUser']);
+
     });
-    // Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-    // post
+
+# ===================== ROUTE FOR POSTS ===========================
+
     Route::prefix('posts')->group(function () {
         Route::post('', [PostController::class, 'store']);
         Route::put('/{post}', [PostController::class, 'update']);
@@ -51,21 +62,23 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
+//Không cần xác thực => vào trang web có thể xem được luôn
 # ===================== ROUTE FOR BANNERS ===========================
+
 Route::get('/banners', [BannerController::class, 'getBanners']);
+
 # ===================== ROUTE FOR POSTS ===========================
 
-//Lay danh sach bai viet
 Route::prefix('posts')->group(function () {
     Route::get('', [PostController::class, 'getPosts']);
     Route::get('/{id}', [PostController::class, 'show']);
 });
 
-// Danh sach teacher
+# ===================== ROUTE FOR TEACHER ===========================
+
 Route::prefix('teachers')->group(function () {
-    // Danh sach teacher
     Route::get('/', [TeacherController::class, 'getTeachers']);
-    // Danh sách khóa học của một teacher cụ thể
+
     Route::get('/list-courses/{id}', [TeacherController::class, 'getCoursesIsTeacher']);
 });
 
