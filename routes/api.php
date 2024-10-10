@@ -96,6 +96,8 @@ Route::prefix('teachers')->group(function () {
     Route::get('/', [TeacherController::class, 'getTeachers']);
 
     Route::get('/list-courses/{id}', [TeacherController::class, 'getCoursesIsTeacher']);
+    // Tìm kiếm giảng viên;
+    Route::get('/search-teacher', [TeacherController::class, 'searchTeachers']);
 });
 # ===================== ROUTE FOR COURSE ===========================
 
