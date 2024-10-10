@@ -21,6 +21,7 @@ class CourseFactory extends Factory
             'id_category' => rand(1, 6),
             'name' => fake()->text('20'),
             'slug' => fake()->text('20'),
+            'thumbnail' => fake()->imageUrl(),
             'price' => rand(1000, 5000),
             'is_free' => 1,
             'status' => 'approved',

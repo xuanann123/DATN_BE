@@ -14,7 +14,7 @@ class TeacherController extends Controller
     public function getTeachers(Request $request)
     {
         // Số thứ tự trang;
-        $page = $request->page ?? 1;
+        $page = $request->page ??  1;
         // Số bản ghi trên một trang;
         $perPage = $request->perPage ?? 12;
 
@@ -96,6 +96,53 @@ class TeacherController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $courses,
+        ], 200);
+    }
+
+    public function searchTeachers(Request $request)
+    {
+        // Số thứ tự trang;
+        $page = $request->page ??  1;
+        // Số bản ghi trên một trang;
+        $perPage = $request->perPage ?? 12;
+
+        // Lấy keyword ở url;
+        $searchTerm = $request->key;
+
+        $teachers = DB::table('users as u')
+            ->selectRaw('
+                u.id as user_id,
+                u.name as user_name,
+                u.avatar as user_avatar,
+                COUNT(c.id) as total_courses,
+                COUNT(r.id) as total_ratings,
+                ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
+            ')
+            ->leftJoin('courses as c', 'u.id', '=', 'c.id_user')
+            ->leftJoin('ratings as r', 'c.id', '=', 'r.id_course')
+            ->where('u.user_type', 'teacher')
+//            ->where('u.is_active', 1)
+            ->where(function($query) use ($searchTerm) {
+                $query->where('u.name', 'LIKE', "%{$searchTerm}%")
+                ->orWhere('c.name', 'LIKE', "%{$searchTerm}%");
+            })
+            ->groupBy('u.id', 'u.name', 'u.avatar')
+            ->orderByDesc('average_rating')
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        if($teachers->count() <= 0){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No data found',
+            ], 204);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $teachers->items(),
+            'current_page' => $teachers->currentPage(),
+            'total_pages' => $teachers->lastPage(),
+            'total_count' => $teachers->total(),
         ], 200);
     }
 }
