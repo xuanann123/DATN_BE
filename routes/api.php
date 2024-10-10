@@ -4,12 +4,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use PHPUnit\Framework\Attributes\Group;
 use App\Http\Middleware\VerifyCsrfToken;
-use App\Http\Controllers\api\Client\CourseController;
 use App\Http\Controllers\api\Client\AuthController;
 use App\Http\Controllers\api\Client\PostController;
 use App\Http\Controllers\api\Client\UserController;
 use App\Http\Controllers\api\Client\BannerController;
+use App\Http\Controllers\api\Client\CourseController;
 use App\Http\Controllers\api\Client\TeacherController;
+use App\Http\Controllers\api\Client\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,12 +57,18 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('teacher')->group(function () {
         Route::post('/course', [CourseController::class, 'storeNewCourse']);
+        Route::get('/course/{course}', [CourseController::class, 'showCourseTeacher']);
         Route::prefix('manage')->group(function () {
             Route::put('/{course}/target-student', [CourseController::class, 'updateTargetStudent']);
+            Route::put('/{course}/overview', [CourseController::class, 'updateCourseOverview']);
         });
     });
 
     // Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+# ===================== ROUTE FOR POSTS ===========================
+Route::prefix('categories')->group(function () {
+    Route::get('/name', [CategoryController::class, 'getNameCategories']);
+});
     // post
 # ===================== ROUTE FOR POSTS ===========================
     Route::prefix('posts')->group(function () {
@@ -89,6 +96,11 @@ Route::prefix('teachers')->group(function () {
     Route::get('/', [TeacherController::class, 'getTeachers']);
 
     Route::get('/list-courses/{id}', [TeacherController::class, 'getCoursesIsTeacher']);
+});
+# ===================== ROUTE FOR COURSE ===========================
+
+Route::prefix('course')->group(function () {
+    //
 });
 
 
