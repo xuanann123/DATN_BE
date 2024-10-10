@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Admin\Courses\CreateCourseRequest;
 use App\Http\Requests\Admin\Courses\UpdateCourseRequest;
 use App\Http\Requests\Client\Courses\StoreNewCourseRequest;
+use App\Http\Requests\Client\Courses\UpdateCourseOverviewRequest;
 use App\Http\Requests\Client\Courses\UpdateTargetStudentRequest;
 use App\Models\Audience;
 use App\Models\Goal;
@@ -63,6 +64,33 @@ class CourseController extends Controller
         }
     }
 
+    public function showCourseTeacher(Course $course)
+    {
+        try {
+            if ($course->status == 'draft' && $course->id_user !== auth()->id()) {
+                return response()->json([
+                    'status' => 403,
+                    'message' => "Khóa học này đang ở chế độ nháp, vui lòng liên hệ {$course->user->name}.",
+                    'data' => []
+                ], 403);
+            }
+
+            $courseData = $course->load(['user', 'category', 'modules', 'tags', 'goals', 'requirements', 'audiences']);
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Thông tin khóa học.',
+                'data' => $courseData,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Đã xảy ra lỗi: ' . $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
+    }
+
     public function updateTargetStudent(Request $request, Course $course)
     {
 
@@ -80,18 +108,12 @@ class CourseController extends Controller
 
         try {
             DB::beginTransaction();
-
-            foreach ($goals as $goalData) {
-                $this->updateOrCreateRecord($course, Goal::class, $goalData, 'goal');
-            }
-
-            foreach ($requirements as $requirementData) {
-                $this->updateOrCreateRecord($course, Requirement::class, $requirementData, 'requirement');
-            }
-
-            foreach ($audiences as $audienceData) {
-                $this->updateOrCreateRecord($course, Audience::class, $audienceData, 'audience');
-            }
+            // goals
+            $this->updateOrCreateRecord($course, Goal::class, $goals, 'goal');
+            // requirements
+            $this->updateOrCreateRecord($course, Requirement::class, $requirements, 'requirement');
+            // audiences
+            $this->updateOrCreateRecord($course, Audience::class, $audiences, 'audience');
 
             DB::commit();
 
@@ -115,30 +137,129 @@ class CourseController extends Controller
         }
     }
 
+    public function updateCourseOverview(UpdateCourseOverviewRequest $request, Course $course)
+    {
+        DB::beginTransaction();
+        try {
+            // Kiểm tra quyền truy cập
+            if ($course->id_user !== auth()->id()) {
+                return response()->json([
+                    'status' => 403,
+                    'message' => 'Bạn không có quyền sửa khóa học này!',
+                    'data' => []
+                ], 403);
+            }
+
+            $data = $request->validated();
+
+            // lưu thumbnail và trailer cũ để xóa nếu cần
+            $oldThumbnail = $course->thumbnail;
+            $oldTrailer = $course->trailer;
+
+            // gen course code
+            if (!$course->code) {
+                $data['code'] = 'KH-' . Str::uuid();
+            }
+
+            // nếu giá miễn phí
+            if (isset($data['price']) && $data['price'] == 0) {
+                $data['is_free'] = 1;
+                $data['price_sale'] = 0;
+            } else {
+                $data['is_free'] = 0;
+            }
+
+            // thumbnail
+            if ($request->hasFile('thumbnail')) {
+                $image = $request->file('thumbnail');
+                $newNameImage = 'course_thumbnail_' . Str::uuid() . '.' . $image->getClientOriginalExtension();
+                $pathImage = Storage::putFileAs('courses/thumbnails', $image, $newNameImage);
+                $data['thumbnail'] = $pathImage;
+            }
+
+            // trailer video
+            if ($request->hasFile('trailer')) {
+                $video = $request->file('trailer');
+                $newNameVideo = 'course_trailer_' . Str::uuid() . '.' . $video->getClientOriginalExtension();
+                $pathVideo = Storage::putFileAs('courses/trailers', $video, $newNameVideo);
+                $data['trailer'] = $pathVideo;
+            }
+
+            $course->update($data);
+
+            // xử lý tags
+            $tagIds = [];
+            if (isset($data['tags']) && is_array($data['tags'])) {
+                foreach ($data['tags'] as $tag) {
+                    $tag = trim($tag);
+                    if (!empty($tag)) {
+                        $tagModel = Tag::firstOrCreate([
+                            'name' => $tag,
+                            'slug' => Str::slug($tag),
+                        ]);
+                        $tagIds[] = $tagModel->id;
+                    }
+                }
+                $course->tags()->sync($tagIds);
+            } else {
+                $course->tags()->sync([]); // request không có tag, xoá tất cả tag cũ
+            }
+
+            DB::commit();
+
+            // xóa thumbnail/trailer cũ nếu có thumbnail/trailer mới
+            if ($oldThumbnail && isset($data['thumbnail'])) {
+                Storage::delete($oldThumbnail);
+            }
+
+            if ($oldTrailer && isset($data['trailer'])) {
+                Storage::delete($oldTrailer);
+            }
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Đã lưu thành công các thay đổi của bạn.',
+                'data' => $course->load('tags')
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            // xóa thumbnail/trailer mới nếu gặp lỗi
+            if (isset($data['thumbnail'])) {
+                Storage::delete($data['thumbnail']);
+            }
+
+            if (isset($data['trailer'])) {
+                Storage::delete($data['trailer']);
+            }
+
+            return response()->json([
+                'status' => 500,
+                'message' => 'Đã xảy ra lỗi khi cập nhật khóa học',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     private function updateOrCreateRecord(Course $course, $model, $data, $field)
     {
+        // Lấy tất cả các vị trí từ data
+        $newPositions = array_column($data, 'position');
 
-        if (empty($data[$field])) {
-            $model::where('course_id', $course->id)
-                ->where('position', $data['position'])
-                ->delete();
-        } else {
-            $existingRecord = $model::where('course_id', $course->id)
-                ->where('position', $data['position'])
-                ->first();
-
-            if ($existingRecord) {
-                $existingRecord->update([$field => $data[$field]]);
-            } else {
-                $model::updateOrCreate(
-                    ['course_id' => $course->id, 'position' => $data['position']],
-                    [
-                        'course_id' => $course->id,
-                        'position' => $data['position'],
-                        $field => $data[$field]
-                    ]
-                );
-            }
+        // Xóa các bản ghi cũ không có trong request
+        $model::where('course_id', $course->id)
+            ->whereNotIn('position', $newPositions)
+            ->delete();
+        // Create hoặc update
+        foreach ($data as $item) {
+            $model::updateOrCreate(
+                [
+                    'course_id' => $course->id,
+                    'position' => $item['position']
+                ],
+                [$field => $item[$field]]
+            );
         }
     }
 
