@@ -63,7 +63,7 @@ Route::prefix('teachers')->group(function () {
     // Danh sach teacher
     Route::get('/', [TeacherController::class, 'getTeachers']);
     // Danh sách khóa học của một teacher cụ thể
-    Route::get('/list-courses/{id}', [TeacherController::class, 'getCoursesIsTeacher']);
+    Route::get('/list-courses/{id}', [TeacherController::class, 'getCoursesTeacher']);
     // Tìm kiếm giảng viên;
     Route::get('/search-teacher', [TeacherController::class, 'searchTeachers']);
 });
