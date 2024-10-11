@@ -4395,6 +4395,7 @@ code {
     --vz-topbar-search-color: #fff;
     --vz-header-border: #405189
 }
+
 /* Chỉnh menu backgroud trước nè */
 :root {
     --vz-vertical-menu-bg: #fff;
@@ -4411,6 +4412,7 @@ code {
     --vz-vertical-menu-box-shadow: 0 2px 4px rgba(15, 34, 58, 0.12);
     --vz-vertical-menu-dropdown-box-shadow: 0 2px 4px rgba(15, 34, 58, 0.12)
 }
+
 /* Chỉnh menu backgroud đen thì sao trước nè */
 
 :root[data-sidebar=dark] {
@@ -4554,7 +4556,7 @@ code {
 }
 
 [data-bs-theme=dark] {
-    --vz-vertical-menu-bg: #fff;
+    --vz-vertical-menu-bg: #05A5F0;
     --vz-vertical-menu-border: #fff;
     --vz-vertical-menu-item-color: #6d7080;
     --vz-vertical-menu-item-bg: rgba(64, 81, 137, 0.15);

@@ -4,6 +4,7 @@
 @endsection
 @section('style-libs')
     <link href="{{ asset('theme/admin/assets/libs/dropzone/dropzone.css') }}" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         .switch {
             /* switch */
@@ -356,6 +357,29 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="id_category" class="form-label">Chọn tags cho khoá học</label>
+                        <div>
+                            <div class="mb-3 position-relative">
+                                <select class="js-example-basic-multiple" name="tags[]" multiple="multiple">
+                                    @foreach ($tags as $tag)
+                                        <option value="{{ $tag->name }}"
+                                            {{ (in_array($tag->name, old('tags', $course->tags->pluck('name')->toArray())) ? 'selected' : '') ?? '' }}>
+                                            {{ $tag->name }}
+                                        </option>
+                                    @endforeach
+                                    @foreach (old('tags', []) as $oldTag)
+                                        @if (!in_array($oldTag, $tags->pluck('name')->toArray()) && !empty($oldTag))
+                                            <option value="{{ $oldTag }}" selected>
+                                                {{ $oldTag }}
+                                            </option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="is_active" class="form-label">Trạng thái</label> <br>
                         <label class="switch">
                             <input {{ $course->is_active == 1 ? 'checked' : '' }} name="is_active" id="is_active"
@@ -393,8 +417,8 @@
             <!-- end card -->
             <div class="text-start mb-4">
                 {{-- <button type="submit" class="btn btn-danger w-sm">Delete</button> --}}
-                <button type="submit" class="btn btn-success w-sm">Cập nhật</button>
-                <a href="" class="btn btn-secondary w-sm">Thêm bài học</a>
+                <a href="{{ route('admin.courses.list') }}" class="btn btn-secondary w-sm">Quay lại</a>
+                <button type="submit" class="btn btn-warning w-sm">Cập nhật</button>
             </div>
         </div>
         <!-- end col -->
@@ -402,6 +426,11 @@
     <!-- end row -->
 @endsection
 @section('script-libs')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script src="{{ asset('theme/admin/assets/js/pages/select2.init.js') }}"></script>
     <!-- ckeditor -->
     <script src="{{ asset('theme/admin/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js') }}"></script>
 

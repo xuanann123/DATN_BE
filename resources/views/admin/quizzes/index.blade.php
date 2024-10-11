@@ -125,14 +125,17 @@
                                                     <textarea class="form-control" id="quizDescription" name="description" rows="3" required></textarea>
                                                 </div>
 
-                                                <div class="mb-3">
+                                                {{-- <div class="mb-3">
                                                     <label for="quizDuration" class="form-label">Tổng điểm
                                                         (points)</label>
                                                     <input type="number" class="form-control" id="quizDuration"
                                                         name="total_points" required>
-                                                </div>
-
-                                                <button type="submit" class="btn btn-primary">Add Quiz</button>
+                                                </div> --}}
+                                                <a href="{{ route('admin.courses.detail', $module->course->id) }}"
+                                                    class="me-1 btn btn-secondary">
+                                                    Quay lại
+                                                </a>
+                                                <button type="submit" class="btn btn-success">Thêm bài tập</button>
                                             </form>
                                         @else
                                             <form action="{{ route('admin.quizzes.store', $module->quiz->id) }}"
@@ -157,7 +160,7 @@
                                                                             <i class="ri-image-add-line"></i>
                                                                         </button>
                                                                         <input type="file" class="form-control d-none"
-                                                                            name="questions[0][image]" accept="image/*"
+                                                                            name="questions[0][image]" accept=""
                                                                             onchange="previewImage(this)">
                                                                     </div>
                                                                     <div class="text-center border-dashed mt-2 d-none">
@@ -202,7 +205,7 @@
                                                                             <input type="file"
                                                                                 class="form-control d-none"
                                                                                 name="questions[0][options][0][image]"
-                                                                                accept="image/*"
+                                                                                accept=""
                                                                                 onchange="previewImage(this)">
                                                                             <button type="button" id="btn-delete"
                                                                                 class="btn btn-ghost-danger btn-icon waves-effect waves-light"
@@ -236,7 +239,7 @@
                                                                             <input type="file"
                                                                                 class="form-control d-none"
                                                                                 name="questions[0][options][1][image]"
-                                                                                accept="image/*"
+                                                                                accept=""
                                                                                 onchange="previewImage(this)">
                                                                             <button type="button" id="btn-delete"
                                                                                 class="btn btn-ghost-danger btn-icon waves-effect waves-light"
@@ -261,7 +264,11 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <button type="submit" class="btn btn-sm btn-secondary mt-2"
+                                                    <a href="{{ route('admin.courses.detail', $module->course->id) }}"
+                                                        class="me-1 btn btn-sm btn-secondary">
+                                                        Quay lại
+                                                    </a>
+                                                    <button type="submit" class="btn btn-sm btn-success"
                                                         id="addQuestionBtn">Thêm câu hỏi</button>
                                                 </div>
                                             </form>
@@ -430,7 +437,7 @@
                             title="Thêm hình ảnh">
                             <i class="ri-image-add-line"></i>
                         </button>
-                        <input type="file" class="form-control d-none" name="questions[0][options][${optionCount}][image]" accept="image/*" onchange="previewImage(this)">
+                        <input type="file" class="form-control d-none" name="questions[0][options][${optionCount}][image]" accept="" onchange="previewImage(this)">
                         <button type="button" id="btn-delete" class="btn btn-ghost-danger btn-icon waves-effect waves-light" style="background: none; border: none; padding: 0;"
                         title="Xóa lựa chọn">
                             <i class="bx bx-trash fs-5"></i>

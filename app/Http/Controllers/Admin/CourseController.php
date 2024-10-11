@@ -58,7 +58,7 @@ class CourseController extends Controller
         $data['is_free'] = $request->price != 0 ? 0 : 1;
         $data['id_user'] = auth()->id();
         $tagStorage = $request->tagStorage;
-        $data['tags'] = explode(',', $tagStorage);
+        // $data['tags'] = explode(',', $tagStorage);
         $tagIds = [];
         try {
 
@@ -114,7 +114,7 @@ class CourseController extends Controller
         });
 
         $quizzesCount = $course->modules->sum(function ($module) {
-            return $module->lessons->where('content_type', 'quiz')->count();
+            return $module->quiz !== NULL;
         });
 
         return view('admin.courses.detail', compact('title', 'course', 'lecturesCount', 'quizzesCount', 'maxModulePosition'));
@@ -126,7 +126,8 @@ class CourseController extends Controller
         $categories = Category::whereNull('parent_id')->with('children')->get();
         $options = $this->getCategoryOptions($categories);
         $course = Course::find($id);
-        return view('admin.courses.edit', compact('title', 'course', 'options'));
+        $tags = Tag::all();
+        return view('admin.courses.edit', compact('title', 'course', 'options', 'tags'));
     }
 
     public function update(UpdateCourseRequest $request, string $id)
@@ -158,8 +159,31 @@ class CourseController extends Controller
             $data['thumbnail'] = $course->thumbnail;
         }
 
+        // tags
+        // xoa tags
+        if (empty($data['tags'])) {
+            $data['tags'] = '';
+            $course->tags()->sync([]);
+        }
+
+        // update tags
+        if (isset($data['tags']) && is_array($data['tags'])) {
+            foreach ($data['tags'] as $tag) {
+                $tag = trim($tag);
+                if (!empty($tag)) {
+                    $tag = Tag::firstOrCreate([
+                        'name' => $tag,
+                        'slug' => Str::slug($tag),
+                    ]);
+                    $tagIds[] = $tag->id;
+                }
+            }
+
+            $course->tags()->sync($tagIds);
+        }
+
         if ($course->update($data)) {
-            return redirect()->route('admin.courses.list')->with(['message' => 'Cập nhật thành công!']);
+            return redirect()->back()->with(['success' => 'Cập nhật thành công!']);
         }
 
         return redirect()->route('admin.courses.list')->with(['error' => 'Cập nhật thất bại!']);

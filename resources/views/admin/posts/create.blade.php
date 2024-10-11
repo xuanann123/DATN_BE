@@ -163,7 +163,7 @@
                         <span class="text-muted">Chọn tags ("," hoặc dấu cách để ngăn cách nhau)</span>
                         <select class="js-example-basic-multiple" name="tags[]" multiple="multiple" value>
                             @foreach ($tags as $tag)
-                                <option value="{{ $tag->id }}"
+                                <option value="{{ $tag->name }}"
                                     {{ in_array($tag->id, old('tags', [])) ? 'selected' : '' }}>
                                     {{ $tag->name }}
                                 </option>

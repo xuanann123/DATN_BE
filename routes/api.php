@@ -1,14 +1,16 @@
 <?php
 
-use App\Http\Controllers\api\Client\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\api\Client\BannerController;
+use PHPUnit\Framework\Attributes\Group;
+use App\Http\Middleware\VerifyCsrfToken;
+use App\Http\Controllers\api\Client\AuthController;
 use App\Http\Controllers\api\Client\PostController;
 use App\Http\Controllers\api\Client\UserController;
-use App\Http\Middleware\VerifyCsrfToken;
-use PHPUnit\Framework\Attributes\Group;
+use App\Http\Controllers\api\Client\BannerController;
+use App\Http\Controllers\api\Client\CourseController;
 use App\Http\Controllers\api\Client\TeacherController;
+use App\Http\Controllers\api\Client\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,39 +35,78 @@ Route::prefix('auth')->group(function () {
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 });
 
+//Xác thực cần đăng nhập để thao tác
 Route::middleware('auth:sanctum')->group(function () {
+
+# ===================== ROUTE FOR AUTH ===========================
+
     Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
     });
+
+# ===================== ROUTE FOR USERS ===========================
+
     Route::prefix('user')->group(function () {
         Route::get('/profile', [UserController::class, 'show']);
         Route::post('/profile', [UserController::class, 'updateProfile']);
         Route::post('/change-password', [UserController::class, 'changePassword']);
+        Route::get('/posts', [PostController::class, 'myListPost']);
+        Route::get('/posts/{id}', [PostController::class, 'getListPostByUser']);
+
     });
+
+    Route::prefix('teacher')->group(function () {
+        Route::post('/course', [CourseController::class, 'storeNewCourse']);
+        Route::get('/course/{course}', [CourseController::class, 'showCourseTeacher']);
+        Route::prefix('manage')->group(function () {
+            Route::put('/{course}/target-student', [CourseController::class, 'updateTargetStudent']);
+            Route::put('/{course}/overview', [CourseController::class, 'updateCourseOverview']);
+        });
+    });
+
     // Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+
+    // post
+# ===================== ROUTE FOR POSTS ===========================
+    Route::prefix('posts')->group(function () {
+        Route::post('', [PostController::class, 'store']);
+        Route::put('/{post}', [PostController::class, 'update']);
+        Route::delete('/{post}', [PostController::class, 'destroy']);
+    });
 });
 
+//Không cần xác thực => vào trang web có thể xem được luôn
 # ===================== ROUTE FOR BANNERS ===========================
+
 Route::get('/banners', [BannerController::class, 'getBanners']);
+
+# ===================== ROUTE FOR POSTS ===========================
+Route::prefix('categories')->group(function () {
+    Route::get('/name', [CategoryController::class, 'getNameCategories']);
+});
+
 # ===================== ROUTE FOR POSTS ===========================
 
-//Lay danh sach bai viet
 Route::prefix('posts')->group(function () {
     Route::get('', [PostController::class, 'getPosts']);
-    Route::post('', [PostController::class, 'store']);
     Route::get('/{id}', [PostController::class, 'show']);
-    Route::put('/{id}', [PostController::class, 'update']);
-    Route::delete('/{id}', [PostController::class, 'destroy']);
 });
 
-// Danh sach teacher
+# ===================== ROUTE FOR TEACHER ===========================
+
 Route::prefix('teachers')->group(function () {
-    // Danh sach teacher
     Route::get('/', [TeacherController::class, 'getTeachers']);
+
     // Danh sách khóa học của một teacher cụ thể
     Route::get('/list-courses/{id}', [TeacherController::class, 'getCoursesTeacher']);
+
     // Tìm kiếm giảng viên;
     Route::get('/search-teacher', [TeacherController::class, 'searchTeachers']);
+});
+# ===================== ROUTE FOR COURSE ===========================
+
+Route::prefix('course')->group(function () {
+    //
 });
 
 
