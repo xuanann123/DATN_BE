@@ -65,10 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-# ===================== ROUTE FOR POSTS ===========================
-Route::prefix('categories')->group(function () {
-    Route::get('/name', [CategoryController::class, 'getNameCategories']);
-});
+
     // post
 # ===================== ROUTE FOR POSTS ===========================
     Route::prefix('posts')->group(function () {
@@ -82,6 +79,11 @@ Route::prefix('categories')->group(function () {
 # ===================== ROUTE FOR BANNERS ===========================
 
 Route::get('/banners', [BannerController::class, 'getBanners']);
+
+# ===================== ROUTE FOR POSTS ===========================
+Route::prefix('categories')->group(function () {
+    Route::get('/name', [CategoryController::class, 'getNameCategories']);
+});
 
 # ===================== ROUTE FOR POSTS ===========================
 
