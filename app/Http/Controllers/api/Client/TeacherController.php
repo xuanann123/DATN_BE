@@ -23,8 +23,8 @@ class TeacherController extends Controller
                 u.id as user_id,
                 u.name as user_name,
                 u.avatar as user_avatar,
-                COUNT(c.id) as total_courses,
-                COUNT(r.id) as total_ratings,
+                COUNT(DISTINCT c.id) as total_courses,
+                COUNT(DISTINCT r.id) as total_ratings,
                 ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
             ')
             ->leftJoin('courses as c', 'u.id', '=', 'c.id_user')
@@ -51,12 +51,33 @@ class TeacherController extends Controller
         ], 200);
     }
 
-    // Api chi tiet giang vien va danh sach khoa hoc cua giang vien do
-    public function getCoursesIsTeacher(Request $request) {
-        $idTeacher = $request->id;
-        $teacher = User::where('id', $idTeacher)
-            ->where('is_active', 1)
+    public function teacherId($id)
+    {
+        $teacher = DB::table('users as u')
+            ->selectRaw('
+                u.id as user_id,
+                u.name as user_name,
+                u.avatar as user_avatar,
+                COUNT(c.id) as total_courses,
+                COUNT(r.id) as total_ratings,
+                ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
+            ')
+            ->leftJoin('courses as c', 'u.id', '=', 'c.id_user')
+            ->leftJoin('ratings as r', 'c.id', '=', 'r.id_course')
+            ->where('u.user_type', 'teacher')
+            ->where('u.is_active', 1)
+            ->where('u.id', $id)
+            ->groupBy('u.id', 'u.name', 'u.avatar')
             ->first();
+
+        return $teacher;
+    }
+
+    // Api chi tiet giang vien va danh sach khoa hoc cua giang vien do
+    public function getCoursesTeacher(Request $request) {
+        $id = $request->id;
+
+        $teacher = $this->teacherId($id);
 
         if(!$teacher) {
             return response()->json([
@@ -71,8 +92,6 @@ class TeacherController extends Controller
                 c.name as course_name,
                 c.thumbnail as course_thumbnail,
                 c.total_student,
-                u.name as teacher_name,
-                u.avatar as user_avatar,
                 COUNT(DISTINCT l.id) as total_lessons,
                 c.duration as course_duration,
                 ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
@@ -81,9 +100,9 @@ class TeacherController extends Controller
             ->leftJoin('lessons as l', 'l.id_module', '=', 'm.id')
             ->leftJoin('ratings as r', 'r.id_course', '=', 'c.id')
             ->leftJoin('users as u', 'u.id', '=', 'c.id_user')
-            ->where('c.id_user', $idTeacher)
-            ->where('c.is_active', 1)
-            ->groupBy('c.id', 'c.name', 'c.thumbnail', 'u.name', 'u.avatar')
+            ->where('c.id_user', $id)
+//            ->where('c.is_active', 1)
+            ->groupBy('c.id', 'c.name', 'c.thumbnail')
             ->get();
 
         if($courses->count() <= 0){
@@ -95,7 +114,8 @@ class TeacherController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $courses,
+            'dataCourses' => $courses,
+            'dataTeacher' => $teacher,
         ], 200);
     }
 
