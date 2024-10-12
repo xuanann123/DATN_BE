@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\Client;
+namespace App\Http\Controllers\api\Client\Intructor;
 
 use App\Models\Tag;
 use App\Models\Course;
@@ -27,11 +27,83 @@ class CourseController extends Controller
 {
     public function index()
     {
-        $courses = Course::select('id', 'id_user', 'id_category', 'name', 'sort_description', 'thumbnail', 'price', 'created_at', 'updated_at')
-            ->with(['user:id,avatar'])
-            ->orderByDesc('id')
-            ->paginate(12);
-        return view('admin.courses.index', compact('title', 'courses'));
+        try {
+            $courses = Course::select('id', 'name', 'is_active')
+                ->where('id_user', auth()->id())
+                ->orderByDesc('id')
+                ->paginate(8);
+            return response()->json([
+                'status' => 200,
+                'message' => 'Danh sách khóa học.',
+                'data' => $courses,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Đã xảy ra lỗi khi lấy danh sách khóa học.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getCourseGoals(Course $course)
+    {
+        if (auth()->id() !== $course->id_user) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Bạn không có quyền truy cập.',
+                'data' => []
+            ], 403);
+        }
+
+        return response()->json([
+            'message' => 'Danh sách mục tiêu khóa học.',
+            'data' => [
+                'goals' => $course->goals,
+                'requirements' => $course->requirements,
+                'audiences' => $course->audiences,
+            ],
+            'status' => 200,
+        ], 200);
+    }
+
+    public function getCourseOverview(Course $course)
+    {
+        try {
+            if (auth()->id() !== $course->id_user) {
+                return response()->json([
+                    'status' => 403,
+                    'message' => 'Bạn không có quyền truy cập.',
+                    'data' => []
+                ], 403);
+            }
+            
+            $data = $course->only([
+                'name',
+                'sort_description',
+                'description',
+                'level',
+                'category',
+                'thumbnail',
+                'trailer',
+                'price',
+                'price_sale',
+                'is_active',
+                'tags',
+            ]);
+
+            return response()->json([
+                'message' => 'Tổng quan khóa học.',
+                'data' => $data,
+                'status' => 200,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Đã xảy ra lỗi khi lấy tổng quan khóa học.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function storeNewCourse(StoreNewCourseRequest $request)
