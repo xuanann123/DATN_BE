@@ -37,6 +37,8 @@ class PostController extends Controller
                 return [
                     'id' => $post->id,
                     'user_id' => $post->user_id,
+                    'username' => $post->user->name,
+                    'avatar' => url(Storage::url($post->user->avatar)),
                     'title' => $post->title,
                     'slug' => $post->slug,
                     'description' => $post->description,
@@ -51,7 +53,6 @@ class PostController extends Controller
                     'tags' => $post->tags
                 ];
             });
-            // Kiểm tra nếu danh sách bài viết rỗng
             if ($listPosts->isEmpty()) {
                 return response()->json([
                     'status' => 'success',
@@ -157,6 +158,8 @@ class PostController extends Controller
                 $post = [
                     'id' => $post->id,
                     'user_id' => $post->user_id,
+                    'username' => $post->user->name,
+                    'avatar' => url(Storage::url($post->user->avatar)),
                     'title' => $post->title,
                     'slug' => $post->slug,
                     'description' => $post->description,
@@ -207,12 +210,9 @@ class PostController extends Controller
                     $pathImage = Storage::putFileAs('posts', $image, $newNameImage);
                     $data['thumbnail'] = $pathImage;
                 }
-
                 $post->update($data);
-
                 // categories
                 $post->categories()->sync($data['categories']);
-
                 if (empty($data['tags'])) {
                     $data['tags'] = '';
                     $post->tags()->sync([]);
@@ -230,7 +230,6 @@ class PostController extends Controller
                             $tagIds[] = $tag->id;
                         }
                     }
-
                     // dd($da);
                     $post->tags()->sync($tagIds);
                 }
@@ -324,6 +323,8 @@ class PostController extends Controller
                 return [
                     'id' => $post->id,
                     'user_id' => $post->user_id,
+                    'username' => $post->user->name,
+                    'avatar' => url(Storage::url($post->user->avatar)),
                     'title' => $post->title,
                     'slug' => $post->slug,
                     'description' => $post->description,
@@ -359,6 +360,7 @@ class PostController extends Controller
             ], 500);
         }
     }
+
     public function getListPostByUser(string $id) {
         try {
             $listPosts = Post::where('is_active', '=', 1)->select(
@@ -380,6 +382,8 @@ class PostController extends Controller
                 return [
                     'id' => $post->id,
                     'user_id' => $post->user_id,
+                    'username' => $post->user->name,
+                    'avatar' => url(Storage::url($post->user->avatar)),
                     'title' => $post->title,
                     'slug' => $post->slug,
                     'description' => $post->description,
