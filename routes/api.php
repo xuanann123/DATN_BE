@@ -8,9 +8,12 @@ use App\Http\Controllers\api\Client\AuthController;
 use App\Http\Controllers\api\Client\PostController;
 use App\Http\Controllers\api\Client\UserController;
 use App\Http\Controllers\api\Client\BannerController;
-use App\Http\Controllers\api\Client\CourseController;
+use App\Http\Controllers\api\Client\Intructor\CourseController;
 use App\Http\Controllers\api\Client\TeacherController;
 use App\Http\Controllers\api\Client\CategoryController;
+use App\Http\Controllers\api\Client\Intructor\CurriculumController;
+use App\Http\Controllers\api\Client\Intructor\TextLessonController;
+use App\Http\Controllers\api\Client\Intructor\ModuleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,8 +62,21 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/course', [CourseController::class, 'storeNewCourse']);
         Route::get('/course/{course}', [CourseController::class, 'showCourseTeacher']);
         Route::prefix('manage')->group(function () {
+            Route::get('/{course}/target-student', [CourseController::class, 'getCourseGoals']);
             Route::put('/{course}/target-student', [CourseController::class, 'updateTargetStudent']);
+            Route::get('/{course}/overview', [CourseController::class, 'getCourseOverview']);
             Route::put('/{course}/overview', [CourseController::class, 'updateCourseOverview']);
+            Route::get('/{course}/curriculum', [CurriculumController::class, 'index']);
+            Route::prefix('/module')->group(function () {
+                Route::post('{course}/add', [ModuleController::class, 'storeModule']);
+                Route::put('{module}/update', [ModuleController::class, 'updateModule']);
+                Route::delete('{module}/delete', [ModuleController::class, 'deleteModule']);
+            });
+            Route::prefix('/lesson')->group(function () {
+                Route::post('{module}/add-text-lesson', [TextLessonController::class, 'storeTextLesson']);
+                Route::put('{lesson}/update-text-lesson', [TextLessonController::class, 'updateTextLesson']);
+                Route::delete('{lesson}/delete-text-lesson', [TextLessonController::class, 'destroyTextLesson']);
+            });
         });
     });
 
