@@ -55,23 +55,32 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/change-password', [UserController::class, 'changePassword']);
         Route::get('/posts', [PostController::class, 'myListPost']);
         Route::get('/posts/{id}', [PostController::class, 'getListPostByUser']);
-
     });
 
     Route::prefix('teacher')->group(function () {
+        //Thêm khoá học mới
         Route::post('/course', [CourseController::class, 'storeNewCourse']);
+        //Hiển thị toàn bộ khoá học của 1 teacher
         Route::get('/course/{course}', [CourseController::class, 'showCourseTeacher']);
+
         Route::prefix('manage')->group(function () {
+            //Quản lý mục tiêu khóa học
             Route::get('/{course}/target-student', [CourseController::class, 'getCourseGoals']);
             Route::put('/{course}/target-student', [CourseController::class, 'updateTargetStudent']);
+
+            //Quản lý tổng quan khoá học
             Route::get('/{course}/overview', [CourseController::class, 'getCourseOverview']);
             Route::put('/{course}/overview', [CourseController::class, 'updateCourseOverview']);
+
+            //Quản lý chương trình giảng dạy
             Route::get('/{course}/curriculum', [CurriculumController::class, 'index']);
+            //Quản lý chương học
             Route::prefix('/module')->group(function () {
                 Route::post('{course}/add', [ModuleController::class, 'storeModule']);
                 Route::put('{module}/update', [ModuleController::class, 'updateModule']);
                 Route::delete('{module}/delete', [ModuleController::class, 'deleteModule']);
             });
+            //Quản lý bài học
             Route::prefix('/lesson')->group(function () {
                 Route::post('{module}/add-text-lesson', [TextLessonController::class, 'storeTextLesson']);
                 Route::put('{lesson}/update-text-lesson', [TextLessonController::class, 'updateTextLesson']);
