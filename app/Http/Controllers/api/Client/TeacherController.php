@@ -114,8 +114,10 @@ class TeacherController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'dataCourses' => $courses,
-            'dataTeacher' => $teacher,
+            'data' => [
+                'dataCourses' => $courses,
+                'dataTeacher' => $teacher,
+            ]
         ], 200);
     }
 
