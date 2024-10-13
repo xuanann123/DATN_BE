@@ -22,33 +22,44 @@ class UploadVideo implements ShouldQueue
     }
 
 
-//    public function handle()
-//    {
-//        $data = $this->request;
-//
-//        $moduleId = $request->id_module;
-//        $description = $request->description;
-//
-//        if ($request->check && $request->check == 'upload') {
-//            $file = $request->file('video');
-//            $stream = fopen($file->getRealPath(), 'r+');
-//            $fileName = 'videos/' . time() . '_' . $file->getClientOriginalName();
-//            Storage::disk('public')->put($fileName, $stream);
-//            fclose($stream);
-//            $data['url'] = $fileName;
-//            $data['duration'] = $request->duration;
-//        } else {
-//            $data['video_youtube_id'] = $request->video_youtube_id;
-//            $data['duration'] = $this->getVideoDuration($request->video_youtube_id);
-//        }
-//
-//        $newLessonVideo = $this->addLessonVideo($data, $moduleId, $description);
-//        if (!$newLessonVideo) {
-//            return back()->with('error', 'Thêm bài học không thành công!');
-//        }
-//
-//        return back()->with('success', 'Thêm bài học thành công!');
-//    }
+    public function handle()
+    {
+        $data = [
+            'title' => $this->request['title'],
+            'type' => $this->request['check'],
+        ];
+
+        $moduleId = $this->request['id_module'];
+        $description = $this->request['description'];
+
+        if ($data['type'] && $data['type'] == 'upload') {
+            $file = $this->request['video'];
+            $stream = fopen($file->getRealPath(), 'r+');
+            $fileName = 'videos/' . time() . '_' . $file->getClientOriginalName();
+            Storage::disk('public')->put($fileName, $stream);
+            fclose($stream);
+            $data['url'] = $fileName;
+            $data['duration'] = $this->request['duration'];
+        } else {
+            $data['video_youtube_id'] = $this->request['video_youtube_id'];
+            $data['duration'] = $this->getVideoDuration($this->request['video_youtube_id']);
+        }
+
+        $newLessonVideo = $this->addLessonVideo($data, $moduleId, $description);
+
+        if (!$newLessonVideo) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Thêm bài học không thành công!',
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Thêm bài học thành công!',
+            'data' => $newLessonVideo,
+        ]);
+    }
 
     public function addLessonVideo($data, $moduleId, $description)
     {
