@@ -972,7 +972,7 @@
         });
     </script>
 
-    <script>
+    {{-- <script>
         $(document).ready(function() {
             $('#addVideoLessonForm').on('submit', function(e) {
                 $('.is_loading').css({
@@ -1017,5 +1017,5 @@
                 });
             });
         });
-    </script>
+    </script> --}}
 @endsection
