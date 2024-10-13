@@ -101,7 +101,7 @@ class TeacherController extends Controller
             ->leftJoin('ratings as r', 'r.id_course', '=', 'c.id')
             ->leftJoin('users as u', 'u.id', '=', 'c.id_user')
             ->where('c.id_user', $id)
-//            ->where('c.is_active', 1)
+            ->where('c.is_active', 1)
             ->groupBy('c.id', 'c.name', 'c.thumbnail')
             ->get();
 
