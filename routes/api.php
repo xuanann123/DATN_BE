@@ -14,6 +14,7 @@ use App\Http\Controllers\api\Client\CategoryController;
 use App\Http\Controllers\api\Client\Intructor\CurriculumController;
 use App\Http\Controllers\api\Client\Intructor\TextLessonController;
 use App\Http\Controllers\api\Client\Intructor\ModuleController;
+use App\Http\Controllers\api\Client\Intructor\UploadVideoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -125,4 +126,7 @@ Route::prefix('course')->group(function () {
     //
 });
 
-
+# ===================== ROUTE FOR LESSON ===========================
+Route::prefix('lessons')->group(function () {
+    Route::post('/upload-video', [UploadVideoController::class, 'uploadVideo']);
+});
