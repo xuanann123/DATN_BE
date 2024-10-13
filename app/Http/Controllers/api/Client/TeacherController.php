@@ -44,10 +44,12 @@ class TeacherController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $teachers->items(),
-            'current_page' => $teachers->currentPage(),
-            'total_pages' => $teachers->lastPage(),
-            'total_count' => $teachers->total(),
+            'data' => [
+                'teachers' => $teachers->items(),
+                'current_page' => $teachers->currentPage(),
+                'total_pages' => $teachers->lastPage(),
+                'total_count' => $teachers->total(),
+            ]
         ], 200);
     }
 
@@ -143,7 +145,7 @@ class TeacherController extends Controller
             ->leftJoin('courses as c', 'u.id', '=', 'c.id_user')
             ->leftJoin('ratings as r', 'c.id', '=', 'r.id_course')
             ->where('u.user_type', 'teacher')
-//            ->where('u.is_active', 1)
+            ->where('u.is_active', 1)
             ->where(function($query) use ($searchTerm) {
                 $query->where('u.name', 'LIKE', "%{$searchTerm}%")
                 ->orWhere('c.name', 'LIKE', "%{$searchTerm}%");
@@ -161,10 +163,12 @@ class TeacherController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $teachers->items(),
-            'current_page' => $teachers->currentPage(),
-            'total_pages' => $teachers->lastPage(),
-            'total_count' => $teachers->total(),
+            'data' => [
+                'teachers' => $teachers->items(),
+                'current_page' => $teachers->currentPage(),
+                'total_pages' => $teachers->lastPage(),
+                'total_count' => $teachers->total(),
+            ]
         ], 200);
     }
 }
