@@ -28,10 +28,12 @@ class CourseController extends Controller
     public function index()
     {
         try {
-            $courses = Course::select('id', 'name', 'is_active')
+            $limit = request()->get('limit', 8);
+
+            $courses = Course::select('id', 'name', 'thumbnail', 'status')
                 ->where('id_user', auth()->id())
                 ->orderByDesc('id')
-                ->paginate(8);
+                ->paginate($limit);
             return response()->json([
                 'status' => 200,
                 'message' => 'Danh sách khóa học.',
@@ -77,7 +79,7 @@ class CourseController extends Controller
                     'data' => []
                 ], 403);
             }
-            
+
             $data = $course->only([
                 'name',
                 'sort_description',

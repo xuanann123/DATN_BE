@@ -58,10 +58,12 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('teacher')->group(function () {
+        // Danh sách khóa học
+        Route::get('/course', [CourseController::class, 'index']);
         //Thêm khoá học mới
         Route::post('/course', [CourseController::class, 'storeNewCourse']);
-        //Hiển thị toàn bộ khoá học của 1 teacher
-        Route::get('/course/{course}', [CourseController::class, 'showCourseTeacher']);
+        //
+        // Route::get('/course/{course}', [CourseController::class, 'showCourseTeacher']);
 
         Route::prefix('manage')->group(function () {
             //Quản lý mục tiêu khóa học
