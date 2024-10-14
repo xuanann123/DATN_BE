@@ -15,6 +15,7 @@ use App\Http\Controllers\api\Client\Intructor\CurriculumController;
 use App\Http\Controllers\api\Client\Intructor\TextLessonController;
 use App\Http\Controllers\api\Client\Intructor\ModuleController;
 use App\Http\Controllers\api\Client\Intructor\UploadVideoController;
+use App\Http\Controllers\api\Client\CourseDetailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
     });
+
+# ===================== ROUTE FOR COURSE ===========================
+
+    Route::prefix('courses')->group(function () {
+        Route::get('/{course}', [CourseDetailController::class, 'courseDetail']);
+    });
+
 
 # ===================== ROUTE FOR USERS ===========================
 
@@ -131,13 +139,15 @@ Route::prefix('teachers')->group(function () {
     // Tìm kiếm giảng viên;
     Route::get('/search-teacher', [TeacherController::class, 'searchTeachers']);
 });
-# ===================== ROUTE FOR COURSE ===========================
-
-Route::prefix('course')->group(function () {
-    //
-});
 
 # ===================== ROUTE FOR LESSON ===========================
 Route::prefix('lessons')->group(function () {
     Route::post('/upload-video', [UploadVideoController::class, 'uploadVideo']);
 });
+
+# ===================== ROUTE FOR COMMENT ===========================
+Route::prefix('comments')->group(function () {
+    Route::post('/{id}', [CommentController::class, 'commentsLesson']);
+});
+
+

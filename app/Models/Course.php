@@ -65,9 +65,5 @@ class Course extends Model
         return $this->hasMany(Audience::class, 'course_id');
     }
 
-    public function comments()
-    {
-        return $this->morphMany(Comment::class, 'commentable');
-    }
 
 }

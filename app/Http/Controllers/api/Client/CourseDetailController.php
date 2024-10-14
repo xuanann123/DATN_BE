@@ -1,26 +1,23 @@
 <?php
 
-namespace App\Http\Controllers\api\Client\Intructor;
+namespace App\Http\Controllers\api\Client;
 
-use App\Models\Course;
-use App\Models\Module;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Client\Courses\StoreModuleRequest;
+use App\Models\Course;
+use Illuminate\Http\Request;
 
-class CurriculumController extends Controller
+class CourseDetailController extends Controller
 {
-    public function index(Course $course)
-    {
-        try {
-            if (auth()->id() !== $course->id_user) {
-                return response()->json([
-                    'status' => 403,
-                    'message' => 'Bạn không có quyền truy cập.',
-                    'data' => []
-                ], 403);
-            }
+    public function courseDetail(Request $request) {
 
+        $slugCourse = $request->course;
+
+        $course = Course::where([
+            ['slug', $slugCourse],
+            ['is_active', 1]
+        ])->first();
+
+        try {
             $modules = $course->modules()->with(['lessons.lessonable'])->get();
             return response()->json([
                 'status' => 200,
