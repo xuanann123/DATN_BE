@@ -51,14 +51,14 @@ class UploadVideo implements ShouldQueue
             return response()->json([
                 'status' => 'error',
                 'message' => 'Thêm bài học không thành công!',
-            ]);
+            ], 500);
         }
 
         return response()->json([
             'status' => 'success',
             'message' => 'Thêm bài học thành công!',
             'data' => $newLessonVideo,
-        ]);
+        ], 201);
     }
 
     public function addLessonVideo($data, $moduleId, $description)
