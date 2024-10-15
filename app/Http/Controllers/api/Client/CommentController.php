@@ -26,8 +26,16 @@ class CommentController extends Controller
 
         $this->loadChildrenRecursively($comments);
 
+        if(count($comments) <= 0){
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Comments not found'
+            ], 204);
+        }
+
         return response()->json([
             'status' => 'success',
+            'message' => 'Comments list',
             'data' => $comments,
         ], 200);
     }
