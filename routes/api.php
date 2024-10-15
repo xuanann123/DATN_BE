@@ -16,6 +16,7 @@ use App\Http\Controllers\api\Client\Intructor\TextLessonController;
 use App\Http\Controllers\api\Client\Intructor\ModuleController;
 use App\Http\Controllers\api\Client\Intructor\UploadVideoController;
 use App\Http\Controllers\api\Client\CourseDetailController;
+use App\Http\Controllers\api\Client\LessonController;
 
 /*
 |--------------------------------------------------------------------------
@@ -150,6 +151,7 @@ Route::prefix('courses')->group(function () {
 
 # ===================== ROUTE FOR LESSON ===========================
 Route::prefix('lessons')->group(function () {
+    Route::get('/lesson-detail/{id}', [LessonController::class, 'lessonDetail']);
     Route::post('/upload-video', [UploadVideoController::class, 'uploadVideo']);
 });
 
