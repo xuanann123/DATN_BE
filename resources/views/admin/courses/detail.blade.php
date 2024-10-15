@@ -996,11 +996,9 @@
                     processData: false,
                     contentType: false,
                     success: (response) => {
-                        console.log(response);
-                        // location.reload()
+                        location.reload();
                     },
                     error: (error) => {
-                        // console.log(error);
                         if (error.responseJSON && error.responseJSON.errors) {
                             let errors = error.responseJSON.errors;
                             for (let key in errors) {

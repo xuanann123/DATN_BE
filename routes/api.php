@@ -133,8 +133,9 @@ Route::prefix('teachers')->group(function () {
 });
 # ===================== ROUTE FOR COURSE ===========================
 
-Route::prefix('course')->group(function () {
-    //
+Route::prefix('courses')->group(function () {
+    // Tim kiem khoa hoc
+    Route::get('/search-course', [CourseController::class, 'searchCourses']);
 });
 
 # ===================== ROUTE FOR LESSON ===========================
