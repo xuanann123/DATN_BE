@@ -16,6 +16,7 @@ use App\Http\Controllers\api\Client\Intructor\TextLessonController;
 use App\Http\Controllers\api\Client\Intructor\ModuleController;
 use App\Http\Controllers\api\Client\Intructor\UploadVideoController;
 use App\Http\Controllers\api\Client\CourseDetailController;
+use App\Http\Controllers\api\Client\CommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -155,7 +156,7 @@ Route::prefix('lessons')->group(function () {
 
 # ===================== ROUTE FOR COMMENT ===========================
 Route::prefix('comments')->group(function () {
-    Route::post('/{id}', [CommentController::class, 'commentsLesson']);
+    Route::get('/comment-post/{id}', [CommentController::class, 'getCommentsPost']);
 });
 
 

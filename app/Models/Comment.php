@@ -30,7 +30,7 @@ class Comment extends Model
         return $this->belongsTo(Comment::class, 'parent_id');
     }
 
-    public function chilren () {
+    public function children () {
         return $this->hasMany(Comment::class, 'parent_id');
     }
 }
