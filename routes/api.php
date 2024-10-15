@@ -29,7 +29,9 @@ use App\Http\Controllers\api\Client\CommentController;
 |
 */
 
-
+Route::prefix('comments')->group(function () {
+    Route::post('/add-comment-post', [CommentController::class, 'addCommentPost']);
+});
 Route::prefix('auth')->group(function () {
     Route::post('/signup', [AuthController::class, 'signup']);
     Route::post('/login', [AuthController::class, 'login']);
@@ -55,6 +57,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('courses')->group(function () {
         Route::get('/{course}', [CourseDetailController::class, 'courseDetail']);
     });
+
+# ===================== ROUTE FOR COMMENT ===========================
+
+//    Route::prefix('comments')->group(function () {
+//        Route::post('/add-comment-post', [CommentController::class, 'addCommentPost']);
+//    });
 
 
 # ===================== ROUTE FOR USERS ===========================

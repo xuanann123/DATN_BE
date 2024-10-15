@@ -14,6 +14,8 @@ class Comment extends Model
         'id_lesson',
         'content',
         'parent_id',
+        'commentable_type',
+        'commentable_id',
     ];
 
     public function commentable()

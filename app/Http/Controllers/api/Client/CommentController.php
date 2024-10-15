@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\api\Client;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Client\Posts\CommentRequest;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
+    CONST COMMENTABLE_TYPE = 'App\Models\Post';
+
     public function getCommentsPost(Request $request)
     {
         $post = Post::find($request->id);
@@ -51,4 +54,25 @@ class CommentController extends Controller
         }
     }
 
+    public function  addCommentPost(CommentRequest $request) {
+
+        $dataComment = $request->all();
+
+        $dataComment['commentable_type'] = self::COMMENTABLE_TYPE;
+
+        $newComment = Comment::query()->create($dataComment);
+
+        if(!$newComment){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Bình luận thất bại'
+            ], 500);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Bình luận thành công',
+            'data' => $newComment
+        ], 201);
+    }
 }
