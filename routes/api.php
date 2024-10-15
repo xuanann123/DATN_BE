@@ -16,7 +16,11 @@ use App\Http\Controllers\api\Client\Intructor\TextLessonController;
 use App\Http\Controllers\api\Client\Intructor\ModuleController;
 use App\Http\Controllers\api\Client\Intructor\UploadVideoController;
 use App\Http\Controllers\api\Client\CourseDetailController;
+
 use App\Http\Controllers\api\Client\LessonController;
+
+use App\Http\Controllers\api\Client\CommentController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +33,9 @@ use App\Http\Controllers\api\Client\LessonController;
 |
 */
 
-
+Route::prefix('comments')->group(function () {
+    Route::post('/add-comment-post', [CommentController::class, 'addCommentPost']);
+});
 Route::prefix('auth')->group(function () {
     Route::post('/signup', [AuthController::class, 'signup']);
     Route::post('/login', [AuthController::class, 'login']);
@@ -55,6 +61,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('courses')->group(function () {
         Route::get('/{course}', [CourseDetailController::class, 'courseDetail']);
     });
+
+# ===================== ROUTE FOR COMMENT ===========================
+
+//    Route::prefix('comments')->group(function () {
+//        Route::post('/add-comment-post', [CommentController::class, 'addCommentPost']);
+//    });
 
 
 # ===================== ROUTE FOR USERS ===========================
@@ -157,7 +169,7 @@ Route::prefix('lessons')->group(function () {
 
 # ===================== ROUTE FOR COMMENT ===========================
 Route::prefix('comments')->group(function () {
-    Route::post('/{id}', [CommentController::class, 'commentsLesson']);
+    Route::get('/comment-post/{id}', [CommentController::class, 'getCommentsPost']);
 });
 
 

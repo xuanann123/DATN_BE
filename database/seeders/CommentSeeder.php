@@ -2,8 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Course;
-use App\Models\Lesson;
+use App\Models\Post;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -14,13 +13,13 @@ class CommentSeeder extends Seeder
      */
     public function run(): void
     {
-        Lesson::all()->each(function ($course) {
-            for ($i = 0; $i < 50; $i++) {
-                $course->comments()->create([
-                    'id_user' => rand(1, 90),
-                    'content' => fake()->text('25')
+        $post = Post::find(15);
+            for ($i = 0; $i < 150; $i++) {
+                $post->comments()->create([
+                    'id_user' => rand(20, 90),
+                    'content' => fake()->text('25'),
+                    'parent_id' => rand(1, 50),
                 ]);
             }
-        });
     }
 }

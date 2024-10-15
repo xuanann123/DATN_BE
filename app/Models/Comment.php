@@ -14,6 +14,8 @@ class Comment extends Model
         'id_lesson',
         'content',
         'parent_id',
+        'commentable_type',
+        'commentable_id',
     ];
 
     public function commentable()
@@ -30,7 +32,7 @@ class Comment extends Model
         return $this->belongsTo(Comment::class, 'parent_id');
     }
 
-    public function chilren () {
+    public function children () {
         return $this->hasMany(Comment::class, 'parent_id');
     }
 }
