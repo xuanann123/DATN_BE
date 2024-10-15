@@ -65,4 +65,5 @@ class Course extends Model
         return $this->hasMany(Audience::class, 'course_id');
     }
 
+
 }

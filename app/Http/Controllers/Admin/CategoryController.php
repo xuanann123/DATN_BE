@@ -56,7 +56,7 @@ class CategoryController extends Controller
     {
         $options = [];
         foreach ($categories as $category) {
-            $prefix = str_repeat('-', $level * 2) . ($level > 0 ? ' ' : '');
+            $prefix = str_repeat('&nbsp&nbsp', $level * 2) . ($level > 0 ? ' ' : '');
             $options[$category->id] = $prefix . $category->name;
             if ($category->children->isNotEmpty()) {
                 $options += $this->getCategoryOptions($category->children, $level + 1);
