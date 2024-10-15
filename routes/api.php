@@ -140,6 +140,14 @@ Route::prefix('teachers')->group(function () {
     Route::get('/search-teacher', [TeacherController::class, 'searchTeachers']);
 });
 
+# ===================== ROUTE FOR COURSE ===========================
+
+Route::prefix('courses')->group(function () {
+    // Tim kiem khoa hoc
+    Route::get('/search-course', [CourseController::class, 'searchCourses']);
+});
+
+
 # ===================== ROUTE FOR LESSON ===========================
 Route::prefix('lessons')->group(function () {
     Route::post('/upload-video', [UploadVideoController::class, 'uploadVideo']);

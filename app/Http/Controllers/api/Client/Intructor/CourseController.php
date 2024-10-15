@@ -357,4 +357,61 @@ class CourseController extends Controller
 
         return redirect()->back()->with('success', 'Cập nhật thành công.');
     }
+
+    public function searchCourses(Request $request)
+    {
+
+        // Số thứ tự trang;
+        $page = $request->page ??  1;
+        // Số bản ghi trên một trang;
+        $perPage = $request->perPage ?? 12;
+
+        // Lấy keyword ở url;
+        $searchTerm = $request->key;
+
+        $courses = DB::table('courses as c')
+            ->selectRaw('
+                u.id as user_id,
+                u.name as user_name,
+                u.avatar as user_avatar,
+                c.id as course_id,
+                c.name as course_name,
+                c.thumbnail as course_thumbnail,
+                c.total_student,
+                COUNT(DISTINCT l.id) as total_lessons,
+                c.duration as course_duration,
+                ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
+            ')
+            ->join('users as u', 'u.id', '=', 'c.id_user')
+            ->leftJoin('ratings as r', 'c.id', '=', 'r.id_course')
+            ->leftJoin('modules as m', 'm.id_course', '=', 'c.id')
+            ->leftJoin('lessons as l', 'l.id_module', '=', 'm.id')
+            ->where('c.is_active', 1)
+            ->where('u.is_active', 1)
+            ->where('u.user_type', 'teacher')
+            ->where(function($query) use ($searchTerm) {
+                $query->where('c.name', 'LIKE', "%{$searchTerm}%")
+                    ->orWhere('u.name', 'LIKE', "%{$searchTerm}%");
+            })
+            ->groupBy('u.id', 'u.name', 'u.avatar', 'c.id', 'c.name', 'c.thumbnail', 'c.total_student', 'c.duration')
+            ->orderByDesc('average_rating')
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        if($courses->count() <= 0){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No data found',
+            ], 204);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'courses' => $courses->items(),
+                'current_page' => $courses->currentPage(),
+                'total_pages' => $courses->lastPage(),
+                'total_count' => $courses->total(),
+            ]
+        ], 200);
+    }
 }

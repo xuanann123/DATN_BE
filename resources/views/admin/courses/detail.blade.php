@@ -972,7 +972,7 @@
         });
     </script>
 
-    {{-- <script>
+    <script>
         $(document).ready(function() {
             $('#addVideoLessonForm').on('submit', function(e) {
                 $('.is_loading').css({
@@ -996,10 +996,9 @@
                     processData: false,
                     contentType: false,
                     success: (response) => {
-                        location.reload()
+                        location.reload();
                     },
                     error: (error) => {
-                        // console.log(error);
                         if (error.responseJSON && error.responseJSON.errors) {
                             let errors = error.responseJSON.errors;
                             for (let key in errors) {
@@ -1017,5 +1016,5 @@
                 });
             });
         });
-    </script> --}}
+    </script>
 @endsection

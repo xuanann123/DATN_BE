@@ -153,9 +153,6 @@ Route::prefix("admin")
                 Route::post('/store-lesson-text', [LessonController::class, 'store'])->name('store-lesson-text');
                 Route::get('/get-lesson-details/{id}', [LessonController::class, 'show'])->name('get-lesson-details');
 
-
-                // Route::get('/auth/youtube', [UploadVideoController::class, 'redirectToGoogle'])->name('youtube.auth');
-                // Route::get('/callback', [UploadVideoController::class, 'handleGoogleCallback'])->name('youtube.callback');
                 Route::post('/store-lesson-video', [UploadVideoController::class, 'storeLessonVideo'])->name('store-lesson-video');
             });
         Route::prefix('approval')
@@ -194,4 +191,3 @@ Route::prefix("admin")
     });
 
 
-// Route::get('/callback', [UploadVideoController::class, 'handleGoogleCallback'])->name('youtube.callback');
