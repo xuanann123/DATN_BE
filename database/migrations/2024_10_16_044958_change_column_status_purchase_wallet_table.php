@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('purchase_wallets', function (Blueprint $table) {
-            $table->boolean('status')->default(1)->change();
+            $table->boolean('status')->default(1)->comment('Đã khóa/ Hoạt động')->change();
         });
     }
 
