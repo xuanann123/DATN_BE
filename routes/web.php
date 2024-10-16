@@ -34,7 +34,11 @@ use App\Http\Controllers\Admin\UploadVideoController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+//    return view('welcome');
+    if(!auth()->check()){
+        return redirect()->route('admin.login');
+    }
+    return redirect()->route('admin.dashboard');
 });
 
 Route::get('admin/login', [AdminController::class, 'index'])->name('admin.login.index');
