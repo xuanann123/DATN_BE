@@ -16,6 +16,7 @@ use App\Http\Controllers\api\Client\Intructor\TextLessonController;
 use App\Http\Controllers\api\Client\Intructor\ModuleController;
 use App\Http\Controllers\api\Client\Intructor\UploadVideoController;
 use App\Http\Controllers\api\Client\CourseDetailController;
+use App\Http\Controllers\api\Client\PaymentController;
 
 use App\Http\Controllers\api\Client\LessonController;
 
@@ -33,9 +34,6 @@ use App\Http\Controllers\api\Client\CommentController;
 |
 */
 
-Route::prefix('comments')->group(function () {
-    Route::post('/add-comment-post', [CommentController::class, 'addCommentPost']);
-});
 Route::prefix('auth')->group(function () {
     Route::post('/signup', [AuthController::class, 'signup']);
     Route::post('/login', [AuthController::class, 'login']);
@@ -56,6 +54,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
     });
 
+# ===================== ROUTE FOR TRANSACTIONS ===========================
+
+    Route::prefix('transactions')->group(function () {
+        // Nap tien
+        Route::post('/deposit', [PaymentController::class, 'depositController']);
+    });
+
 # ===================== ROUTE FOR COURSE ===========================
 
     Route::prefix('courses')->group(function () {
@@ -64,9 +69,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 # ===================== ROUTE FOR COMMENT ===========================
 
-//    Route::prefix('comments')->group(function () {
-//        Route::post('/add-comment-post', [CommentController::class, 'addCommentPost']);
-//    });
+    Route::prefix('comments')->group(function () {
+        Route::post('/add-comment-post', [CommentController::class, 'addCommentPost']);
+    });
 
 
 # ===================== ROUTE FOR USERS ===========================
@@ -109,6 +114,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('{module}/add-text-lesson', [TextLessonController::class, 'storeTextLesson']);
                 Route::put('{lesson}/update-text-lesson', [TextLessonController::class, 'updateTextLesson']);
                 Route::delete('{lesson}/delete-text-lesson', [TextLessonController::class, 'destroyTextLesson']);
+                Route::post('/upload-video', [UploadVideoController::class, 'uploadVideo']);
             });
         });
     });
@@ -164,12 +170,12 @@ Route::prefix('courses')->group(function () {
 # ===================== ROUTE FOR LESSON ===========================
 Route::prefix('lessons')->group(function () {
     Route::get('/lesson-detail/{id}', [LessonController::class, 'lessonDetail']);
-    Route::post('/upload-video', [UploadVideoController::class, 'uploadVideo']);
 });
 
 # ===================== ROUTE FOR COMMENT ===========================
 Route::prefix('comments')->group(function () {
     Route::get('/comment-post/{id}', [CommentController::class, 'getCommentsPost']);
 });
+
 
 
