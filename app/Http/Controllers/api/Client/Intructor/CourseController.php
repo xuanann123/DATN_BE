@@ -337,25 +337,26 @@ class CourseController extends Controller
         }
     }
 
-    public function submit(Request $request)
+    public function submit(Course $course)
     {
-        $course = Course::query()->findOrFail($request->id);
+        try {
+            $course->update([
+                'status' => 'pending',
+                'submited_at' => now()
+            ]);
 
-        $act = $request->has('submit') ? 'submit' : ($request->has('enable') ? 'enable' : ($request->has('disable') ? 'disable' : null));
-
-        match ($act) {
-            'submit' => [
-                $course->submited_at = now(),
-                $course->status = 'pending'
-            ],
-            'enable' => $course->is_active = 1,
-            'disable' => $course->is_active = 0,
-            default => null
-        };
-
-        $course->save();
-
-        return redirect()->back()->with('success', 'Cập nhật thành công.');
+            return response()->json([
+                'status' => 200,
+                'message' => 'Khóa học của bạn đã được gửi đi để xem xét.',
+                'data' => []
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Cập nhật không thành công! ' . $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
     }
 
     public function searchCourses(Request $request)
