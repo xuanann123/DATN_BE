@@ -116,6 +116,8 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::delete('{lesson}/delete-text-lesson', [TextLessonController::class, 'destroyTextLesson']);
                 Route::post('/upload-video/{module}', [UploadVideoController::class, 'uploadVideo']);
             });
+            // submit cho admin de xem xet khoa hoc
+            Route::post('{course}/submit', [CourseController::class, 'submit']);
         });
     });
 
