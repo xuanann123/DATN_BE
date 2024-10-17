@@ -64,7 +64,8 @@ Route::middleware('auth:sanctum')->group(function () {
     # ===================== ROUTE FOR COURSE ===========================
 
     Route::prefix('courses')->group(function () {
-        Route::get('/{course}', [CourseDetailController::class, 'courseDetail']);
+        // Route::get('/{course}', [CourseDetailController::class, 'courseDetail']);
+        Route::get('detail/check/{slug}', [CourseDetailController::class, 'courseDetailForAuthUser']);
     });
 
     # ===================== ROUTE FOR COMMENT ===========================
@@ -166,6 +167,7 @@ Route::prefix('teachers')->group(function () {
 Route::prefix('courses')->group(function () {
     // Tim kiem khoa hoc
     Route::get('/search-course', [CourseController::class, 'searchCourses']);
+    Route::get('detail/{slug}', [CourseDetailController::class, 'courseDetail']);
 });
 
 
