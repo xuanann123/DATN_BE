@@ -14,7 +14,6 @@ class LessonController extends Controller
         $lessonId = $request->id;
         $lesson = Lesson::where([
             ['id', $lessonId],
-            ['is_active', 1]
         ])->first();
 
         if (!$lesson) {
