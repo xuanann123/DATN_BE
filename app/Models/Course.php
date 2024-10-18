@@ -28,6 +28,9 @@ class Course extends Model
         'is_active',
         'is_free',
         'is_trending',
+        'status',
+        'submited_at',
+        'admin_comments'
     ];
 
     public function user()
