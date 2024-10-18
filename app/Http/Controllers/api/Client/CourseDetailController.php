@@ -144,20 +144,20 @@ class CourseDetailController extends Controller // di ve sinh
                         }
                     }
                 }
-                //Trả về dữ liệu phía client
-                return response()->json([
-                    'status' => 'success',
-                    'message' => "Bài học của bạn.",
-                    'data' => [
-                        // 'course' => $course,
-                        'progress_percent' => $progress_percent,
-                        'total_lessons' => $total_lessons,
-                        'completed_lessons' => $completed_lessons,
-                        'modules' => $course->modules,
-                        'next_lesson' => $next_lesson,
-                    ],
-                ], 200);
             }
+            //Trả về dữ liệu phía client
+            return response()->json([
+                'status' => 'success',
+                'message' => "Bài học của bạn.",
+                'data' => [
+                    // 'course' => $course,
+                    'progress_percent' => $progress_percent,
+                    'total_lessons' => $total_lessons,
+                    'completed_lessons' => $completed_lessons,
+                    'modules' => $course->modules,
+                    'next_lesson' => $next_lesson,
+                ],
+            ], 200);
         } catch (\Exception $e) {
             //Lỗi Auth nếu chưa đăng nhập
             return response()->json([
