@@ -9,10 +9,12 @@ use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
+    //TAG VU XUAN DUC
     CONST COIN_CONVERTER = 1000;
+    //FIX CỨNG
     CONST DISCOUNT = 30/100;
 
-    // Nap tien
+    // Về phần nạp tiền => cần auth 
     public function depositController(Request $request) {
         $userId = $request->id_user;
         $user = User::find($userId);
