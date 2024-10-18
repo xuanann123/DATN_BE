@@ -13,12 +13,13 @@ class CommentSeeder extends Seeder
      */
     public function run(): void
     {
-        $post = Post::find(15);
+        $post = Post::find(50);
             for ($i = 0; $i < 150; $i++) {
                 $post->comments()->create([
                     'id_user' => rand(20, 90),
                     'content' => fake()->text('25'),
-                    'parent_id' => rand(1, 50),
+                    // 'parent_id' => NULL,
+                    // 'parent_id' => rand(1, 50),
                 ]);
             }
     }

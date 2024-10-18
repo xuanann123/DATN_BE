@@ -14,7 +14,7 @@ class CourseDetailController extends Controller
     public function courseDetail($slug)
     {
         try {
-            $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons.lessonable'])
+            $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons'])
                 ->where('slug', $slug)
                 ->firstOrFail();
 
@@ -44,7 +44,7 @@ class CourseDetailController extends Controller
 
     public function courseDetailForAuthUser($slug)
     {
-        $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons.lessonable'])
+        $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons'])
             ->where('slug', $slug)
             ->firstOrFail();
 

@@ -10,13 +10,15 @@ use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
-    CONST COMMENTABLE_TYPE = 'App\Models\Post';
+    const COMMENTABLE_TYPE = 'App\Models\Post';
 
-    public function getCommentsPost(Request $request)
+    public function getCommentsPost($slug)
     {
-        $post = Post::find($request->id);
+        $post = Post::where('slug', $slug)
+            ->where('is_active', 1)
+            ->first();
 
-        if(!$post){
+        if (!$post) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Post not found'
@@ -25,11 +27,13 @@ class CommentController extends Controller
 
         $comments = Comment::select('comments.*', 'users.name', 'users.avatar', 'users.email')
             ->join('users', 'users.id', '=', 'comments.id_user')
-            ->where('commentable_id', $request->id)->get();
+            ->where('commentable_id', $post->id)
+            ->where('commentable_type', self::COMMENTABLE_TYPE)
+            ->get();
 
         $this->loadChildrenRecursively($comments);
 
-        if(count($comments) <= 0){
+        if (count($comments) <= 0) {
             return response()->json([
                 'status' => 'success',
                 'message' => 'Comments not found'
@@ -54,7 +58,8 @@ class CommentController extends Controller
         }
     }
 
-    public function  addCommentPost(CommentRequest $request) {
+    public function addCommentPost(CommentRequest $request)
+    {
 
         $dataComment = $request->all();
 
@@ -62,7 +67,7 @@ class CommentController extends Controller
 
         $newComment = Comment::query()->create($dataComment);
 
-        if(!$newComment){
+        if (!$newComment) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Bình luận thất bại'
