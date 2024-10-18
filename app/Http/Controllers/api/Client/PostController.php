@@ -149,42 +149,33 @@ class PostController extends Controller
         }
     }
     //Chi tiết bài viết
-    public function show(string $id)
+    public function show(string $slug)
     {
-        $post = Post::find($id);
+        $post = Post::where('slug', $slug)->where('is_active', '=', 1)->first();
         if ($post) {
-            if ($post->is_active === 1) {
-                //Chuẩn hoá dữ liệu
-                $post = [
-                    'id' => $post->id,
-                    'user_id' => $post->user_id,
-                    'username' => $post->user->name,
-                    'avatar' => url(Storage::url($post->user->avatar)),
-                    'title' => $post->title,
-                    'slug' => $post->slug,
-                    'description' => $post->description,
-                    'thumbnail' => url(Storage::url($post->thumbnail)),
-                    'content' => $post->content,
-                    'views' => $post->views,
-                    'status' => $post->status,
-                    'allow_comments' => $post->allow_comments,
-                    'is_banned' => $post->is_banned,
-                    'published_at' => $post->published_at,
-                    'categories' => $post->categories,
-                    'tags' => $post->tags
-                ];
-                return response()->json([
-                    'status' => '200',
-                    'message' => 'Lấy bài viết thành công!',
-                    'data' => $post
-                ], 200);
-            } else {
-                return response()->json([
-                    'status' => '404',
-                    'message' => 'Không tìm thấy bài viết',
-                    'data' => []
-                ], 404);
-            }
+            $post = [
+                'id' => $post->id,
+                'user_id' => $post->user_id,
+                'username' => $post->user->name,
+                'avatar' => url(Storage::url($post->user->avatar)),
+                'title' => $post->title,
+                'slug' => $post->slug,
+                'description' => $post->description,
+                'thumbnail' => url(Storage::url($post->thumbnail)),
+                'content' => $post->content,
+                'views' => $post->views,
+                'status' => $post->status,
+                'allow_comments' => $post->allow_comments,
+                'is_banned' => $post->is_banned,
+                'published_at' => $post->published_at,
+                'categories' => $post->categories,
+                'tags' => $post->tags
+            ];
+            return response()->json([
+                'status' => '200',
+                'message' => 'Lấy bài viết thành công!',
+                'data' => $post
+            ], 200);
         } else {
             return response()->json([
                 'status' => '404',
@@ -302,7 +293,8 @@ class PostController extends Controller
 
 
     }
-    public function myListPost() {
+    public function myListPost()
+    {
         try {
             $listPosts = Post::where('is_active', '=', 1)->select(
                 'id',
@@ -317,7 +309,7 @@ class PostController extends Controller
                 'status',
                 'allow_comments',
                 'is_banned'
-            )->where('user_id', '=',  auth()->id())->get();
+            )->where('user_id', '=', auth()->id())->get();
             //Chuẩn hoá dữ liệu
             $dataPosts = $listPosts->map(function ($post) {
                 return [
@@ -361,7 +353,8 @@ class PostController extends Controller
         }
     }
 
-    public function getListPostByUser(string $id) {
+    public function getListPostByUser(string $id)
+    {
         try {
             $listPosts = Post::where('is_active', '=', 1)->select(
                 'id',
@@ -376,7 +369,7 @@ class PostController extends Controller
                 'status',
                 'allow_comments',
                 'is_banned'
-            )->where('user_id', '=',  $id)->get();
+            )->where('user_id', '=', $id)->get();
             //Chuẩn hoá dữ liệu
             $dataPosts = $listPosts->map(function ($post) {
                 return [
