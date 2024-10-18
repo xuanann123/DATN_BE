@@ -24,13 +24,10 @@ class CourseDetailController extends Controller // di ve sinh
             // Số lượng bài học trong khóa học, sử dụng flatmap để đến từng số lượng bài học trong từng chương học
             $total_lessons = $course->modules->flatMap->lessons->count();
 
-
-           
-
             // set duration cho tung bai hoc
             $this->setLessonDurations($course);
 
-             // Sẽ lấy tổng số lượng tất cả các bài học là video trong khoá học đó
+            // Sẽ lấy tổng số lượng tất cả các bài học là video trong khoá học đó
             $total_duration_vid = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
                 ->sum('duration');
 
@@ -60,7 +57,7 @@ class CourseDetailController extends Controller // di ve sinh
             $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons'])
                 ->where('slug', $slug)
                 ->firstOrFail();
-            //Lấy người dùng hiện tại 
+            //Lấy người dùng hiện tại
             $user = auth()->user();
             // Kiểm tra xem ng dùng đã mua khóa học chưa thông qua Usercourse check xem người dùng này đã đăng kí khoá học chưa
             $userCourse = UserCourse::where('id_user', $user->id)
@@ -69,6 +66,9 @@ class CourseDetailController extends Controller // di ve sinh
             // Tống số lượng bài học trong khoá học
             $total_lessons = $course->modules->flatMap->lessons->count();
 
+            // set duration cho tung bai hoc
+            $this->setLessonDurations($course);
+
             // Nếu người dùng chưa mua khoá học đó thì
             if (!$userCourse) {
                 //Tổng số lượng tất cả các bài học
@@ -76,7 +76,7 @@ class CourseDetailController extends Controller // di ve sinh
                     ->sum('duration');
                 //Cập nhật tổng số lượng bài học
                 $course->total_lessons = $total_lessons;
-                //Tổng thời gian của khoá học đó 
+                //Tổng thời gian của khoá học đó
                 $course->total_duration = $total_duration;
                 //Trả dữ liệu về phía client
                 return response()->json([
@@ -107,12 +107,10 @@ class CourseDetailController extends Controller // di ve sinh
                         ->where('id_lesson', $lesson->id)
                         ->first();
 
-                    //Đến bài nào
+                    //Hoàn thành bài học hay chưa (1: có - 0: chưa)
                     $lesson->is_completed = $lessonProgress ? $lessonProgress->is_completed : 0;
                     //Thời gian dừng đang ở đâu
                     $lesson->last_time_video = $lessonProgress ? $lessonProgress->last_time_video : 0;
-
-
 
                     // bài học cuối cùng hoàn thành
                     if ($lesson->is_completed) {
@@ -120,7 +118,6 @@ class CourseDetailController extends Controller // di ve sinh
 
                     }
                 }
-
                 //
                 // $next_lesson = NULL;
                 if (!$last_completed_lesson) {
@@ -169,7 +166,7 @@ class CourseDetailController extends Controller // di ve sinh
                 'error' => $e->getMessage(),
             ]);
         }
-       
+
     }
 
     private function setLessonDurations($course)
