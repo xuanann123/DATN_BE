@@ -10,6 +10,7 @@ use App\Models\Quiz;
 
 class ModuleController extends Controller
 {
+
     public function store(StoreModuleRequest $request)
     {
         $request->validated();

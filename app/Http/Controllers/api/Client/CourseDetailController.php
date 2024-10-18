@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\LessonProgress;
 use App\Http\Controllers\Controller;
 
+
 class CourseDetailController extends Controller // di ve sinh
 {
     //Phần chi tiết bài học
@@ -68,9 +69,6 @@ class CourseDetailController extends Controller // di ve sinh
             // Tống số lượng bài học trong khoá học
             $total_lessons = $course->modules->flatMap->lessons->count();
 
-
-
-
             // Nếu người dùng chưa mua khoá học đó thì
             if (!$userCourse) {
                 //Tổng số lượng tất cả các bài học
@@ -114,54 +112,55 @@ class CourseDetailController extends Controller // di ve sinh
                     //Thời gian dừng đang ở đâu
                     $lesson->last_time_video = $lessonProgress ? $lessonProgress->last_time_video : 0;
 
-                 
 
-                // bài học cuối cùng hoàn thành
-                if ($lesson->is_completed) {
-                    $last_completed_lesson = $lesson->makeHidden('module');
 
-                }
-            }
+                    // bài học cuối cùng hoàn thành
+                    if ($lesson->is_completed) {
+                        $last_completed_lesson = $lesson->makeHidden('module');
 
-            //
-            // $next_lesson = NULL;
-            if (!$last_completed_lesson) {
-                $next_lesson = $course->modules->sortBy('posittion')->first()->lessons->sortBy('posittion')->first();
-            } else {
-                // check lesson tiep theo dua vao bai hoc hoan thanh cuoi cung trong 1 chuong
-                $current_module = $last_completed_lesson->module;
-                $next_lesson_in_module = $current_module->lessons
-                    ->where('position', '>', $last_completed_lesson->position)
-                    ->sortBy('position')
-                    ->first();
-
-                if ($next_lesson_in_module) {
-                    // bài học tiếp theo trong cùng chương
-                    $next_lesson = $next_lesson_in_module;
-                } else {
-                    // neu la bai hoc cuoi cung trong chuong thi chuyen sang chuong sau
-                    $next_module = $course->modules
-                        ->where('position', '>', $current_module->position)
-                        ->sortBy('posittion')
-                        ->first();
-                    if ($next_module) {
-                        $next_lesson = $next_module->lessons->sortBy('posittion')->first();
                     }
                 }
-            }
-            //Trả về dữ liệu phía client
-            return response()->json([
-                'status' => 'success',
-                'message' => "Bài học của bạn.",
-                'data' => [
-                    // 'course' => $course,
-                    'progress_percent' => $progress_percent,
-                    'total_lessons' => $total_lessons,
-                    'completed_lessons' => $completed_lessons,
-                    'modules' => $course->modules,
-                    'next_lesson' => $next_lesson,
-                ],
+
+                //
+                // $next_lesson = NULL;
+                if (!$last_completed_lesson) {
+                    $next_lesson = $course->modules->sortBy('posittion')->first()->lessons->sortBy('posittion')->first();
+                } else {
+                    // check lesson tiep theo dua vao bai hoc hoan thanh cuoi cung trong 1 chuong
+                    $current_module = $last_completed_lesson->module;
+                    $next_lesson_in_module = $current_module->lessons
+                        ->where('position', '>', $last_completed_lesson->position)
+                        ->sortBy('position')
+                        ->first();
+
+                    if ($next_lesson_in_module) {
+                        // bài học tiếp theo trong cùng chương
+                        $next_lesson = $next_lesson_in_module;
+                    } else {
+                        // neu la bai hoc cuoi cung trong chuong thi chuyen sang chuong sau
+                        $next_module = $course->modules
+                            ->where('position', '>', $current_module->position)
+                            ->sortBy('posittion')
+                            ->first();
+                        if ($next_module) {
+                            $next_lesson = $next_module->lessons->sortBy('posittion')->first();
+                        }
+                    }
+                }
+                //Trả về dữ liệu phía client
+                return response()->json([
+                    'status' => 'success',
+                    'message' => "Bài học của bạn.",
+                    'data' => [
+                        // 'course' => $course,
+                        'progress_percent' => $progress_percent,
+                        'total_lessons' => $total_lessons,
+                        'completed_lessons' => $completed_lessons,
+                        'modules' => $course->modules,
+                        'next_lesson' => $next_lesson,
+                    ],
                 ], 200);
+            }
         } catch (\Exception $e) {
             //Lỗi Auth nếu chưa đăng nhập
             return response()->json([

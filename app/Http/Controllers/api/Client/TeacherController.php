@@ -87,7 +87,6 @@ class TeacherController extends Controller
                 'message' => 'Teacher not found',
             ], 204);
         }
-
         $courses = DB::table('courses as c')
             ->selectRaw('
                 c.id as course_id,
