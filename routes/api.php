@@ -72,6 +72,7 @@ Route::middleware('auth:sanctum')->group(function () {
     # ===================== ROUTE FOR LESSON ===========================
     Route::prefix('lessons')->group(function () {
         Route::get('/lesson-detail/{lesson}', [LessonController::class, 'lessonDetail']);
+        Route::put('/lesson-progress/{lesson}', [LessonController::class, 'updateLessonProgress']);
     });
 
     # ===================== ROUTE FOR COMMENT ===========================
@@ -118,9 +119,9 @@ Route::middleware('auth:sanctum')->group(function () {
                 # ========================== Route for quiz ===========================
                 //ADD QUIZ => Lấy thằng id của module để thêm
                 Route::post('{module}/add-quiz', [ModuleQuizController::class, 'addQuiz']);
-                //Update QUIZ => Lấy id của quiz 
+                //Update QUIZ => Lấy id của quiz
                 Route::put('{quiz}/update-quiz', [ModuleQuizController::class, 'updateQuiz']);
-                //Xoá QUIZ 
+                //Xoá QUIZ
                 Route::delete('{quiz}/delete-quiz', [ModuleQuizController::class, 'deleteQuiz']);
 
             });
