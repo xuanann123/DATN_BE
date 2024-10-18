@@ -144,7 +144,7 @@ Route::prefix('categories')->group(function () {
 
 Route::prefix('posts')->group(function () {
     Route::get('', [PostController::class, 'getPosts']);
-    Route::get('/{id}', [PostController::class, 'show']);
+    Route::get('/{slug}', [PostController::class, 'show']);
 });
 
 # ===================== ROUTE FOR TEACHER ===========================
@@ -174,7 +174,7 @@ Route::prefix('lessons')->group(function () {
 
 # ===================== ROUTE FOR COMMENT ===========================
 Route::prefix('comments')->group(function () {
-    Route::get('/comment-post/{id}', [CommentController::class, 'getCommentsPost']);
+    Route::get('/comment-post/{slug}', [CommentController::class, 'getCommentsPost']);
 });
 
 

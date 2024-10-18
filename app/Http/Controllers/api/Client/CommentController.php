@@ -7,42 +7,51 @@ use App\Http\Requests\Client\Posts\CommentRequest;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CommentController extends Controller
 {
-    CONST COMMENTABLE_TYPE = 'App\Models\Post';
+    //Tạo comment của bài viết
+    const COMMENTABLE_TYPE = 'App\Models\Post';
 
-    public function getCommentsPost(Request $request)
+
+    public function getCommentsPost(string $slug)
     {
-        $post = Post::find($request->id);
-
-        if(!$post){
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Post not found'
-            ], 204);
-        }
-
-        $comments = Comment::select('comments.*', 'users.name', 'users.avatar', 'users.email')
-            ->join('users', 'users.id', '=', 'comments.id_user')
-            ->where('commentable_id', $request->id)->get();
-
-        $this->loadChildrenRecursively($comments);
-
-        if(count($comments) <= 0){
+        try {
+            //Lấy post này ra
+            $post = Post::query()->where('slug', $slug)->where('is_active', '=', 1)->first();
+            if (!$post) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Post not found',
+                    'data' => [],
+                ], 404);
+            }
+            //Lấy danh sách bình luận theo slug post
+            $comments = Comment::select('comments.*', 'users.name', 'users.avatar', 'users.email')
+                ->join('users', 'users.id', '=', 'comments.id_user')
+                ->where('commentable_id', $post->id)->where('commentable_type', self::COMMENTABLE_TYPE)->get();
+            $this->loadChildrenRecursively($comments);
+            if ($comments->isEmpty()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Comments not found'
+                ], status: 404);
+            }
             return response()->json([
                 'status' => 'success',
-                'message' => 'Comments not found'
-            ], 204);
+                'message' => 'Comments list',
+                'data' => $comments,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Internal server error',
+                'data' => [],
+            ], 500);
         }
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Comments list',
-            'data' => $comments,
-        ], 200);
     }
-
+    //Load comment theo cấp cha con
     private function loadChildrenRecursively($comments)
     {
         $comments->load('children');
@@ -53,26 +62,28 @@ class CommentController extends Controller
             }
         }
     }
-
-    public function  addCommentPost(CommentRequest $request) {
-
-        $dataComment = $request->all();
-
-        $dataComment['commentable_type'] = self::COMMENTABLE_TYPE;
-
-        $newComment = Comment::query()->create($dataComment);
-
-        if(!$newComment){
+    //Thêm bình luận
+    public function addCommentPost(CommentRequest $request)
+    {
+    
+        try {
+            //Lấy dữ liệu
+            $dataComment = $request->all();
+            $dataComment['commentable_type'] = self::COMMENTABLE_TYPE;
+            //Thêm comment với database
+            $newComment = Comment::query()->create($dataComment);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Bình luận thành công',
+                'data' => $newComment
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'status' => 'error',
-                'message' => 'Bình luận thất bại'
+                'message' => 'Internal server error',
+                'data' => [],
             ], 500);
         }
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Bình luận thành công',
-            'data' => $newComment
-        ], 201);
     }
 }

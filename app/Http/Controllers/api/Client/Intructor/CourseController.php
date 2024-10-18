@@ -362,7 +362,7 @@ class CourseController extends Controller
     {
 
         // Số thứ tự trang;
-        $page = $request->page ??  1;
+        $page = $request->page ?? 1;
         // Số bản ghi trên một trang;
         $perPage = $request->perPage ?? 12;
 
@@ -389,7 +389,7 @@ class CourseController extends Controller
             ->where('c.is_active', 1)
             ->where('u.is_active', 1)
             ->where('u.user_type', 'teacher')
-            ->where(function($query) use ($searchTerm) {
+            ->where(function ($query) use ($searchTerm) {
                 $query->where('c.name', 'LIKE', "%{$searchTerm}%")
                     ->orWhere('u.name', 'LIKE', "%{$searchTerm}%");
             })
@@ -397,7 +397,7 @@ class CourseController extends Controller
             ->orderByDesc('average_rating')
             ->paginate($perPage, ['*'], 'page', $page);
 
-        if($courses->count() <= 0){
+        if ($courses->count() <= 0) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'No data found',
