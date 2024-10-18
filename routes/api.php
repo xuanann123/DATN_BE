@@ -68,6 +68,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('detail/check/{slug}', [CourseDetailController::class, 'courseDetailForAuthUser']);
     });
 
+    # ===================== ROUTE FOR LESSON ===========================
+    Route::prefix('lessons')->group(function () {
+        Route::get('/lesson-detail/{lesson}', [LessonController::class, 'lessonDetail']);
+    });
+
     # ===================== ROUTE FOR COMMENT ===========================
 
     Route::prefix('comments')->group(function () {
@@ -173,7 +178,7 @@ Route::prefix('courses')->group(function () {
 
 # ===================== ROUTE FOR LESSON ===========================
 Route::prefix('lessons')->group(function () {
-    Route::get('/lesson-detail/{id}', [LessonController::class, 'lessonDetail']);
+    // Route::get('/lesson-detail/{id}', [LessonController::class, 'lessonDetail']);
 });
 
 # ===================== ROUTE FOR COMMENT ===========================

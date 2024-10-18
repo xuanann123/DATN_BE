@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\LessonProgress;
 use App\Http\Controllers\Controller;
 
-class CourseDetailController extends Controller
+class CourseDetailController extends Controller // di ve sinh
 {
     public function courseDetail($slug)
     {
@@ -20,6 +20,9 @@ class CourseDetailController extends Controller
 
             // tong so luong bai hoc
             $total_lessons = $course->modules->flatMap->lessons->count();
+
+            // set duration cho tung bai hoc
+            $this->setLessonDurations($course);
 
             // tong thoi luong video trong khoa hoc
             $total_duration_vid = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
@@ -58,6 +61,8 @@ class CourseDetailController extends Controller
         // tổng số bài học trong khóa học
         $total_lessons = $course->modules->flatMap->lessons->count();
 
+        // set duration cho tung bai hoc
+        $this->setLessonDurations($course);
 
         // chua mua
         if (!$userCourse) {
@@ -98,7 +103,7 @@ class CourseDetailController extends Controller
 
                 // bài học cuối cùng hoàn thành
                 if ($lesson->is_completed) {
-                    $last_completed_lesson = $lesson;
+                    $last_completed_lesson = $lesson->makeHidden('module');
                 }
             }
         }
@@ -143,5 +148,17 @@ class CourseDetailController extends Controller
                 'next_lesson' => $next_lesson,
             ],
         ], 200);
+    }
+
+    private function setLessonDurations($course)
+    {
+        $course->modules->flatMap->lessons->map(function ($lesson) {
+            if ($lesson->lessonable_type === Video::class) {
+                $video = Video::find($lesson->lessonable_id);
+                $lesson->duration = $video ? $video->duration : null;
+            } else {
+                $lesson->duration = null;
+            }
+        });
     }
 }
