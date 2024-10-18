@@ -16,6 +16,7 @@ class Comment extends Model
         'parent_id',
         'commentable_type',
         'commentable_id',
+        'is_approved',
     ];
 
     public function commentable()
