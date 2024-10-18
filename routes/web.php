@@ -139,6 +139,7 @@ Route::prefix("admin")
             ->as('modules.')
             ->group(function () {
                 Route::post('/store', [ModuleController::class, 'store'])->name('store');
+                //Lưu trữ quiz trong module
                 Route::post('/{id}/add/quiz', [ModuleController::class, 'storeQuiz'])->name('add');
             });
         //Route with quizzes

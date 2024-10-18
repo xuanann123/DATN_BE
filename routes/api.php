@@ -21,7 +21,7 @@ use App\Http\Controllers\api\Client\PaymentController;
 use App\Http\Controllers\api\Client\LessonController;
 
 use App\Http\Controllers\api\Client\CommentController;
-
+use App\Http\Controllers\api\Client\Intructor\ModuleQuizController;
 
 /*
 |--------------------------------------------------------------------------
@@ -115,6 +115,14 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('{course}/add', [ModuleController::class, 'storeModule']);
                 Route::put('{module}/update', [ModuleController::class, 'updateModule']);
                 Route::delete('{module}/delete', [ModuleController::class, 'deleteModule']);
+                # ========================== Route for quiz ===========================
+                //ADD QUIZ => Lấy thằng id của module để thêm
+                Route::post('{module}/add-quiz', [ModuleQuizController::class, 'addQuiz']);
+                //Update QUIZ => Lấy id của quiz 
+                Route::put('{quiz}/update-quiz', [ModuleQuizController::class, 'updateQuiz']);
+                //Xoá QUIZ 
+                Route::delete('{quiz}/delete-quiz', [ModuleQuizController::class, 'deleteQuiz']);
+
             });
             //Quản lý bài học
             Route::prefix('/lesson')->group(function () {
