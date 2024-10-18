@@ -65,6 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('courses')->group(function () {
         // Route::get('/{course}', [CourseDetailController::class, 'courseDetail']);
+        //Chi tiết bài học khi đăng kí khoá học
         Route::get('detail/check/{slug}', [CourseDetailController::class, 'courseDetailForAuthUser']);
     });
 
@@ -165,8 +166,9 @@ Route::prefix('teachers')->group(function () {
 # ===================== ROUTE FOR COURSE ===========================
 
 Route::prefix('courses')->group(function () {
-    // Tim kiem khoa hoc
+    // Tìm kiếm khoá học
     Route::get('/search-course', [CourseController::class, 'searchCourses']);
+    //Chi tiết khoá học đối với người chưa đăng nhập vào hệ thống
     Route::get('detail/{slug}', [CourseDetailController::class, 'courseDetail']);
 });
 

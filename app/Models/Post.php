@@ -90,6 +90,7 @@ class Post extends Model
             };
         });
     }
+    //Đinh nghĩa mối quan hệ nhiều nhiều với comment
     public function comments()
     {
         return $this->morphMany(Comment::class, 'commentable');

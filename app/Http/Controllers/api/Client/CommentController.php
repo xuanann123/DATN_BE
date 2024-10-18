@@ -32,18 +32,21 @@ class CommentController extends Controller
                 ->join('users', 'users.id', '=', 'comments.id_user')
                 ->where('commentable_id', $post->id)->where('commentable_type', self::COMMENTABLE_TYPE)->get();
             $this->loadChildrenRecursively($comments);
+            //Dữ liệu trống
             if ($comments->isEmpty()) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Comments not found'
                 ], status: 404);
             }
+            //Đủ điều kiện
             return response()->json([
                 'status' => 'success',
                 'message' => 'Comments list',
                 'data' => $comments,
             ], 200);
         } catch (\Exception $e) {
+            //Lỗi server
             return response()->json([
                 'status' => 'error',
                 'message' => 'Internal server error',
@@ -51,7 +54,7 @@ class CommentController extends Controller
             ], 500);
         }
     }
-    //Load comment theo cấp cha con
+    //Load comment theo cấp cha parent_id con = id cha (comment)
     private function loadChildrenRecursively($comments)
     {
         $comments->load('children');
@@ -72,12 +75,14 @@ class CommentController extends Controller
             $dataComment['commentable_type'] = self::COMMENTABLE_TYPE;
             //Thêm comment với database
             $newComment = Comment::query()->create($dataComment);
+            //Thêm dữ liệu thành công thông báo cho người dùng
             return response()->json([
                 'status' => 'success',
                 'message' => 'Bình luận thành công',
                 'data' => $newComment
             ], 201);
         } catch (\Exception $e) {
+            //Lỗi server
             DB::rollBack();
             return response()->json([
                 'status' => 'error',
