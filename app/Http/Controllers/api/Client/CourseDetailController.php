@@ -25,12 +25,12 @@ class CourseDetailController extends Controller // di ve sinh
             $total_lessons = $course->modules->flatMap->lessons->count();
 
 
-           
+
 
             // set duration cho tung bai hoc
             $this->setLessonDurations($course);
 
-             // Sẽ lấy tổng số lượng tất cả các bài học là video trong khoá học đó
+            // Sẽ lấy tổng số lượng tất cả các bài học là video trong khoá học đó
             $total_duration_vid = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
                 ->sum('duration');
 
@@ -60,7 +60,7 @@ class CourseDetailController extends Controller // di ve sinh
             $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons'])
                 ->where('slug', $slug)
                 ->firstOrFail();
-            //Lấy người dùng hiện tại 
+            //Lấy người dùng hiện tại
             $user = auth()->user();
             // Kiểm tra xem ng dùng đã mua khóa học chưa thông qua Usercourse check xem người dùng này đã đăng kí khoá học chưa
             $userCourse = UserCourse::where('id_user', $user->id)
@@ -76,7 +76,7 @@ class CourseDetailController extends Controller // di ve sinh
                     ->sum('duration');
                 //Cập nhật tổng số lượng bài học
                 $course->total_lessons = $total_lessons;
-                //Tổng thời gian của khoá học đó 
+                //Tổng thời gian của khoá học đó
                 $course->total_duration = $total_duration;
                 //Trả dữ liệu về phía client
                 return response()->json([
@@ -147,20 +147,20 @@ class CourseDetailController extends Controller // di ve sinh
                         }
                     }
                 }
-                //Trả về dữ liệu phía client
-                return response()->json([
-                    'status' => 'success',
-                    'message' => "Bài học của bạn.",
-                    'data' => [
-                        // 'course' => $course,
-                        'progress_percent' => $progress_percent,
-                        'total_lessons' => $total_lessons,
-                        'completed_lessons' => $completed_lessons,
-                        'modules' => $course->modules,
-                        'next_lesson' => $next_lesson,
-                    ],
-                ], 200);
             }
+            //Trả về dữ liệu phía client
+            return response()->json([
+                'status' => 'success',
+                'message' => "Bài học của bạn.",
+                'data' => [
+                    // 'course' => $course,
+                    'progress_percent' => $progress_percent,
+                    'total_lessons' => $total_lessons,
+                    'completed_lessons' => $completed_lessons,
+                    'modules' => $course->modules,
+                    'next_lesson' => $next_lesson,
+                ],
+            ], 200);
         } catch (\Exception $e) {
             //Lỗi Auth nếu chưa đăng nhập
             return response()->json([
@@ -169,7 +169,6 @@ class CourseDetailController extends Controller // di ve sinh
                 'error' => $e->getMessage(),
             ]);
         }
-       
     }
 
     private function setLessonDurations($course)
