@@ -147,7 +147,7 @@ Route::prefix('categories')->group(function () {
 
 Route::prefix('posts')->group(function () {
     Route::get('', [PostController::class, 'getPosts']);
-    Route::get('/{id}', [PostController::class, 'show']);
+    Route::get('/{slug}', [PostController::class, 'show']);
 });
 
 # ===================== ROUTE FOR TEACHER ===========================
