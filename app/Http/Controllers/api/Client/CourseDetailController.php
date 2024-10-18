@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\LessonProgress;
 use App\Http\Controllers\Controller;
 
-class CourseDetailController extends Controller
+class CourseDetailController extends Controller // di ve sinh
 {
     //Phần chi tiết bài học
     public function courseDetail($slug)
@@ -23,7 +23,13 @@ class CourseDetailController extends Controller
             // Số lượng bài học trong khóa học, sử dụng flatmap để đến từng số lượng bài học trong từng chương học
             $total_lessons = $course->modules->flatMap->lessons->count();
 
-            // Sẽ lấy tổng số lượng tất cả các bài học là video trong khoá học đó
+
+           
+
+            // set duration cho tung bai hoc
+            $this->setLessonDurations($course);
+
+             // Sẽ lấy tổng số lượng tất cả các bài học là video trong khoá học đó
             $total_duration_vid = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
                 ->sum('duration');
 
@@ -47,6 +53,7 @@ class CourseDetailController extends Controller
     //Phần chi tiết khoá học đôi với người dùng đã đăng nhập vào hệ thống
     public function courseDetailForAuthUser($slug)
     {
+
         try {
             //Lấy bài học với các mục liên quan tránh n+1 egger loading
             $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons'])
@@ -60,6 +67,8 @@ class CourseDetailController extends Controller
                 ->first();
             // Tống số lượng bài học trong khoá học
             $total_lessons = $course->modules->flatMap->lessons->count();
+
+
 
 
             // Nếu người dùng chưa mua khoá học đó thì
@@ -105,10 +114,12 @@ class CourseDetailController extends Controller
                     //Thời gian dừng đang ở đâu
                     $lesson->last_time_video = $lessonProgress ? $lessonProgress->last_time_video : 0;
 
-                    // Lấy ra được bài hoàn thiện cuối cùng của vòng lập
-                    if ($lesson->is_completed) {
-                        $last_completed_lesson = $lesson;
-                    }
+                 
+
+                // bài học cuối cùng hoàn thành
+                if ($lesson->is_completed) {
+                    $last_completed_lesson = $lesson->makeHidden('module');
+
                 }
             }
 
@@ -160,5 +171,17 @@ class CourseDetailController extends Controller
             ]);
         }
        
+    }
+
+    private function setLessonDurations($course)
+    {
+        $course->modules->flatMap->lessons->map(function ($lesson) {
+            if ($lesson->lessonable_type === Video::class) {
+                $video = Video::find($lesson->lessonable_id);
+                $lesson->duration = $video ? $video->duration : null;
+            } else {
+                $lesson->duration = null;
+            }
+        });
     }
 }
