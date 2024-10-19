@@ -123,7 +123,11 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::put('{quiz}/update-quiz', [ModuleQuizController::class, 'updateQuiz']);
                 //Xoá QUIZ
                 Route::delete('{quiz}/delete-quiz', [ModuleQuizController::class, 'deleteQuiz']);
-
+                # ========================== Route for question and option ===========================
+                //Hiển thị danh sách toàn bộ câu hỏi id của module
+                Route::get('{id}/show-quiz', [ModuleQuizController::class, 'showQuiz']);
+                //Thêm câu hỏi cho quiz
+                Route::post('{quiz}/add-question-and-option', [ModuleQuizController::class, 'addQuestionAndOption']);
             });
             //Quản lý bài học
             Route::prefix('/lesson')->group(function () {
