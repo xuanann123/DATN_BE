@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 class UpdateDatabaseForPolymorphicTags extends Migration
 {
@@ -15,7 +16,7 @@ class UpdateDatabaseForPolymorphicTags extends Migration
         Schema::dropIfExists('post_tag');
 
         Schema::table('posts', function (Blueprint $table) {
-            $table->renameColumn('id_banned', 'is_banned');
+            DB::statement('ALTER TABLE posts CHANGE id_banned is_banned TINYINT(1) DEFAULT 0');
         });
 
         // tags đa hình
