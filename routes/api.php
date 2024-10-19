@@ -34,11 +34,6 @@ use App\Http\Controllers\api\Client\Intructor\ModuleQuizController;
 |
 */
 
-Route::prefix('transactions')->group(function () {
-    Route::post('/payment', [PaymentController::class, 'paymentController']);
-    Route::get('/deposit', [PaymentController::class, 'depositController']);
-});
-
 
 
 Route::prefix('auth')->group(function () {
@@ -63,6 +58,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     # ===================== ROUTE FOR TRANSACTIONS ===========================
 
+    Route::prefix('transactions')->group(function () {
+        Route::post('/payment', [PaymentController::class, 'paymentController']);
+        Route::get('/deposit', [PaymentController::class, 'depositController']);
+    });
 
 
 
