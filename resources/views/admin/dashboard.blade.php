@@ -3,12 +3,6 @@
     Dashboard
 @endsection
 @section('content')
-    <form action="{{ route('payments.payment')  }}" method="post">
-        @csrf
-        <input type="hidden" name="id_user" value="1">
-        <input type="text" name="amount">
-        <button name="redirect">Nạp</button>
-    </form>
     <div class="row">
         <div class="col">
             <div class="h-100">
