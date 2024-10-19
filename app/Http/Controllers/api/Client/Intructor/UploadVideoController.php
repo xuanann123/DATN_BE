@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\api\Client\Intructor;
 
+use App\Models\Lesson;
 use App\Models\Video;
 use App\Models\Module;
 use Illuminate\Http\Request;
-use App\Jobs\Client\UploadVideo;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Admin\Lessons\StoreLessonVideoRequest;
+use App\Http\Requests\Client\Lessons\UpdateLessonVideoRequest;
 
 class UploadVideoController extends Controller
 {
@@ -88,5 +90,91 @@ class UploadVideoController extends Controller
     {
         $interval = new \DateInterval($duration);
         return ($interval->h * 3600) + ($interval->i * 60) + $interval->s;
+    }
+
+    public function deleteLessonVideo(Lesson $lesson)
+    {
+        DB::beginTransaction();
+        try {
+            if ($lesson->lessonable_type == Video::class) {
+                $video = $lesson->lessonable;
+                if ($video->url && Storage::exists($video->url)) {
+                    Storage::delete($video->url);
+                }
+                $video->delete();
+            }
+            $lesson->delete();
+            DB::commit();
+            return response()->json([
+                'status' => 200,
+                'message' => 'Xóa bài học thành công!',
+                'data' => []
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 500,
+                'message' => 'Đã xảy ra lỗi khi xóa bài học.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function updateLessonVideo(UpdateLessonVideoRequest $request, Lesson $lesson)
+    {
+        DB::beginTransaction();
+        try {
+            if ($lesson->lessonable_type == Video::class) {
+                $data = [
+                    'title' => $request['title'],
+                ];
+
+                if ($request['check'] && $request['check'] == 'upload' && !empty($request['video'])) {
+                    $file = $request['video'];
+                    $stream = fopen($file->getRealPath(), 'r+');
+                    $fileName = 'videos/' . time() . '_' . $file->getClientOriginalName();
+                    Storage::disk('public')->put($fileName, $stream);
+                    fclose($stream);
+                    $data['url'] = $fileName;
+                    $data['duration'] = $request['duration'];
+                    $data['type'] = $request['check'];
+                    $data['video_youtube_id'] = '';
+                    $video = $lesson->lessonable;
+                    if ($video->url && Storage::exists($video->url)) {
+                        Storage::delete($video->url);
+                    }
+                } else if(!empty($request['video_youtube_id'])) {
+                    $data['url'] = '';
+                    $data['type'] = 'url';
+                    $data['video_youtube_id'] = $request['video_youtube_id'];
+                    $data['duration'] = $this->getVideoDuration($request['video_youtube_id']);
+                }
+
+                $lesson->lessonable()->update($data);
+
+            }
+
+            $lesson->update([
+                'title' => $request['title'],
+                'description' => $request['description'],
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Cập nhật bài học thành công!',
+                'data' => [
+                    'lesson' => $lesson,
+                ],
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 500,
+                'message' => 'Đã xảy ra lỗi khi cập nhật bài học.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

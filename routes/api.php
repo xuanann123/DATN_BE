@@ -33,6 +33,10 @@ use App\Http\Controllers\api\Client\Intructor\ModuleQuizController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::delete('/delete-lesson-video/{lesson}', [UploadVideoController::class, 'deleteLessonVideo']);
+
+Route::put('/update-lesson-video/{lesson}', [UploadVideoController::class, 'updateLessonVideo']);
+
 
 Route::prefix('auth')->group(function () {
     Route::post('/signup', [AuthController::class, 'signup']);
@@ -131,6 +135,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::put('{lesson}/update-text-lesson', [TextLessonController::class, 'updateTextLesson']);
                 Route::delete('{lesson}/delete-text-lesson', [TextLessonController::class, 'destroyTextLesson']);
                 Route::post('/upload-video/{module}', [UploadVideoController::class, 'uploadVideo']);
+
             });
             // submit cho admin de xem xet khoa hoc
             Route::post('{course}/submit', [CourseController::class, 'submit']);
@@ -196,6 +201,7 @@ Route::prefix('lessons')->group(function () {
 Route::prefix('comments')->group(function () {
     Route::get('/comment-post/{slug}', [CommentController::class, 'getCommentsPost']);
 });
+
 
 
 
