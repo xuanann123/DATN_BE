@@ -21,6 +21,8 @@ use App\Http\Controllers\Admin\QuestionController;
 
 use App\Http\Controllers\Admin\UploadVideoController;
 
+use App\Http\Controllers\api\Client\PaymentController;
+
 
 /*
 |--------------------------------------------------------------------------

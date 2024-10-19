@@ -60,9 +60,11 @@ Route::middleware('auth:sanctum')->group(function () {
     # ===================== ROUTE FOR TRANSACTIONS ===========================
 
     Route::prefix('transactions')->group(function () {
-        // Nap tien
-        Route::post('/deposit', [PaymentController::class, 'depositController']);
+        Route::post('/payment', [PaymentController::class, 'paymentController']);
+        Route::get('/deposit', [PaymentController::class, 'depositController']);
     });
+
+
 
     # ===================== ROUTE FOR COURSE ===========================
 
@@ -93,6 +95,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/change-password', [UserController::class, 'changePassword']);
         Route::get('/posts', [PostController::class, 'myListPost']);
         Route::get('/posts/{id}', [PostController::class, 'getListPostByUser']);
+
+        Route::get('/balance/{user}', [PaymentController::class, 'balancePurchaseWallet']);
     });
 
     Route::prefix('teacher')->group(function () {
@@ -206,6 +210,9 @@ Route::prefix('lessons')->group(function () {
 Route::prefix('comments')->group(function () {
     Route::get('/comment-post/{slug}', [CommentController::class, 'getCommentsPost']);
 });
+
+
+
 
 
 
