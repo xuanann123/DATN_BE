@@ -19,10 +19,11 @@ use App\Http\Controllers\api\Client\Intructor\UploadVideoController;
 use App\Http\Controllers\api\Client\CourseDetailController;
 use App\Http\Controllers\api\Client\PaymentController;
 
-use App\Http\Controllers\api\Client\LessonController;
+use App\Http\Controllers\api\Client\Student\LessonController;
 
 use App\Http\Controllers\api\Client\CommentController;
 use App\Http\Controllers\api\Client\Intructor\ModuleQuizController;
+use App\Http\Controllers\api\Client\Student\NoteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,6 +79,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('lessons')->group(function () {
         Route::get('/lesson-detail/{lesson}', [LessonController::class, 'lessonDetail']);
         Route::put('/lesson-progress/{lesson}', [LessonController::class, 'updateLessonProgress']);
+    });
+
+    # ===================== ROUTE FOR NOTE ===========================
+    Route::prefix('notes')->group(function () {
+        Route::get('{course}', [NoteController::class, 'getNotes']);
+        Route::post('/add-note/{lesson}', [NoteController::class, 'addNote']);
+        Route::get('{note}/get-lesson', [NoteController::class, 'getLessonByNote']);
     });
 
     # ===================== ROUTE FOR COMMENT ===========================
