@@ -197,4 +197,11 @@ Route::prefix("admin")
             });
     });
 
+Route::prefix('payments')
+    ->as('payments.')
+    ->group(function () {
+        Route::post('/payment', [PaymentController::class, 'paymentController'])->name('payment');
+        Route::post('/deposit', [PaymentController::class, 'depositController'])->name('deposit');
+    });
+
 
