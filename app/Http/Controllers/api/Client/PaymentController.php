@@ -98,7 +98,7 @@ class PaymentController extends Controller
         $returnData = array('code' => '00'
         , 'message' => 'success'
         , 'data' => $vnp_Url);
-        if (isset($_POST['redirect'])) {
+        if (isset($_POST['id_user'])) {
             Session::put('id_user' , $request->id_user) ;
             Session::put('amount' , $request->amount) ;
             Session::put('$vnp_TxnRef' , $vnp_TxnRef) ;
