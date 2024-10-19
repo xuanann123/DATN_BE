@@ -38,11 +38,11 @@ class PostController extends Controller
                     'id' => $post->id,
                     'user_id' => $post->user_id,
                     'username' => $post->user->name,
-                    'avatar' => url(Storage::url($post->user->avatar)),
+                    'avatar' => $post->user->avatar,
                     'title' => $post->title,
                     'slug' => $post->slug,
                     'description' => $post->description,
-                    'thumbnail' => url(Storage::url($post->thumbnail)),
+                    'thumbnail' => $post->thumbnail,
                     'content' => $post->content,
                     'views' => $post->views,
                     'status' => $post->status,
@@ -55,10 +55,10 @@ class PostController extends Controller
             });
             if ($listPosts->isEmpty()) {
                 return response()->json([
-                    'status' => 'success',
+                    'status' => 'error',
                     'message' => 'Không có bài viết nào',
                     'data' => []
-                ], 200);
+                ], 404);
             }
             return response()->json([
                 'status' => 'success',
@@ -128,7 +128,7 @@ class PostController extends Controller
             }
             DB::commit();
             return response()->json([
-                'status' => 201,
+                'status' => 'success',
                 'message' => 'Thêm bài viết thành công.',
                 'data' => [
                     "post" => $post,
@@ -151,43 +151,55 @@ class PostController extends Controller
     //Chi tiết bài viết
     public function show(string $slug)
     {
-        $post = Post::where('slug', $slug)->where('is_active', '=', 1)->first();
-        if ($post) {
-            $post = [
-                'id' => $post->id,
-                'user_id' => $post->user_id,
-                'username' => $post->user->name,
-                'avatar' => url(Storage::url($post->user->avatar)),
-                'title' => $post->title,
-                'slug' => $post->slug,
-                'description' => $post->description,
-                'thumbnail' => url(Storage::url($post->thumbnail)),
-                'content' => $post->content,
-                'views' => $post->views,
-                'status' => $post->status,
-                'allow_comments' => $post->allow_comments,
-                'is_banned' => $post->is_banned,
-                'published_at' => $post->published_at,
-                'categories' => $post->categories,
-                'tags' => $post->tags
-            ];
+        try {
+            //Hiển thị dữ liệu
+            $post = Post::where('slug', $slug)->where('is_active', '=', 1)->first();
+            if ($post) {
+                $post = [
+                    'id' => $post->id,
+                    'user_id' => $post->user_id,
+                    'username' => $post->user->name,
+                    'avatar' => $post->user->avatar,
+                    'title' => $post->title,
+                    'slug' => $post->slug,
+                    'description' => $post->description,
+                    'thumbnail' => $post->thumbnail,
+                    'content' => $post->content,
+                    'views' => $post->views,
+                    'status' => $post->status,
+                    'allow_comments' => $post->allow_comments,
+                    'is_banned' => $post->is_banned,
+                    'published_at' => $post->published_at,
+                    'categories' => $post->categories,
+                    'tags' => $post->tags
+                ];
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Lấy bài viết thành công!',
+                    'data' => $post
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không tìm thấy bài viết',
+                    'data' => []
+                ], 404);
+            }
+        } catch (\Exception $e) {
             return response()->json([
-                'status' => '200',
-                'message' => 'Lấy bài viết thành công!',
-                'data' => $post
-            ], 200);
-        } else {
-            return response()->json([
-                'status' => '404',
-                'message' => 'Không tìm thấy bài viết',
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi tìm bài viết',
                 'data' => []
-            ], 404);
+            ], 500);
         }
+
     }
 
     //Cấp nhật bài viết
-    public function update(UpdatePostRequest $request, Post $post)
+    public function update(UpdatePostRequest $request, string $slug)
     {
+        $post = Post::where('slug', $slug)->where('is_active', '=', 1)->firstOrFail();
+      
         DB::beginTransaction();
         try {
             $data = $request->validated();
@@ -256,9 +268,10 @@ class PostController extends Controller
     }
 
     //Xóa bài viết
-    public function destroy(Post $post)
+    public function destroy(string $slug)
     {
         //Thuộc kiểu xoá mền
+        $post = Post::where('slug', $slug)->where('is_active', '=', 1)->first();
         DB::beginTransaction();
         try {
             if ($post->user_id == auth()->id()) {
@@ -269,7 +282,6 @@ class PostController extends Controller
                 //Xoá bài viêts
                 $post->delete();
                 DB::commit();
-
                 return response()->json([
                     'status' => '200',
                     'message' => 'Xóa bài viết thành công',
@@ -316,11 +328,11 @@ class PostController extends Controller
                     'id' => $post->id,
                     'user_id' => $post->user_id,
                     'username' => $post->user->name,
-                    'avatar' => url(Storage::url($post->user->avatar)),
+                    'avatar' => $post->user->avatar,
                     'title' => $post->title,
                     'slug' => $post->slug,
                     'description' => $post->description,
-                    'thumbnail' => url(Storage::url($post->thumbnail)),
+                    'thumbnail' => $post->thumbnail,
                     'content' => $post->content,
                     'views' => $post->views,
                     'status' => $post->status,
@@ -334,10 +346,10 @@ class PostController extends Controller
             // Kiểm tra nếu danh sách bài viết rỗng
             if ($listPosts->isEmpty()) {
                 return response()->json([
-                    'status' => 'success',
+                    'status' => 'error',
                     'message' => 'Không có bài viết nào',
                     'data' => []
-                ], 200);
+                ], 404);
             }
             return response()->json([
                 'status' => 'success',
