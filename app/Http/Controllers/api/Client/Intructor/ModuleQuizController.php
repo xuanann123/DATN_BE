@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\api\Client\Intructor;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Client\Quiz\StoreQuizRequest;
-use App\Http\Requests\Client\Quiz\UpdateQuizRequest;
+use App\Models\Quiz;
 use App\Models\Module;
 use App\Models\Option;
 use App\Models\Question;
-use App\Models\Quiz;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\Client\Quiz\StoreQuizRequest;
+use App\Http\Requests\Client\Quiz\UpdateQuizRequest;
 
 class ModuleQuizController extends Controller
 {
@@ -116,7 +118,7 @@ class ModuleQuizController extends Controller
         //Dữ liệu theo tên chương tên khoá học + người tạo khoá học
         $module = Module::with(['quiz', 'course.user'])->where('id', $id)->first();
         //Tiếp theo lấy quiz của nó để truy vấn sâu để đổ dữ liệu ra
-        $quiz = Quiz::with(['questions.options'])->where('id_module', $id)->first();
+        $quiz = Quiz::with(['questions.options', 'module.course'])->where('id_module', $id)->first();
         if (!$module) {
             return response()->json([
                 'status' => 'error',
@@ -129,7 +131,7 @@ class ModuleQuizController extends Controller
             'status' => 'success',
             'message' => 'Get quiz successfully',
             'data' => [
-                'module' => $module,
+                // 'module' => $module,
                 'quiz' => $quiz
             ]
         ]);
@@ -146,29 +148,38 @@ class ModuleQuizController extends Controller
                     'data' => []
                 ], 404);
             }
-            //Thêm dữ liệu bằng cách như sau
+            $questionData = $request->question;
+            // // Thêm dữ liệu bằng cách như sau
             $quizQuestion = Question::create([
                 'id_quiz' => $quiz->id,  // Thêm quiz_id nếu cần
-                'question' => $request->input('question'),
-                'type' => $request->input('type'),
-                'points' => $request->input('points'),
-                'image_url' => $this->uploadImage($request->input('image') ?? NULL, 'questions')
+                'question' => $questionData['question'],
+                'type' => $questionData['type'],
+                'points' => $questionData['points'],
+                'image_url' => $this->uploadImage($questionData['image'] ?? NULL, 'questions')
             ]);
-            //Tạo 1 vòng duyệt qua từng option rồi thêm dữ liệu vào database
-            // foreach ($request->input('options') as $optionIndex => $optionData) {
-        
-            //     $option = Option::create([
-            //         'id_question' => $quizQuestion->id,
-            //         'text' => $optionData['text'],
-            //         'image_url' => $this->uploadImage($optionData['image'] ?? NULL, 'options'),
-            //     ]);
-            // }
-        
-            //Trả về dữ liệu khi update này
+            // Tạo 1 vòng duyệt qua từng option rồi thêm dữ liệu vào database
+            foreach ($request->input('options') as $optionIndex => $optionData) {
+                $optionText = is_array($optionData) ? $optionData['text'] : $optionData;
+                $optionImage = $request->file("options.{$optionIndex}.image") ?? null;
+                $option = Option::create([
+                    'id_question' => $quizQuestion->id,
+                    'option' => $optionText,
+                    'image_url' => $this->uploadImage($optionImage, 'options'),
+                    'is_correct' => $this->isCorrectAnswer($questionData, $optionIndex)
+                ]);
+            }
+
+            // Lấy câu hỏi vừa tạo cùng với các options
+            $questionWithOptions = Question::with('options')->find($quizQuestion->id);
+
+            // Trả về dữ liệu khi update này
             return response()->json([
                 'status' => 'success',
                 'message' => 'Update quiz successfully',
-                'data' => $quiz
+                'data' => [
+                    'quiz' => $quiz,
+                    'question' => $questionWithOptions
+                ],
             ], 200);
         } catch (\Exception $e) {
             //Lỗi server
@@ -180,5 +191,26 @@ class ModuleQuizController extends Controller
         }
     }
 
+    private function isCorrectAnswer($question, $optionIndex)
+    {
+        if ($question['type'] === 'one_choice') {
+            // Với one_choice, correct_answer là một giá trị số (index)
+            return $optionIndex == $question['correct_answer'];
+        } elseif ($question['type'] === 'multiple_choice') {
+            // Với multiple_choice, correct_answer là một mảng chứa các index
+            return in_array($optionIndex, $question['correct_answer']);
+        }
+        return false;
+    }
+
+    private function uploadImage($image, $type)
+    {
+        if ($image && $image->isValid()) {
+            $newNameImage = $type . '_' . Str::uuid() . '.' . $image->getClientOriginalExtension();
+            return Storage::putFileAs('images/' . $type, $image, $newNameImage);
+            // return $newNameImage;
+        }
+        return null;
+    }
 
 }
