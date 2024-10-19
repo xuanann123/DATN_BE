@@ -147,8 +147,8 @@ Route::middleware('auth:sanctum')->group(function () {
 # ===================== ROUTE FOR POSTS ===========================
     Route::prefix('posts')->group(function () {
         Route::post('', [PostController::class, 'store']);
-        Route::put('/{post}', [PostController::class, 'update']);
-        Route::delete('/{post}', [PostController::class, 'destroy']);
+        Route::put('/{slug}', [PostController::class, 'update']);
+        Route::delete('/{slug}', [PostController::class, 'destroy']);
     });
 });
 
