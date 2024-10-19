@@ -13,5 +13,16 @@ class Note extends Model
         'id_user',
         'id_lesson',
         'content',
+        'duration',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user');
+    }
+
+    public function lesson()
+    {
+        return $this->belongsTo(Lesson::class, 'id_lesson');
+    }
 }

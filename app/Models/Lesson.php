@@ -35,4 +35,10 @@ class Lesson extends Model
     {
         return $this->morphMany(Comment::class, 'commentable');
     }
+
+
+    public function notes()
+    {
+        return $this->hasMany(Note::class, 'id_lesson');
+    }
 }

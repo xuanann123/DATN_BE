@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\Client;
+namespace App\Http\Controllers\api\Client\Student;
 
 use App\Models\Video;
 use App\Models\Lesson;
