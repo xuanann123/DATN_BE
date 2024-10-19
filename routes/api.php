@@ -9,6 +9,7 @@ use App\Http\Controllers\api\Client\PostController;
 use App\Http\Controllers\api\Client\UserController;
 use App\Http\Controllers\api\Client\BannerController;
 use App\Http\Controllers\api\Client\Intructor\CourseController;
+use App\Http\Controllers\api\Client\Intructor\LessonController as LessonTeacherController;
 use App\Http\Controllers\api\Client\TeacherController;
 use App\Http\Controllers\api\Client\CategoryController;
 use App\Http\Controllers\api\Client\Intructor\CurriculumController;
@@ -133,6 +134,7 @@ Route::middleware('auth:sanctum')->group(function () {
             });
             //Quản lý bài học
             Route::prefix('/lesson')->group(function () {
+                Route::get('{lesson}/detail', [LessonTeacherController::class, 'lessonDetailTeacher']);
                 Route::post('{module}/add-text-lesson', [TextLessonController::class, 'storeTextLesson']);
                 Route::put('{lesson}/update-text-lesson', [TextLessonController::class, 'updateTextLesson']);
                 Route::delete('{lesson}/delete-text-lesson', [TextLessonController::class, 'destroyTextLesson']);
