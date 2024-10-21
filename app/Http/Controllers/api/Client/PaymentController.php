@@ -63,7 +63,7 @@ class PaymentController extends Controller
             "vnp_Locale" => $vnp_Locale,
             "vnp_OrderInfo" => $vnp_OrderInfo,
             "vnp_OrderType" => $vnp_OrderType,
-            "vnp_ReturnUrl" => $vnp_ReturnUrl,
+            "vnp_ReturnUrl" => $vnp_ReturnUrl . '?user=' . $request->user,
             "vnp_TxnRef" => $vnp_TxnRef,
             // "vnp_ExpireDate"=> $vnp_ExpireDate ,
         );
@@ -98,35 +98,25 @@ class PaymentController extends Controller
         $returnData = array('code' => '00'
         , 'message' => 'success'
         , 'data' => $vnp_Url);
-        if (isset($_POST['id_user'])) {
-            Session::put('id_user' , $request->id_user) ;
-            Session::put('amount' , $request->amount) ;
-            Session::put('$vnp_TxnRef' , $vnp_TxnRef) ;
+        if (isset($_POST['amount'])) {
             return redirect($vnp_Url) ;
         } else {
             echo json_encode($returnData);
         }
     }
 
-
-
-
 //     Về phần nạp tiền => cần auth
     public function depositController(Request $request) {
         if($request->vnp_TransactionStatus == '00') {
-            $userId = Session::get('id_user');
+            $userId = $request->user;
             $user = User::find($userId);
 
             if(!$user) {
-                return response()->json([
-                    'code' => 204,
-                    'status' => 'error',
-                    'message' => 'Người dùng không tồn tại.',
-                ]);
+                return redirect(env('FE_URL'). 'wallet?status=error');
             }
 
             $purchaseWallet = PurchaseWallet::where('id_user', $userId)->first();
-            $amount = Session::get('amount');
+            $amount = ($request->amount) / 100;
             $coin =  $amount / self::COIN_CONVERTER;
 
             if(!$purchaseWallet) {
@@ -138,11 +128,7 @@ class PaymentController extends Controller
                 $newPurchaseWallet = PurchaseWallet::query()->create($data);
 
                 if(!$newPurchaseWallet) {
-                    return response()->json([
-                        'code' => 500,
-                        'status' => 'error',
-                        'message' => 'Nạp tiền không thành công.'
-                    ]);
+                    return redirect(env('FE_URL'). 'wallet?status=error');
                 }
 
                 $newPurchaseWallet->transactions()->create([
@@ -154,13 +140,7 @@ class PaymentController extends Controller
                     'status' => 'success',
                 ]);
 
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Nạp tiền thành công',
-                    'data' => [
-                        'balance' => $coin,
-                    ]
-                ], 201);
+                return redirect(env('FE_URL'). 'wallet?status=success');
             }
 
             if ($purchaseWallet->update([
@@ -176,13 +156,7 @@ class PaymentController extends Controller
                     'status' => 'success',
                 ]);
 
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Nạp tiền thành công',
-                    'data' => [
-                        'balance' => $purchaseWallet->balance,
-                    ]
-                ], 200);
+                return redirect(env('FE_URL'). 'wallet?status=success');
             }
 
             $purchaseWallet->transactions()->create([
@@ -194,17 +168,9 @@ class PaymentController extends Controller
                 'status' => 'error',
             ]);
 
-            return response()->json([
-                'code' => 500,
-                'status' => 'error',
-                'message' => 'Nạp tiền không thành công.',
-            ]);
+            return redirect(env('FE_URL'). 'wallet?status=error');
         }
 
-        return response()->json([
-            'code' => 500,
-            'status' => 'error',
-            'message' => 'Nạp tiền không thành công.',
-        ]);
+        return redirect(env('FE_URL'). 'wallet?status=error');
     }
 }

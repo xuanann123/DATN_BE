@@ -61,11 +61,9 @@ Route::middleware('auth:sanctum')->group(function () {
     # ===================== ROUTE FOR TRANSACTIONS ===========================
 
     Route::prefix('transactions')->group(function () {
-        Route::post('/payment', [PaymentController::class, 'paymentController']);
+        Route::post('/payment/{user}', [PaymentController::class, 'paymentController']);
         Route::get('/deposit', [PaymentController::class, 'depositController']);
     });
-
-
 
     # ===================== ROUTE FOR COURSE ===========================
 
