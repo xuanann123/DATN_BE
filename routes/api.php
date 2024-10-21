@@ -159,6 +159,10 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
+// Redirect vnpay
+Route::prefix('transactions')->group(function () {
+        Route::get('/deposit', [PaymentController::class, 'depositController']);
+});
     // Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
     // post
