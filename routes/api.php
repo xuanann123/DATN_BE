@@ -84,8 +84,10 @@ Route::middleware('auth:sanctum')->group(function () {
     # ===================== ROUTE FOR NOTE ===========================
     Route::prefix('notes')->group(function () {
         Route::get('{course}', [NoteController::class, 'getNotes']);
-        Route::post('/add-note/{lesson}', [NoteController::class, 'addNote']);
         Route::get('{note}/get-lesson', [NoteController::class, 'getLessonByNote']);
+        Route::post('/add-note/{lesson}', [NoteController::class, 'addNote']);
+        Route::put('/update-note/{note}', [NoteController::class, 'updateNote']);
+        Route::delete('/delete-note/{note}', [NoteController::class, 'deleteNote']);
     });
 
     # ===================== ROUTE FOR COMMENT ===========================
