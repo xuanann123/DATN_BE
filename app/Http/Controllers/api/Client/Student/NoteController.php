@@ -9,6 +9,7 @@ use App\Models\UserCourse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\Notes\StoreNoteRequest;
+use App\Http\Requests\Client\Notes\UpdateNoteRequest;
 
 class NoteController extends Controller
 {
@@ -138,6 +139,70 @@ class NoteController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Đã xảy ra lỗi khi lấy thông tin bài học từ ghi chú.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function updateNote(UpdateNoteRequest $request, Note $note)
+    {
+        try {
+            $user = auth()->user();
+
+            // Kiểm tra ghi chú có phải của người đang đăng nhập tạo hay không
+            if ($note->id_user != $user->id) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Bạn không có quyền cập nhật ghi chú này.',
+                    'data' => []
+                ], 403);
+            }
+
+            // Update
+            $note->update($request->validated());
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Cập nhật ghi chú thành công.',
+                'data' => $note,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi cập nhật ghi chú.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function deleteNote(Note $note)
+    {
+        try {
+            $user = auth()->user();
+
+            // Kiểm tra ghi chú có phải của người dùng đăng nhập hay không
+            if ($note->id_user != $user->id) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Bạn không có quyền xóa ghi chú này.',
+                    'data' => []
+                ], 403);
+            }
+
+            // Delete
+            $note->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Xóa ghi chú thành công.',
+                'data' => [],
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi xóa ghi chú.',
                 'error' => $e->getMessage(),
             ], 500);
         }
