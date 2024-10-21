@@ -159,10 +159,7 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
-// Redirect vnpay
-Route::prefix('transactions')->group(function () {
-        Route::get('/deposit', [PaymentController::class, 'depositController']);
-});
+
     // Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
     // post
@@ -172,6 +169,11 @@ Route::prefix('transactions')->group(function () {
         Route::put('/{slug}', [PostController::class, 'update']);
         Route::delete('/{slug}', [PostController::class, 'destroy']);
     });
+});
+
+// Redirect vnpay
+Route::prefix('transactions')->group(function () {
+    Route::get('/deposit', [PaymentController::class, 'depositController']);
 });
 
 //Không cần xác thực => vào trang web có thể xem được luôn
