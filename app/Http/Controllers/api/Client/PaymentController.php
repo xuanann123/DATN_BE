@@ -116,7 +116,7 @@ class PaymentController extends Controller
             }
 
             $purchaseWallet = PurchaseWallet::where('id_user', $userId)->first();
-            $amount = ($request->amount) / 100;
+            $amount = ($request->vnp_Amount) / 100;
             $coin =  $amount / self::COIN_CONVERTER;
 
             if(!$purchaseWallet) {
