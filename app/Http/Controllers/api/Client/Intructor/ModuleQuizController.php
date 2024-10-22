@@ -191,6 +191,176 @@ class ModuleQuizController extends Controller
         }
     }
 
+    public function showQuestionAndOption(Question $question)
+    {
+        try {
+            // Nếu không tồn tại câu hỏi
+            if (!$question) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Câu hỏi không tồn tại',
+                    'data' => []
+                ], 404);
+            }
+
+            // Lấy câu hỏi cùng với các options
+            $questionWithOptions = Question::with('options')->find($question->id);
+
+            // Trả về response khi thành công
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Thông tin câu hỏi và câu trả lời',
+                'data' => $questionWithOptions
+            ], 200);
+        } catch (\Exception $e) {
+            // Lỗi server
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
+    }
+
+    public function updateQuestionAndOption(Request $request, Question $question)
+    {
+        try {
+            // nếu không tồn tại câu hỏi
+            if (!$question) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không tồn tại câu hỏi',
+                    'data' => []
+                ], 404);
+            }
+            //
+            $questionData = $request->question;
+
+            // Xử lý việc xóa ảnh của question nếu có yêu cầu 'remove_image' gửi từ FE
+            if (isset($questionData['remove_image']) && $questionData['remove_image'] == true) {
+                if ($question->image_url) {
+                    Storage::delete($question->image_url); // del ảnh trong storage
+                }
+                $question->image_url = null; // Xóa đường dẫn image trong db
+            } else {
+                // Kiểm tra nếu có ảnh mới upload
+                if (isset($questionData['image'])) {
+                    $question->image_url = $this->uploadImage($questionData['image'], 'questions', $question->image_url);
+                }
+            }
+
+            // update question
+            $question->update([
+                'question' => $questionData['question'],
+                'type' => $questionData['type'],
+                'points' => $questionData['points'],
+                'image_url' => $question->image_url,
+            ]);
+
+            // update or create options
+            foreach ($request->options as $optionIndex => $optionData) {
+                $optionId = $optionData['id'] ?? NULL; // check xem co id cua option khong ?
+                $optionText = is_array($optionData) ? $optionData['text'] : $optionData;
+                $optionImage = $request->file("options.{$optionIndex}.image") ?? null;
+
+                if ($optionId) {
+                    // update option nếu có optionId
+                    $option = Option::find($optionId);
+                    if ($option) {
+                        // Xử lý việc xóa ảnh của option nếu có yêu cầu 'remove_image' gửi từ FE
+                        if (isset($optionData['remove_image']) && $optionData['remove_image'] == true) {
+                            if ($option->image_url) {
+                                Storage::delete($option->image_url); // del ảnh trong storage
+                            }
+                            $option->image_url = null; // Xóa đường dẫn img trong db
+                        } elseif ($optionImage) {
+                            // Kiểm tra nếu có ảnh mới upload
+                            $option->image_url = $this->uploadImage($optionImage, 'options', $option->image_url);
+                        }
+                        $option->update([
+                            'option' => $optionText,
+                            'image_url' => $option->image_url,
+                            'is_correct' => $this->isCorrectAnswer($questionData, $optionIndex),
+                        ]);
+                    }
+                } else {
+                    // create option nếu không có optionId
+                    Option::create([
+                        'id_question' => $question->id,
+                        'option' => $optionText,
+                        'image_url' => $this->uploadImage($optionImage, 'options'),
+                        'is_correct' => $this->isCorrectAnswer($questionData, $optionIndex)
+                    ]);
+                }
+            }
+
+            // Lấy question cùng options vừa update
+            $updatedQuestion = Question::with('options')->find($question->id);
+
+            // Trả về dữ liệu khi update này
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Cập nhật thành công câu hỏi và lựa chọn.',
+                'data' => $updatedQuestion
+            ], 200);
+        } catch (\Exception $e) {
+            // Lỗi server
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
+    }
+
+    public function deleteQuestionAndOption(Question $question)
+    {
+        try {
+            // nếu không tồn tại câu hỏi
+            if (!$question) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không tồn tại câu hỏi',
+                    'data' => []
+                ], 404);
+            }
+
+            // Xóa ảnh của question nếu có
+            if ($question->image_url) {
+                Storage::delete($question->image_url);
+            }
+
+            // Lấy tất cả các options của question
+            $options = $question->options;
+
+            // Xoá từng option của question
+            foreach ($options as $option) {
+                // Xoá ảnh của option nếu có
+                if ($option->image_url) {
+                    Storage::delete($option->image_url);
+                }
+                $option->delete();
+            }
+
+            // Del question
+            $question->delete();
+
+            // Trả về response khi xóa thành công
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Xóa câu hỏi và các lựa chọn thành công.',
+                'data' => []
+            ], 200);
+        } catch (\Exception $e) {
+            // Lỗi server
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
+    }
+
     private function isCorrectAnswer($question, $optionIndex)
     {
         if ($question['type'] === 'one_choice') {
@@ -203,9 +373,13 @@ class ModuleQuizController extends Controller
         return false;
     }
 
-    private function uploadImage($image, $type)
+    private function uploadImage($image, $type, $currentImage = null)
     {
         if ($image && $image->isValid()) {
+            // Xóa ảnh cũ nếu tồn tại
+            if ($currentImage) {
+                Storage::delete($currentImage);
+            }
             $newNameImage = $type . '_' . Str::uuid() . '.' . $image->getClientOriginalExtension();
             return Storage::putFileAs('images/' . $type, $image, $newNameImage);
             // return $newNameImage;
