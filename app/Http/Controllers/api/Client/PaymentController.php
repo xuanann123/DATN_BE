@@ -99,7 +99,8 @@ class PaymentController extends Controller
         , 'message' => 'success'
         , 'data' => $vnp_Url);
         if (isset($_POST['amount'])) {
-            return redirect($vnp_Url) ;
+//            return redirect($vnp_Url) ;
+            return $vnp_Url;
         } else {
             echo json_encode($returnData);
         }
