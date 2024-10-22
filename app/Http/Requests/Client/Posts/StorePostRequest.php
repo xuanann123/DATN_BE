@@ -25,7 +25,7 @@ class StorePostRequest extends BaseFormRequest
         return [
             'title' => 'required|string|max:255',
             'description' => 'required|string|min:6',
-            'slug' => 'required|string|max:255|unique:posts',
+            'slug' => 'string|max:255|unique:posts',
             'thumbnail' => 'required|image',
             'status' => '',
             'published_at' => '',

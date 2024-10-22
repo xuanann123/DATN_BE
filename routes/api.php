@@ -131,6 +131,17 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('{course}/add', [ModuleController::class, 'storeModule']);
                 Route::put('{module}/update', [ModuleController::class, 'updateModule']);
                 Route::delete('{module}/delete', [ModuleController::class, 'deleteModule']);
+                
+            });
+            //Quản lý bài học
+            Route::prefix('/lesson')->group(function () {
+                Route::get('{lesson}/detail', [LessonTeacherController::class, 'lessonDetailTeacher']);
+                Route::post('{module}/add-text-lesson', [TextLessonController::class, 'storeTextLesson']);
+                Route::put('{lesson}/update-text-lesson', [TextLessonController::class, 'updateTextLesson']);
+                Route::delete('{lesson}/delete-text-lesson', [TextLessonController::class, 'destroyTextLesson']);
+                Route::post('/upload-video/{module}', [UploadVideoController::class, 'uploadVideo']);
+                Route::delete('/delete-lesson-video/{lesson}', [UploadVideoController::class, 'deleteLessonVideo']);
+                Route::put('/update-lesson-video/{lesson}', [UploadVideoController::class, 'updateLessonVideo']);
                 # ========================== Route for quiz ===========================
                 //ADD QUIZ => Lấy thằng id của module để thêm
                 Route::post('{module}/add-quiz', [ModuleQuizController::class, 'addQuiz']);
@@ -146,16 +157,6 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::get('quiz/{question}/show-question-and-option', [ModuleQuizController::class, 'showQuestionAndOption']);
                 Route::put('quiz/{question}/update-question-and-option', [ModuleQuizController::class, 'updateQuestionAndOption']);
                 Route::delete('quiz/{question}/delete-question-and-option', [ModuleQuizController::class, 'deleteQuestionAndOption']);
-            });
-            //Quản lý bài học
-            Route::prefix('/lesson')->group(function () {
-                Route::get('{lesson}/detail', [LessonTeacherController::class, 'lessonDetailTeacher']);
-                Route::post('{module}/add-text-lesson', [TextLessonController::class, 'storeTextLesson']);
-                Route::put('{lesson}/update-text-lesson', [TextLessonController::class, 'updateTextLesson']);
-                Route::delete('{lesson}/delete-text-lesson', [TextLessonController::class, 'destroyTextLesson']);
-                Route::post('/upload-video/{module}', [UploadVideoController::class, 'uploadVideo']);
-                Route::delete('/delete-lesson-video/{lesson}', [UploadVideoController::class, 'deleteLessonVideo']);
-                Route::put('/update-lesson-video/{lesson}', [UploadVideoController::class, 'updateLessonVideo']);
             });
             // submit cho admin de xem xet khoa hoc
             Route::post('{course}/submit', [CourseController::class, 'submit']);

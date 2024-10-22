@@ -15,6 +15,9 @@ use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
+    public function getTags() {
+        
+    }
     public function getPosts()
     {
         try {

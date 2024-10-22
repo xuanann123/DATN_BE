@@ -28,12 +28,11 @@ class UpdatePostRequest extends BaseFormRequest
         $post = Post::where('slug', $slug)->first();
 
         $postId = $post ? $post->id : null;
-    
+
         return [
             'title' => 'required|string|max:255',
             'description' => 'required|string|min:6',
             'slug' => [
-                'required',
                 'string',
                 'max:255',
                 Rule::unique('posts', 'slug')->ignore($postId)
