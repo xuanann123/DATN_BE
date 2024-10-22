@@ -142,7 +142,10 @@ Route::middleware('auth:sanctum')->group(function () {
                 //Hiển thị danh sách toàn bộ câu hỏi id của module
                 Route::get('{id}/show-quiz', [ModuleQuizController::class, 'showQuiz']);
                 //Thêm câu hỏi cho quiz
-                Route::post('{quiz}/add-question-and-option', [ModuleQuizController::class, 'addQuestionAndOption']);
+                Route::post('quiz/{quiz}/add-question-and-option', [ModuleQuizController::class, 'addQuestionAndOption']);
+                Route::get('quiz/{question}/show-question-and-option', [ModuleQuizController::class, 'showQuestionAndOption']);
+                Route::put('quiz/{question}/update-question-and-option', [ModuleQuizController::class, 'updateQuestionAndOption']);
+                Route::delete('quiz/{question}/delete-question-and-option', [ModuleQuizController::class, 'deleteQuestionAndOption']);
             });
             //Quản lý bài học
             Route::prefix('/lesson')->group(function () {
