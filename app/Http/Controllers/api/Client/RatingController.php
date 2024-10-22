@@ -36,17 +36,15 @@ class RatingController extends Controller
 
         if(count($listRating) == 0) {
             return response()->json([
-                'code' => 204,
                 'status' => 'error',
                 'massage' => 'Không có đánh giá cho khóa học này'
-            ]);
+            ], 200);
         }
 
         return response()->json([
-            'code' => 200,
             'status' => 'success',
             'data' => $listRating
-        ]);
+        ], 200);
     }
 
     public function addRating(RatingRequest $request){
@@ -54,17 +52,17 @@ class RatingController extends Controller
         $newRating = Rating::query()->create($dataRating);
         if(!$newRating) {
             return response()->json([
-                'code' => 500,
+                
                 'status' => 'error',
                 'message' => 'Đánh giá thất bại'
-            ]);
+            ], 500);
         }
 
         return response()->json([
-            'code' => 201,
+            
             'status' => 'success',
             'message' => 'Đánh giá thành công',
             'data' => $newRating
-        ]);
+        ], 201);
     }
 }
