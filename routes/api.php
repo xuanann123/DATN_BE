@@ -20,7 +20,7 @@ use App\Http\Controllers\api\Client\CourseDetailController;
 use App\Http\Controllers\api\Client\PaymentController;
 
 use App\Http\Controllers\api\Client\Student\LessonController;
-
+use App\Http\Controllers\api\Client\RatingController;
 use App\Http\Controllers\api\Client\CommentController;
 use App\Http\Controllers\api\Client\Intructor\ModuleQuizController;
 use App\Http\Controllers\api\Client\Student\NoteController;
@@ -35,8 +35,6 @@ use App\Http\Controllers\api\Client\Student\NoteController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
-
 
 Route::prefix('auth')->group(function () {
     Route::post('/signup', [AuthController::class, 'signup']);
@@ -92,6 +90,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('comments')->group(function () {
         Route::post('/add-comment-post', [CommentController::class, 'addCommentPost']);
         Route::post('/add-comment-course', [CommentController::class, 'addCommentCourse']);
+    });
+
+    # ===================== ROUTE FOR RATING ===========================
+    Route::prefix('ratings')->group(function () {
+        Route::get('/add-rating-course', [RatingController::class, 'addRating']);
     });
 
 
@@ -228,6 +231,11 @@ Route::prefix('lessons')->group(function () {
 Route::prefix('comments')->group(function () {
     Route::get('/comment-post/{slug}', [CommentController::class, 'getCommentsPost']);
     Route::get('/comment-course/{slug}', [CommentController::class, 'getCommentsCourse']);
+});
+
+# ===================== ROUTE FOR RATING ===========================
+Route::prefix('ratings')->group(function () {
+    Route::get('/rating-course/{course_id}', [RatingController::class, 'getRating']);
 });
 
 
