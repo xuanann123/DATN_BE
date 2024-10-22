@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Vouchers\CreateVoucherRequest;
 use App\Http\Requests\Admin\Vouchers\UpdateVoucherRequest;
 use App\Models\Voucher;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -71,13 +72,17 @@ class VoucherController extends Controller
         }
         try {
             $newVoucher = Voucher::query()->create($data);
-
-
-            broadcast(new VoucherCreated($newVoucher))->toOthers();
-            return redirect()->route('admin.vouchers.index')->with(['message' => 'Thêm mới thành công!']);
-        } catch (\Throwable $th) {
+            if (Carbon::parse($newVoucher->start_time)->isFuture()) {
+                broadcast(new VoucherCreated($newVoucher))->toOthers();
+            }
+            return response()->json(['success' => true], 200);
+        } catch (\Exception $e) {
             DB::rollBack();
-            throw $th;
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
 
     }
