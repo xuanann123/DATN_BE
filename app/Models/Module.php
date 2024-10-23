@@ -23,6 +23,7 @@ class Module extends Model
     public function lessons () {
         return $this->hasMany(Lesson::class, 'id_module');
     }
+    //Mối quan hệ 11 
     public function quiz() {
         return $this->hasOne(Quiz::class, 'id_module');
     }
