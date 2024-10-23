@@ -22,7 +22,7 @@ class ModuleQuizController extends Controller
         if (!$module) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Module not found',
+                'message' => 'Không tìm thấy chương học',
                 'data' => []
             ], 404);
         }
@@ -35,7 +35,7 @@ class ModuleQuizController extends Controller
             ]);
             return response()->json([
                 'status' => 'success',
-                'message' => 'Add quiz successfully',
+                'message' => 'Thêm bài tập thành công',
                 'data' => $quiz
             ], 201);
         } catch (\Exception $e) {
@@ -57,7 +57,7 @@ class ModuleQuizController extends Controller
             if (!$quiz) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Quiz not found',
+                    'message' => 'Không tìm thấy quiz',
                     'data' => []
                 ], 404);
             }
@@ -69,7 +69,7 @@ class ModuleQuizController extends Controller
             //Trả về dữ liệu khi update thành công
             return response()->json([
                 'status' => 'success',
-                'message' => 'Update quiz successfully',
+                'message' => 'Cập nhật bài tập thành công',
                 'data' => $quiz
             ], 200);
         } catch (\Exception $e) {
@@ -90,7 +90,7 @@ class ModuleQuizController extends Controller
             if (!$quiz) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Quiz not found',
+                    'message' => 'Không tìm thấy quiz',
                     'data' => []
                 ], 404);
             }
@@ -99,7 +99,7 @@ class ModuleQuizController extends Controller
             //Trả dữ liệu delete quiz success
             return response()->json([
                 'status' => 'success',
-                'message' => 'Delete quiz successfully',
+                'message' => 'Xoá bài tập thành công',
                 'data' => []
             ], 200);
         } catch (\Exception $e) {
@@ -122,14 +122,14 @@ class ModuleQuizController extends Controller
         if (!$module) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Module not found',
+                'message' => 'Không tìm thấy bài tập',
                 'data' => []
             ]);
         }
         //Đổ câu hỏi ra
         return response()->json([
             'status' => 'success',
-            'message' => 'Get quiz successfully',
+            'message' => 'Lấy bài tập thành công',
             'data' => [
                 // 'module' => $module,
                 'quiz' => $quiz
@@ -144,7 +144,7 @@ class ModuleQuizController extends Controller
             if (!$quiz) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Quiz not found',
+                    'message' => 'Bài tập không tồn tại',
                     'data' => []
                 ], 404);
             }
@@ -175,7 +175,7 @@ class ModuleQuizController extends Controller
             // Trả về dữ liệu khi update này
             return response()->json([
                 'status' => 'success',
-                'message' => 'Update quiz successfully',
+                'message' => 'Cập nhật bài tập thành công',
                 'data' => [
                     'quiz' => $quiz,
                     'question' => $questionWithOptions

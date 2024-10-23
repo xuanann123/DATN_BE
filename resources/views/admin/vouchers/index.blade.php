@@ -21,6 +21,7 @@
             justify-content: end;
         }
     </style>
+    
 @endsection
 @section('content')
     <div class="row">
@@ -49,28 +50,28 @@
             </div>
             <div class="card">
                 <div class="card-header d-flex justify-content-between gap-3">
-                        <div class="col-sm-auto d-flex">
-                            <select name="act" id="" class="form-select">
-                                <option value="" class="form-control">Thao tác nhiều bản ghi</option>
-                                @foreach ($listAct as $key => $act)
-                                    <option value="{{ $key }}" class="form-control">{{ $act }}</option>
-                                @endforeach
-                            </select>
-                            <button type="submit" class="ms-2 btn btn-primary">Chose</button>
-                        </div>
-                        <div class="col-sm-auto d-flex ms-2">
-                            <ul class="d-flex gap-4 mt-1 list-unstyled">
-                                <li><a href="{{ request()->fullUrlWithQuery(['status' => 'all']) }}">Tất
-                                        cả({{ $count['all'] }})</a></li>
-                                <li><a href="{{ request()->fullUrlWithQuery(['status' => 'active']) }}">Kích
-                                        hoạt({{ $count['active'] }})</a></li>
-                                <li><a href="{{ request()->fullUrlWithQuery(['status' => 'inactive']) }}">Chờ xác
-                                        nhận({{ $count['inactive'] }})</a></li>
-                                <li><a href="{{ request()->fullUrlWithQuery(['status' => 'trash']) }}">Vô hiệu
-                                        hoá({{ $count['trash'] }})</a></li>
-                            </ul>
-                        </div>
+                    <div class="col-sm-auto d-flex">
+                        <select name="act" id="" class="form-select">
+                            <option value="" class="form-control">Thao tác nhiều bản ghi</option>
+                            @foreach ($listAct as $key => $act)
+                                <option value="{{ $key }}" class="form-control">{{ $act }}</option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="ms-2 btn btn-primary">Chose</button>
                     </div>
+                    <div class="col-sm-auto d-flex ms-2">
+                        <ul class="d-flex gap-4 mt-1 list-unstyled">
+                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'all']) }}">Tất
+                                    cả({{ $count['all'] }})</a></li>
+                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'active']) }}">Kích
+                                    hoạt({{ $count['active'] }})</a></li>
+                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'inactive']) }}">Chờ xác
+                                    nhận({{ $count['inactive'] }})</a></li>
+                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'trash']) }}">Vô hiệu
+                                    hoá({{ $count['trash'] }})</a></li>
+                        </ul>
+                    </div>
+                </div>
                 <div class="card-body">
                     <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
                         style="width:100%">
@@ -179,6 +180,7 @@
             </div>
         </div><!--end col-->
     </div><!--end row-->
+    
 @endsection
 
 @section('script-libs')
