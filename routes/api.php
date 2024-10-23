@@ -60,6 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('transactions')->group(function () {
         Route::post('/payment/{user}', [PaymentController::class, 'paymentController']);
+        Route::post('/buy-course/{id_user}/{id_course}', [PaymentController::class, 'buyCourse']);
     });
 
     # ===================== ROUTE FOR COURSE ===========================
@@ -134,7 +135,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('{course}/add', [ModuleController::class, 'storeModule']);
                 Route::put('{module}/update', [ModuleController::class, 'updateModule']);
                 Route::delete('{module}/delete', [ModuleController::class, 'deleteModule']);
-                
+
             });
             //Quản lý bài học
             Route::prefix('/lesson')->group(function () {
