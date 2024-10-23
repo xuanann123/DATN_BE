@@ -52,17 +52,49 @@ class RatingController extends Controller
         $newRating = Rating::query()->create($dataRating);
         if(!$newRating) {
             return response()->json([
-                
+
                 'status' => 'error',
                 'message' => 'Đánh giá thất bại'
             ], 500);
         }
 
         return response()->json([
-            
+
             'status' => 'success',
             'message' => 'Đánh giá thành công',
             'data' => $newRating
         ], 201);
+    }
+
+    public function getRatingHomePage()
+    {
+        $listRating = DB::table('ratings as r')
+            ->select(
+                'u.name as user_name',
+                'u.email as user_email',
+                'u.avatar as user_avatar',
+                'r.content as content',
+                'r.rate as rate',
+                'r.created_at as created_at'
+            )
+            ->join('users as u', 'u.id', '=', 'r.id_user')
+            ->where('r.rate', 5)
+            ->orderByDesc('r.created_at')
+            ->limit(5)
+            ->get();
+
+        if(count($listRating) == 0) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Không có đánh giá'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Danh sách đánh giá',
+            'data' => $listRating
+        ], 200);
     }
 }
