@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\api\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Bill;
+use App\Models\Course;
 use App\Models\PurchaseWallet;
 use App\Models\User;
+use App\Models\UserCourse;
+use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -173,5 +177,96 @@ class PaymentController extends Controller
         }
 
         return redirect(env('FE_URL'). 'wallet?status=error');
+    }
+
+    public function buyCourse(Request $request)
+    {
+        $userId = $request->id_user;
+        $courseId = $request->id_course;
+
+        $course = Course::find($courseId);
+        if(!$course) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Khóa học không tồn tại'
+            ]);
+        }
+
+        $user = User::find($userId);
+        if(!$user) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Người dùng không tồn tại'
+            ]);
+        }
+
+
+        $wallet = PurchaseWallet::find($userId);
+        if(!$wallet) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Bạn chưa có ví, vui lòng nạp tiền để tạo ví'
+            ]);
+        }
+
+        if($request->id_voucher) {
+            $voucher = Voucher::find($request->id_voucher);
+            if(!$voucher) {
+                return response()->json([
+                    'code' => 204,
+                    'status' => 'error',
+                    'message' => 'Voucher không tồn tại'
+                ]);
+            }
+        }
+
+        if($wallet->balance < $request->total_coin_after_discount) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Số dư không đủ, vui lòng nạp thêm xu'
+            ]);
+        }
+
+        $newUserCourse = UserCourse::query()->create([
+            'id_user' => $userId,
+            'id_course' => $courseId,
+        ]);
+
+        $newBill = Bill::query()->create([
+            'id_user' => $userId,
+            'id_course' => $courseId,
+            'voucher_code' => Voucher::find($request->id_voucher)->code ?? null,
+            'voucher_discount' => $request->coin_discount,
+            'total_coin' => $request->total_coin,
+            'total_coin_after_discount' => $request->total_coin_after_discount,
+            'status' => 'Thành công'
+        ]);
+
+        if(!$newUserCourse) {
+            return response()->json([
+                'code' => 500,
+                'status' => 'error',
+                'message' => 'Mua khóa học thất bại'
+            ]);
+        } else {
+            $wallet->update([
+                'balance' => $wallet->balance - $request->total_coin_after_discount,
+            ]);
+
+            if($request->id_voucher) {
+                Voucher::find($request->id_voucher)->update([
+                    'count' => $voucher->count - 1,
+                ]);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Mua khóa học thành công',
+                'data' => $newBill
+            ], 201);
+        }
     }
 }
