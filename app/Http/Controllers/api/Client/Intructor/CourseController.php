@@ -415,4 +415,47 @@ class CourseController extends Controller
             ]
         ], 200);
     }
+
+    public function courseCheckout(Request $request)
+    {
+        $slug = $request->slug;
+
+        $course = DB::table('courses as c')
+            ->selectRaw('
+                u.id as user_id,
+                u.name as user_name,
+                u.avatar as user_avatar,
+                c.id as course_id,
+                c.name as course_name,
+                c.thumbnail as course_thumbnail,
+                c.price,
+                c.price_sale,
+                c.total_student,
+                COUNT(DISTINCT l.id) as total_lessons,
+                c.duration as course_duration,
+                ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
+            ')
+            ->join('users as u', 'u.id', '=', 'c.id_user')
+            ->leftJoin('ratings as r', 'c.id', '=', 'r.id_course')
+            ->leftJoin('modules as m', 'm.id_course', '=', 'c.id')
+            ->leftJoin('lessons as l', 'l.id_module', '=', 'm.id')
+            ->where('c.is_active', 1)
+            ->where('c.slug', $slug)
+            ->groupBy('u.id', 'u.name', 'u.avatar', 'c.id', 'c.name', 'c.thumbnail', 'c.total_student', 'c.duration')
+            ->first();
+
+        if(!$course) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Khóa học không tồn tại'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Truy vấn khóa học thành công',
+            'data' => $course
+        ], 200);
+    }
 }

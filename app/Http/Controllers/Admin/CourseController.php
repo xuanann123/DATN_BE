@@ -105,6 +105,7 @@ class CourseController extends Controller
             'modules.lessons'
         )->findOrFail($id);
 
+
         Session::put('course_id', $id);
 
         $maxModulePosition = Module::where('id_course', $course->id)->max('position');
@@ -197,11 +198,13 @@ class CourseController extends Controller
             return redirect()->route('admin.courses.list')->with(['error' => 'Khóa học không tồn tại!']);
         }
 
-        $fileExists = Storage::disk('public')->exists($course->thumbnail);
-        if ($fileExists) {
-            Storage::disk('public')->delete($course->thumbnail);
-        }
+        if($course->thumbnail) {
+            $fileExists = Storage::disk('public')->exists($course->thumbnail);
+            if ($fileExists) {
+                Storage::disk('public')->delete($course->thumbnail);
+            }
 
+        }
         $course->delete();
 
         return back()->with(['message' => 'Xóa thành công!']);

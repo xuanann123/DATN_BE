@@ -35,4 +35,9 @@ class Category extends Model
         }
         return $query;
     }
+
+    public function courses()
+    {
+        return $this->hasMany(Course::class, 'id_category');
+    }
 }

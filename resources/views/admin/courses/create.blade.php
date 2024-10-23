@@ -222,6 +222,17 @@
                         <img src="" style="display: none" id="show-image" width="200px">
                     </div>
 
+{{--                    <div class="mb-3">--}}
+{{--                        <label class="form-label" for="trailer">Trailer khóa học </label>--}}
+{{--                        <input class="form-control" id="trailer" name="trailer" type="file" accept="video/*">--}}
+{{--                        <small class="help-block form-text text-danger">--}}
+{{--                            @if ($errors->has('trailer'))--}}
+{{--                                {{ $errors->first('trailer') }}--}}
+{{--                            @endif--}}
+{{--                        </small> <br>--}}
+{{--                        <img src="" style="display: none" id="show-trailer" width="200px">--}}
+{{--                    </div>--}}
+
                     <div class="mb-3 row">
                         <div class="col-lg-4">
                             <div class="mb-3 mb-lg-0">
@@ -349,7 +360,7 @@
                         <div>
                             <div class="mb-3 position-relative">
                                 <span class="text-muted">Chọn tags ("," hoặc dấu cách để ngăn cách nhau)</span>
-                                <select class="js-example-basic-multiple" name="tags[]" multiple="multiple" value>
+                                <select class="js-example-basic-multiple" name="tags[]" multiple="multiple" >
                                     @foreach ($tags as $id => $name)
                                         <option value="{{ $name }}"
                                             {{ in_array($name, old('tags', [])) ? 'selected' : '' }}>

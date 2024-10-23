@@ -63,6 +63,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/buy-course/{id_user}/{id_course}', [PaymentController::class, 'buyCourse']);
     });
 
+    # ===================== ROUTE FOR CHECKOUT ===========================
+
+    Route::prefix('payment')->group(function () {
+        Route::get('/course/{slug}', [CourseController::class, 'courseCheckout']);
+    });
+
+
     # ===================== ROUTE FOR COURSE ===========================
 
     Route::prefix('courses')->group(function () {
@@ -238,6 +245,7 @@ Route::prefix('comments')->group(function () {
 Route::prefix('ratings')->group(function () {
     Route::get('/rating-course/{course_id}', [RatingController::class, 'getRating']);
 });
+
 
 
 
