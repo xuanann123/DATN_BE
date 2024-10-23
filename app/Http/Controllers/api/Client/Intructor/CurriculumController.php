@@ -20,8 +20,9 @@ class CurriculumController extends Controller
                     'data' => []
                 ], 403);
             }
+            //Tú lấy dan sách
 
-            $modules = $course->modules()->with(['lessons.lessonable'])->get();
+            $modules = $course->modules()->with(['lessons.lessonable', 'quiz'])->get();
             return response()->json([
                 'status' => 200,
                 'message' => "Danh sách chương trình giảng dạy.",

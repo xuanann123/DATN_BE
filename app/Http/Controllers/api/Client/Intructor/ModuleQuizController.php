@@ -19,6 +19,7 @@ class ModuleQuizController extends Controller
     //Chỉ thêm được 1 quiz cho 1 chương học
     public function addQuiz(StoreQuizRequest $request, Module $module)
     {
+
         if (!$module) {
             return response()->json([
                 'status' => 'error',
@@ -57,7 +58,7 @@ class ModuleQuizController extends Controller
             if (!$quiz) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Không tìm thấy quiz',
+                    'message' => 'Không tìm thấy bài tập',
                     'data' => []
                 ], 404);
             }
@@ -148,6 +149,7 @@ class ModuleQuizController extends Controller
                     'data' => []
                 ], 404);
             }
+
             $questionData = $request->question;
             // // Thêm dữ liệu bằng cách như sau
             $quizQuestion = Question::create([
@@ -175,12 +177,12 @@ class ModuleQuizController extends Controller
             // Trả về dữ liệu khi update này
             return response()->json([
                 'status' => 'success',
-                'message' => 'Cập nhật bài tập thành công',
+                'message' => 'Thêm bài tập thành công',
                 'data' => [
                     'quiz' => $quiz,
                     'question' => $questionWithOptions
                 ],
-            ], 200);
+            ], 201);
         } catch (\Exception $e) {
             //Lỗi server
             return response()->json([
