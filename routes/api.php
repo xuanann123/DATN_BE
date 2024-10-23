@@ -65,7 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     # ===================== ROUTE FOR CHECKOUT ===========================
 
-    Route::prefix('checkout')->group(function () {
+    Route::prefix('payment')->group(function () {
         Route::get('/course/{slug}', [CourseController::class, 'courseCheckout']);
     });
 
