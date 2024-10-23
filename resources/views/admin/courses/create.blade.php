@@ -222,16 +222,16 @@
                         <img src="" style="display: none" id="show-image" width="200px">
                     </div>
 
-{{--                    <div class="mb-3">--}}
-{{--                        <label class="form-label" for="trailer">Trailer khóa học </label>--}}
-{{--                        <input class="form-control" id="trailer" name="trailer" type="file" accept="video/*">--}}
-{{--                        <small class="help-block form-text text-danger">--}}
-{{--                            @if ($errors->has('trailer'))--}}
-{{--                                {{ $errors->first('trailer') }}--}}
-{{--                            @endif--}}
-{{--                        </small> <br>--}}
-{{--                        <img src="" style="display: none" id="show-trailer" width="200px">--}}
-{{--                    </div>--}}
+                    <div class="mb-3">
+                        <label class="form-label" for="trailer">Trailer khóa học </label>
+                        <input class="form-control" id="trailer" name="trailer" type="file" accept="video/*">
+                        <small class="help-block form-text text-danger">
+                            @if ($errors->has('trailer'))
+                                {{ $errors->first('trailer') }}
+                            @endif
+                        </small> <br>
+                        <video src="" style="display: none" id="show-trailer" width="300px" height="auto" controls></video>
+                    </div>
 
                     <div class="mb-3 row">
                         <div class="col-lg-4">
@@ -606,6 +606,20 @@
             $(document).click(function(event) {
                 if (!$(event.target).closest('#inputField').length) {
                     $('#suggestions').hide();
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('#trailer').on('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const videoUrl = URL.createObjectURL(file);
+                    $('#show-trailer').attr('src', videoUrl).show();
+                } else {
+                    $('#show-trailer').hide();
                 }
             });
         });

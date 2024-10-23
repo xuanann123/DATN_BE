@@ -71,6 +71,15 @@ class CourseController extends Controller
                 $data['thumbnail'] = $pathImage;
             }
 
+            // Xử lí video trailer;
+
+            if ($request->trailer && $request->hasFile('trailer')) {
+                $trailer = $request->file('trailer');
+                $newNameTrailer = 'course_' . time() . '.' . $trailer->getClientOriginalExtension();
+                $pathTrailer = Storage::putFileAs('videos/trailers', $trailer, $newNameTrailer);
+                $data['trailer'] = $pathTrailer;
+            }
+
             //Xử lý khoá học
             $newCourse = Course::query()->create($data);
             //Xử lý tags
@@ -90,6 +99,9 @@ class CourseController extends Controller
         } catch (\Throwable $th) {
             if (Storage::disk('public')->exists($data['thumbnail'])) {
                 Storage::disk('public')->delete($data['thumbnail']);
+            }
+            if (Storage::disk('public')->exists($data['trailer'])) {
+                Storage::disk('public')->delete($data['trailer']);
             }
             DB::rollBack();
             return redirect()->route('admin.courses.list')->with(['error' => 'Thêm mới không thành công!']);
@@ -151,13 +163,31 @@ class CourseController extends Controller
             $pathImage = Storage::putFileAs('courses', $image, $newNameImage);
 
             $data['thumbnail'] = $pathImage;
-
-            $fileExists = Storage::disk('public')->exists($course->thumbnail);
-            if ($fileExists) {
-                Storage::disk('public')->delete($course->thumbnail);
+            if($course->thumbnail) {
+                $fileExists = Storage::disk('public')->exists($course->thumbnail);
+                if ($fileExists) {
+                    Storage::disk('public')->delete($course->thumbnail);
+                }
             }
         } else {
             $data['thumbnail'] = $course->thumbnail;
+        }
+
+        if ($request->trailer && $request->hasFile('trailer')) {
+            $trailer = $request->file('trailer');
+            $newNameTrailer = 'course_' . time() . '.' . $trailer->getClientOriginalExtension();
+            $pathTrailer = Storage::putFileAs('videos/trailers', $trailer, $newNameTrailer);
+
+            $data['trailer'] = $pathTrailer;
+
+            if($course->trailer) {
+                $fileExists = Storage::disk('public')->exists($course->trailer);
+                if ($fileExists) {
+                    Storage::disk('public')->delete($course->trailer);
+                }
+            }
+        } else {
+            $data['trailer'] = $course->trailer;
         }
 
         // tags
@@ -199,9 +229,17 @@ class CourseController extends Controller
         }
 
         if($course->thumbnail) {
-            $fileExists = Storage::disk('public')->exists($course->thumbnail);
-            if ($fileExists) {
+            $fileImageExists = Storage::disk('public')->exists($course->thumbnail);
+            if ($fileImageExists) {
                 Storage::disk('public')->delete($course->thumbnail);
+            }
+
+        }
+
+        if($course->trailer) {
+            $fileTrailerExists = Storage::disk('public')->exists($course->trailer);
+            if ($fileTrailerExists) {
+                Storage::disk('public')->delete($course->trailer);
             }
 
         }
