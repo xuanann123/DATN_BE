@@ -21,6 +21,7 @@ class CreateCourseRequest extends FormRequest
             'sort_description' => 'nullable|min:6|max:255',
             'learned' => 'nullable|min:6',
             'thumbnail' => 'required|image|max:5120',
+            'trailer' => 'required|mimes:mp4,mov,avi,flv|max:102400',
             'id_category' => 'required|integer',
             'price' => 'numeric|min:0',
             'price_sale' => 'numeric|min:0',
@@ -52,6 +53,10 @@ class CreateCourseRequest extends FormRequest
             'thumbnail.required' => 'Vui lòng chọn ảnh khóa học.',
             'thumbnail.image' => 'Đây không phải ảnh.',
             'thumbnail.max' => 'Kích thước ảnh không được vượt quá :max KB.',
+
+            'trailer.required' => 'Vui lòng tải lên video trailer.',
+            'trailer.mimes' => 'Video phải có định dạng: mp4, mov, avi, hoặc flv.',
+            'trailer.max' => 'Video trailer không quá 100mb',
 
             'id_category.required' => 'Vui lòng chọn danh mục.',
             'id_category.integer' => 'Danh mục không hợp lệ.',
