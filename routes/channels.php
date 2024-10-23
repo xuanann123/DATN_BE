@@ -21,6 +21,8 @@ Broadcast::channel('vouchers', function () {
     //Vì là kênh công khai nên auto trả về true
     return true;
 });
+
+
 //Yêu cầu phải login
 Broadcast::channel('chat', function ($user) {
     if ($user) {

@@ -21,11 +21,12 @@ class VoucherCreated implements ShouldBroadcast
     }
 
 
-    public function broadcastOn()   
+    public function broadcastOn()
     {
-        //publish chanel
         return new Channel('vouchers');
     }
+   
+
     public function broadcastWith()
     {
         //Trả dữ liệu này về bên phía blade client
