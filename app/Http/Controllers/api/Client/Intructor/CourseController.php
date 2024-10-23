@@ -428,6 +428,8 @@ class CourseController extends Controller
                 c.id as course_id,
                 c.name as course_name,
                 c.thumbnail as course_thumbnail,
+                c.price,
+                c.price_sale,
                 c.total_student,
                 COUNT(DISTINCT l.id) as total_lessons,
                 c.duration as course_duration,
