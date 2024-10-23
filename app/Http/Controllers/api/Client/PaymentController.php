@@ -9,6 +9,7 @@ use App\Models\PurchaseWallet;
 use App\Models\User;
 use App\Models\UserCourse;
 use App\Models\Voucher;
+use App\Models\WithdrawalWallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -230,11 +231,13 @@ class PaymentController extends Controller
             ]);
         }
 
+        // Tạo bản ghi mới vào bảng user_course để xác nhận đã mua khóa học;
         $newUserCourse = UserCourse::query()->create([
             'id_user' => $userId,
             'id_course' => $courseId,
         ]);
 
+        // Tạo bill;
         $newBill = Bill::query()->create([
             'id_user' => $userId,
             'id_course' => $courseId,
@@ -252,13 +255,29 @@ class PaymentController extends Controller
                 'message' => 'Mua khóa học thất bại'
             ]);
         } else {
+
+            // Cập nhật lại số dư của ví mua;
             $wallet->update([
                 'balance' => $wallet->balance - $request->total_coin_after_discount,
             ]);
 
+            // Cập nhật lại số lượng voucher chưa sử dụng
             if($request->id_voucher) {
                 Voucher::find($request->id_voucher)->update([
                     'count' => $voucher->count - 1,
+                ]);
+            }
+
+            // Kiểm tra tác giả khóa học đã có ví rút chưa, nếu chưa thì tạo và cộng số tiền học viên vừa mua khóa học
+            $withdrawalWallet = WithdrawalWallet::where('id_user', $course->id_user)->first();
+            if(!$withdrawalWallet) {
+                WithdrawalWallet::query()->create([
+                    'id_user' => $course->id_user,
+                    'balance' => $request->total_coin - ($request->total_coin * self::DISCOUNT),
+                ]);
+            } else {
+                $withdrawalWallet->update([
+                    'balance' => $withdrawalWallet->balance + ($request->total_coin - ($request->total_coin * self::DISCOUNT))
                 ]);
             }
 
