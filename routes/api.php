@@ -35,10 +35,6 @@ use App\Http\Controllers\api\Client\Student\NoteController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::prefix('transactions')->group(function () {
-    Route::post('/payment/{user}', [PaymentController::class, 'paymentController']);
-    Route::post('/buy-course/{id_user}/{id_course}', [PaymentController::class, 'buyCourse']);
-});
 
 Route::prefix('auth')->group(function () {
     Route::post('/signup', [AuthController::class, 'signup']);
@@ -62,6 +58,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     # ===================== ROUTE FOR TRANSACTIONS ===========================
 
+    Route::prefix('transactions')->group(function () {
+        Route::post('/payment/{user}', [PaymentController::class, 'paymentController']);
+        Route::post('/buy-course/{id_user}/{id_course}', [PaymentController::class, 'buyCourse']);
+    });
 
     # ===================== ROUTE FOR COURSE ===========================
 
