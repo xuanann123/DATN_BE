@@ -244,6 +244,7 @@ Route::prefix('comments')->group(function () {
 # ===================== ROUTE FOR RATING ===========================
 Route::prefix('ratings')->group(function () {
     Route::get('/rating-course/{course_id}', [RatingController::class, 'getRating']);
+    Route::get('/rating-home-page', [RatingController::class, 'getRatingHomePage']);
 });
 
 
