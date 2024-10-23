@@ -224,6 +224,17 @@
                         <img src="{{ Storage::url($course->thumbnail) }}" id="show-image" width="200px">
                     </div>
 
+{{--                    <div class="mb-3">--}}
+{{--                        <label class="form-label" for="trailer">Trailer khóa học </label>--}}
+{{--                        <input class="form-control" id="trailer" name="trailer" type="file" accept="video/*">--}}
+{{--                        <small class="help-block form-text text-danger">--}}
+{{--                            @if ($errors->has('trailer'))--}}
+{{--                                {{ $errors->first('trailer') }}--}}
+{{--                            @endif--}}
+{{--                        </small> <br>--}}
+{{--                        <img src="" style="display: none" id="show-trailer" width="200px">--}}
+{{--                    </div>--}}
+
                     <div class="mb-3 row">
                         <div class="col-lg-4">
                             <div class="mb-3 mb-lg-0">
@@ -305,7 +316,7 @@
 
                     <div class="mb-3">
                         <label class="form-label">Mô tả ngắn</label>
-                        <textarea name="sort_description" id="ckeditor-classic">{{ old('sort_description') ?? $course->sort_description }}</textarea>
+                        <textarea name="sort_description" class="form-control">{{ old('sort_description') ?? $course->sort_description }}</textarea>
                         <small class="help-block form-text text-danger">
                             @if ($errors->has('sort_description'))
                                 {{ $errors->first('sort_description') }}
