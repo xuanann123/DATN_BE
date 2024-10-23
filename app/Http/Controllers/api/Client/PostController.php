@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
 class PostController extends Controller
 {
     public function getTags() {
-        
+
     }
     public function getPosts()
     {
@@ -81,7 +81,7 @@ class PostController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->validated();
-            $post['slug'] = Str::slug($data['title'], '-');
+            $data['slug'] = Str::slug($data['title'], '-');
             //Xử lý phần dữ liệu thumbnail
             if ($request->thumbnail && $request->hasFile('thumbnail')) {
                 $image = $request->file('thumbnail');
@@ -202,7 +202,7 @@ class PostController extends Controller
     public function update(UpdatePostRequest $request, string $slug)
     {
         $post = Post::where('slug', $slug)->where('is_active', '=', 1)->firstOrFail();
-      
+
         DB::beginTransaction();
         try {
             $data = $request->validated();
