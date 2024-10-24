@@ -15,7 +15,8 @@ use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
-    public function getTags() {
+    public function getTags()
+    {
 
     }
     public function getPosts()
@@ -152,10 +153,11 @@ class PostController extends Controller
     public function show(string $slug)
     {
         try {
-            //Hiển thị dữ liệu
+            //Hiển thị dữ liệu chi tiết bài viết
             $post = Post::where('slug', $slug)->where('is_active', '=', 1)->first();
             if ($post) {
-                $post = [
+                // Dữ liệu chi tiết bài viết
+                $postData = [
                     'id' => $post->id,
                     'user_id' => $post->user_id,
                     'username' => $post->user->name,
@@ -173,10 +175,54 @@ class PostController extends Controller
                     'categories' => $post->categories,
                     'tags' => $post->tags
                 ];
+
+                // Danh sách bài viết cùng tác giả đó
+                $relatedPosts = Post::where('user_id', $post->user_id)
+                    ->where('is_active', 1)
+                    ->where('id', '!=', $post->id) // không lấy bài viết hiện tại
+                    ->limit(5)
+                    ->get([
+                        'id',
+                        'user_id',
+                        'title',
+                        'slug',
+                        'description',
+                        'thumbnail',
+                        'content',
+                        'views',
+                        'published_at',
+                        'status',
+                        'allow_comments',
+                        'is_banned'
+                    ]);
+
+                // Danh sách bài viết nổi bật (sort theo view giảm dần)
+                $popularPosts = Post::where('is_active', 1)
+                    ->orderBy('views', 'DESC')
+                    ->limit(5)
+                    ->get([
+                        'id',
+                        'user_id',
+                        'title',
+                        'slug',
+                        'description',
+                        'thumbnail',
+                        'content',
+                        'views',
+                        'published_at',
+                        'status',
+                        'allow_comments',
+                        'is_banned'
+                    ]);
+
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Lấy bài viết thành công!',
-                    'data' => $post
+                    'data' => [
+                        'post' => $post,
+                        'related_posts' => $relatedPosts,
+                        'popular_post' => $popularPosts
+                    ]
                 ], 200);
             } else {
                 return response()->json([
@@ -189,6 +235,7 @@ class PostController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Đã xảy ra lỗi khi tìm bài viết',
+                'error' => $e->getMessage(),
                 'data' => []
             ], 500);
         }
