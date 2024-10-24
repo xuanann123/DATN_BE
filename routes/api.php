@@ -18,6 +18,7 @@ use App\Http\Controllers\api\Client\Intructor\ModuleController;
 use App\Http\Controllers\api\Client\Intructor\UploadVideoController;
 use App\Http\Controllers\api\Client\CourseDetailController;
 use App\Http\Controllers\api\Client\PaymentController;
+use App\Http\Controllers\api\Client\CourseController as CourseHomePageController;
 
 use App\Http\Controllers\api\Client\Student\LessonController;
 use App\Http\Controllers\api\Client\RatingController;
@@ -231,6 +232,10 @@ Route::prefix('courses')->group(function () {
     Route::get('/search-course', [CourseController::class, 'searchCourses']);
     //Chi tiết khoá học đối với người chưa đăng nhập vào hệ thống
     Route::get('detail/{slug}', [CourseDetailController::class, 'courseDetail']);
+    // Khóa học mới nhất
+    Route::get('new-course', [CourseHomePageController::class, 'listNewCourse']);
+    // Khóa học giảm giá
+    Route::get('sale-course', [CourseHomePageController::class, 'listCourseSale']);
 });
 
 
