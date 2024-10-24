@@ -20,6 +20,8 @@ class CourseDetailController extends Controller // di ve sinh
             $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons'])
                 ->where('slug', $slug)
                 ->firstOrFail();
+            // tên thằng tạo ra khóa học
+            $course->author = $course->user->name;
 
             // Số lượng bài học trong khóa học, sử dụng flatmap để đến từng số lượng bài học trong từng chương học
             $total_lessons = $course->modules->flatMap->lessons->count();
@@ -59,6 +61,10 @@ class CourseDetailController extends Controller // di ve sinh
                 ->firstOrFail();
             //Lấy người dùng hiện tại
             $user = auth()->user();
+
+            // tên thằng tạo ra khóa học
+            $course->author = $course->user->name;
+            
             // Kiểm tra xem ng dùng đã mua khóa học chưa thông qua Usercourse check xem người dùng này đã đăng kí khoá học chưa
             $userCourse = UserCourse::where('id_user', $user->id)
                 ->where('id_course', $course->id)

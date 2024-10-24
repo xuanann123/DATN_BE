@@ -32,6 +32,7 @@ class CourseController extends Controller
             ->leftJoin('modules as m', 'm.id_course', '=', 'c.id')
             ->leftJoin('lessons as l', 'l.id_module', '=', 'm.id')
             ->where('c.is_active', 1)
+            ->where('c.status', 'approved')
             ->where('u.is_active', 1)
             ->where('u.user_type', 'teacher')
             ->groupBy('u.id', 'u.name', 'u.avatar', 'c.id', 'c.name', 'c.thumbnail', 'c.price', 'c.price_sale', 'c.total_student', 'c.duration')
@@ -76,6 +77,7 @@ class CourseController extends Controller
             ->leftJoin('modules as m', 'm.id_course', '=', 'c.id')
             ->leftJoin('lessons as l', 'l.id_module', '=', 'm.id')
             ->where('c.is_active', 1)
+            ->where('c.status', 'approved')
             ->where('u.is_active', 1)
             ->where('u.user_type', 'teacher')
             ->where('c.price_sale', '>', 0)
@@ -114,7 +116,7 @@ class CourseController extends Controller
                     "data" => []
                 ], 204);
             }
-             return response()->json([
+            return response()->json([
             'status' => 'success',
             'message' => 'Lấy được danh sách khoá học theo danh mục',
             'data' => $categories
