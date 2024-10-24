@@ -236,6 +236,8 @@ Route::prefix('courses')->group(function () {
     Route::get('new-course', [CourseHomePageController::class, 'listNewCourse']);
     // Khóa học giảm giá
     Route::get('sale-course', [CourseHomePageController::class, 'listCourseSale']);
+    Route::get('category-course', [CourseHomePageController::class, 'getAllCourseByCategory']);
+
 });
 
 
