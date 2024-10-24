@@ -39,10 +39,9 @@ class CourseController extends Controller
 
         if (count($courses) == 0) {
             return response()->json([
-                'code' => 204,
                 'status' => 'error',
                 'message' => 'Không có khóa học'
-            ]);
+            ], 204);
         }
 
         return response()->json([
