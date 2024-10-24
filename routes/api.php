@@ -74,6 +74,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('courses')->group(function () {
         // Route::get('/{course}', [CourseDetailController::class, 'courseDetail']);
+        // Check xem đã mua khóa học hay chưa;
+        Route::get('check-buy-course/{id_user}/{id_course}', [PaymentController::class, 'checkBuyCourse']);
         //Chi tiết bài học khi đăng kí khoá học
         Route::get('detail/check/{slug}', [CourseDetailController::class, 'courseDetailForAuthUser']);
     });
@@ -119,11 +121,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('teacher')->group(function () {
+        // Ví rút của giảng viên
+        Route::get('/balance/{user}', [PaymentController::class, 'balanceWithdrawalWallets']);
         // Danh sách khóa học
         Route::get('/course', [CourseController::class, 'index']);
         //Thêm khoá học mới
         Route::post('/course', [CourseController::class, 'storeNewCourse']);
-        //
+
         // Route::get('/course/{course}', [CourseController::class, 'showCourseTeacher']);
 
         Route::prefix('manage')->group(function () {

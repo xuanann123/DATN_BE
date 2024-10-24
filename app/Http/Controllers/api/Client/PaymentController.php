@@ -42,6 +42,25 @@ class PaymentController extends Controller
         ]);
     }
 
+    public function balanceWithdrawalWallets(Request $request)
+    {
+        $wallet = WithdrawalWallet::where('id_user', $request->user)->first();
+
+        if(!$wallet){
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Ví không tồn tại'
+            ]);
+        }
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'data' => $wallet
+        ]);
+    }
+
     public function paymentController(Request $request) {
 
         $vnp_Url = env('VNP_URL');
@@ -203,6 +222,14 @@ class PaymentController extends Controller
             ]);
         }
 
+        $checkByCourse = UserCourse::where('id_user', $userId)->where('id_course', $courseId)->first();
+        if($checkByCourse) {
+            return response()->json([
+                'status' => "error",
+                'message' => "Bạn đã mua khóa học này rồi"
+            ], 409);
+        }
+
 
         $wallet = PurchaseWallet::find($userId);
         if(!$wallet) {
@@ -287,5 +314,43 @@ class PaymentController extends Controller
                 'data' => $newBill
             ], 201);
         }
+    }
+
+    public function checkBuyCourse(Request $request)
+    {
+        $userId = $request->id_user;
+        $courseId = $request->id_course;
+
+        $course = Course::find($courseId);
+        if(!$course) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Khóa học không tồn tại'
+            ]);
+        }
+
+        $user = User::find($userId);
+        if(!$user) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Người dùng không tồn tại'
+            ]);
+        }
+
+        $checkByCourse = UserCourse::where('id_user', $userId)->where('id_course', $courseId)->first();
+        if($checkByCourse) {
+            return response()->json([
+                'status' => "error",
+                'message' => "Bạn đã mua khóa học này rồi"
+            ], 409);
+        }
+
+        return response()->json([
+            'code' => 204,
+            'status' => 'success',
+            'message' => 'Chưa mua khóa học'
+        ]);
     }
 }
