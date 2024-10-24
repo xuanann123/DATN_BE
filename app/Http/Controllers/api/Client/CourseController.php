@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\api\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class CourseController extends Controller
 {
-    public function listNewCourse() {
+    public function listNewCourse()
+    {
         $courses = DB::table('courses as c')
             ->selectRaw('
                 u.id as user_id,
@@ -32,7 +34,7 @@ class CourseController extends Controller
             ->where('c.is_active', 1)
             ->where('u.is_active', 1)
             ->where('u.user_type', 'teacher')
-            ->groupBy('u.id', 'u.name', 'u.avatar', 'c.id', 'c.name', 'c.thumbnail',  'c.price','c.price_sale', 'c.total_student', 'c.duration')
+            ->groupBy('u.id', 'u.name', 'u.avatar', 'c.id', 'c.name', 'c.thumbnail', 'c.price', 'c.price_sale', 'c.total_student', 'c.duration')
             ->orderByDesc('c.created_at')
             ->limit(3)
             ->get();
@@ -51,7 +53,8 @@ class CourseController extends Controller
         ], 200);
     }
 
-    public function listCourseSale() {
+    public function listCourseSale()
+    {
         $courses = DB::table('courses as c')
             ->selectRaw('
                 u.id as user_id,
@@ -75,8 +78,8 @@ class CourseController extends Controller
             ->where('c.is_active', 1)
             ->where('u.is_active', 1)
             ->where('u.user_type', 'teacher')
-            ->where('c.price_sale', '>' , 0)
-            ->groupBy('u.id', 'u.name', 'u.avatar', 'c.id', 'c.name', 'c.thumbnail',  'c.price','c.price_sale', 'c.total_student', 'c.duration')
+            ->where('c.price_sale', '>', 0)
+            ->groupBy('u.id', 'u.name', 'u.avatar', 'c.id', 'c.name', 'c.thumbnail', 'c.price', 'c.price_sale', 'c.total_student', 'c.duration')
             ->orderByDesc('c.price_sale')
             ->limit(3)
             ->get();
@@ -93,5 +96,35 @@ class CourseController extends Controller
             'message' => 'Danh sách khóa học giảm giá',
             'data' => $courses,
         ], 200);
+    }
+    //Lấy khoá học theo học theo tất cả danh mục
+    public function getAllCourseByCategory()
+    {
+        //Danh sách category
+        try {
+            $categories = Category::with([
+                'courses' => function ($query) {
+                    $query->limit(4);
+                }
+            ])->where('is_active', 1)->get();
+            if (count($categories) < 1) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Chưa có danh mục nào',
+                    "data" => []
+                ], 204);
+            }
+             return response()->json([
+            'status' => 'success',
+            'message' => 'Lấy được danh sách khoá học theo danh mục',
+            'data' => $categories
+        ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi trong quá trình lấy danh mục.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
