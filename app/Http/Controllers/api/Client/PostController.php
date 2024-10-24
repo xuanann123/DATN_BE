@@ -156,26 +156,6 @@ class PostController extends Controller
             //Hiển thị dữ liệu chi tiết bài viết
             $post = Post::where('slug', $slug)->where('is_active', '=', 1)->first();
             if ($post) {
-                // Dữ liệu chi tiết bài viết
-                $postData = [
-                    'id' => $post->id,
-                    'user_id' => $post->user_id,
-                    'username' => $post->user->name,
-                    'avatar' => $post->user->avatar,
-                    'title' => $post->title,
-                    'slug' => $post->slug,
-                    'description' => $post->description,
-                    'thumbnail' => $post->thumbnail,
-                    'content' => $post->content,
-                    'views' => $post->views,
-                    'status' => $post->status,
-                    'allow_comments' => $post->allow_comments,
-                    'is_banned' => $post->is_banned,
-                    'published_at' => $post->published_at,
-                    'categories' => $post->categories,
-                    'tags' => $post->tags
-                ];
-
                 // Danh sách bài viết cùng tác giả đó
                 $relatedPosts = Post::where('user_id', $post->user_id)
                     ->where('is_active', 1)
@@ -214,15 +194,32 @@ class PostController extends Controller
                         'allow_comments',
                         'is_banned'
                     ]);
+                // Dữ liệu chi tiết bài viết
+                $post = [
+                    'id' => $post->id,
+                    'user_id' => $post->user_id,
+                    'username' => $post->user->name,
+                    'avatar' => $post->user->avatar,
+                    'title' => $post->title,
+                    'slug' => $post->slug,
+                    'description' => $post->description,
+                    'thumbnail' => $post->thumbnail,
+                    'content' => $post->content,
+                    'views' => $post->views,
+                    'status' => $post->status,
+                    'allow_comments' => $post->allow_comments,
+                    'is_banned' => $post->is_banned,
+                    'published_at' => $post->published_at,
+                    'categories' => $post->categories,
+                    'tags' => $post->tags,
+                    'related_posts' => $relatedPosts,
+                    'popular_post' => $popularPosts
+                ];
 
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Lấy bài viết thành công!',
-                    'data' => [
-                        'post' => $post,
-                        'related_posts' => $relatedPosts,
-                        'popular_post' => $popularPosts
-                    ]
+                    'data' => $post
                 ], 200);
             } else {
                 return response()->json([
