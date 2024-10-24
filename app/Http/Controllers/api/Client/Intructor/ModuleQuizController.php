@@ -246,8 +246,9 @@ class ModuleQuizController extends Controller
                 $question->image_url = null; // Xóa đường dẫn image trong db
             } else {
                 // Kiểm tra nếu có ảnh mới upload
-                if (isset($questionData['image'])) {
-                    $question->image_url = $this->uploadImage($questionData['image'], 'questions', $question->image_url);
+                $questionImage = $request->file('question.image');
+                if ($questionImage) {
+                    $question->image_url = $this->uploadImage($questionImage, 'questions', $question->image_url);
                 }
             }
 
