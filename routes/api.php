@@ -36,7 +36,6 @@ use App\Http\Controllers\api\Client\Student\NoteController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::get('history-transactions/{id_user}', [PaymentController::class, 'historyTransactionsPurchase']);
 
 Route::prefix('auth')->group(function () {
     Route::post('/signup', [AuthController::class, 'signup']);
@@ -121,6 +120,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/balance/{user}', [PaymentController::class, 'balancePurchaseWallet']);
         Route::get('/history-buy-course/{id_user}', [PaymentController::class, 'historyBuyCourse']);
+        Route::get('/history-transactions/{id_user}', [PaymentController::class, 'historyTransactionsPurchase']);
     });
 
     Route::prefix('teacher')->group(function () {
