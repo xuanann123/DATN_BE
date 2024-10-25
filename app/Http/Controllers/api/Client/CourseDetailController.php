@@ -142,6 +142,18 @@ class CourseDetailController extends Controller // di ve sinh
                 ->whereIn('quiz_id', $course->modules->pluck('quiz.id'))
                 ->count();
 
+            // Gán giá trị is_completed cho quiz trong khóa học
+            foreach ($course->modules as $module) {
+                if ($module->quiz) {
+                    $quizProgress = QuizProgress::where('user_id', $user->id)
+                        ->where('quiz_id', $module->quiz->id)
+                        ->first();
+
+                    // Gán giá trị is_completed cho quiz
+                    $module->quiz->is_completed = $quizProgress ? $quizProgress->is_completed : 0;
+                }
+            }
+
             // Tổng số lượng bài học và quiz đã hoàn thành
             $total_completed_items = $completed_lessons + $completed_quizzes;
 
