@@ -393,6 +393,49 @@ class PaymentController extends Controller
             return response()->json([
                 'code' => 204,
                 'status' => 'error',
+                'message' => 'Không có lịch sử mua khóa học'
+            ]);
+        }
+
+        return response()->json([
+            'status' => "success",
+            'message' => 'Danh sách lịch sử mua khóa học',
+            'data' => $listHistoryByCourse
+        ], 200);
+    }
+
+    public function historyTransactionsPurchase(Request $request)
+    {
+        $userId = $request->id_user;
+        $user = User::find($userId);
+        if(!$user) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Người dùng không tồn tại'
+            ]);
+        }
+
+        $listHistoryTransactionsPurchase = DB::table('transactions as t')
+            ->selectRaw('
+                u.name as user_name,
+                t.id as transaction_id,
+                t.coin_unit,
+                t.amount,
+                t.coin,
+                t.status,
+                t.created_at as date_of_transaction
+            ')
+            ->join('users as u', 'u.id', '=', 't.transactionable_id')
+            ->where('t.transactionable_id', $userId)
+            ->where('t.transactionable_type', 'App\Models\PurchaseWallet')
+            ->orderByDesc('date_of_transaction')
+            ->get();
+
+        if(!$listHistoryTransactionsPurchase) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
                 'message' => 'Không có lịch sử giao dịch'
             ]);
         }
@@ -400,7 +443,7 @@ class PaymentController extends Controller
         return response()->json([
             'status' => "success",
             'message' => 'Danh sách lịch sử giao dịch',
-            'data' => $listHistoryByCourse
+            'data' => $listHistoryTransactionsPurchase
         ], 200);
     }
 }
