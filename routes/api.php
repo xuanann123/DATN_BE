@@ -61,7 +61,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('transactions')->group(function () {
         Route::post('/payment/{user}', [PaymentController::class, 'paymentController']);
-        Route::post('/buy-course/{id_user}/{id_course}', [PaymentController::class, 'buyCourse']);
+        Route::post('buy-course/{id_user}/{id_course}', [PaymentController::class, 'buyCourse']);
     });
 
     # ===================== ROUTE FOR CHECKOUT ===========================
@@ -119,6 +119,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/posts/{id}', [PostController::class, 'getListPostByUser']);
 
         Route::get('/balance/{user}', [PaymentController::class, 'balancePurchaseWallet']);
+        Route::get('/history-buy-course/{id_user}', [PaymentController::class, 'historyBuyCourse']);
+
     });
 
     Route::prefix('teacher')->group(function () {
