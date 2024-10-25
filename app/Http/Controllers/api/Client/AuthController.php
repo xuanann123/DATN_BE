@@ -92,6 +92,7 @@ class AuthController extends Controller
 
             $user->update([
                 'email_verified_at' => now(),
+                'is_active' => 1
             ]);
 
             $otp->delete();
