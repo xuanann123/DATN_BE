@@ -84,6 +84,7 @@ Route::middleware('auth:sanctum')->group(function () {
     # ===================== ROUTE FOR LESSON ===========================
     Route::prefix('lessons')->group(function () {
         Route::get('/lesson-detail/{lesson}', [LessonController::class, 'lessonDetail']);
+        Route::get('/quiz-detail/{quiz}', [LessonController::class, 'quizDetail']);
         Route::put('/lesson-progress/{lesson}', [LessonController::class, 'updateLessonProgress']);
     });
 

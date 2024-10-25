@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api\Client\Student;
 
+use App\Models\Quiz;
 use App\Models\Video;
 use App\Models\Lesson;
 use App\Models\Document;
@@ -41,6 +42,45 @@ class LessonController extends Controller
                 'status' => 'success',
                 'message' => "Thông tin chi tiết bài học.",
                 'data' => $lesson,
+            ], 200);
+        } catch (\Exception $e) {
+            //Lỗi server báo lỗi
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi lấy thông tin bài học.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    // Chi tiết quiz
+    public function quizDetail(Quiz $quiz)
+    {
+        try {
+            //Lấy người dùng hiện tại
+            $user = auth()->user();
+
+            // Kiểm tra người dùng đã mua khoá học đó chưa
+            $userCourse = UserCourse::where('id_user', $user->id)
+                ->where('id_course', $quiz->module->id_course)
+                ->first();
+            //Nếu chưa mua thì báo lỗi 403 cấm truy cập
+            if (!$userCourse) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Bạn chưa mua khóa học này.',
+                    'data' => []
+                ], 403);
+            }
+            //Lấy quiz đó ra
+            $quiz = Quiz::with(['questions.options'])
+                ->where('id', $quiz->id)
+                ->firstOrFail();
+            //Nếu tồn tại quiz đó thì trả về dữ liệu như bên
+            return response()->json([
+                'status' => 'success',
+                'message' => "Thông tin chi tiết bài học.",
+                'data' => $quiz,
             ], 200);
         } catch (\Exception $e) {
             //Lỗi server báo lỗi
