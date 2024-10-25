@@ -28,12 +28,13 @@ class CourseController extends Controller
     public function index()
     {
         try {
-            $limit = request()->get('limit', 8);
+            // $limit = request()->get('limit', 8);
 
-            $courses = Course::select('id', 'name', 'thumbnail', 'status')
-                ->where('id_user', auth()->id())
-                ->orderByDesc('id')
-                ->paginate($limit);
+            // $courses = Course::select('id', 'name', 'thumbnail', 'status')
+            //     ->where('id_user', auth()->id())
+            //     ->orderByDesc('id')
+            //     ->paginate($limit);
+            $courses = Course::with('user', 'category', 'tags')->where('id_user', auth()->id())->latest('id')->paginate(8);
             return response()->json([
                 'status' => 200,
                 'message' => 'Danh sách khóa học.',
