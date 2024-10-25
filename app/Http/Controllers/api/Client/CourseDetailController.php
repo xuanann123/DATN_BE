@@ -101,8 +101,13 @@ class CourseDetailController extends Controller // di ve sinh
             $userCourse = UserCourse::where('id_user', $user->id)
                 ->where('id_course', $course->id)
                 ->first();
+
             // Tống số lượng bài học trong khoá học
             $total_lessons = $course->modules->flatMap->lessons->count();
+            // Tổng số lượng quiz trong khóa học
+            $total_quizzes = $course->modules->whereNotNull('quiz')->count();
+            // Tổng bài học + quiz
+            $total_items = $total_lessons + $total_quizzes;
 
             // set duration cho tung bai hoc
             $this->setLessonDurations($course);
@@ -131,8 +136,17 @@ class CourseDetailController extends Controller // di ve sinh
                 ->whereIn('id_lesson', $course->modules->flatMap->lessons->pluck('id'))
                 ->count();
 
+            // Số lượng quiz đã hoàn thành
+            $completed_quizzes = QuizProgress::where('user_id', $user->id)
+                ->where('is_completed', 1)
+                ->whereIn('quiz_id', $course->modules->pluck('quiz.id'))
+                ->count();
+
+            // Tổng số lượng bài học và quiz đã hoàn thành
+            $total_completed_items = $completed_lessons + $completed_quizzes;
+
             // Tính tiến độ khoá học người dùng đã đăng kí khoá học sẽ là (tổng bài đã hoàn thiện)/ (tổng bài học) * 100 = tiến độ (%)
-            $progress_percent = $total_lessons > 0 ? ($completed_lessons / $total_lessons) * 100 : 0;
+            $progress_percent = $total_items > 0 ? ($total_completed_items / $total_items) * 100 : 0;
 
             // Biến check khoá học đã hoàn thành => bài học cuối cùng.
             $last_completed_lesson = NULL;
@@ -198,8 +212,8 @@ class CourseDetailController extends Controller // di ve sinh
                 'data' => [
                     // 'course' => $course,
                     'progress_percent' => $progress_percent,
-                    'total_lessons' => $total_lessons,
-                    'completed_lessons' => $completed_lessons,
+                    'total_lessons' => $total_items,
+                    'completed_lessons' => $total_completed_items,
                     'modules' => $course->modules,
                     'next_lesson' => $next_lesson,
                 ],
