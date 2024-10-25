@@ -146,7 +146,10 @@ class CourseController extends Controller
         try {
             $categories = Category::with([
                 'courses' => function ($query) {
-                    $query->where('is_active', 1)->where('status', 'approved')->limit(4);
+                    $query->where('is_active', 1)
+                        ->where('status', 'approved')
+                        ->with(['user:id,name,avatar'])
+                        ->limit(4);
                 }
             ])->where('is_active', 1)->get();
             if (count($categories) < 1) {
