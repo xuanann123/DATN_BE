@@ -119,6 +119,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/posts/{id}', [PostController::class, 'getListPostByUser']);
 
         Route::get('/balance/{user}', [PaymentController::class, 'balancePurchaseWallet']);
+        //Danh sách khoá học của tôi đã mua
+        Route::get('/my-course-bought', [UserController::class, 'myCourseBought']);
     });
 
     Route::prefix('teacher')->group(function () {

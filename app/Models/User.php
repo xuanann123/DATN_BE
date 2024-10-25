@@ -68,4 +68,9 @@ class User extends Authenticatable implements MustVerifyEmail
     public function posts() {
         return $this->hasMany(Post::class, 'user_id');
     }
+    //Những khoá học đã đăng kí
+    public function userCourses()
+    {
+        return $this->belongsToMany(Course::class, 'user_courses', 'id_user', 'id_course');
+    }
 }

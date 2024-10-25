@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Client\User\UpdateProfileRequest;
 use App\Http\Requests\Client\User\ChangePasswordRequest;
+use App\Models\User;
+use App\Models\UserCourse;
+use App\Models\Video;
 
 class UserController extends Controller
 {
@@ -134,5 +137,49 @@ class UserController extends Controller
                 Storage::disk('public')->delete($oldAvatarPath);
             }
         }
+    }
+    //Danh sách khoá học của tôi đã mua
+    public function myCourseBought()
+    {
+        $authUser = Auth::user();
+        $myCourseBought = User::with([
+            'userCourses.tags',
+            'userCourses.category',
+        ])->findOrFail($authUser->id);
+        //Duyệt qua toàn bộ khoá học đó
+        $myCourseBought->userCourses->each(function ($course) {
+            // Tính tổng số lượng bài học trong khóa học
+            $total_lessons = $course->modules->flatMap->lessons->count();
+            // Set thời gian cho từng bài học (cần có hàm setLessonDurations)
+            $this->setLessonDurations($course);
+            $total_duration = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
+                ->sum('duration');
+            //Cập nhật tổng số lượng bài học
+            // $course->submited_at = $course->created_at;
+            $course->total_lessons = $total_lessons;
+            //Tổng thời gian của khoá học đó
+            $course->total_duration = $total_duration;
+
+        });
+        return response()->json(
+            [
+                'status' => 'success',
+                'message' => 'Danh sách khoa học đã mua.',
+                'data' => $myCourseBought,
+            ]
+            ,
+            200
+        );
+    }
+    private function setLessonDurations($course)
+    {
+        $course->modules->flatMap->lessons->map(function ($lesson) {
+            if ($lesson->lessonable_type === Video::class) {
+                $video = Video::find($lesson->lessonable_id);
+                $lesson->duration = $video ? $video->duration : null;
+            } else {
+                $lesson->duration = null;
+            }
+        });
     }
 }
