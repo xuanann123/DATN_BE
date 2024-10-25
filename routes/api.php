@@ -61,7 +61,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('transactions')->group(function () {
         Route::post('/payment/{user}', [PaymentController::class, 'paymentController']);
-        Route::post('/buy-course/{id_user}/{id_course}', [PaymentController::class, 'buyCourse']);
+        Route::post('buy-course/{id_user}/{id_course}', [PaymentController::class, 'buyCourse']);
     });
 
     # ===================== ROUTE FOR CHECKOUT ===========================
@@ -84,6 +84,7 @@ Route::middleware('auth:sanctum')->group(function () {
     # ===================== ROUTE FOR LESSON ===========================
     Route::prefix('lessons')->group(function () {
         Route::get('/lesson-detail/{lesson}', [LessonController::class, 'lessonDetail']);
+        Route::get('/quiz-detail/{quiz}', [LessonController::class, 'quizDetail']);
         Route::put('/lesson-progress/{lesson}', [LessonController::class, 'updateLessonProgress']);
     });
 
@@ -119,8 +120,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/posts/{id}', [PostController::class, 'getListPostByUser']);
 
         Route::get('/balance/{user}', [PaymentController::class, 'balancePurchaseWallet']);
+
         //Danh sách khoá học của tôi đã mua
         Route::get('/my-course-bought', [UserController::class, 'myCourseBought']);
+
+        Route::get('/history-buy-course/{id_user}', [PaymentController::class, 'historyBuyCourse']);
+        Route::get('/history-transactions/{id_user}', [PaymentController::class, 'historyTransactionsPurchase']);
+
     });
 
     Route::prefix('teacher')->group(function () {
@@ -240,6 +246,8 @@ Route::prefix('courses')->group(function () {
     Route::get('new-course', [CourseHomePageController::class, 'listNewCourse']);
     // Khóa học giảm giá
     Route::get('sale-course', [CourseHomePageController::class, 'listCourseSale']);
+    // Khóa học nổi bật
+    Route::get('popular-course', [CourseHomePageController::class, 'listCoursePopular']);
     Route::get('category-course', [CourseHomePageController::class, 'getAllCourseByCategory']);
 
 });

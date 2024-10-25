@@ -8,7 +8,7 @@ use App\Models\UserCourse;
 use Illuminate\Http\Request;
 use App\Models\LessonProgress;
 use App\Http\Controllers\Controller;
-
+use App\Models\QuizProgress;
 
 class CourseDetailController extends Controller // di ve sinh
 {
@@ -17,7 +17,7 @@ class CourseDetailController extends Controller // di ve sinh
     {
         try {
             //Chi tiết bài học lấy theo slug
-            $course = Course::with(['category', 'user', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons'])
+            $course = Course::with(['category', 'user', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons', 'modules.quiz'])
                 ->where('slug', $slug)
                 ->where('is_active', 1)
                 ->where('status', 'approved')
@@ -88,7 +88,7 @@ class CourseDetailController extends Controller // di ve sinh
 
         try {
             //Lấy bài học với các mục liên quan tránh n+1 egger loading
-            $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons', 'quiz'])
+            $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons', 'modules.quiz'])
                 ->where('slug', $slug)
                 ->firstOrFail();
             //Lấy người dùng hiện tại
@@ -101,8 +101,13 @@ class CourseDetailController extends Controller // di ve sinh
             $userCourse = UserCourse::where('id_user', $user->id)
                 ->where('id_course', $course->id)
                 ->first();
+
             // Tống số lượng bài học trong khoá học
             $total_lessons = $course->modules->flatMap->lessons->count();
+            // Tổng số lượng quiz trong khóa học
+            $total_quizzes = $course->modules->whereNotNull('quiz')->count();
+            // Tổng bài học + quiz
+            $total_items = $total_lessons + $total_quizzes;
 
             // set duration cho tung bai hoc
             $this->setLessonDurations($course);
@@ -131,8 +136,29 @@ class CourseDetailController extends Controller // di ve sinh
                 ->whereIn('id_lesson', $course->modules->flatMap->lessons->pluck('id'))
                 ->count();
 
+            // Số lượng quiz đã hoàn thành
+            $completed_quizzes = QuizProgress::where('user_id', $user->id)
+                ->where('is_completed', 1)
+                ->whereIn('quiz_id', $course->modules->pluck('quiz.id'))
+                ->count();
+
+            // Gán giá trị is_completed cho quiz trong khóa học
+            foreach ($course->modules as $module) {
+                if ($module->quiz) {
+                    $quizProgress = QuizProgress::where('user_id', $user->id)
+                        ->where('quiz_id', $module->quiz->id)
+                        ->first();
+
+                    // Gán giá trị is_completed cho quiz
+                    $module->quiz->is_completed = $quizProgress ? $quizProgress->is_completed : 0;
+                }
+            }
+
+            // Tổng số lượng bài học và quiz đã hoàn thành
+            $total_completed_items = $completed_lessons + $completed_quizzes;
+
             // Tính tiến độ khoá học người dùng đã đăng kí khoá học sẽ là (tổng bài đã hoàn thiện)/ (tổng bài học) * 100 = tiến độ (%)
-            $progress_percent = $total_lessons > 0 ? ($completed_lessons / $total_lessons) * 100 : 0;
+            $progress_percent = $total_items > 0 ? ($total_completed_items / $total_items) * 100 : 0;
 
             // Biến check khoá học đã hoàn thành => bài học cuối cùng.
             $last_completed_lesson = NULL;
@@ -153,7 +179,6 @@ class CourseDetailController extends Controller // di ve sinh
                     // bài học cuối cùng hoàn thành
                     if ($lesson->is_completed) {
                         $last_completed_lesson = $lesson->makeHidden('module');
-
                     }
                 }
                 //
@@ -172,13 +197,22 @@ class CourseDetailController extends Controller // di ve sinh
                         // bài học tiếp theo trong cùng chương
                         $next_lesson = $next_lesson_in_module;
                     } else {
-                        // neu la bai hoc cuoi cung trong chuong thi chuyen sang chuong sau
-                        $next_module = $course->modules
-                            ->where('position', '>', $current_module->position)
-                            ->sortBy('posittion')
+                        // nếu chưa làm quiz chương đó thì "next_lesson" sẽ là quiz của chương
+                        $quizProgress = QuizProgress::where('user_id', $user->id)
+                            ->where('quiz_id', $current_module->quiz->id)
                             ->first();
-                        if ($next_module) {
-                            $next_lesson = $next_module->lessons->sortBy('posittion')->first();
+
+                        if (!$quizProgress || !$quizProgress->is_completed) {
+                            $next_lesson = $current_module->quiz;
+                        } else {
+                            // neu la bai hoc cuoi cung trong chuong va quiz da hoan thanh thi chuyen sang chuong sau
+                            $next_module = $course->modules
+                                ->where('position', '>', $current_module->position)
+                                ->sortBy('posittion')
+                                ->first();
+                            if ($next_module) {
+                                $next_lesson = $next_module->lessons->sortBy('posittion')->first();
+                            }
                         }
                     }
                 }
@@ -190,8 +224,8 @@ class CourseDetailController extends Controller // di ve sinh
                 'data' => [
                     // 'course' => $course,
                     'progress_percent' => $progress_percent,
-                    'total_lessons' => $total_lessons,
-                    'completed_lessons' => $completed_lessons,
+                    'total_lessons' => $total_items,
+                    'completed_lessons' => $total_completed_items,
                     'modules' => $course->modules,
                     'next_lesson' => $next_lesson,
                 ],

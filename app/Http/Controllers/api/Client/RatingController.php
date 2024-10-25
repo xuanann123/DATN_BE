@@ -80,7 +80,7 @@ class RatingController extends Controller
             ->join('users as u', 'u.id', '=', 'r.id_user')
             ->where('r.rate', 5)
             ->orderByDesc('r.created_at')
-            ->limit(5)
+            ->limit(6)
             ->get();
 
         if(count($listRating) == 0) {

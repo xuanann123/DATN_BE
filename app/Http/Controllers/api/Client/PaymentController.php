@@ -12,6 +12,7 @@ use App\Models\Voucher;
 use App\Models\WithdrawalWallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class PaymentController extends Controller
@@ -204,6 +205,13 @@ class PaymentController extends Controller
         $userId = $request->id_user;
         $courseId = $request->id_course;
 
+        if(!$request->total_coin || !$request->total_coin_after_discount) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Thiếu thông tin thanh toán'
+            ]);
+        }
+
         $course = Course::find($courseId);
         if(!$course) {
             return response()->json([
@@ -231,7 +239,7 @@ class PaymentController extends Controller
         }
 
 
-        $wallet = PurchaseWallet::find($userId);
+        $wallet = PurchaseWallet::where('id_user', $userId)->first();
         if(!$wallet) {
             return response()->json([
                 'code' => 204,
@@ -352,5 +360,91 @@ class PaymentController extends Controller
             'status' => 'success',
             'message' => 'Chưa mua khóa học'
         ]);
+    }
+
+    public function historyBuyCourse(Request $request)
+    {
+        $userId = $request->id_user;
+        $user = User::find($userId);
+        if(!$user) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Người dùng không tồn tại'
+            ]);
+        }
+
+        $listHistoryByCourse = DB::table('bills as b')
+            ->selectRaw('
+                u.name as user_name,
+                c.name as course_name,
+                b.id as bill_id,
+                b.total_coin_after_discount as total_coin,
+                b.status,
+                b.created_at as date_of_purchase
+            ')
+            ->join('users as u', 'u.id', '=', 'b.id_user')
+            ->join('courses as c', 'c.id', '=', 'b.id_course')
+            ->where('b.id_user', $userId)
+            ->orderByDesc('date_of_purchase')
+            ->get();
+
+        if($listHistoryByCourse->count() == 0) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Không có lịch sử mua khóa học'
+            ]);
+        }
+
+        return response()->json([
+            'status' => "success",
+            'message' => 'Danh sách lịch sử mua khóa học',
+            'data' => $listHistoryByCourse
+        ], 200);
+    }
+
+    public function historyTransactionsPurchase(Request $request)
+    {
+        $userId = $request->id_user;
+        $user = User::find($userId);
+        if(!$user) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Người dùng không tồn tại'
+            ]);
+        }
+
+        $listHistoryTransactionsPurchase = DB::table('transactions as t')
+            ->selectRaw('
+                u.name as user_name,
+                t.id as transaction_id,
+                t.coin_unit,
+                t.amount,
+                t.coin,
+                t.status,
+                t.created_at as date_of_transaction
+            ')
+            ->join('purchase_wallets as p', 'p.id', '=', 't.transactionable_id')
+            ->join('users as u', 'u.id', '=', 'p.id_user')
+            ->where('u.id', $userId)
+            ->where('t.transactionable_type', 'App\Models\PurchaseWallet')
+            ->orderByDesc('date_of_transaction')
+            ->get();
+
+        if($listHistoryTransactionsPurchase->count() == 0) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Không có lịch sử giao dịch'
+            ]);
+        }
+
+        return response()->json([
+            'status' => "success",
+            'message' => 'Danh sách lịch sử giao dịch',
+            'data' => $listHistoryTransactionsPurchase
+        ], 200);
     }
 }

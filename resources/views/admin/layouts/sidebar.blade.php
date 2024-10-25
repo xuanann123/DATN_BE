@@ -198,6 +198,29 @@
                     </div>
                 </li>
 
+                {{-- Giao dịch --}}
+                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý giao dịch</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#"
+                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                        <i class="ri-arrow-right-circle-line"></i> <span>Giao dịch nạp tiền</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#"
+                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                        <i class="ri-arrow-left-circle-line"></i> <span>Giao dịch rút tiền</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#"
+                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                        <i class="ri-money-euro-circle-line"></i> <span>Yêu cầu rút tiền</span>
+                    </a>
+                </li>
+
+
                 {{-- Kiểm duyệt --}}
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý kiểm
                         duyệt</span>
