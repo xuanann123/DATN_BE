@@ -120,8 +120,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/posts/{id}', [PostController::class, 'getListPostByUser']);
 
         Route::get('/balance/{user}', [PaymentController::class, 'balancePurchaseWallet']);
+
+        //Danh sách khoá học của tôi đã mua
+        Route::get('/my-course-bought', [UserController::class, 'myCourseBought']);
+
         Route::get('/history-buy-course/{id_user}', [PaymentController::class, 'historyBuyCourse']);
         Route::get('/history-transactions/{id_user}', [PaymentController::class, 'historyTransactionsPurchase']);
+
     });
 
     Route::prefix('teacher')->group(function () {
