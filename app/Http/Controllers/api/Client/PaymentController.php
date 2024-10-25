@@ -238,7 +238,7 @@ class PaymentController extends Controller
         }
 
 
-        $wallet = PurchaseWallet::find($userId);
+        $wallet = PurchaseWallet::where('id_user', $userId)->first();
         if(!$wallet) {
             return response()->json([
                 'code' => 204,
