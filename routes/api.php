@@ -232,6 +232,8 @@ Route::prefix('courses')->group(function () {
     Route::get('/search-course', [CourseController::class, 'searchCourses']);
     //Chi tiết khoá học đối với người chưa đăng nhập vào hệ thống
     Route::get('detail/{slug}', [CourseDetailController::class, 'courseDetail']);
+    Route::get('detail/quiz/{slug}', [CourseDetailController::class, 'courseQuizDetail']);
+
     // Khóa học mới nhất
     Route::get('new-course', [CourseHomePageController::class, 'listNewCourse']);
     // Khóa học giảm giá
