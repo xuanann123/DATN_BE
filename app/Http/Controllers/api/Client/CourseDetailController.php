@@ -8,7 +8,7 @@ use App\Models\UserCourse;
 use Illuminate\Http\Request;
 use App\Models\LessonProgress;
 use App\Http\Controllers\Controller;
-
+use App\Models\QuizProgress;
 
 class CourseDetailController extends Controller // di ve sinh
 {
@@ -17,7 +17,7 @@ class CourseDetailController extends Controller // di ve sinh
     {
         try {
             //Chi tiết bài học lấy theo slug
-            $course = Course::with(['category', 'user', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons'])
+            $course = Course::with(['category', 'user', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons', 'modules.quiz'])
                 ->where('slug', $slug)
                 ->where('is_active', 1)
                 ->where('status', 'approved')
@@ -88,7 +88,7 @@ class CourseDetailController extends Controller // di ve sinh
 
         try {
             //Lấy bài học với các mục liên quan tránh n+1 egger loading
-            $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons', 'quiz'])
+            $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons', 'modules.quiz'])
                 ->where('slug', $slug)
                 ->firstOrFail();
             //Lấy người dùng hiện tại
@@ -153,7 +153,6 @@ class CourseDetailController extends Controller // di ve sinh
                     // bài học cuối cùng hoàn thành
                     if ($lesson->is_completed) {
                         $last_completed_lesson = $lesson->makeHidden('module');
-
                     }
                 }
                 //
@@ -172,13 +171,22 @@ class CourseDetailController extends Controller // di ve sinh
                         // bài học tiếp theo trong cùng chương
                         $next_lesson = $next_lesson_in_module;
                     } else {
-                        // neu la bai hoc cuoi cung trong chuong thi chuyen sang chuong sau
-                        $next_module = $course->modules
-                            ->where('position', '>', $current_module->position)
-                            ->sortBy('posittion')
+                        // nếu chưa làm quiz chương đó thì "next_lesson" sẽ là quiz của chương
+                        $quizProgress = QuizProgress::where('user_id', $user->id)
+                            ->where('quiz_id', $current_module->quiz->id)
                             ->first();
-                        if ($next_module) {
-                            $next_lesson = $next_module->lessons->sortBy('posittion')->first();
+
+                        if (!$quizProgress || !$quizProgress->is_completed) {
+                            $next_lesson = $current_module->quiz;
+                        } else {
+                            // neu la bai hoc cuoi cung trong chuong va quiz da hoan thanh thi chuyen sang chuong sau
+                            $next_module = $course->modules
+                                ->where('position', '>', $current_module->position)
+                                ->sortBy('posittion')
+                                ->first();
+                            if ($next_module) {
+                                $next_lesson = $next_module->lessons->sortBy('posittion')->first();
+                            }
                         }
                     }
                 }
