@@ -120,7 +120,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/balance/{user}', [PaymentController::class, 'balancePurchaseWallet']);
         Route::get('/history-buy-course/{id_user}', [PaymentController::class, 'historyBuyCourse']);
-
+        Route::get('/history-transactions/{id_user}', [PaymentController::class, 'historyTransactionsPurchase']);
     });
 
     Route::prefix('teacher')->group(function () {
