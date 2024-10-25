@@ -112,6 +112,14 @@ class CourseController extends Controller
                 ->where('status', 'approved')
                 ->withCount('ratings')
                 ->withAvg('ratings', 'rate')
+                ->withCount([
+                    'modules as lessons_count' => function ($query) {
+                        $query->whereHas('lessons');
+                    },
+                    'modules as quiz_count' => function ($query) {
+                        $query->whereHas('quiz');
+                    }
+                ])
                 ->orderByDesc('total_student')
                 ->orderByDesc('ratings_avg_rate')
                 ->limit($limit)
@@ -123,6 +131,21 @@ class CourseController extends Controller
                     'status' => 'error',
                     'message' => 'Không có khóa học nổi bật'
                 ], 204);
+            }
+
+            // Tính tổng số lesson, quiz và duration
+            foreach ($courses as $course) {
+                // Tính tổng lessons và quiz
+                $course->total_lessons = $course->lessons_count + $course->quiz_count;
+
+                // Tính tổng duration của các lesson vid
+                $course->total_duration_video = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                        return $lesson->lessonable->duration ?? 0;
+                    });
+                })->sum();
+
+                $course->makeHidden('modules');
             }
 
             // Trả về danh sách khóa học nổi bật
@@ -148,6 +171,14 @@ class CourseController extends Controller
                 'courses' => function ($query) {
                     $query->where('is_active', 1)
                         ->where('status', 'approved')
+                        ->withCount([
+                            'modules as lessons_count' => function ($query) {
+                                $query->whereHas('lessons');
+                            },
+                            'modules as quiz_count' => function ($query) {
+                                $query->whereHas('quiz');
+                            }
+                        ])
                         ->with(['user:id,name,avatar'])
                         ->limit(4);
                 }
@@ -159,6 +190,24 @@ class CourseController extends Controller
                     "data" => []
                 ], 204);
             }
+
+            // Tính tổng số lesson, quiz và duration
+            foreach ($categories as $category) {
+                foreach ($category->courses as $course) {
+                    // Tính tổng lessons và quiz
+                    $course->total_lessons = $course->lessons_count + $course->quiz_count;
+
+                    // Tính tổng duration của các lesson vid
+                    $course->total_duration_video = $course->modules->flatMap(function ($module) {
+                        return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                            return $lesson->lessonable->duration ?? 0;
+                        });
+                    })->sum();
+
+                    $course->makeHidden('modules');
+                }
+            }
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Lấy được danh sách khoá học theo danh mục',
