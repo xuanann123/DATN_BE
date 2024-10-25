@@ -4,7 +4,6 @@ namespace App\Http\Controllers\api\Client;
 
 use App\Models\Course;
 use App\Models\Category;
-use App\Models\Course;
 use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
