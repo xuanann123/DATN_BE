@@ -204,6 +204,13 @@ class PaymentController extends Controller
         $userId = $request->id_user;
         $courseId = $request->id_course;
 
+        if(!$request->total_coin || !$request->total_coin_after_discount) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Thiếu thông tin thanh toán'
+            ]);
+        }
+
         $course = Course::find($courseId);
         if(!$course) {
             return response()->json([
