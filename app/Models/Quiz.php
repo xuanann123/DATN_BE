@@ -23,4 +23,8 @@ class Quiz extends Model
     public function module() {
         return $this->belongsTo(Module::class, 'id_module');
     }
+
+    public function quizProgress() {
+        return $this->hasMany(QuizProgress::class);
+    }
 }
