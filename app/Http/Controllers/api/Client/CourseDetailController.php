@@ -17,7 +17,7 @@ class CourseDetailController extends Controller // di ve sinh
     {
         try {
             //Chi tiết bài học lấy theo slug
-            $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons'])
+            $course = Course::with(['category', 'user', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons', 'quiz'])
                 ->where('slug', $slug)
                 ->where('is_active', 1)
                 ->where('status', 'approved')
@@ -66,7 +66,7 @@ class CourseDetailController extends Controller // di ve sinh
 
         try {
             //Lấy bài học với các mục liên quan tránh n+1 egger loading
-            $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons'])
+            $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons','quiz'])
                 ->where('slug', $slug)
                 ->firstOrFail();
             //Lấy người dùng hiện tại
