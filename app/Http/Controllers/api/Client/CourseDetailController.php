@@ -60,6 +60,28 @@ class CourseDetailController extends Controller // di ve sinh
             ], 500);
         }
     }
+    public function courseQuizDetail($slug)
+    {
+        $course = Course::with(['modules.quiz'])->where('slug', $slug)
+            ->where('is_active', 1)
+            ->where('status', 'approved')->firstOrFail();
+        //Lưu chữ mảng dữ liệu quiz
+        $listQuiz = [];
+        //Danh sách module
+        $listModules = $course->modules;
+        //Duyệt dữ liệu từng module rồi chuyển dữ liệu vào một mảng
+        foreach ($listModules as $module) {
+            if ($module->quiz) {
+                $listQuiz[] = $module->quiz;
+            }
+        }
+        //Trả về dữ liệu bên phải client khi lấy được này
+        return response()->json([
+            'status' => 'success',
+            'message' => "Thông tin khóa học.",
+            'data' => $listQuiz,
+        ], 200);
+    }
     //Phần chi tiết khoá học đôi với người dùng đã đăng nhập vào hệ thống
     public function courseDetailForAuthUser($slug)
     {
