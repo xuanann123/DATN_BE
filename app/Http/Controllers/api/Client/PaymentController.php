@@ -426,8 +426,9 @@ class PaymentController extends Controller
                 t.status,
                 t.created_at as date_of_transaction
             ')
-            ->join('users as u', 'u.id', '=', 't.transactionable_id')
-            ->where('t.transactionable_id', $userId)
+            ->join('purchase_wallets as p', 'p.id', '=', 't.transactionable_id')
+            ->join('users as u', 'u.id', '=', 'p.id_user')
+            ->where('u.id', $userId)
             ->where('t.transactionable_type', 'App\Models\PurchaseWallet')
             ->orderByDesc('date_of_transaction')
             ->get();
