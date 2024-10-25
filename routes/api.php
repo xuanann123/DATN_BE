@@ -238,6 +238,8 @@ Route::prefix('courses')->group(function () {
     Route::get('new-course', [CourseHomePageController::class, 'listNewCourse']);
     // Khóa học giảm giá
     Route::get('sale-course', [CourseHomePageController::class, 'listCourseSale']);
+    // Khóa học nổi bật
+    Route::get('popular-course', [CourseHomePageController::class, 'listCoursePopular']);
     Route::get('category-course', [CourseHomePageController::class, 'getAllCourseByCategory']);
 
 });
