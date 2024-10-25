@@ -389,7 +389,7 @@ class PaymentController extends Controller
             ->orderByDesc('date_of_purchase')
             ->get();
 
-        if(!$listHistoryByCourse) {
+        if($listHistoryByCourse->count() == 0) {
             return response()->json([
                 'code' => 204,
                 'status' => 'error',
@@ -433,7 +433,7 @@ class PaymentController extends Controller
             ->orderByDesc('date_of_transaction')
             ->get();
 
-        if(!$listHistoryTransactionsPurchase) {
+        if($listHistoryTransactionsPurchase->count() == 0) {
             return response()->json([
                 'code' => 204,
                 'status' => 'error',
