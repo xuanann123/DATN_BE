@@ -17,19 +17,22 @@ class CourseDetailController extends Controller // di ve sinh
     {
         try {
             //Chi tiết bài học lấy theo slug
-            $course = Course::with(['category', 'user', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons'])
+            $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons'])
                 ->where('slug', $slug)
                 ->where('is_active', 1)
-                ->firstOrFail();
-            // tên thằng tạo ra khóa học
-            // $course->author = $course->user->name;
-            if ($course->count() < 1) {
+                ->where('status', 'approved')
+                ->first();
+
+            if (!$course) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Đã xảy ra lỗi khi lấy ra thông tin khóa hoc.',
+                    'message' => 'Khóa học không tồn tại.',
                     'data' => []
-                ], 204);
+                ], 404);
             }
+            // tên thằng tạo ra khóa học
+            $course->author = $course->user->name;
+
             // Số lượng bài học trong khóa học, sử dụng flatmap để đến từng số lượng bài học trong từng chương học
             $total_lessons = $course->modules->flatMap->lessons->count();
 
@@ -71,7 +74,7 @@ class CourseDetailController extends Controller // di ve sinh
 
             // tên thằng tạo ra khóa học
             $course->author = $course->user->name;
-            
+
             // Kiểm tra xem ng dùng đã mua khóa học chưa thông qua Usercourse check xem người dùng này đã đăng kí khoá học chưa
             $userCourse = UserCourse::where('id_user', $user->id)
                 ->where('id_course', $course->id)
