@@ -12,6 +12,7 @@ use App\Models\Voucher;
 use App\Models\WithdrawalWallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class PaymentController extends Controller
@@ -359,5 +360,47 @@ class PaymentController extends Controller
             'status' => 'success',
             'message' => 'Chưa mua khóa học'
         ]);
+    }
+
+    public function historyBuyCourse(Request $request)
+    {
+        $userId = $request->id_user;
+        $user = User::find($userId);
+        if(!$user) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Người dùng không tồn tại'
+            ]);
+        }
+
+        $listHistoryByCourse = DB::table('bills as b')
+            ->selectRaw('
+                u.name as user_name,
+                c.name as course_name,
+                b.id as bill_id,
+                b.total_coin_after_discount as total_coin,
+                b.status,
+                b.created_at as date_of_purchase
+            ')
+            ->join('users as u', 'u.id', '=', 'b.id_user')
+            ->join('courses as c', 'c.id', '=', 'b.id_course')
+            ->where('b.id_user', $userId)
+            ->orderByDesc('date_of_purchase')
+            ->get();
+
+        if(!$listHistoryByCourse) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Không có lịch sử giao dịch'
+            ]);
+        }
+
+        return response()->json([
+            'status' => "success",
+            'message' => 'Danh sách lịch sử giao dịch',
+            'data' => $listHistoryByCourse
+        ], 200);
     }
 }
