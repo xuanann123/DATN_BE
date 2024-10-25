@@ -17,7 +17,7 @@ class CourseDetailController extends Controller // di ve sinh
     {
         try {
             //Chi tiết bài học lấy theo slug
-            $course = Course::with(['category', 'user', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons'])
+            $course = Course::with(['category', 'user', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons', 'quiz'])
                 ->where('slug', $slug)
                 ->where('is_active', 1)
                 ->firstOrFail();
@@ -63,7 +63,7 @@ class CourseDetailController extends Controller // di ve sinh
 
         try {
             //Lấy bài học với các mục liên quan tránh n+1 egger loading
-            $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons'])
+            $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons','quiz'])
                 ->where('slug', $slug)
                 ->firstOrFail();
             //Lấy người dùng hiện tại
@@ -71,7 +71,7 @@ class CourseDetailController extends Controller // di ve sinh
 
             // tên thằng tạo ra khóa học
             $course->author = $course->user->name;
-            
+
             // Kiểm tra xem ng dùng đã mua khóa học chưa thông qua Usercourse check xem người dùng này đã đăng kí khoá học chưa
             $userCourse = UserCourse::where('id_user', $user->id)
                 ->where('id_course', $course->id)
