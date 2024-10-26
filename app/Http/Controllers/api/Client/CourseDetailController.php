@@ -198,14 +198,14 @@ class CourseDetailController extends Controller // di ve sinh
                         // bài học tiếp theo trong cùng chương
                         $next_lesson = $next_lesson_in_module;
                     } else {
-                        // nếu chưa làm quiz chương đó thì "next_lesson" sẽ là quiz của chương
-                        $quizProgress = QuizProgress::where('user_id', $user->id)
-                            ->where('quiz_id', $current_module->quiz->id)
-                            ->first();
+                        // // nếu chưa làm quiz chương đó thì "next_lesson" sẽ là quiz của chương
+                        // $quizProgress = QuizProgress::where('user_id', $user->id)
+                        //     ->where('quiz_id', $current_module->quiz->id)
+                        //     ->first();
 
-                        if (!$quizProgress || !$quizProgress->is_completed) {
-                            $next_lesson = $current_module->quiz;
-                        } else {
+                        // if (!$quizProgress || !$quizProgress->is_completed) {
+                        //     $next_lesson = $current_module->quiz;
+                        // } else {
                             // neu la bai hoc cuoi cung trong chuong va quiz da hoan thanh thi chuyen sang chuong sau
                             $next_module = $course->modules
                                 ->where('position', '>', $current_module->position)
@@ -214,7 +214,7 @@ class CourseDetailController extends Controller // di ve sinh
                             if ($next_module) {
                                 $next_lesson = $next_module->lessons->sortBy('posittion')->first();
                             }
-                        }
+                        // }
                     }
                 }
             }
