@@ -13,81 +13,111 @@ class CourseController extends Controller
 {
     public function listNewCourse()
     {
-        $courses = DB::table('courses as c')
-            ->selectRaw('
-                u.id as user_id,
-                u.name as user_name,
-                u.avatar as user_avatar,
-                c.id as course_id,
-                c.name as course_name,
-                c.thumbnail as course_thumbnail,
-                c.price,
-                c.price_sale,
-                c.total_student,
-                COUNT(DISTINCT l.id) as total_lessons,
-                c.duration as course_duration,
-                c.created_at as course_created_at,
-                ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
-            ')
-            ->join('users as u', 'u.id', '=', 'c.id_user')
-            ->leftJoin('ratings as r', 'c.id', '=', 'r.id_course')
-            ->leftJoin('modules as m', 'm.id_course', '=', 'c.id')
-            ->leftJoin('lessons as l', 'l.id_module', '=', 'm.id')
-            ->where('c.is_active', 1)
-            ->where('c.status', 'approved')
-            ->where('u.is_active', 1)
-            ->where('u.user_type', 'teacher')
-            ->groupBy('u.id', 'u.name', 'u.avatar', 'c.id', 'c.name', 'c.thumbnail', 'c.price', 'c.price_sale', 'c.total_student', 'c.duration')
-            ->orderByDesc('c.created_at')
-            ->limit(3)
-            ->get();
+        try {
+            $courses = Course::with([
+                'category',
+                'user',
+                'tags'
+                // Đếm số lượng khi lấy dữ liệu
+            ])->withCount([
+                        'modules as lessons_count' => function ($query) {
+                            $query->whereHas('lessons');
+                        },
+                        'modules as quiz_count' => function ($query) {
+                            $query->whereHas('quiz');
+                        }
+                    ])
+                ->where('is_active', 1)
+                ->where('status', 'approved')
+                ->orderByDesc('created_at')->limit(6)->get();
 
-        if (count($courses) == 0) {
+            $courses->each(function ($course) {
+                $course->total_lessons = $course->lessons_count + $course->quiz_count;
+
+                // Tính tổng duration của các lesson vid
+                $course->total_duration_video = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                        return $lesson->lessonable->duration ?? 0;
+                    });
+                })->sum();
+
+                $course->makeHidden('modules');
+
+            });
+            if (count($courses) == 0) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không có khóa học mới nào'
+                ], 204);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Danh sách khóa học mới',
+                'data' => $courses,
+            ], 200);
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Không có khóa học'
-            ], 204);
+                'message' => 'Đã xảy ra lỗi khi lọc khóa học mới.' . $e,
+                'data' => []
+            ]);
         }
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Danh sách khóa học mới nhất',
-            'data' => $courses,
-        ], 200);
     }
 
     public function listCourseSale()
     {
-        $courses = Course::with([
-            'category',
-            'user',
-            'tags'
-        ])->where('is_active', 1)->where('status', 'approved')->orderByDesc('price_sale')->limit(6)->get();
-        $courses->each(function ($course) {
-            // Tính tổng số lượng bài học trong khóa học
-            $total_lessons = $course->modules->flatMap->lessons->count();
-            // Set thời gian cho từng bài học (cần có hàm setLessonDurations)
-            $this->setLessonDurations($course);
-            $total_duration = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
-                ->sum('duration');
-            //Cập nhật tổng số lượng bài học
-            $course->total_lessons = $total_lessons;
-            //Tổng thời gian của khoá học đó
-            $course->total_duration = $total_duration;
+        try {
+            $courses = Course::with([
+                'category',
+                'user',
+                'tags'
+                // Đếm số lượng khi lấy dữ liệu
+            ])->withCount([
+                        'modules as lessons_count' => function ($query) {
+                            $query->whereHas('lessons');
+                        },
+                        'modules as quiz_count' => function ($query) {
+                            $query->whereHas('quiz');
+                        }
+                    ])
+                ->where('is_active', 1)
+                ->where('status', 'approved')
+                ->orderByDesc('price_sale')->limit(6)->get();
 
-        });
-        if (count($courses) == 0) {
+            $courses->each(function ($course) {
+                $course->total_lessons = $course->lessons_count + $course->quiz_count;
+
+                // Tính tổng duration của các lesson vid
+                $course->total_duration_video = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                        return $lesson->lessonable->duration ?? 0;
+                    });
+                })->sum();
+
+                $course->makeHidden('modules');
+
+            });
+            if (count($courses) == 0) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không có khóa học'
+                ], 204);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Danh sách khóa học giảm giá',
+                'data' => $courses,
+            ], 200);
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Không có khóa học'
-            ], 204);
+                'message' => 'Đã xảy ra lỗi khi lọc khóa học giảm giá.' . $e,
+                'data' => []
+            ]);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Danh sách khóa học giảm giá',
-            'data' => $courses,
-        ], 200);
     }
 
     // Lấy khóa học nổi bật
