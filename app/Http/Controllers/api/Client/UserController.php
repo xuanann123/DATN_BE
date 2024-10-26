@@ -148,15 +148,19 @@ class UserController extends Controller
         ])->findOrFail($authUser->id);
         //Duyệt qua toàn bộ khoá học đó
         $myCourseBought->userCourses->each(function ($course) {
+
             // Tính tổng số lượng bài học trong khóa học
             $total_lessons = $course->modules->flatMap->lessons->count();
+            //Kiểm tra quiz có hay không và truy vấn vào quiz lấy ra số lượng
+            $total_quizzes = $course->modules->whereNotNull('quiz')->count();
+       
             // Set thời gian cho từng bài học (cần có hàm setLessonDurations)
             $this->setLessonDurations($course);
             $total_duration = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
                 ->sum('duration');
             //Cập nhật tổng số lượng bài học
             // $course->submited_at = $course->created_at;
-            $course->total_lessons = $total_lessons;
+            $course->total_lessons = $total_lessons + $total_quizzes;
             //Tổng thời gian của khoá học đó
             $course->total_duration = $total_duration;
 
