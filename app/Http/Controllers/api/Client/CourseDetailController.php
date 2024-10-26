@@ -35,17 +35,18 @@ class CourseDetailController extends Controller // di ve sinh
 
             // Số lượng bài học trong khóa học, sử dụng flatmap để đến từng số lượng bài học trong từng chương học
             $total_lessons = $course->modules->flatMap->lessons->count();
+            $total_quiz = $course->modules->whereNotNull('quiz')->count();
 
             // set duration cho tung bai hoc
             $this->setLessonDurations($course);
 
             // Sẽ lấy tổng số lượng tất cả các bài học là video trong khoá học đó
-            $total_duration_vid = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
+            $total_duration_video = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
                 ->sum('duration');
 
             //Set giá trị trong khoá học là tổng bài học và tổng số lượng bài học
-            $course->total_lessons = $total_lessons;
-            $course->total_duration_vid = $total_duration_vid;
+            $course->total_lessons = $total_lessons + $total_quiz;
+            $course->total_duration_video = $total_duration_video;
             // Trả về dữ liệu bên phía client khi lấy được thành công
             return response()->json([
                 'status' => 'success',
