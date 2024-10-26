@@ -156,13 +156,12 @@ class UserController extends Controller
        
             // Set thời gian cho từng bài học (cần có hàm setLessonDurations)
             $this->setLessonDurations($course);
-            $total_duration = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
+            $total_duration_video = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
                 ->sum('duration');
-            //Cập nhật tổng số lượng bài học
             // $course->submited_at = $course->created_at;
             $course->total_lessons = $total_lessons + $total_quizzes;
             //Tổng thời gian của khoá học đó
-            $course->total_duration = $total_duration;
+            $course->total_duration_video = $total_duration_video;
 
         });
         return response()->json(
