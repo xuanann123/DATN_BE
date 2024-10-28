@@ -163,7 +163,7 @@ class PaymentController extends Controller
                     'coin_unit' => self::COIN_CONVERTER,
                     'amount' => $amount,
                     'coin' => $coin,
-                    'status' => 'success',
+                    'status' => 'Thành công',
                 ]);
 
                 return redirect(env('FE_URL'). 'wallet?status=success');
@@ -179,7 +179,7 @@ class PaymentController extends Controller
                     'coin_unit' => self::COIN_CONVERTER,
                     'amount' => $amount,
                     'coin' => $coin,
-                    'status' => 'success',
+                    'status' => 'Thành công',
                 ]);
 
                 return redirect(env('FE_URL'). 'wallet?status=success');
@@ -191,7 +191,7 @@ class PaymentController extends Controller
                 'coin_unit' => self::COIN_CONVERTER,
                 'amount' => $amount,
                 'coin' => $coin,
-                'status' => 'error',
+                'status' => 'Thất bại',
             ]);
 
             return redirect(env('FE_URL'). 'wallet?status=error');

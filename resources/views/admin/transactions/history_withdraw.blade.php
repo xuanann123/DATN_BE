@@ -32,7 +32,7 @@
 
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="javascript: void(0);">Transactions</a></li>
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Giao dịch</a></li>
                         <li class="breadcrumb-item active">{{ $title }}</li>
                     </ol>
                 </div>
@@ -44,19 +44,7 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between gap-3">
-                    <div class="col-sm-auto d-flex ms-2">
-                        <ul class="d-flex gap-4 mt-1 list-unstyled">
-                            {{--                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'all']) }}">Tất--}}
-                            {{--                                    cả({{ $count['all'] }})</a></li>--}}
-                            {{--                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'active']) }}">Kích--}}
-                            {{--                                    hoạt({{ $count['active'] }})</a></li>--}}
-                            {{--                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'inactive']) }}">Chờ xác--}}
-                            {{--                                    nhận({{ $count['inactive'] }})</a></li>--}}
-                            {{--                            <li><a href="{{ request()->fullUrlWithQuery(['status' => 'trash']) }}">Vô hiệu--}}
-                            {{--                                    hoá({{ $count['trash'] }})</a></li>--}}
-                        </ul>
-                    </div>
+                <div class="card-header d-flex justify-content-end gap-3">
                     <div class="col-sm-auto d-flex ms-2">
                         <form action="{{ route('admin.categories.index') }}" method="GET" class="d-flex gap-2">
                             <input type="text" class="form-control ml-2" placeholder="Tìm kiếm ..." name="keyword"
@@ -69,32 +57,12 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('admin.categories.action') }}">
-                        @csrf
-                        <div class="row mb-3">
-                            <div class="col-md-4 d-flex">
-                                <select name="act" id="" class="form-select">
-                                    <option value="" class="form-control">Thao tác nhiều bản ghi</option>
-                                    {{--                                    @foreach ($listAct as $key => $act)--}}
-                                    {{--                                        <option value="{{ $key }}" class="form-control">{{ $act }}--}}
-                                    {{--                                        </option>--}}
-                                    {{--                                    @endforeach--}}
-                                </select>
-                                <button class="btn btn-outline-primary ms-2" type="submit">
-                                    Chọn
-                                </button>
-                            </div>
-                        </div>
 
                         <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
                                style="width:100%">
                             <thead>
                             <tr>
-                                <th scope="col" style="width: 50px;">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="selectAll" value="option">
-                                    </div>
-                                </th>
+                                <th>ID</th>
                                 <th data-ordering="false">Người giao dịch</th>
                                 <th data-ordering="false">Số tiền giao dịch</th>
                                 <th data-ordering="false">Tỉ lệ chuyển đổi</th>
@@ -106,12 +74,9 @@
                             <tbody class="list form-check-all">
                             @foreach ($historyWithdraw as $withdraw)
                                 <tr>
-                                    <th scope="row">
-                                        <div class="form-check">
-                                            <input class="form-check-input checkbox" type="checkbox" name="listCheck[]"
-                                                   value="{{ $withdraw->id }}">
-                                        </div>
-                                    </th>
+                                    <td>
+                                        {{ $withdraw->id }}
+                                    </td>
                                     <td>{{ $withdraw->name != "" ? $withdraw->name : $withdraw->email }}</td>
                                     <td>
                                         {{ number_format($withdraw->amount, 1, '.', ',') }}
@@ -134,8 +99,6 @@
                             @endforeach
                             </tbody>
                         </table>
-                    </form>
-
                     <div class="paginate-data">
                         {{ $historyWithdraw->links() }}
                     </div>
