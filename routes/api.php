@@ -160,6 +160,7 @@ Route::middleware('auth:sanctum')->group(function () {
             //Quản lý bài học
             Route::prefix('/lesson')->group(function () {
                 Route::get('{lesson}/detail', [LessonTeacherController::class, 'lessonDetailTeacher']);
+                Route::put('{module}/update-lesson-position', [LessonTeacherController::class, 'updateLessonPosition']);
                 Route::post('{module}/add-text-lesson', [TextLessonController::class, 'storeTextLesson']);
                 Route::put('{lesson}/update-text-lesson', [TextLessonController::class, 'updateTextLesson']);
                 Route::delete('{lesson}/delete-text-lesson', [TextLessonController::class, 'destroyTextLesson']);
