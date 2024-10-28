@@ -22,9 +22,13 @@ class CourseController extends Controller
     {
         $title = 'Danh sách khóa học';
         $courses = Course::select('id', 'id_user', 'id_category', 'name', 'sort_description', 'thumbnail', 'created_at', 'updated_at')
-            ->with(['user:id,avatar'])
+            ->with(['user:id,avatar,name','userCourses'])
             ->orderByDesc('id')
             ->paginate(12);
+            
+        //Danh Lấy ngẫu nhiên 3 thành viên tham gia khoá học
+
+        // dd($courses);
         return view('admin.courses.index', compact('title', 'courses'));
     }
 
@@ -163,7 +167,7 @@ class CourseController extends Controller
             $pathImage = Storage::putFileAs('courses', $image, $newNameImage);
 
             $data['thumbnail'] = $pathImage;
-            if($course->thumbnail) {
+            if ($course->thumbnail) {
                 $fileExists = Storage::disk('public')->exists($course->thumbnail);
                 if ($fileExists) {
                     Storage::disk('public')->delete($course->thumbnail);
@@ -180,7 +184,7 @@ class CourseController extends Controller
 
             $data['trailer'] = $pathTrailer;
 
-            if($course->trailer) {
+            if ($course->trailer) {
                 $fileExists = Storage::disk('public')->exists($course->trailer);
                 if ($fileExists) {
                     Storage::disk('public')->delete($course->trailer);
@@ -228,7 +232,7 @@ class CourseController extends Controller
             return redirect()->route('admin.courses.list')->with(['error' => 'Khóa học không tồn tại!']);
         }
 
-        if($course->thumbnail) {
+        if ($course->thumbnail) {
             $fileImageExists = Storage::disk('public')->exists($course->thumbnail);
             if ($fileImageExists) {
                 Storage::disk('public')->delete($course->thumbnail);
@@ -236,7 +240,7 @@ class CourseController extends Controller
 
         }
 
-        if($course->trailer) {
+        if ($course->trailer) {
             $fileTrailerExists = Storage::disk('public')->exists($course->trailer);
             if ($fileTrailerExists) {
                 Storage::disk('public')->delete($course->trailer);

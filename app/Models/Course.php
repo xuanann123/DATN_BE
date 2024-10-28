@@ -75,5 +75,10 @@ class Course extends Model
     public function ratings() {
         return $this->hasMany(Rating::class, 'id_course');
     }
+    //Danh sách người đăng kí khoá học
+    public function userCourses()
+    {
+        return $this->belongsToMany(User::class, 'user_courses', 'id_course', 'id_user');
+    }
 
 }

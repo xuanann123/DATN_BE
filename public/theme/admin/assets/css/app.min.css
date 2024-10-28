@@ -4413,8 +4413,8 @@ code {
 }
 
 :root[data-sidebar=dark] {
-    --vz-vertical-menu-bg: #05A5F0;
-    --vz-vertical-menu-border: #05A5F0;
+    --vz-vertical-menu-bg: #405189;
+    --vz-vertical-menu-border: #405189;
     --vz-vertical-menu-item-color: #ffffff;
     --vz-vertical-menu-item-bg: rgba(255, 255, 255, 0.15);
     --vz-vertical-menu-item-hover-color: #5AC8FA;
