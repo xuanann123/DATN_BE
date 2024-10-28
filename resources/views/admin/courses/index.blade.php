@@ -55,19 +55,20 @@
         <div class="col-sm">
             <div class="d-flex justify-content-sm-end gap-2">
                 <div class="search-box ms-2">
-                    <input type="text" class="form-control" placeholder="Search...">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm">
                     <i class="ri-search-line search-icon"></i>
                 </div>
-
-                <select class="form-control w-md" data-choices data-choices-search-false>
-                    <option value="All">All</option>
-                    <option value="Today">Today</option>
-                    <option value="Yesterday" selected>Yesterday</option>
-                    <option value="Last 7 Days">Last 7 Days</option>
-                    <option value="Last 30 Days">Last 30 Days</option>
-                    <option value="This Month">This Month</option>
-                    <option value="Last Year">Last Year</option>
-                </select>
+                <div>
+                    <select class="form-control w-md" data-choices data-choices-search-false>
+                        <option value="All">Tất cả</option>
+                        <option value="Today">Hôm nay</option>
+                        <option value="Yesterday" selected>Hôm qua</option>
+                        <option value="Last 7 Days">Tuần trước</option>
+                        <option value="Last 30 Days">Tháng trước</option>
+                        <option value="This Month">Tháng này</option>
+                        <option value="Last Year">Năm trước</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
@@ -75,13 +76,16 @@
     <div class="row">
         @foreach ($courses as $course)
             <div class="col-xxl-3 col-sm-6 project-card">
-                <div class="card card-height-100">
+                <div class="card">
                     <div class="card-body">
-                        <div class="d-flex flex-column h-100">
+                        <div class="d-flex flex-column">
                             <div class="d-flex">
                                 <div class="flex-grow-1">
+                                    @php
+                                        \Carbon\Carbon::setLocale('vi');
+                                    @endphp
                                     <p class="text-muted mb-4">Cập nhật :
-                                        {{ \Carbon\Carbon::parse($course->updated_at)->format('d M Y') }}</p>
+                                        {{ \Carbon\Carbon::parse($course->updated_at)->translatedFormat('d M Y') }}
                                 </div>
                                 <div class="flex-shrink-0">
                                     <div class="d-flex gap-1 align-items-center">
@@ -122,16 +126,15 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="d-flex mb-2">
-                                <div class="flex-shrink-0 me-3">
-                                    <div class="avatar-lg">
-                                        <span class="avatar-title bg-danger-subtle rounded">
-                                            <img src="{{ Storage::url($course->thumbnail) }}" alt=""
-                                                class="img-fluid px-1">
-                                        </span>
-                                    </div>
+
+
+                            <div class="d-flex flex-column mb-2">
+                                <div class="mb-2">
+                                    <img src="{{ Storage::url($course->thumbnail) }}"
+                                        style="height: 150px!important; overflow: hidden !important" alt=""
+                                        class="w-100 px-1">
                                 </div>
-                                <div class="flex-grow-1">
+                                <div>
                                     <h5 class="mb-1 fs-15"><a href="{{ route('admin.courses.detail', $course->id) }}"
                                             class="text-body">{{ $course->name }}</a></h5>
                                     <p class="text-muted text-truncate-two-lines mb-3">
@@ -139,63 +142,63 @@
                                 </div>
                             </div>
                             <div class="mt-auto">
-                                <div class="d-flex mb-2">
-                                    <div class="flex-grow-1">
-                                        <div>Tasks</div>
+                                <div class="d-flex mb-2 mt-2">
+                                    <div class="flex-grow-1 d-flex">
+                                        @php
+                                            $url = $course->user->avatar
+                                                ? Storage::url($course->user->avatar)
+                                                : 'https://png.pngtree.com/png-clipart/20210608/ourlarge/pngtree-dark-gray-simple-avatar-png-image_3418404.jpg';
+                                        @endphp
+
+                                        <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip"
+                                            data-bs-trigger="hover" data-bs-placement="top" title="Brent Gonzalez">
+                                            <div class="avatar-xxs">
+                                                <img src="{{ $url }}" alt=""
+                                                    class="rounded-circle img-fluid overflow-hidden"
+                                                    style="width: 24px!important; height: 24px!important">
+                                            </div>
+                                        </a>
+                                        <div class="mt-1 ms-1">{{ $course->user->name }}</div>
                                     </div>
-                                    <div class="flex-shrink-0">
-                                        <div><i class="ri-list-check align-bottom me-1 text-muted"></i> 22/56</div>
+                                    <div class="flex-shrink-0 mt-1">
+                                        <div><i class="ri-list-check align-bottom me-1 text-muted"></i>
+                                            {{ $course->modules->count() }} chương</div>
                                     </div>
                                 </div>
-                                <div class="progress progress-sm animated-progress">
-                                    <div class="progress-bar bg-success" role="progressbar" aria-valuenow="54"
-                                        aria-valuemin="0" aria-valuemax="100" style="width: 54%;"></div>
-                                </div>
+
                             </div>
+
                         </div>
 
                     </div>
                     <div class="card-footer bg-transparent border-top-dashed py-2">
                         <div class="d-flex align-items-center">
                             <div class="flex-grow-1">
-                                <div class="avatar-group">
-                                    <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip"
-                                        data-bs-trigger="hover" data-bs-placement="top" title="Brent Gonzalez">
-                                        <div class="avatar-xxs">
-                                            <img src="assets/images/users/avatar-3.jpg" alt=""
-                                                class="rounded-circle img-fluid">
-                                        </div>
-                                    </a>
-                                    <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip"
-                                        data-bs-trigger="hover" data-bs-placement="top" title="Sylvia Wright">
-                                        <div class="avatar-xxs">
-                                            <div class="avatar-title rounded-circle bg-secondary">
-                                                S
+                                <div class="avatar-group" style="height: 25px!important"">
+                                    @php
+                                        $urlUserCourse = '';
+                                    @endphp
+                                    @foreach ($course->userCourses as $user)
+                                        @php
+                                            $urlUserCourse = $user->avatar
+                                                ? Storage::url($user->avatar)
+                                                : 'https://png.pngtree.com/png-clipart/20210608/ourlarge/pngtree-dark-gray-simple-avatar-png-image_3418404.jpg';
+                                        @endphp
+                                        <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip"
+                                            data-bs-trigger="hover" data-bs-placement="top" title="Brent Gonzalez">
+                                            <div class="avatar-xxs">
+                                                <img src="{{ $urlUserCourse }}" alt=""
+                                                    class="rounded-circle img-fluid ms-2"
+                                                    style="width: 24px!important; height: 24px!important">
                                             </div>
-                                        </div>
-                                    </a>
-                                    <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip"
-                                        data-bs-trigger="hover" data-bs-placement="top" title="Ellen Smith">
-                                        <div class="avatar-xxs">
-                                            <img src="assets/images/users/avatar-4.jpg" alt=""
-                                                class="rounded-circle img-fluid">
-                                        </div>
-                                    </a>
-                                    <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip"
-                                        data-bs-trigger="hover" data-bs-placement="top" title="Add Members">
-                                        <div class="avatar-xxs">
-                                            <div
-                                                class="avatar-title fs-16 rounded-circle bg-light border-dashed border text-primary">
-                                                +
-                                            </div>
-                                        </div>
-                                    </a>
+                                        </a>
+                                    @endforeach
                                 </div>
                             </div>
-                            <div class="flex-shrink-0">
-                                <div class="text-muted">
+                            <div class="flex-shrink-0 ">
+                                <div class="text-muted ">
                                     <i class="ri-calendar-event-fill me-1 align-bottom"></i>
-                                    {{ \Carbon\Carbon::parse($course->created_at)->format('d M Y') }}
+                                    {{ \Carbon\Carbon::parse($course->created_at)->translatedFormat('d M Y') }}
                                 </div>
                             </div>
                         </div>
