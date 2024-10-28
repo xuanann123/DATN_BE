@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\TransactionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\TagController;
@@ -174,6 +175,14 @@ Route::prefix("admin")
                         Route::get("/{id}", [ApprovalCourseController::class, 'show'])->name('detail');
                         Route::post("/{id}/approve", [ApprovalCourseController::class, 'approve'])->name('approve');
                     });
+            });
+
+        // Route transactions;
+        Route::prefix('transactions')
+            ->as('transactions.')
+            ->group(function () {
+                Route::get('/history-deposit', [TransactionController::class, 'historyDeposit'])->name('history-deposit');
+                Route::get('/history-withdraw', [TransactionController::class, 'historyWithdraw'])->name('history-withdraw');
             });
         // route post
         Route::prefix('posts')
