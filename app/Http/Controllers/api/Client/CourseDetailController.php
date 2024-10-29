@@ -237,7 +237,7 @@ class CourseDetailController extends Controller // di ve sinh
                 'status' => 'error',
                 'message' => 'Đã xảy ra lỗi khi lấy ra bài học.',
                 'error' => $e->getMessage(),
-            ]);
+            ], 500);
         }
 
     }
