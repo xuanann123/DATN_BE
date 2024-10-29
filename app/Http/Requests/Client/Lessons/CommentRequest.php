@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Client\Courses;
+namespace App\Http\Requests\Client\Lessons;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -24,7 +24,7 @@ class CommentRequest extends FormRequest
         return [
             'id_user' => 'required|integer|exists:users,id',
             'content' => 'required|string|max:255',
-            'commentable_id' => 'required|integer|exists:courses,id',
+            'commentable_id' => 'required|integer|exists:lessons,id',
             'parent_id' => 'nullable|integer|exists:comments,id',
         ];
     }
@@ -39,9 +39,9 @@ class CommentRequest extends FormRequest
             'content.max' => 'Bình luận không quá 255 kí tự.',
             'commentable_id.required' => 'Vui lòng thêm id khóa học.',
             'commentable_id.integer' => 'Id khóa học là số nguyên.',
-            'commentable_id.exists' => 'Khóa học không tồn tại',
+            'commentable_id.exists' => 'Bài học không tồn tại',
             'parent_id.integer' => 'Id bình luận là số nguyên.',
-            'parent_id.exists' => 'Bình luận không tồn tại',
+            'parent_id.exists' => 'Bình luận cha không tồn tại',
         ];
     }
 }

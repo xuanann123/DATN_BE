@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\api\Client;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Client\Lessons\CommentRequest as CommentLessonRequest;
 use App\Http\Requests\Client\Posts\CommentRequest as CommentPostRequest;
-use App\Http\Requests\Client\Courses\CommentRequest as CommentCourseRequest;
 use App\Models\Comment;
-use App\Models\Course;
+use App\Models\Lesson;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +15,7 @@ class CommentController extends Controller
 {
     //Tạo comment của bài viết
     const COMMENTABLE_TYPE_POST = 'App\Models\Post';
-    const COMMENTABLE_TYPE_COURSE = 'App\Models\Course';
+    const COMMENTABLE_TYPE_LESSON = 'App\Models\Lesson';
 
 
     public function getCommentsPost(string $slug)
@@ -97,24 +97,23 @@ class CommentController extends Controller
     }
 
 
-    // Danh sách bình luận khóa học
-    public function getCommentsCourse(string $slug)
+    // Danh sách bình luận bài học
+    public function getCommentsLesson(Request $request)
     {
         try {
-            //Lấy post này ra
-            $course = Course::query()->where('slug', $slug)->where('is_active', '=', 1)->first();
-            if (!$course) {
+            //Lấy  lesson ra;
+            $lesson = Lesson::find($request->id_lesson);
+            if (!$lesson) {
                 return response()->json([
                     'code' => '204',
                     'status' => 'error',
-                    'message' => 'Khóa học không tồn tại',
-                    'data' => [],
+                    'message' => 'Bài học không tồn tại',
                 ]);
             }
-            //Lấy danh sách bình luận theo slug course
+            //Lấy danh sách bình luận theo id lesson
             $comments = Comment::select('comments.*', 'users.name', 'users.avatar', 'users.email')
                 ->join('users', 'users.id', '=', 'comments.id_user')
-                ->where('commentable_id', $course->id)->where('commentable_type', self::COMMENTABLE_TYPE_COURSE)->get();
+                ->where('commentable_id', $lesson->id)->where('commentable_type', self::COMMENTABLE_TYPE_LESSON)->get();
             $this->loadChildrenRecursively($comments);
             //Dữ liệu trống
             if ($comments->isEmpty()) {
@@ -140,12 +139,12 @@ class CommentController extends Controller
         }
     }
 
-    //Thêm bình luận khóa học
-    public function addCommentCourse(CommentCourseRequest $request) {
+    //Thêm bình luận bài học
+    public function addCommentLesson(CommentLessonRequest $request) {
         try {
             //Lấy dữ liệu
             $dataComment = $request->all();
-            $dataComment['commentable_type'] = self::COMMENTABLE_TYPE_COURSE;
+            $dataComment['commentable_type'] = self::COMMENTABLE_TYPE_LESSON;
             //Thêm comment với database
             $newComment = Comment::query()->create($dataComment);
             //Thêm dữ liệu thành công thông báo cho người dùng
