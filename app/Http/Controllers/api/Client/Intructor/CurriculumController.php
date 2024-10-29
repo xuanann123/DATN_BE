@@ -13,6 +13,7 @@ class CurriculumController extends Controller
     public function index(Course $course)
     {
         try {
+            //Quyền truy cập
             if (auth()->id() !== $course->id_user) {
                 return response()->json([
                     'status' => 403,
@@ -20,8 +21,7 @@ class CurriculumController extends Controller
                     'data' => []
                 ], 403);
             }
-            //Tú lấy dan sách
-
+            //Lấy danh sách khoá tổng quan
             $modules = $course->modules()->with(['lessons.lessonable', 'quiz'])->get();
             return response()->json([
                 'status' => 200,
