@@ -181,6 +181,8 @@ Route::prefix("admin")
         Route::prefix('transactions')
             ->as('transactions.')
             ->group(function () {
+                Route::get('/history-buy-course', [TransactionController::class, 'historyBuyCourse'])->name('history-buy-course');
+                Route::get('/detail-bill-course/{bill}', [TransactionController::class, 'detailBillCourse'])->name('detail-bill-course');
                 Route::get('/history-deposit', [TransactionController::class, 'historyDeposit'])->name('history-deposit');
                 Route::get('/history-withdraw', [TransactionController::class, 'historyWithdraw'])->name('history-withdraw');
             });
