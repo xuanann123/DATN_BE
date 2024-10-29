@@ -21,7 +21,7 @@ class TextLessonController extends Controller
         try {
             $request->validated();
 
-            $maxPosition = Lesson::where('id_module', $request->id_module)->max('position');
+            $maxPosition = Lesson::where('id_module', $module->id)->max('position');
 
             $document = Document::create([
                 'content' => $request->content,
