@@ -79,7 +79,11 @@ class LessonController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Vị trí các bài học đã được cập nhật thành công.',
-                'data' => $module->load('lessons'),
+                'data' => $module->load([
+                    'lessons' => function ($query) {
+                        $query->orderBy('position');
+                    }
+                ])
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
