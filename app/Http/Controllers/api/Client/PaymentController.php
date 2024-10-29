@@ -280,7 +280,7 @@ class PaymentController extends Controller
             'voucher_discount' => $request->coin_discount,
             'total_coin' => $request->total_coin,
             'total_coin_after_discount' => $request->total_coin_after_discount,
-            'status' => 'Thành công'
+            'status' => 'Thanh toán thành công'
         ]);
 
         if(!$newUserCourse) {
