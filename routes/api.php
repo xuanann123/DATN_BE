@@ -131,7 +131,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     });
 
-    Route::prefix('teacher')->group(function () {
+    Route::prefix('teacher')->middleware('teacher')->group(function () {
         // Ví rút của giảng viên
         Route::get('/balance/{user}', [PaymentController::class, 'balanceWithdrawalWallets']);
         // Danh sách khóa học

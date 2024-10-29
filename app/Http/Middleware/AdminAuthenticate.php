@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +17,7 @@ class AdminAuthenticate
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && Auth::user()->user_type == 'admin') {
+        if (Auth::check() && Auth::user()->user_type == User::TYPE_ADMIN && Auth::user()->is_active == 1 && Auth::user()->email_verified_at != null) {
             return $next($request);
         }
 
