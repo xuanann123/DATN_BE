@@ -21,6 +21,7 @@
             display: flex;
             justify-content: end;
         }
+
         .invoice-box {
             max-width: 800px;
             margin: auto;
@@ -126,7 +127,7 @@
                     <div class="col-sm-auto d-flex ms-2">
                         <form action="{{ route('admin.categories.index') }}" method="GET" class="d-flex gap-2">
                             <input type="text" class="form-control ml-2" placeholder="Tìm kiếm ..." name="keyword"
-                                   value="{{ request()->input('keyword') }}">
+                                value="{{ request()->input('keyword') }}">
                             <input type="hidden" name="status" value="{{ request()->input('status') }}">
                             <button class="btn btn-outline-primary ms-2" type="submit">
                                 <i class="ri-search-line"></i>
@@ -137,50 +138,49 @@
                 <div class="card-body">
 
                     <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
-                           style="width:100%">
+                        style="width:100%">
                         <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th data-ordering="false">Người mua</th>
-                            <th data-ordering="false">Tên khóa học</th>
-                            <th data-ordering="false">Số xu</th>
-                            <th>Ngày mua</th>
-                            <th>Trạng thái</th>
-                            <th>Thao tác</th>
-                        </tr>
+                            <tr>
+                                <th>ID</th>
+                                <th data-ordering="false">Người mua</th>
+                                <th data-ordering="false">Tên khóa học</th>
+                                <th data-ordering="false">Số xu</th>
+                                <th>Ngày mua</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
                         </thead>
                         <tbody class="list form-check-all">
-                        @foreach ($historyBuyCourse as $buy)
-                            <tr>
-                                <td>
-                                    {{ $buy->id }}
-                                </td>
-                                <td>{{ $buy->name_user != "" ? $buy->name_user : $buy->email }}</td>
-                                <td>
-                                    {{ $buy->name_course }}
-                                </td>
-                                <td>
-                                    {{ number_format($buy->total_price, 1, '.', ',') }}
-                                </td>
-                                <td>
-                                    {{ $buy->created_at }}
-                                </td>
-                                <td>
-                                        <span class="badge bg-{{ $buy->status == 'Thanh toán thành công' ? 'success' : 'danger' }}">
+                            @foreach ($historyBuyCourse as $buy)
+                                <tr>
+                                    <td>
+                                        {{ $buy->id }}
+                                    </td>
+                                    <td>{{ $buy->name_user != '' ? $buy->name_user : $buy->email }}</td>
+                                    <td>
+                                        {{ $buy->name_course }}
+                                    </td>
+                                    <td>
+                                        {{ number_format($buy->total_price, 1, '.', ',') }}
+                                    </td>
+                                    <td>
+                                        {{ $buy->created_at }}
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="badge bg-{{ $buy->status == 'Thanh toán thành công' ? 'success' : 'danger' }}">
                                             {{ $buy->status }}
                                         </span>
-                                </td>
-                                <td>
-{{--                                    <span class="detail_bill ri-eye-line text-primary cursor-pointer btn"></span>--}}
-                                    <button class="btn btn-sm btn-light me-2"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#detailBillModal"
-                                            data-bill-id="{{ $buy->id }}">
-                                        <i class="ri-eye-line"></i> <i>Chi tiết</i>
-                                    </button>
-                                </td>
-                            </tr>
-                        @endforeach
+                                    </td>
+                                    <td>
+                                        {{--                                    <span class="detail_bill ri-eye-line text-primary cursor-pointer btn"></span> --}}
+                                        <button class="btn btn-sm btn-light me-2" data-bs-toggle="modal"
+                                            data-bs-target="#detailBillModal" data-bill-id="{{ $buy->id }}">
+                                            <i class="ri-eye-line"></i> <i>Chi tiết</i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                     <div class="paginate-data">
@@ -192,14 +192,12 @@
         </div><!--end col-->
     </div><!--end row-->
 
-    <div class="modal fade" id="detailBillModal" tabindex="-1" aria-labelledby="detailBillModal"
-         aria-hidden="true">
+    <div class="modal fade" id="detailBillModal" tabindex="-1" aria-labelledby="detailBillModal" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content border-0 shadow-lg">
                 <div class="modal-header bg-primary-subtle">
                     <h5 class="modal-title mb-3" id="previewLessonModalLabel">Chi tiết hóa đơn</h5>
-                    <button type="button" class="btn-close mb-2" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
+                    <button type="button" class="btn-close mb-2" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div id="modal-body" class="modal-body p-4">
 
@@ -223,7 +221,7 @@
     </script>
     <!--datatable js-->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
     <script>
         $(document).ready(function() {
@@ -280,7 +278,7 @@
                                     </tr>
                                     <tr class="item">
                                         <td>Giá</td>
-                                        <td>${data.total_coin} xu</td>
+                                        <td>${data.total_coin} <span style="color:orange;" class='ri-copper-coin-line'></span></td>
                                     </tr>
                                     <tr class="item">
                                         <td>Mã voucher</td>
@@ -288,12 +286,12 @@
                                     </tr>
                                     <tr class="item">
                                         <td>Discount</td>
-                                        <td>${data.voucher_discount != null ? data.voucher_discount : 'Trống'} xu</td>
+                                        <td>${data.voucher_discount != null ? data.voucher_discount + `<span style="margin-left: 5px;color:orange" class='ri-copper-coin-line'></span>` : 'Trống'}</td>
                                     </tr>
 
                                     <tr class="total">
                                         <td>Phải trả</td>
-                                        <td>${data.total_coin_after_discount} xu</td>
+                                        <td>${data.total_coin_after_discount} <span style="color:orange;" class='ri-copper-coin-line'></span></td>
                                     </tr>
                                 </table>
                             </div>
@@ -320,7 +318,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
     <script src="{{ asset('theme/admin/assets/js/pages/datatables.init.js') }}"></script>
 @endsection
