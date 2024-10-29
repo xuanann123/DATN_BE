@@ -202,6 +202,12 @@
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý giao dịch</span>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ route('admin.transactions.history-buy-course') }}"
+                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                        <i class=" ri-chat-history-line"></i> <span>Khóa học đã bán</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link menu-link" href="{{  route('admin.transactions.history-deposit') }}"
                        data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
                         <i class="ri-arrow-right-circle-line"></i> <span>Giao dịch nạp tiền</span>
