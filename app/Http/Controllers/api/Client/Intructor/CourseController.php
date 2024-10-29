@@ -255,6 +255,119 @@ class CourseController extends Controller
         }
     }
 
+    public function deleteCourse(Course $course)
+    {
+        DB::beginTransaction();
+        try {
+            // Kiểm tra trạng thái nháp
+            if ($course->status !== 'draft') {
+                return response()->json([
+                    'status' => 400,
+                    'message' => 'Chỉ có thể xóa khóa học ở trạng thái nháp.',
+                    'data' => []
+                ], 400);
+            }
+
+            // Kiểm tra quyền sở hữu khóa học
+            if ($course->id_user !== auth()->id()) {
+                return response()->json([
+                    'status' => 403,
+                    'message' => 'Bạn không có quyền xóa khóa học này.',
+                    'data' => []
+                ], 403);
+            }
+
+            // Xóa khóa học
+            $course->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Xóa khóa học thành công.',
+                'data' => []
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi xóa khóa học',
+                'error' => $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
+    }
+
+    // Hàm ẩn khóa hoc
+    public function disableCourse(Course $course)
+    {
+        DB::beginTransaction();
+        try {
+            // Kiểm tra quyền sở hữu khóa học
+            if ($course->id_user !== auth()->id()) {
+                return response()->json([
+                    'status' => 403,
+                    'message' => 'Bạn không có quyền ẩn khóa học này.',
+                    'data' => []
+                ], 403);
+            }
+
+            $course->update(['is_active' => 0]);
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Khóa học đã được ẩn thành công.',
+                'data' => []
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi ẩn khóa học: ',
+                'error' => $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
+    }
+
+    // Hiện khóa học
+    public function enableCourse(Course $course)
+    {
+        DB::beginTransaction();
+        try {
+            // Kiểm tra quyền sở hữu khóa học
+            if ($course->id_user !== auth()->id()) {
+                return response()->json([
+                    'status' => 403,
+                    'message' => 'Bạn không có quyền hiện khóa học này.',
+                    'data' => []
+                ], 403);
+            }
+
+            $course->update(['is_active' => 1]);
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Khóa học đã được kích hoạt hiển thị thành công.',
+                'data' => []
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi kích hoạt hiển thị khóa học',
+                'error' => $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
+    }
+
 
     public function submit(Course $course)
     {

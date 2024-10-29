@@ -5,9 +5,11 @@ namespace App\Http\Controllers\api\Client\Intructor;
 use App\Models\Course;
 use App\Models\Module;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\Courses\StoreModuleRequest;
 use App\Http\Requests\Client\Courses\UpdateModuleRequest;
+use App\Http\Requests\Client\Modules\UpdateModulePositionsRequest;
 
 class ModuleController extends Controller
 {
@@ -105,4 +107,61 @@ class ModuleController extends Controller
             ], 500);
         }
     }
+
+    public function updateModulePosition(UpdateModulePositionsRequest $request, Course $course)
+    {
+        DB::beginTransaction();
+        try {
+            // Người dùng đang đăng nhập
+            $user = auth()->user();
+
+            // Kiểm tra xem người dùng có phải là người tạo ra khóa học hay không
+            if ($user->id !== $course->id_user) {
+                return response()->json([
+                    'status' => 403,
+                    'message' => 'Bạn không có quyền truy cập vào khóa học này.',
+                    'data' => []
+                ], 403);
+            }
+
+            // update vị trí của các module
+            foreach ($request->modules as $modulePosition) {
+                $module = Module::find($modulePosition['id']);
+                if ($module && $module->id_course === $course->id) {
+                    $module->position = $modulePosition['position'];
+                    $module->save();
+                }
+            }
+
+            DB::commit();
+
+            // Lấy danh sách module và sắp xếp theo position
+            $modules = $course->modules()->with([
+                'lessons' => function ($query) {
+                    $query->orderBy('position');
+                },
+                'lessons.lessonable',
+                'quiz'
+            ])
+                ->orderBy('position')
+                ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Vị trí các module đã được cập nhật thành công.',
+                'data' => [
+                    'modules' => $modules
+                ],
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Lỗi server
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi cập nhật vị trí module.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 }
