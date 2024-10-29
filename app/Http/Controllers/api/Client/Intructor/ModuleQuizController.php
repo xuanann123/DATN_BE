@@ -363,6 +363,7 @@ class ModuleQuizController extends Controller
             ], 500);
         }
     }
+    //Kiểm tra đáp án đúng không
 
     private function isCorrectAnswer($question, $optionIndex)
     {

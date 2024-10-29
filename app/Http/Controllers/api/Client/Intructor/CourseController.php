@@ -28,19 +28,16 @@ class CourseController extends Controller
     public function index()
     {
         try {
-            // $limit = request()->get('limit', 8);
-
-            // $courses = Course::select('id', 'name', 'thumbnail', 'status')
-            //     ->where('id_user', auth()->id())
-            //     ->orderByDesc('id')
-            //     ->paginate($limit);
+            //Lấy danh sách khoá học của tác giả đó.
             $courses = Course::with('user', 'category', 'tags')->where('id_user', auth()->id())->latest('id')->paginate(8);
+            //Khi lấy về đúng
             return response()->json([
                 'status' => 200,
                 'message' => 'Danh sách khóa học.',
                 'data' => $courses,
             ], 200);
         } catch (\Exception $e) {
+            //Khi lấy dữ liệu sai
             return response()->json([
                 'status' => 500,
                 'message' => 'Đã xảy ra lỗi khi lấy danh sách khóa học.',
@@ -48,9 +45,10 @@ class CourseController extends Controller
             ], 500);
         }
     }
-
+    //Lấy mục tiêu của khoá học
     public function getCourseGoals(Course $course)
     {
+        //Kiểm tra quyền truy cập
         if (auth()->id() !== $course->id_user) {
             return response()->json([
                 'status' => 403,
@@ -58,7 +56,7 @@ class CourseController extends Controller
                 'data' => []
             ], 403);
         }
-
+        //Trả về dữ liệu nếu pass quyền truy cập
         return response()->json([
             'message' => 'Danh sách mục tiêu khóa học.',
             'data' => [
@@ -69,9 +67,10 @@ class CourseController extends Controller
             'status' => 200,
         ], 200);
     }
-
+    //Lấy tổng quan khoá học
     public function getCourseOverview(Course $course)
     {
+        //Check quyền truy cập 
         try {
             if (auth()->id() !== $course->id_user) {
                 return response()->json([
@@ -80,6 +79,7 @@ class CourseController extends Controller
                     'data' => []
                 ], 403);
             }
+            //Dữ liệu lấy từ bảng khoá course
 
             $data = $course->only([
                 'name',
@@ -94,7 +94,7 @@ class CourseController extends Controller
                 'is_active',
                 'tags',
             ]);
-
+            //Trả về dữ liệu khi lấy thành công
             return response()->json([
                 'message' => 'Tổng quan khóa học.',
                 'data' => $data,
@@ -108,29 +108,32 @@ class CourseController extends Controller
             ], 500);
         }
     }
+    //Lưu 1 khoá học mới.
 
     public function storeNewCourse(StoreNewCourseRequest $request)
     {
+
+        //Lấy dữ liệu request đẩy lên
         $data = $request->only(['name', 'id_category']);
+        //Lấy người tạo ra khoá học
         $data['id_user'] = auth()->id();
+        //Lấy đường dẫn khoá học nhờ vào name và uuid
         $data['slug'] = Str::slug($data['name']) . '_' . Str::uuid();
 
         try {
-            DB::beginTransaction();
-
-            // tao 1 khoa hoc moi
+            // Tạo 1 khoá học mới
             $newCourse = Course::create($data);
-
-            DB::commit();
-
+            //Thêm 1 khoá học thành công
             return response()->json([
                 'status' => 201,
                 'message' => 'Thêm mới khóa học thành công!',
                 'data' => $newCourse->load('category')
             ], 201);
         } catch (\Exception $e) {
+            //Lưu log
             Log::error($e->getMessage());
             DB::rollBack();
+            //Kiểm tra báo lỗi khi lỗi server
             return response()->json([
                 'status' => 500,
                 'message' => 'Thêm mới không thành công!' . $e->getMessage(),
@@ -138,10 +141,11 @@ class CourseController extends Controller
             ], 500);
         }
     }
-
+    //Lấy thông tin 1 khoá học theo teacher
     public function showCourseTeacher(Course $course)
     {
         try {
+            //check quyền truy cập
             if ($course->status == 'draft' && $course->id_user !== auth()->id()) {
                 return response()->json([
                     'status' => 403,
@@ -149,15 +153,16 @@ class CourseController extends Controller
                     'data' => []
                 ], 403);
             }
-
+            //Trả về dữ liệu nếu pass quyền truy cập.
             $courseData = $course->load(['user', 'category', 'modules', 'tags', 'goals', 'requirements', 'audiences']);
-
+            //Lấy thành công
             return response()->json([
                 'status' => 200,
                 'message' => 'Thông tin khóa học.',
                 'data' => $courseData,
             ], 200);
         } catch (\Exception $e) {
+            //Lỗi server
             return response()->json([
                 'status' => 500,
                 'message' => 'Đã xảy ra lỗi: ' . $e->getMessage(),
@@ -165,10 +170,10 @@ class CourseController extends Controller
             ], 500);
         }
     }
-
+    //Cập nhật mục tiêu của khoá học
     public function updateTargetStudent(Request $request, Course $course)
     {
-
+        //Check quyền truy cập
         if ($course->id_user !== auth()->id()) {
             return response()->json([
                 'status' => 403,
@@ -191,7 +196,7 @@ class CourseController extends Controller
             $this->updateOrCreateRecord($course, Audience::class, $audiences, 'audience');
 
             DB::commit();
-
+            //Trả về dữ liệu
             return response()->json([
                 'message' => 'Đã lưu thành công các thay đổi của bạn.',
                 'data' => [
@@ -202,6 +207,7 @@ class CourseController extends Controller
                 'status' => 200,
             ], 200);
         } catch (\Exception $e) {
+            //Lưu log + rollback + trả dữ liệu nếu lỗi
             Log::error($e->getMessage());
             DB::rollBack();
             return response()->json([
@@ -211,6 +217,7 @@ class CourseController extends Controller
             ], 500);
         }
     }
+    //Cập nhật tổng quan
 
     public function updateCourseOverview(UpdateCourseOverviewRequest $request, Course $course)
     {
@@ -445,7 +452,7 @@ class CourseController extends Controller
             ->groupBy('u.id', 'u.name', 'u.avatar', 'c.id', 'c.name', 'c.thumbnail', 'c.total_student', 'c.duration')
             ->first();
 
-        if(!$course) {
+        if (!$course) {
             return response()->json([
                 'code' => 204,
                 'status' => 'error',
