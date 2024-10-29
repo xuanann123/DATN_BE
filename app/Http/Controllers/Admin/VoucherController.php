@@ -71,15 +71,8 @@ class VoucherController extends Controller
             $data['is_active'] = 0;
         }
         try {
+            //Thêm dữ liệu
             $newVoucher = Voucher::query()->create($data);
-            $timezone = config('app.timezone'); // Hoặc bất kỳ múi giờ nào bạn cần
-            // dd(Carbon::parse($newVoucher->start_time, $timezone), Carbon::now($timezone));
-            broadcast(new VoucherCreated($newVoucher))->toOthers();
-            // if ($newVoucher->start_time && Carbon::parse($newVoucher->start_time, $timezone)->isFuture()) {
-            //     broadcast(new VoucherCreated($newVoucher))->toOthers();
-            // }
-            // broadcast(new VoucherCreated($newVoucher))->toOthers();
-
             return redirect()->route('admin.vouchers.index')->with(['success' => 'Thêm voucher thành công']);
         } catch (\Exception $e) {
             DB::rollBack();

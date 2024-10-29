@@ -58,14 +58,15 @@
                 <div class="d-flex justify-content-sm-end gap-2">
                     <div class="search-box ms-2">
                         <input type="text" name="search" value="{{ old('search', $searchQuery) }}" class="form-control"
-                            placeholder="Search..." onkeydown="if(event.key === 'Enter'){ this.form.submit(); }">
+                            placeholder="Tìm kiếm..." onkeydown="if(event.key === 'Enter'){ this.form.submit(); }">
                         <i class="ri-search-line search-icon"></i>
                     </div>
-
+                    {{-- Danh sách chọn về trạng thái của bài viết --}}
                     <div>
                         <select class="form-control" name="status" data-choices data-choices-search-true
                             onchange="document.getElementById('filterForm').submit()">
-                            <option value="all" {{ $statusFilter == 'all' ? 'selected' : '' }}>Tất cả</option>
+                            <option value="" selected>Lọc theo trạng thái</option>
+                            <option value="all" {{ $statusFilter == 'all' ? 'selected' : '' }} >Tất cả</option>
                             <option value="draft" {{ $statusFilter == 'draft' ? 'selected' : '' }}>Bản nháp</option>
                             <option value="published" {{ $statusFilter == 'published' ? 'selected' : '' }}>Đã xuất bản
                             </option>
@@ -73,16 +74,19 @@
                             </option>
                         </select>
                     </div>
-
-                    <select name="time_filter" class="form-control" data-choices data-choices-search-true
-                        onchange="document.getElementById('filterForm').submit()">
-                        <option value="all" {{ $timeFilter == 'all' ? 'selected' : '' }} selected>Tất cả</option>
-                        <option value="today" {{ $timeFilter == 'today' ? 'selected' : '' }}>Hôm nay</option>
-                        <option value="yesterday" {{ $timeFilter == 'yesterday' ? 'selected' : '' }}>Hôm qua</option>
-                        <option value="this_week" {{ $timeFilter == 'this_week' ? 'selected' : '' }}>Tuần này</option>
-                        <option value="this_month" {{ $timeFilter == 'this_month' ? 'selected' : '' }}>Tháng này</option>
-                        <option value="this_year" {{ $timeFilter == 'this_year' ? 'selected' : '' }}>Năm nay</option>
-                    </select>
+                    <div>
+                        <select name="time_filter" class="form-control" data-choices data-choices-search-true
+                            onchange="document.getElementById('filterForm').submit()">
+                            <option value="" selected>Lọc theo thời gian</option>
+                            <option value="all" {{ $timeFilter == 'all' ? 'selected' : '' }} >Tất cả</option>
+                            <option value="today" {{ $timeFilter == 'today' ? 'selected' : '' }}>Hôm nay</option>
+                            <option value="yesterday" {{ $timeFilter == 'yesterday' ? 'selected' : '' }}>Hôm qua</option>
+                            <option value="this_week" {{ $timeFilter == 'this_week' ? 'selected' : '' }}>Tuần này</option>
+                            <option value="this_month" {{ $timeFilter == 'this_month' ? 'selected' : '' }}>Tháng này
+                            </option>
+                            <option value="this_year" {{ $timeFilter == 'this_year' ? 'selected' : '' }}>Năm nay</option>
+                        </select>
+                    </div>
                 </div>
             </form>
         </div>
@@ -108,10 +112,12 @@
                         <!-- Sample post item -->
                         <div class="card mb-3">
                             <div class="card-body">
+
                                 <div class="d-flex align-items-center mb-3">
+
                                     <div class="flex-shrink-0">
                                         <img src="{{ Storage::url($post->thumbnail) }}" alt=""
-                                            class="avatar-sm rounded">
+                                            class="avatar-sm rounded" style="width: 300px!important; height: auto">
                                     </div>
                                     <div class="flex-grow-1 ms-3">
                                         <h5 class="fs-16 mb-1 fw-bold">
@@ -292,7 +298,6 @@
                                             </div><!-- /.modal-dialog -->
                                         </div>
                                     </div>
-
                                 </div>
                                 <div class="text-muted text-truncate">{!! $post->description !!}</div>
                                 <div>
