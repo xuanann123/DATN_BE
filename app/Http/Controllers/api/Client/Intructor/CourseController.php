@@ -45,32 +45,10 @@ class CourseController extends Controller
             ], 500);
         }
     }
-    //Lấy mục tiêu của khoá học
-    public function getCourseGoals(Course $course)
-    {
-        //Kiểm tra quyền truy cập
-        if (auth()->id() !== $course->id_user) {
-            return response()->json([
-                'status' => 403,
-                'message' => 'Bạn không có quyền truy cập.',
-                'data' => []
-            ], 403);
-        }
-        //Trả về dữ liệu nếu pass quyền truy cập
-        return response()->json([
-            'message' => 'Danh sách mục tiêu khóa học.',
-            'data' => [
-                'goals' => $course->goals,
-                'requirements' => $course->requirements,
-                'audiences' => $course->audiences,
-            ],
-            'status' => 200,
-        ], 200);
-    }
     //Lấy tổng quan khoá học
     public function getCourseOverview(Course $course)
     {
-        //Check quyền truy cập 
+        //Check quyền truy cập
         try {
             if (auth()->id() !== $course->id_user) {
                 return response()->json([
@@ -166,53 +144,6 @@ class CourseController extends Controller
             return response()->json([
                 'status' => 500,
                 'message' => 'Đã xảy ra lỗi: ' . $e->getMessage(),
-                'data' => []
-            ], 500);
-        }
-    }
-    //Cập nhật mục tiêu của khoá học
-    public function updateTargetStudent(Request $request, Course $course)
-    {
-        //Check quyền truy cập
-        if ($course->id_user !== auth()->id()) {
-            return response()->json([
-                'status' => 403,
-                'message' => 'Bạn không có quyền sửa khóa học này!',
-                'data' => []
-            ], 403);
-        }
-
-        $goals = $request->goals ?? [];
-        $requirements = $request->requirements ?? [];
-        $audiences = $request->audiences ?? [];
-
-        try {
-            DB::beginTransaction();
-            // goals
-            $this->updateOrCreateRecord($course, Goal::class, $goals, 'goal');
-            // requirements
-            $this->updateOrCreateRecord($course, Requirement::class, $requirements, 'requirement');
-            // audiences
-            $this->updateOrCreateRecord($course, Audience::class, $audiences, 'audience');
-
-            DB::commit();
-            //Trả về dữ liệu
-            return response()->json([
-                'message' => 'Đã lưu thành công các thay đổi của bạn.',
-                'data' => [
-                    'goals' => $course->goals,
-                    'requirements' => $course->requirements,
-                    'audiences' => $course->audiences,
-                ],
-                'status' => 200,
-            ], 200);
-        } catch (\Exception $e) {
-            //Lưu log + rollback + trả dữ liệu nếu lỗi
-            Log::error($e->getMessage());
-            DB::rollBack();
-            return response()->json([
-                'status' => 500,
-                'message' => 'Cập nhật không thành công! ' . $e->getMessage(),
                 'data' => []
             ], 500);
         }
@@ -324,26 +255,6 @@ class CourseController extends Controller
         }
     }
 
-    private function updateOrCreateRecord(Course $course, $model, $data, $field)
-    {
-        // Lấy tất cả các vị trí từ data
-        $newPositions = array_column($data, 'position');
-
-        // Xóa các bản ghi cũ không có trong request
-        $model::where('course_id', $course->id)
-            ->whereNotIn('position', $newPositions)
-            ->delete();
-        // Create hoặc update
-        foreach ($data as $item) {
-            $model::updateOrCreate(
-                [
-                    'course_id' => $course->id,
-                    'position' => $item['position']
-                ],
-                [$field => $item[$field]]
-            );
-        }
-    }
 
     public function submit(Course $course)
     {

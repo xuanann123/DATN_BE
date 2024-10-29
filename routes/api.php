@@ -24,6 +24,7 @@ use App\Http\Controllers\api\Client\Student\LessonController;
 use App\Http\Controllers\api\Client\RatingController;
 use App\Http\Controllers\api\Client\CommentController;
 use App\Http\Controllers\api\Client\Intructor\ModuleQuizController;
+use App\Http\Controllers\api\Client\Intructor\TargetController;
 use App\Http\Controllers\api\Client\Student\NoteController;
 
 /*
@@ -141,9 +142,11 @@ Route::middleware('auth:sanctum')->group(function () {
         // Route::get('/course/{course}', [CourseController::class, 'showCourseTeacher']);
 
         Route::prefix('manage')->group(function () {
+            // Check điều kiện để gửi khóa học đi xem xét
+            Route::get('/{course}/manage-menu', [TargetController::class, 'checkCourseCompletion']);
             //Quản lý mục tiêu khóa học
-            Route::get('/{course}/target-student', [CourseController::class, 'getCourseGoals']);
-            Route::put('/{course}/target-student', [CourseController::class, 'updateTargetStudent']);
+            Route::get('/{course}/target-student', [TargetController::class, 'getCourseGoals']);
+            Route::put('/{course}/target-student', [TargetController::class, 'updateTargetStudent']);
 
             //Quản lý tổng quan khoá học
             Route::get('/{course}/overview', [CourseController::class, 'getCourseOverview']);
