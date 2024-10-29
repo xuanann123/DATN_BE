@@ -285,7 +285,7 @@
                                         <td>${data.voucher_code != null ? data.voucher_code : 'Trống'}</td>
                                     </tr>
                                     <tr class="item">
-                                        <td>Discount</td>
+                                        <td>Số xu giảm</td>
                                         <td>${data.voucher_discount != null ? data.voucher_discount + `<span style="margin-left: 5px;color:orange" class='ri-copper-coin-line'></span>` : 'Trống'}</td>
                                     </tr>
 
