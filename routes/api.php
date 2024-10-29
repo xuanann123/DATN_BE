@@ -101,7 +101,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('comments')->group(function () {
         Route::post('/add-comment-post', [CommentController::class, 'addCommentPost']);
-        Route::post('/add-comment-course', [CommentController::class, 'addCommentCourse']);
+        Route::get('/comment-lesson/{id_lesson}', [CommentController::class, 'getCommentsLesson']);
+        Route::post('/add-comment-lesson', [CommentController::class, 'addCommentLesson']);
     });
 
     # ===================== ROUTE FOR RATING ===========================
@@ -261,7 +262,6 @@ Route::prefix('lessons')->group(function () {
 # ===================== ROUTE FOR COMMENT ===========================
 Route::prefix('comments')->group(function () {
     Route::get('/comment-post/{slug}', [CommentController::class, 'getCommentsPost']);
-    Route::get('/comment-course/{slug}', [CommentController::class, 'getCommentsCourse']);
 });
 
 # ===================== ROUTE FOR RATING ===========================
