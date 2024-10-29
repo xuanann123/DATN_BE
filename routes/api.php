@@ -159,6 +159,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('{course}/add', [ModuleController::class, 'storeModule']);
                 Route::put('{module}/update', [ModuleController::class, 'updateModule']);
                 Route::delete('{module}/delete', [ModuleController::class, 'deleteModule']);
+                Route::put('{course}/update-module-position', [ModuleController::class, 'updateModulePosition']);
 
             });
             //Quản lý bài học
@@ -187,6 +188,12 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::put('quiz/{question}/update-question-and-option', [ModuleQuizController::class, 'updateQuestionAndOption']);
                 Route::delete('quiz/{question}/delete-question-and-option', [ModuleQuizController::class, 'deleteQuestionAndOption']);
             });
+            // xoa khoa hoc vinh vien
+            Route::delete('{course}/delete-course', [CourseController::class, 'deleteCourse']);
+            // an khoa hoc
+            Route::put('{course}/disable-course', [CourseController::class, 'disableCourse']);
+            // hien thi khoa hoc
+            Route::put('{course}/enable-course', [CourseController::class, 'enableCourse']);
             // submit cho admin de xem xet khoa hoc
             Route::post('{course}/submit', [CourseController::class, 'submit']);
         });

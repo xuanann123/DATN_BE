@@ -22,7 +22,15 @@ class CurriculumController extends Controller
                 ], 403);
             }
             //Lấy danh sách khoá tổng quan
-            $modules = $course->modules()->with(['lessons.lessonable', 'quiz'])->get();
+            $modules = $course->modules()->with([
+                'lessons' => function ($query) {
+                    $query->orderBy('position');
+                },
+                'lessons.lessonable',
+                'quiz'
+            ])
+            ->orderBy('position')
+            ->get();
             return response()->json([
                 'status' => 200,
                 'message' => "Danh sách chương trình giảng dạy.",
