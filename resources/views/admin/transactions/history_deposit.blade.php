@@ -46,10 +46,10 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-end gap-3">
                     <div class="col-sm-auto d-flex ms-2">
-                        <form action="{{ route('admin.categories.index') }}" method="GET" class="d-flex gap-2">
+                        <form action="{{ route('admin.transactions.history-deposit') }}" method="GET"
+                            class="d-flex gap-2">
                             <input type="text" class="form-control ml-2" placeholder="Tìm kiếm ..." name="keyword"
-                                   value="{{ request()->input('keyword') }}">
-                            <input type="hidden" name="status" value="{{ request()->input('status') }}">
+                                value="{{ request()->input('keyword') }}">
                             <button class="btn btn-outline-primary ms-2" type="submit">
                                 <i class="ri-search-line"></i>
                             </button>
@@ -59,9 +59,9 @@
                 <div class="card-body">
 
 
-                        <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
-                               style="width:100%">
-                            <thead>
+                    <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
+                        style="width:100%">
+                        <thead>
                             <tr>
                                 <th data-ordering="false">ID</th>
                                 <th data-ordering="false">Người giao dịch</th>
@@ -71,12 +71,12 @@
                                 <th>Ngày giao dịch</th>
                                 <th>Trạng thái</th>
                             </tr>
-                            </thead>
-                            <tbody class="list form-check-all">
+                        </thead>
+                        <tbody class="list form-check-all">
                             @foreach ($historyDeposit as $deposit)
                                 <tr>
                                     <td>{{ $deposit->id }}</td>
-                                    <td>{{ $deposit->name != "" ? $deposit->name : $deposit->email }}</td>
+                                    <td>{{ $deposit->name != '' ? $deposit->name : $deposit->email }}</td>
                                     <td>
                                         {{ number_format($deposit->amount, 1, '.', ',') }}
                                     </td>
@@ -90,14 +90,15 @@
                                         {{ $deposit->created_at }}
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $deposit->status == 'Thành công' ? 'success' : 'danger' }}">
+                                        <span
+                                            class="badge bg-{{ $deposit->status == 'Thành công' ? 'success' : 'danger' }}">
                                             {{ $deposit->status }}
                                         </span>
                                     </td>
                                 </tr>
                             @endforeach
-                            </tbody>
-                        </table>
+                        </tbody>
+                    </table>
 
                     <div class="paginate-data">
                         {{ $historyDeposit->links() }}
@@ -105,8 +106,8 @@
                 </div>
 
             </div>
-        </div><!--end col-->
-    </div><!--end row-->
+        </div>
+    </div>
 @endsection
 
 @section('script-libs')
@@ -120,7 +121,7 @@
     </script>
     <!--datatable js-->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
     {{-- <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script> --}}
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
@@ -132,7 +133,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
     <script src="{{ asset('theme/admin/assets/js/pages/datatables.init.js') }}"></script>
 @endsection

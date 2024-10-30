@@ -14,7 +14,7 @@ class Goal extends Model
         'course_id',
         'position',
     ];
-
+    //Mục tiêu thuộc về 1 khoá học
     public function course()
     {
         return $this->belongsTo(Course::class, 'course_id');

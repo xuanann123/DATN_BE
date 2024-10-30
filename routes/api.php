@@ -109,6 +109,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     # ===================== ROUTE FOR RATING ===========================
     Route::prefix('ratings')->group(function () {
+
         Route::get('/check-rating-course/{id_user}/{id_course}', [RatingController::class, 'checkRating']);
         Route::post('/add-rating-course', [RatingController::class, 'addRating']);
     });

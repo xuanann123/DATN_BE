@@ -37,8 +37,8 @@ use App\Http\Controllers\api\Client\PaymentController;
 */
 
 Route::get('/', function () {
-//    return view('welcome');
-    if(!auth()->check()){
+    //    return view('welcome');
+    if (!auth()->check()) {
         return redirect()->route('admin.login');
     }
     return redirect()->route('admin.dashboard');
@@ -112,6 +112,7 @@ Route::prefix("admin")
                 Route::get("/action", [UserController::class, 'action'])->name('action');
                 Route::get("/edit/{user}", [UserController::class, 'edit'])->name('edit');
                 Route::put("/update/{user}", [UserController::class, 'update'])->name('update');
+                Route::put("/change-password/{user}", [UserController::class, 'changePassword'])->name('change-password');
                 Route::get("/detail/{user}", [UserController::class, 'detail'])->name('detail');
                 Route::get("/restore/{id}", [UserController::class, 'restore'])->name('restore');
                 Route::get("/forceDelete/{id}", [UserController::class, 'forceDelete'])->name('forceDelete');
@@ -207,5 +208,3 @@ Route::prefix("admin")
                 Route::post('/greet/{receiver}', [ChatController::class, 'greetReceived'])->name('greet');
             });
     });
-
-

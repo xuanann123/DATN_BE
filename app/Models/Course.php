@@ -8,6 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Course extends Model
 {
     use HasFactory;
+    //Định nghĩa level cho khoá học
+    const LEVEL_BEGINNER = 'Sơ Cấp';
+    //Trung cấp
+    const LEVEL_INTERMEDIATE = 'Trung Cấp';
+    //Chuyên gia
+    const LEVEL_MASTER = 'Chuyên Gia';
+    const LEVEL_ARRAY = [
+        self::LEVEL_BEGINNER,
+        self::LEVEL_INTERMEDIATE,
+        self::LEVEL_MASTER
+    ];
 
     protected $fillable = [
         'id_user',
@@ -72,7 +83,8 @@ class Course extends Model
         return $this->morphMany(Comment::class, 'commentable');
     }
 
-    public function ratings() {
+    public function ratings()
+    {
         return $this->hasMany(Rating::class, 'id_course');
     }
     //Danh sách người đăng kí khoá học
