@@ -4,7 +4,10 @@ namespace App\Http\Controllers\api\Client;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\Courses\RatingRequest;
+use App\Models\Course;
 use App\Models\Rating;
+use App\Models\User;
+use App\Models\UserCourse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +18,7 @@ class RatingController extends Controller
     {
         $courseId = $request->course_id;
         $countItem = 10;
-        if($request->page && $request->page != 0) {
+        if ($request->page && $request->page != 0) {
             $countItem = $request->page * 10;
         }
 
@@ -34,7 +37,7 @@ class RatingController extends Controller
             ->limit($countItem)
             ->get();
 
-        if(count($listRating) == 0) {
+        if (count($listRating) == 0) {
             return response()->json([
                 'status' => 'error',
                 'massage' => 'Không có đánh giá cho khóa học này'
@@ -47,10 +50,51 @@ class RatingController extends Controller
         ], 200);
     }
 
-    public function addRating(RatingRequest $request){
+    public function checkRating(Request $request)
+    {
+        $userId = $request->id_user;
+        $courseId = $request->id_course;
+
+        $user = User::find($userId);
+        if (!$user) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Người dùng không tồn tại'
+            ]);
+        }
+
+        $course = Course::find($courseId);
+        if (!$course) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Khóa học không tồn tại'
+            ]);
+        }
+
+        $checkProgressCourse = UserCourse::where('id_user', $userId)
+            ->where('id_course', $courseId)
+            ->first();
+
+        if ($checkProgressCourse->progress_percent == 100 && $checkProgressCourse->completed_at) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Đã hoàn thành khóa học'
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Chưa hoàn thành khóa học'
+        ], 200);
+    }
+
+    public function addRating(RatingRequest $request)
+    {
         $dataRating = $request->all();
         $newRating = Rating::query()->create($dataRating);
-        if(!$newRating) {
+        if (!$newRating) {
             return response()->json([
 
                 'status' => 'error',
@@ -83,7 +127,7 @@ class RatingController extends Controller
             ->limit(6)
             ->get();
 
-        if(count($listRating) == 0) {
+        if (count($listRating) == 0) {
             return response()->json([
                 'code' => 204,
                 'status' => 'error',
