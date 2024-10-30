@@ -128,7 +128,7 @@ class CourseController extends Controller
             // }
             // $newCourse->tags()->sync($tagIds);
             DB::commit();
-            return redirect()->route('admin.courses.list')->with(['message' => 'Thêm mới thành công!']);
+            return redirect()->route('admin.courses.edit', $newCourse->id)->with(['success' => 'Thêm mới thành công!']);
         } catch (\Throwable $th) {
             if (Storage::disk('public')->exists($data['thumbnail'])) {
                 Storage::disk('public')->delete($data['thumbnail']);
@@ -143,6 +143,7 @@ class CourseController extends Controller
 
     public function detail($id)
     {
+        
         $title = 'Chi tiết khóa học';
         $course = Course::with(
             'category',
@@ -168,12 +169,18 @@ class CourseController extends Controller
 
     public function edit(string $id)
     {
+        //Kiểm tra quyền xem người đó sở hữu 
+        if(auth()->id() !== Course::find($id)->id_user){
+            return redirect()->route('admin.courses.list')->with(['error' => 'Bạn không có quyền truy cập khoá học này!']);
+        }
+        //level modeule course 
+        $levels = Course::LEVEL_ARRAY;
         $title = "Chỉnh sửa khóa học";
         $categories = Category::whereNull('parent_id')->with('children')->get();
         $options = $this->getCategoryOptions($categories);
         $course = Course::find($id);
         $tags = Tag::all();
-        return view('admin.courses.edit', compact('title', 'course', 'options', 'tags'));
+        return view('admin.courses.edit', compact('title', 'course', 'options', 'tags','levels'));
     }
 
     public function update(UpdateCourseRequest $request, string $id)
