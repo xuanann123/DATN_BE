@@ -109,20 +109,23 @@
                                         </form>
                                     </div>
                                     <div class="col-md-auto">
-                                        <form action="{{ route('admin.approval.courses.approve', $course->id) }}"
-                                            method="post">
-                                            @csrf
-                                            <input type="hidden" name="id" id=""
-                                                value="{{ $course->id }}">
-                                            @if ($course->status === 'pending')
-                                                <div class="hstack gap-1 flex-wrap">
-                                                    <button type="submit" name="reject" class="btn btn-danger">Từ
-                                                        chối</button>
-                                                    <button type="submit" name="approval" class="btn btn-success">Chấp
-                                                        thuận</button>
-                                                </div>
-                                            @endif
-                                        </form>
+                                        @php
+                                            // Check điều kiện không đạt của khóa học
+                                            $hasFailedConditions = collect($conditions)->contains(
+                                                fn($condition) => !$condition['status'],
+                                            );
+                                        @endphp
+                                        @if ($course->status === 'pending')
+                                            <div class="hstack gap-1 flex-wrap">
+                                                <button type="button" name="reject" class="btn btn-danger"
+                                                    data-bs-toggle="modal" data-bs-target="#rejectModal" id="reject-btn">Từ
+                                                    chối</button>
+                                                <button type="submit" class="btn btn-success" data-bs-toggle="modal"
+                                                    data-bs-target="#approvalModal" id="approval-main-btn"
+                                                    {{ $hasFailedConditions ? 'disabled' : '' }}>Chấp
+                                                    thuận</button>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -138,6 +141,12 @@
                             <li class="nav-item">
                                 <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#course-content" role="tab">
                                     Nội dung
+                                </a>
+                            </li>
+                            <li class="nav-item-2">
+                                <a class="nav-link fw-semibold text-danger" data-bs-toggle="tab" href="#course-completion"
+                                    role="tab">
+                                    Điều kiện hoàn thành khóa học
                                 </a>
                             </li>
                         </ul>
@@ -178,9 +187,9 @@
                                         <table class="table table-borderless align-middle mb-0">
                                             <tbody>
                                                 <tr>
-                                                    <td class="fw-medium">Thời gian</td>
+                                                    <td class="fw-medium">Thời gian video</td>
                                                     <td id="course-duration">
-                                                        {{ $course->duration ? $course->duration . ' tuần' : 'Chưa xác định' }}
+                                                        {{ $totalDurationVideo ? $totalDurationVideo : 'Chưa xác định' }}
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -192,8 +201,12 @@
                                                     <td id="quiz-count">{{ $quizzesCount ?? 'Chưa có' }}</td>
                                                 </tr>
                                                 <tr>
+                                                    <td class="fw-medium">Trình độ</td>
+                                                    <td id="quiz-count">{{ $course->level ?? 'Chưa có' }}</td>
+                                                </tr>
+                                                <tr>
                                                     <td class="fw-medium">Học viên</td>
-                                                    <td id="course-language">Tạm thời chưa làm</td>
+                                                    <td id="course-language">{{ $course->total_student }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="fw-medium">Price</td>
@@ -206,11 +219,11 @@
                                                                     class="text-decoration-line-through">{{ number_format($course->price, 0) }}</span>
                                                                 <span
                                                                     class="text-danger">{{ number_format($course->price_sale, 0) }}</span>
-                                                                <i class="ri-bit-coin-line"></i>
+                                                                <i class="ri-bit-coin-line fw-bold text-warning"></i>
                                                             @else
                                                                 <span
                                                                     class="text-danger">{{ number_format($course->price, 0) }}</span>
-                                                                <i class="ri-bit-coin-line"></i>
+                                                                <i class="ri-bit-coin-line fw-bold text-warning"></i>
                                                             @endif
                                                         @endif
                                                     </td>
@@ -320,6 +333,102 @@
                     </div>
                 </div>
 
+                {{-- Điều kiện hoàn thành khóa học --}}
+                <div class="tab-pane fade" id="course-completion" role="tabpanel">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="live-preview">
+                                <ul class="list-group">
+                                    @foreach ($conditions as $condition)
+                                        <li class="list-group-item">
+                                            <i
+                                                class="mdi {{ $condition['status'] ? 'mdi-check-bold text-success' : 'mdi-close-thick text-danger' }} align-middle lh-1 me-2"></i>
+                                            {{ $condition['label'] }}
+                                            ({{ $condition['value'] }}/{{ $condition['required'] }})
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Modal chấp thuận --}}
+                <div class="modal fade zoomIn" id="approvalModal" tabindex="-1" aria-labelledby="approvalModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-body text-center p-5">
+                                <script src="https://cdn.lordicon.com/lordicon.js"></script>
+                                <lord-icon src="https://cdn.lordicon.com/amtdygnu.json" trigger="hover"
+                                    style="width:120px;height:120px">
+                                </lord-icon>
+                                <div class="mt-4">
+                                    <h4 class="mb-3">Chấp thuận khóa học!</h4>
+                                    <p class="text-muted mb-4">Kiểm duyệt viên xác nhận khóa học này đã đủ các điều kiện và
+                                        không có nội dung phản cảm.</p>
+                                    <form action="{{ route('admin.approval.courses.approve', $course->id) }}"
+                                        method="post" id="approval-form">
+                                        @csrf
+                                        <input type="hidden" name="id" id=""
+                                            value="{{ $course->id }}">
+                                        <input type="hidden" name="approval">
+                                        <div class="hstack gap-2 justify-content-center">
+                                            <button type="button" class="btn btn-light"
+                                                data-bs-dismiss="modal">Đóng</button>
+                                            <button type="submit" id="approval-btn" class="btn btn-success">Xác
+                                                nhận</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal từ chối -->
+                <div class="modal modal-lg fade zoomIn" id="rejectModal" tabindex="-1"
+                    aria-labelledby="rejectModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header border-bottom bg-primary-subtle">
+                                <h4 class="modal-title" id="rejectModalLabel"><i
+                                        class="mdi mdi-close-circle text-danger"></i> Từ chối khóa học</h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                @if (collect($conditions)->contains(fn($condition) => !$condition['status']))
+                                    <h6 class="fs-15">Những điều kiện khóa học chưa đạt:</h6>
+                                    <ul class="list-group list-group-flush">
+                                        @foreach ($conditions as $condition)
+                                            @if (!$condition['status'])
+                                                <li class="list-group-item text-muted">
+                                                    <i class="mdi mdi-close-thick text-danger align-middle lh-1 me-2"></i>
+                                                    {{ $condition['label'] }}
+                                                    ({{ $condition['value'] }}/{{ $condition['required'] }})
+                                                </li>
+                                            @endif
+                                        @endforeach
+                                    </ul>
+                                @endif
+                                <form action="{{ route('admin.approval.courses.approve', $course->id) }}" method="post"
+                                    class="" id="reject-form">
+                                    <h6 class="fs-15 mt-2">Đánh giá của người kiểm duyệt:</h6>
+                                    <textarea name="admin_comments" id="ckeditor-classic-2"></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                @csrf
+                                <input type="hidden" name="id" value="{{ $course->id }}">
+                                <input type="hidden" name="reject">
+                                <button type="submit" class="btn btn-danger" id="reject-btn-2">Xác nhận</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Preview Lesson Modal -->
                 <div class="modal fade" id="previewLessonModal" tabindex="-1" aria-labelledby="previewLessonModal"
                     aria-hidden="true">
@@ -331,9 +440,6 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body p-4">
-                            </div>
-                            <div class="modal-footer border-top-0">
-                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
                             </div>
                         </div>
                     </div>
@@ -369,7 +475,24 @@
     <!--crypto-orders init-->
     <script src="{{ asset('theme/admin/assets/js/pages/crypto-orders.init.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ asset('theme/admin/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js') }}"></script>
+    <script src="{{ asset('theme/admin/assets/js/pages/project-create.init.js') }}"></script>
     <script>
+        // select tab default
+        $(document).ready(function() {
+            $('a[data-bs-toggle="tab"]').on('show.bs.tab', function(e) {
+                var activeTab = $(e.target).attr('href')
+                localStorage.setItem('activeTab', activeTab)
+            })
+
+            var activeTab = localStorage.getItem('activeTab')
+            if (activeTab) {
+                var tabElement = $('a[href="' + activeTab + '"]')
+                tabElement.tab('show')
+            } else {
+                $('a[href="#course-overview"]').tab('show')
+            }
+        })
         // preview lesson
         $(document).ready(function() {
             $('[data-bs-target="#previewLessonModal"]').on('click', function() {
@@ -465,6 +588,28 @@
             $('#previewLessonModal').on('hidden.bs.modal', function() {
                 $(this).find('.modal-title').text('')
                 $(this).find('.modal-body').html('')
+            })
+        })
+    </script>
+    <script>
+        // click nút chấp thuận thì chuyển sang loading và disable
+        $('#approval-form').on('submit', function(e) {
+            $('#approval-btn').each(function() {
+                $(this).prop('disabled', true)
+                $(this).html('<i class="mdi mdi-loading mdi-spin"></i> Đang xử lý...')
+            })
+            $('#reject-btn').each(function() {
+                $(this).prop('disabled', true)
+            })
+        })
+        // click nút từ chối thì chuyển sang loading và disable
+        $('#reject-form').on('submit', function(e) {
+            $('#reject-btn-2').each(function() {
+                $(this).prop('disabled', true)
+                $(this).html('<i class="mdi mdi-loading mdi-spin"></i> Đang xử lý...')
+            })
+            $('#approval-main-btn').each(function() {
+                $(this).prop('disabled', true)
             })
         })
     </script>

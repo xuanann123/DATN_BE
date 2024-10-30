@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\User;
 use App\Models\Course;
 use App\Models\Module;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Approvals\CourseApproveEmail;
+use App\Mail\Approvals\CourseRejectionEmail;
 
 class ApprovalCourseController extends Controller
 {
@@ -59,6 +63,17 @@ class ApprovalCourseController extends Controller
 
         $maxModulePosition = Module::where('id_course', $course->id)->max('position');
 
+        // Tổng thời gian video của tất cả bài học vid trong khóa học
+        $totalDurationVideo = $course->modules->flatMap(function ($module) {
+            return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                return $lesson->lessonable->duration ?? 0;
+            });
+        })->sum();
+        // Chuyển đổi sang định dạng X giờ, Y phút
+        $hours = floor($totalDurationVideo / 3600);
+        $minutes = ceil(($totalDurationVideo % 3600) / 60);
+        $totalDurationVideo = trim(($hours ? $hours . ' Giờ ' : '') . ($minutes ? $minutes . ' Phút' : ''));
+
         $lecturesCount = $course->modules->sum(function ($module) {
             return $module->lessons->whereIn('content_type', ['document', 'video'])->count();
         });
@@ -67,7 +82,9 @@ class ApprovalCourseController extends Controller
             return $module->quiz ? 1 : 0;
         });
 
-        return view('admin.course_censors.detail', compact('title', 'course', 'lecturesCount', 'quizzesCount', 'maxModulePosition'));
+        $conditions = $this->getCourseConditions($course);
+
+        return view('admin.course_censors.detail', compact('title', 'course', 'totalDurationVideo', 'lecturesCount', 'quizzesCount', 'maxModulePosition', 'conditions'));
     }
 
     public function approve(Request $request)
@@ -75,21 +92,35 @@ class ApprovalCourseController extends Controller
         try {
             $course = Course::findOrFail($request->id);
 
-            $course->status = match (true) {
-                $request->has('approval') => 'approved',
-                $request->has('reject') => 'rejected',
-                $request->has('disable') => 'rejected',
-                $request->has('enable') => 'approved',
-                default => $course->status,
-            };
+            $user = User::find($course->id_user);
 
-            $message = match (true) {
-                $request->has('approval') => 'Đã chấp thuận khóa học',
-                $request->has('reject') => 'Đã từ chối khóa học',
-                $request->has('disable') => 'Đã vô hiệu hóa khóa học',
-                $request->has('enable') => 'Đã kích hoạt lại khóa học',
-                default => NULL,
-            };
+            // Lấy điều kiện khóa học
+            $conditions = $this->getCourseConditions($course);
+            // Kiểm tra xem có điều kiện nào không đạt
+            $hasFailedConditions = collect($conditions)->contains(fn($condition) => !$condition['status']);
+
+            // Nếu có điều kiện không đạt và người dùng cố gắng phê duyệt, trả về lỗi
+            if ($request->has('approval') && $hasFailedConditions) {
+                return redirect()->back()->with('error', 'Không thể chấp thuận khóa học vì có điều kiện chưa đạt yêu cầu.');
+            }
+
+            // Chấp thuận khóa học
+            if ($request->has('approval')) {
+                $course->status = 'approved';
+                $message = 'Đã chấp thuận khóa học.';
+                // Gửi email cho giảng viên khi từ chối
+                Mail::to($user->email)->send(new CourseApproveEmail($course));
+            }
+
+            // Xử lý từ chối
+            if ($request->has('reject')) {
+                $course->status = 'rejected';
+                $course->admin_comments = $request->admin_comments;
+                $message = 'Đã từ chối khóa học';
+
+                // Gửi email cho giảng viên khi từ chối
+                Mail::to($user->email)->send(new CourseRejectionEmail($course, $conditions));
+            }
 
             $course->save();
 
@@ -137,5 +168,70 @@ class ApprovalCourseController extends Controller
         };
 
         return redirect()->route('admin.approval.courses.list')->with('success', $message());
+    }
+
+    private function getCourseConditions($course)
+    {
+        $conditions = [
+            [
+                'label' => 'Có ít nhất 4 mục tiêu cho học viên sau khi hoàn thành khóa học.',
+                'value' => $course->goals->count(),
+                'required' => 4
+            ],
+            [
+                'label' => 'Có ít nhất 1 yêu cầu hoặc điều kiện tiên quyết cho học viên khi tham gia khóa học.',
+                'value' => $course->requirements->count(),
+                'required' => 1
+            ],
+            [
+                'label' => 'Có ít nhất 1 thông tin về học viên mục tiêu của khóa học.',
+                'value' => $course->audiences->count(),
+                'required' => 1
+            ],
+            [
+                'label' => 'Có ít nhất 5 chương học trong chương trình giảng dạy.',
+                'value' => $course->modules->count(),
+                'required' => 5
+            ],
+            [
+                'label' => 'Có ít nhất 5 bài học trong chương trình giảng dạy.',
+                'value' => $course->modules->sum(fn($module) => $module->lessons->count()),
+                'required' => 5
+            ],
+            [
+                'label' => 'Tất cả các chương đều có bài tập.',
+                'value' => $course->modules->filter(fn($module) => $module->quiz)->count(),
+                'required' => $course->modules->count()
+            ],
+            [
+                'label' => 'Tổng thời gian của tất cả bài học video có ít nhất 30 phút.',
+                'value' => $totalDurationVideo = ceil($course->modules->flatMap(
+                    fn($module) =>
+                    $module->lessons->where('content_type', 'video')->map(fn($lesson) => $lesson->lessonable->duration ?? 0)
+                )->sum() / 60),
+                'required' => 30
+            ],
+            [
+                'label' => 'Xác định trình độ của khóa học.',
+                'value' => $course->level ? 1 : 0,
+                'required' => 1
+            ],
+            [
+                'label' => 'Mô tả khóa học dài ít nhất 200 kí tự.',
+                'value' => strlen($course->description),
+                'required' => 200
+            ],
+            [
+                'label' => 'Có ảnh bìa của khóa học.',
+                'value' => $course->thumbnail ? 1 : 0,
+                'required' => 1
+            ],
+        ];
+
+        foreach ($conditions as &$condition) {
+            $condition['status'] = $condition['value'] >= $condition['required'];
+        }
+
+        return $conditions;
     }
 }

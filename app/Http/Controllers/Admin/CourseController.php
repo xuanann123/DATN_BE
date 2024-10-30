@@ -23,9 +23,10 @@ class CourseController extends Controller
         $title = 'Danh sách khóa học';
         $courses = Course::select('id', 'id_user', 'id_category', 'name', 'sort_description', 'thumbnail', 'created_at', 'updated_at')
             ->with(['user:id,avatar,name','userCourses'])
+            ->where('id_user', auth()->id())
             ->orderByDesc('id')
             ->paginate(12);
-            
+
         //Danh Lấy ngẫu nhiên 3 thành viên tham gia khoá học
 
         // dd($courses);
