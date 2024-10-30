@@ -53,6 +53,7 @@ class TargetController extends Controller
         $requirements = $request->requirements ?? [];
         $audiences = $request->audiences ?? [];
 
+        
         try {
             DB::beginTransaction();
             // goals

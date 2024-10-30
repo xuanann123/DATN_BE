@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Audience;
 use Illuminate\Support\Facades\Session;
 
 use App\Models\Course;
@@ -11,7 +12,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Admin\Courses\CreateCourseRequest;
 use App\Http\Requests\Admin\Courses\UpdateCourseRequest;
+use App\Models\Goal;
 use App\Models\Module;
+use App\Models\Requirement;
 use App\Models\Tag;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -48,24 +51,44 @@ class CourseController extends Controller
     public function create()
     {
         $title = 'Thêm mới khóa học';
+        $levels = Course::LEVEL_ARRAY;
 
         $categories = Category::whereNull('parent_id')->with('children')->get();
         $options = $this->getCategoryOptions($categories);
         $tags = Tag::query()->pluck('name', 'id')->toArray();
 
-        return view('admin.courses.create', compact('title', 'options', 'tags'));
+        return view('admin.courses.create', compact('title', 'options', 'tags', 'levels'));
     }
 
-    public function store(CreateCourseRequest $request)
+    public function store(Request $request)
     {
-        $data = $request->except('thumbnail');
-        $data['is_free'] = $request->price != 0 ? 0 : 1;
+        $data = $request->except('thumbnail', 'trailer', 'goals', 'requirements', 'audiences');
+        //Kiểm tra khoá học xem có free không?
+        $data['is_free'] = $request->price != 0 ? 0 : 1; 
+        //Lấy người tạo ra khoá học này?
         $data['id_user'] = auth()->id();
-        $tagStorage = $request->tagStorage;
-        // $data['tags'] = explode(',', $tagStorage);
-        $tagIds = [];
+        //Lấy dữ liệu các mảng liên quan
+        $goals = $request->goals ?? [];
+        //Chuyển hoá dữ liệu 
+        if(!empty($goals)) {
+            $goalsArray = array_map(function ($goalText) {
+                return ['goal' => $goalText]; // Thay 'goal_text' bằng tên cột trong bảng 'goals'
+            }, $goals);
+        }
+        $requirements = $request->requirements ?? [];
+        if (!empty($requirements)) {
+            $requirementsArray = array_map(function ($requirementText) {
+                return ['requirement' => $requirementText]; // Thay 'goal_text' bằng tên cột trong bảng 'goals'
+            }, $requirements);
+        }
+        $audiences = $request->audiences ?? [];
+        if (!empty($audiences)) {
+            $audiencesArray = array_map(function ($audienceText) {
+                return ['audience' => $audienceText]; // Thay 'goal_text' bằng tên cột trong bảng 'goals'
+            }, $audiences);
+        }
+    
         try {
-
             DB::beginTransaction();
             //Xử lý hình ảnh
             if ($request->thumbnail && $request->hasFile('thumbnail')) {
@@ -75,8 +98,7 @@ class CourseController extends Controller
                 $data['thumbnail'] = $pathImage;
             }
 
-            // Xử lí video trailer;
-
+            // Xử lí video trailer
             if ($request->trailer && $request->hasFile('trailer')) {
                 $trailer = $request->file('trailer');
                 $newNameTrailer = 'course_' . time() . '.' . $trailer->getClientOriginalExtension();
@@ -84,20 +106,27 @@ class CourseController extends Controller
                 $data['trailer'] = $pathTrailer;
             }
 
-            //Xử lý khoá học
+            //Đi tạo khoá học
             $newCourse = Course::query()->create($data);
+            //Thêm dữ liệu 1-n những mảng liên quan
+            // goals
+            $newCourse->goals()->createMany($goalsArray);
+            // requirements
+            $newCourse->requirements()->createMany($requirementsArray);
+            //  audiences
+            $newCourse->audiences()->createMany($audiencesArray);
             //Xử lý tags
-            foreach ($data['tags'] as $tag) {
-                $tag = trim($tag);
-                if (!empty($tag)) {
-                    $tag = Tag::firstOrCreate([
-                        'name' => $tag,
-                        'slug' => Str::slug($tag),
-                    ]);
-                    $tagIds[] = $tag->id;
-                }
-            }
-            $newCourse->tags()->sync($tagIds);
+            // foreach ($data['tags'] as $tag) {
+            //     $tag = trim($tag);
+            //     if (!empty($tag)) {
+            //         $tag = Tag::firstOrCreate([
+            //             'name' => $tag,
+            //             'slug' => Str::slug($tag),
+            //         ]);
+            //         $tagIds[] = $tag->id;
+            //     }
+            // }
+            // $newCourse->tags()->sync($tagIds);
             DB::commit();
             return redirect()->route('admin.courses.list')->with(['message' => 'Thêm mới thành công!']);
         } catch (\Throwable $th) {
