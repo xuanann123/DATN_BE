@@ -118,17 +118,16 @@
             </div>
         </div>
     </div>
-    <!-- end page title -->
 
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-end gap-3">
                     <div class="col-sm-auto d-flex ms-2">
-                        <form action="{{ route('admin.categories.index') }}" method="GET" class="d-flex gap-2">
+                        <form action="{{ route('admin.transactions.history-buy-course') }}" method="GET"
+                            class="d-flex gap-2">
                             <input type="text" class="form-control ml-2" placeholder="Tìm kiếm ..." name="keyword"
                                 value="{{ request()->input('keyword') }}">
-                            <input type="hidden" name="status" value="{{ request()->input('status') }}">
                             <button class="btn btn-outline-primary ms-2" type="submit">
                                 <i class="ri-search-line"></i>
                             </button>
@@ -173,7 +172,6 @@
                                         </span>
                                     </td>
                                     <td>
-                                        {{--                                    <span class="detail_bill ri-eye-line text-primary cursor-pointer btn"></span> --}}
                                         <button class="btn btn-sm btn-light me-2" data-bs-toggle="modal"
                                             data-bs-target="#detailBillModal" data-bill-id="{{ $buy->id }}">
                                             <i class="ri-eye-line"></i> <i>Chi tiết</i>
@@ -189,8 +187,8 @@
                 </div>
 
             </div>
-        </div><!--end col-->
-    </div><!--end row-->
+        </div>
+    </div>
 
     <div class="modal fade" id="detailBillModal" tabindex="-1" aria-labelledby="detailBillModal" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl">
