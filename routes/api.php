@@ -108,7 +108,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     # ===================== ROUTE FOR RATING ===========================
     Route::prefix('ratings')->group(function () {
-        Route::get('/add-rating-course', [RatingController::class, 'addRating']);
+        Route::post('/add-rating-course', [RatingController::class, 'addRating']);
     });
 
 
@@ -128,7 +128,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/history-buy-course/{id_user}', [PaymentController::class, 'historyBuyCourse']);
         Route::get('/history-transactions/{id_user}', [PaymentController::class, 'historyTransactionsPurchase']);
-
     });
 
     Route::prefix('teacher')->middleware('teacher')->group(function () {
@@ -160,7 +159,6 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::put('{module}/update', [ModuleController::class, 'updateModule']);
                 Route::delete('{module}/delete', [ModuleController::class, 'deleteModule']);
                 Route::put('{course}/update-module-position', [ModuleController::class, 'updateModulePosition']);
-
             });
             //Quản lý bài học
             Route::prefix('/lesson')->group(function () {
@@ -203,7 +201,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
     // post
-# ===================== ROUTE FOR POSTS ===========================
+    # ===================== ROUTE FOR POSTS ===========================
     Route::prefix('posts')->group(function () {
         Route::post('', [PostController::class, 'store']);
         Route::put('/{slug}', [PostController::class, 'update']);
@@ -261,7 +259,6 @@ Route::prefix('courses')->group(function () {
     // Khóa học nổi bật
     Route::get('popular-course', [CourseHomePageController::class, 'listCoursePopular']);
     Route::get('category-course', [CourseHomePageController::class, 'getAllCourseByCategory']);
-
 });
 
 
@@ -280,11 +277,3 @@ Route::prefix('ratings')->group(function () {
     Route::get('/rating-course/{course_id}', [RatingController::class, 'getRating']);
     Route::get('/rating-home-page', [RatingController::class, 'getRatingHomePage']);
 });
-
-
-
-
-
-
-
-
