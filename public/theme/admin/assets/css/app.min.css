@@ -2208,10 +2208,10 @@
 
 /*!
  * Waves v0.7.6
- * http://fian.my.id/Waves 
- * 
- * Copyright 2014-2018 Alfiana E. Sibuea and other contributors 
- * Released under the MIT license 
+ * http://fian.my.id/Waves
+ *
+ * Copyright 2014-2018 Alfiana E. Sibuea and other contributors
+ * Released under the MIT license
  * https://github.com/fians/Waves/blob/master/LICENSE */
 .waves-effect {
     position: relative;
@@ -6270,6 +6270,36 @@ a, button {
 .nav-tabs-custom .nav-item .nav-link.active:after {
     -webkit-transform: scale(1);
     transform: scale(1)
+}
+
+.nav-tabs-custom .nav-item-2 {
+    position: relative
+}
+
+.nav-tabs-custom .nav-item-2 .nav-link {
+    border: none;
+    font-weight: 500;
+    color: var(--vz-danger);
+}
+
+.nav-tabs-custom .nav-item-2 .nav-link::after {
+    content: "";
+    background: var(--vz-danger);
+    height: 1px;
+    position: absolute;
+    width: 100%;
+    right: 0;
+    bottom: 0;
+    transition: all 250ms ease 0s;
+    transform: scale(0);
+}
+
+.nav-tabs-custom .nav-item-2 .nav-link.active {
+    color: var(--vz-danger);
+}
+
+.nav-tabs-custom .nav-item-2 .nav-link.active:after {
+    transform: scale(1);
 }
 
 .nav-tabs-custom.card-header-tabs {

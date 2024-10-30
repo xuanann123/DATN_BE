@@ -30,7 +30,7 @@ class UpdateCourseOverviewRequest extends BaseFormRequest
             'code' => 'nullable|unique:courses,code,' . $this->course->id,
             'id_category' => 'nullable|exists:categories,id',
             'thumbnail' => 'nullable|image|max:2048', // max 2mb
-            'trailer' => 'nullable|file|max:10240', // max 10mb
+            'trailer' => 'nullable|file|max:51200', // max 50mb
             'price' => 'nullable|numeric|min:0',
             'price_sale' => 'nullable|numeric|min:0',
             'is_active' => 'nullable|boolean',
