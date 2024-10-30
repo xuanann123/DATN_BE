@@ -38,6 +38,7 @@ use App\Http\Controllers\api\Client\Student\NoteController;
 |
 */
 
+
 Route::prefix('auth')->group(function () {
     Route::post('/signup', [AuthController::class, 'signup']);
     Route::post('/login', [AuthController::class, 'login']);
@@ -108,6 +109,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     # ===================== ROUTE FOR RATING ===========================
     Route::prefix('ratings')->group(function () {
+
+        Route::get('/check-rating-course/{id_user}/{id_course}', [RatingController::class, 'checkRating']);
         Route::post('/add-rating-course', [RatingController::class, 'addRating']);
     });
 
