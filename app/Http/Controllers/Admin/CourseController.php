@@ -25,8 +25,7 @@ class CourseController extends Controller
     {
         $title = 'Danh sách khóa học';
         $courses = Course::select('id', 'id_user', 'id_category', 'name', 'sort_description', 'thumbnail', 'created_at', 'updated_at')
-            ->with(['user:id,avatar,name','userCourses'])
-            ->where('id_user', auth()->id())
+            ->with(['user:id,avatar,name', 'userCourses'])
             ->orderByDesc('id')
             ->paginate(12);
 
@@ -34,6 +33,19 @@ class CourseController extends Controller
 
         // dd($courses);
         return view('admin.courses.index', compact('title', 'courses'));
+    }
+
+
+    public function myCourse()
+    {
+        $title = "Danh sách khoá học của tôi";
+        $courses = Course::select('id', 'id_user', 'id_category', 'name', 'sort_description', 'thumbnail', 'created_at', 'updated_at')
+            ->with(['user:id,avatar,name', 'userCourses'])
+            ->where('id_user', auth()->id())
+            ->orderByDesc('id')
+            ->paginate(12);
+
+        return view('admin.courses.my_course', compact('title', 'courses'));
     }
 
     private function getCategoryOptions($categories, $level = 0)
@@ -61,17 +73,17 @@ class CourseController extends Controller
         return view('admin.courses.create', compact('title', 'options', 'tags', 'levels'));
     }
 
-    public function store(Request $request)
+    public function store(CreateCourseRequest $request)
     {
         $data = $request->except('thumbnail', 'trailer', 'goals', 'requirements', 'audiences');
         //Kiểm tra khoá học xem có free không?
-        $data['is_free'] = $request->price != 0 ? 0 : 1; 
+        $data['is_free'] = $request->price != 0 ? 0 : 1;
         //Lấy người tạo ra khoá học này?
         $data['id_user'] = auth()->id();
         //Lấy dữ liệu các mảng liên quan
         $goals = $request->goals ?? [];
         //Chuyển hoá dữ liệu 
-        if(!empty($goals)) {
+        if (!empty($goals)) {
             $goalsArray = array_map(function ($goalText) {
                 return ['goal' => $goalText]; // Thay 'goal_text' bằng tên cột trong bảng 'goals'
             }, $goals);
@@ -88,7 +100,7 @@ class CourseController extends Controller
                 return ['audience' => $audienceText]; // Thay 'goal_text' bằng tên cột trong bảng 'goals'
             }, $audiences);
         }
-    
+
         try {
             DB::beginTransaction();
             //Xử lý hình ảnh
@@ -144,7 +156,7 @@ class CourseController extends Controller
 
     public function detail($id)
     {
-        
+
         $title = 'Chi tiết khóa học';
         $course = Course::with(
             'category',
@@ -171,7 +183,7 @@ class CourseController extends Controller
     public function edit(string $id)
     {
         //Kiểm tra quyền xem người đó sở hữu 
-        if(auth()->id() !== Course::find($id)->id_user){
+        if (auth()->id() !== Course::find($id)->id_user) {
             return redirect()->route('admin.courses.list')->with(['error' => 'Bạn không có quyền truy cập khoá học này!']);
         }
         //level modeule course 
@@ -181,7 +193,7 @@ class CourseController extends Controller
         $options = $this->getCategoryOptions($categories);
         $course = Course::find($id);
         $tags = Tag::all();
-        return view('admin.courses.edit', compact('title', 'course', 'options', 'tags','levels'));
+        return view('admin.courses.edit', compact('title', 'course', 'options', 'tags', 'levels'));
     }
 
     public function update(UpdateCourseRequest $request, string $id)

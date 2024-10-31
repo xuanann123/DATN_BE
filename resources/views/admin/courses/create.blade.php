@@ -196,13 +196,13 @@
                                         aria-selected="true">1</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link rounded-pill" data-progressbar="custom-progress-bar"
+                                    <button class=" nav-link rounded-pill" data-progressbar="custom-progress-bar"
                                         id="pills-info-desc-tab" data-bs-toggle="pill" data-bs-target="#pills-info-desc"
                                         type="button" role="tab" aria-controls="pills-info-desc"
-                                        aria-selected="false">2</button>
+                                        aria-selected="false" >2</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link rounded-pill" data-progressbar="custom-progress-bar"
+                                    <button class="disabled nav-link rounded-pill" data-progressbar="custom-progress-bar"
                                         id="pills-success-tab" data-bs-toggle="pill" data-bs-target="#pills-success"
                                         type="button" role="tab" aria-controls="pills-success"
                                         aria-selected="false">3</button>
@@ -216,13 +216,12 @@
                                 <div>
                                     <div class="mb-4">
                                         <div>
-                                            <h5 class="mb-1">Tổng Quan Khoá Học</h5>
-                                            <p class="text-muted">Nhập những thông tin về khoá học</p>
+                                            <h5 class="mb-1">Thông tin tổng quan khoá học</h5>
+                                            <p class="text-muted">Điền hết thông tin tổng quan khoá học</p>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="mb-3 col-lg-12">
-
                                             <input type="text" class="form-control" id="name"
                                                 value="{{ old('name') }}" name="name" placeholder="Tên khóa học">
                                             <small class="help-block form-text text-danger">
@@ -232,8 +231,6 @@
                                             </small>
 
                                         </div>
-
-
                                     </div>
                                     <div class="row">
 
@@ -241,12 +238,13 @@
                                             <div class="mb-3">
                                                 <label for="code" class="form-label">Mã khóa học</label>
                                                 <input type="text" class="form-control" id="code" name="code"
-                                                    placeholder="Mã khóa học" value="{{ old('code') }}">
+                                                    placeholder="Mã khóa học" value="{{ old('code') }}" required>
                                                 <small class="help-block form-text text-danger">
                                                     @if ($errors->has('code'))
                                                         {{ $errors->first('code') }}
                                                     @endif
                                                 </small>
+                                        
                                             </div>
                                         </div>
 
@@ -263,68 +261,20 @@
                                                 </small>
                                             </div>
                                         </div>
-
                                     </div>
                                     <div class="row">
-                                        <div class="col-lg-12">
+                                        <div class="mt-3">
+                                            <h5>Thông tin cơ bản</h5>
+                                        </div>
+
+                                        <div class="col-lg-3">
                                             <div class="mb-3">
-                                                <label class="form-label">Mô tả ngắn</label>
-                                                <textarea name="sort_description" class="form-control">{{ old('sort_description') }}</textarea>
-                                                <small class="help-block form-text text-danger">
-                                                    @if ($errors->has('sort_description'))
-                                                        {{ $errors->first('sort_description') }}
-                                                    @endif
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <div class="mb-3">
-                                                <label class="form-label">Mô tả</label>
-                                                <textarea name="description" id="ckeditor-classic-2">{{ old('description') }}</textarea>
-                                                <small class="help-block form-text text-danger">
-                                                    @if ($errors->has('description'))
-                                                        {{ $errors->first('description') }}
-                                                    @endif
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="mt-3">
-                                        <h5>Thông tin cơ bản</h5>
-                                    </div>
-
-                                    <div class="col-lg-3">
-                                        <div class="mb-3">
-
-                                            <select name="level" id="level" class="form-control">
-                                                <option value="">-- Trình độ --</option>
-                                                @foreach ($levels as $name)
-                                                    <option {{ old('name') == $name ? 'selected' : '' }}
-                                                        value="{{ $name }}">
-                                                        {!! $name !!}</option>
-                                                @endforeach
-                                            </select>
-                                            <small class="help-block form-text text-danger">
-                                                @if ($errors->has('id_category'))
-                                                    {{ $errors->first('id_category') }}
-                                                @endif
-                                            </small>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <div class="mb-3 ">
-                                            <div class="border-1"><select name="id_category" id="id_category"
-                                                    class="form-control">
-                                                    <option value="">-- Thể Loại --</option>
-                                                    @foreach ($options as $id => $name)
-                                                        <option {{ old('id_category') == $id ? 'selected' : '' }}
-                                                            value="{{ $id }}">
+                                                <select name="level" id="level" class="form-control">
+                                                    <option value="">-- Trình độ --</option>
+                                                    @foreach ($levels as $name)
+                                                        <option {{ old('name') == $name ? 'selected' : '' }}
+                                                            value="{{ $name }}">
                                                             {!! $name !!}</option>
                                                     @endforeach
                                                 </select>
@@ -334,102 +284,158 @@
                                                     @endif
                                                 </small>
                                             </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="mb-3 ">
+                                                <div class="border-1"><select name="id_category" id="id_category"
+                                                        class="form-control">
+                                                        <option value="">-- Thể Loại --</option>
+                                                        @foreach ($options as $id => $name)
+                                                            <option {{ old('id_category') == $id ? 'selected' : '' }}
+                                                                value="{{ $id }}">
+                                                                {!! $name !!}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <small class="help-block form-text text-danger">
+                                                        @if ($errors->has('id_category'))
+                                                            {{ $errors->first('id_category') }}
+                                                        @endif
+                                                    </small>
+                                                </div>
 
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 ">
+                                            <select name="is_active" id="is_active" class="form-select">
+                                                <option value="0" {{ old('is_active') == 0 ? 'selected' : '' }}>
+                                                    Không công khai </option>
+                                                <option value="1" {{ old('is_active') == 1 ? 'selected' : '' }}>
+                                                    Công khai</option>
+                                            </select>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 ">
-                                        <select name="is_active" id="is_active" class="form-select">
-                                            <option value="0" {{ old('is_active') == 0 ? 'selected' : '' }}>
-                                                Không công khai </option>
-                                            <option value="1" {{ old('is_active') == 1 ? 'selected' : '' }}>
-                                                Công khai</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="mt-3">
-                                        <h5>Giá khoá học</h5>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <div class="mb-3">
+                                    <div class="row">
+                                        <div class="mt-3">
+                                            <h5>Giá khoá học</h5>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="mb-3">
 
-                                            <input type="number" class="form-control" id="price" name="price"
-                                                placeholder="Giá khoá học" value="{{ old('price') }}">
+                                                <input type="number" class="form-control" id="price" name="price"
+                                                    placeholder="Giá khoá học" value="{{ old('price') }}">
+                                                <small class="help-block form-text text-danger">
+                                                    @if ($errors->has('price'))
+                                                        {{ $errors->first('price') }}
+                                                    @endif
+                                                </small>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="mb-3">
+                                                <input type="number" class="form-control" id="price_sale"
+                                                    name="price_sale" placeholder="Giá khuyến mái khoá học"
+                                                    value="{{ old('price_sale') }}">
+                                                <small class="help-block form-text text-danger">
+                                                    @if ($errors->has('price_sale'))
+                                                        {{ $errors->first('price_sale') }}
+                                                    @endif
+                                                </small>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="mt-3">
+                                            <h5>Hình ảnh khoá học</h5>
+                                        </div>
+                                        <div class="col-lg-5">
+                                            {{-- 1 hình ảnh đại diện bo góc hình ảnh --}}
+                                            <img src="{{ asset('theme/admin/assets/images/img1.jpg') }}"
+                                                class="img-fluid rounded" id="show-image" alt="">
+                                        </div>
+                                        <div class="col-lg-7">
+                                            <p class="d-block">
+                                                Tải hình ảnh khóa học lên tại đây. Để được chấp nhận, hình ảnh phải đáp ứng
+                                                tiêu chuẩn chất lượng hình ảnh khóa học. Hướng dẫn quan trọng: 750x422
+                                                pixel; .jpg, .jpeg,. gif, hoặc .png. và không có chữ trên hình ảnh.
+                                            </p>
+                                            <input class="form-control" id="thumbnail" name="thumbnail" type="file"
+                                                accept="image/*">
                                             <small class="help-block form-text text-danger">
-                                                @if ($errors->has('price'))
-                                                    {{ $errors->first('price') }}
+                                                @if ($errors->has('thumbnail'))
+                                                    {{ $errors->first('thumbnail') }}
                                                 @endif
                                             </small>
-
                                         </div>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <div class="mb-3">
 
-                                            <input type="number" class="form-control" id="price_sale" name="price_sale"
-                                                placeholder="Giá khuyến mái khoá học" value="{{ old('price_sale') }}">
+                                    </div>
+                                    <div class="row">
+                                        <div class="mt-3">
+                                            <h5>Video quảng cáo</h5>
+                                        </div>
+                                        <div class="col-lg-5">
+                                            {{-- 1 hình ảnh đại diện bo góc hình ảnh --}}
+                                            <img src="{{ asset('theme/admin/assets/images/img1.jpg') }}"
+                                                class="img-fluid rounded" id="show-video" alt="">
+                                        </div>
+                                        <div class="col-lg-7">
+                                            <p class="d-block">
+                                                Video quảng cáo của bạn là một cách nhanh chóng và hấp dẫn để học viên xem
+                                                trước
+                                                những gì họ sẽ học trong khóa học của bạn. Học viên quan tâm đến khóa học
+                                                của
+                                                bạn có nhiều khả năng ghi danh hơn nếu video quảng cáo của bạn được thực
+                                                hiện
+                                                tốt.
+                                            </p>
+                                            <input class="form-control" id="trailer" name="trailer" type="file"
+                                                accept="video/*">
                                             <small class="help-block form-text text-danger">
-                                                @if ($errors->has('price_sale'))
-                                                    {{ $errors->first('price_sale') }}
+                                                @if ($errors->has('trailer'))
+                                                    {{ $errors->first('trailer') }}
                                                 @endif
                                             </small>
-
                                         </div>
                                     </div>
+                                    {{-- Dữ liệu ẩn (phải cần để chạy được nextTab) --}}
+                                    <div class="row ">
+                                        <div class="col-lg-12">
+                                            <div class="mb-3 d-none">
+                                                <label class="form-label">Email nhận thông báo
+                                                    kiểm duyệt</label>
+                                                <input type="text" class="form-control"
+                                                    value="{{ auth()->user()->email }}"
+                                                    placeholder="Nhập địa chỉ nhận kiểm duyệt">
+                                                <div class="invalid-feedback">Please enter an email
+                                                    address</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 d-none">
+                                            <div class="mb-3">
+                                                <label class="form-label" for="gen-info-username-input">User Name</label>
+                                                <input type="text" class="form-control" placeholder="Enter user name">
+                                                <div class="invalid-feedback">Please enter a user name
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 d-none">
+                                        <label class="form-label" for="gen-info-password-input">Password</label>
+                                        <input type="password" class="form-control" placeholder="Enter Password">
+                                        <div class="invalid-feedback">Please enter a password</div>
+                                    </div>
+
 
                                 </div>
-                                <div class="row">
-                                    <div class="mt-3">
-                                        <h5>Hình ảnh khoá học</h5>
-                                    </div>
-                                    <div class="col-lg-5">
-                                        {{-- 1 hình ảnh đại diện bo góc hình ảnh --}}
-                                        <img src="{{ asset('theme/admin/assets/images/img1.jpg') }}"
-                                            class="img-fluid rounded" id="show-image" alt="">
-                                    </div>
-                                    <div class="col-lg-7">
-                                        <p class="d-block">
-                                            Tải hình ảnh khóa học lên tại đây. Để được chấp nhận, hình ảnh phải đáp ứng
-                                            tiêu chuẩn chất lượng hình ảnh khóa học. Hướng dẫn quan trọng: 750x422
-                                            pixel; .jpg, .jpeg,. gif, hoặc .png. và không có chữ trên hình ảnh.
-                                        </p>
-                                        <input class="form-control" id="thumbnail" name="thumbnail" type="file"
-                                            accept="image/*">
-                                        <small class="help-block form-text text-danger">
-                                            @if ($errors->has('thumbnail'))
-                                                {{ $errors->first('thumbnail') }}
-                                            @endif
-                                        </small>
-                                    </div>
-
-                                </div>
-                                <div class="row">
-                                    <div class="mt-3">
-                                        <h5>Video quảng cáo</h5>
-                                    </div>
-                                    <div class="col-lg-5">
-                                        {{-- 1 hình ảnh đại diện bo góc hình ảnh --}}
-                                        <img src="{{ asset('theme/admin/assets/images/img1.jpg') }}"
-                                            class="img-fluid rounded" id="show-video" alt="">
-                                    </div>
-                                    <div class="col-lg-7">
-                                        <p class="d-block">
-                                            Video quảng cáo của bạn là một cách nhanh chóng và hấp dẫn để học viên xem trước
-                                            những gì họ sẽ học trong khóa học của bạn. Học viên quan tâm đến khóa học của
-                                            bạn có nhiều khả năng ghi danh hơn nếu video quảng cáo của bạn được thực hiện
-                                            tốt.
-                                        </p>
-                                        <input class="form-control" id="trailer" name="trailer" type="file"
-                                            accept="video/*">
-                                        <small class="help-block form-text text-danger">
-                                            @if ($errors->has('trailer'))
-                                                {{ $errors->first('trailer') }}
-                                            @endif
-                                        </small>
-                                    </div>
-
+                                <div class="d-flex align-items-start gap-3 mt-4">
+                                    <button type="button" class="btn btn-success btn-label right ms-auto nexttab nexttab"
+                                        data-nexttab="pills-info-desc-tab"><i
+                                            class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Thêm chỉ tiêu khoá học</button>
                                 </div>
                             </div>
+
                             <div class="tab-pane fade" id="pills-info-desc" role="tabpanel"
                                 aria-labelledby="pills-info-desc-tab">
                                 <div>
@@ -440,7 +446,6 @@
                                             <p class="text-muted">Các mô tả sau sẻ hiển thị công khai trên Trang tổng quan
                                                 khoá học của bạn và sẽ tác động trực tiếp đến thành tích khoá học, đồng thời
                                                 giúp học viên quyết định xem khoá học đó có phù hợp với họ hay không.
-
                                             </p>
                                         </div>
                                     </div>
@@ -454,16 +459,16 @@
                                             <div id="goals-container">
                                                 <input type="text" class="form-control mb-2 rounded" name="goals[]"
                                                     id="inputField"
-                                                    placeholder="Ví dụ: Sẽ làm được một project với Laravel">
+                                                    placeholder="Ví dụ: Sẽ làm được một project với Laravel" required>
                                                 <input type="text" class="form-control mb-2" name="goals[]"
                                                     id="inputField"
-                                                    placeholder="Ví dụ: Quản lý cơ sở dữ liệu với DatabaseMySQL">
+                                                    placeholder="Ví dụ: Quản lý cơ sở dữ liệu với DatabaseMySQL" required>
                                                 <input type="text" class="form-control mb-2" name="goals[]"
                                                     id="inputField"
-                                                    placeholder="Ví dụ: Hiểu và làm việc được với Laravel Realtime">
+                                                    placeholder="Ví dụ: Hiểu và làm việc được với Laravel Realtime" required>
                                                 <input type="text" class="form-control mb-2" name="goals[]"
                                                     id="inputField"
-                                                    placeholder="Ví dụ: Sử dụng với Laravel một cách master">
+                                                    placeholder="Ví dụ: Sử dụng với Laravel một cách master" required>
 
                                             </div>
                                             <button id="add-goal" class="inline-flex items-center btn btn-primary"><svg
@@ -490,9 +495,7 @@
                                             <div id="requirements-container">
                                                 <input type="text" class="form-control mb-2 rounded"
                                                     name="requirements[]" id="inputField"
-                                                    placeholder="Ví dụ: Sẽ làm được một project với Laravel">
-
-
+                                                    placeholder="Ví dụ: Sẽ làm được một project với Laravel" required>
                                             </div>
                                             <button id="add-requirement"
                                                 class="inline-flex items-center btn btn-primary"><svg
@@ -519,7 +522,7 @@
                                             <div id="audiences-container">
                                                 <input type="text" class="form-control mb-2 rounded"
                                                     name="audiences[]" id="inputField"
-                                                    placeholder="Ví dụ: Sẽ làm được một project với Laravel">
+                                                    placeholder="Ví dụ: Sẽ làm được một project với Laravel" required>
                                             </div>
                                             <button id="add-audience" class="inline-flex items-center btn btn-primary"
                                                 type="button"><svg stroke="currentColor" fill="currentColor"
@@ -543,8 +546,7 @@
                                         tổng quan</button>
                                     <button type="submit" class="btn btn-success btn-label right ms-auto nexttab nexttab"
                                         data-nexttab="pills-success-tab"><i
-                                            class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Gửi phê
-                                        duyệt</button>
+                                            class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Thêm nội dung bài học</button>
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="pills-success" role="tabpanel"
@@ -630,7 +632,7 @@
 
                 // Thêm một input mới vào container
                 $('#goals-container').append(`
-                <input type="text" class="form-control mb-2" name="goals[]" placeholder="Ví dụ: Một mục tiêu mới cho khoá học">
+                <input type="text" class="form-control mb-2" name="goals[]" placeholder="Ví dụ: Một mục tiêu mới cho khoá học" required>
             `);
 
 
@@ -640,7 +642,7 @@
 
                 // Thêm một input mới vào container
                 $('#requirements-container').append(`
-                <input type="text" class="form-control mb-2" name="goals[]" placeholder="Ví dụ: Một mục yêu cầu cần thiết cho khoá học">
+                <input type="text" class="form-control mb-2" name="goals[]" placeholder="Ví dụ: Một mục yêu cầu cần thiết cho khoá học" required>
             `);
 
             });
@@ -649,7 +651,7 @@
 
                 // Thêm một input mới vào container
                 $('#audiences-container').append(`
-                <input type="text" class="form-control mb-2" name="goals[]" placeholder="Ví dụ: Một đối tượng mới khi tham gia vào khoá học">
+                <input type="text" class="form-control mb-2" name="goals[]" placeholder="Ví dụ: Một đối tượng mới khi tham gia vào khoá học" required>
             `);
 
             });
