@@ -96,6 +96,52 @@ class RatingController extends Controller
         ], 200);
     }
 
+    public function checkRated(Request $request)
+    {
+        $userId = $request->id_user;
+        $courseId = $request->id_course;
+
+        $user = User::find($userId);
+        if (!$user) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Người dùng không tồn tại'
+            ]);
+        }
+
+        $course = Course::find($courseId);
+        if (!$course) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Khóa học không tồn tại'
+            ]);
+        }
+
+        $checkRating = Rating::where('id_user', $userId)
+            ->where('id_course', $courseId)
+            ->first();
+
+        if ($checkRating) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã đánh giá',
+                'data' => [
+                    'rated' => 'block'
+                ]
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Chưa đánh giá',
+            'data' => [
+                'rated' => 'allow'
+            ]
+        ], 200);
+    }
+
     public function addRating(RatingRequest $request)
     {
         $dataRating = $request->all();
