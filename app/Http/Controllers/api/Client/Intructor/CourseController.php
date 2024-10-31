@@ -7,6 +7,7 @@ use App\Models\Course;
 
 use App\Models\Module;
 use App\Models\Category;
+use App\Notifications\Admin\CourseSubmittedNotification;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +23,7 @@ use App\Http\Requests\Client\Courses\UpdateTargetStudentRequest;
 use App\Models\Audience;
 use App\Models\Goal;
 use App\Models\Requirement;
+use App\Models\User;
 
 class CourseController extends Controller
 {
@@ -371,11 +373,20 @@ class CourseController extends Controller
 
     public function submit(Course $course)
     {
+        DB::beginTransaction();
         try {
             $course->update([
                 'status' => 'pending',
                 'submited_at' => now()
             ]);
+
+            // Gửi thông báo đến admin
+            $admins = User::where('user_type', User::TYPE_ADMIN)->get();
+            foreach ($admins as $admin) {
+                $admin->notify(new CourseSubmittedNotification($course));
+            }
+
+            DB::commit();
 
             return response()->json([
                 'status' => 200,
@@ -383,6 +394,7 @@ class CourseController extends Controller
                 'data' => []
             ], 200);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'status' => 500,
                 'message' => 'Cập nhật không thành công! ' . $e->getMessage(),
