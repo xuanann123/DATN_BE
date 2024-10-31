@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ApprovalCourseController;
 use App\Http\Controllers\Admin\ChatController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\QuizController;
 use App\Http\Controllers\Admin\QuestionController;
@@ -53,6 +54,15 @@ Route::prefix("admin")
     ->group(function () {
         Route::get("/", [DashboardController::class, "index"])->name("dashboard");
         Route::get('/logout', [AdminController::class, 'logout'])->name('logout');
+
+        #============================== NOTIFICATIONS DONE =============================
+        Route::prefix("notifications")
+        ->as('notifications.')
+        ->group(function () {
+            Route::get("/", [NotificationController::class, 'index'])->name('index');
+            Route::get("/unread-count", [NotificationController::class, 'getUnreadCount'])->name('getUnreadCount');
+            Route::post("/{id}/mark-as-read", [NotificationController::class, 'markAsRead'])->name('markAsRead');
+        });
         #============================== BANNERS DONE =============================
         Route::prefix("banners")
             ->as('banners.')

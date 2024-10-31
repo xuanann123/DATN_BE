@@ -416,20 +416,23 @@
                         data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
                         <i class='bx bx-bell fs-22'></i>
                         <span
-                            class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger">3<span
-                                class="visually-hidden">unread messages</span></span>
+                            class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger"
+                            id="unread-notification-count"></span>
                     </button>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"
-                        aria-labelledby="page-header-notifications-dropdown">
+                        aria-labelledby="page-header-notifications-dropdown"
+                        style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate3d(0px, 58.4px, 0px);"
+                        data-popper-placement="bottom-end">
 
                         <div class="dropdown-head bg-primary bg-pattern rounded-top">
                             <div class="p-3">
                                 <div class="row align-items-center">
                                     <div class="col">
-                                        <h6 class="m-0 fs-16 fw-semibold text-white" > Notifications </h6>
+                                        <h6 class="m-0 fs-16 fw-semibold text-white">Thông báo</h6>
                                     </div>
                                     <div class="col-auto dropdown-tabs">
-                                        <span class="badge bg-light-subtle text-body fs-13" id="countNotification"> 4 New</span>
+                                        <span class="badge bg-light-subtle text-body fs-13"
+                                            id="unread-notification-count-2"></span>
                                     </div>
                                 </div>
                             </div>
@@ -437,22 +440,21 @@
                             <div class="px-2 pt-2">
                                 <ul class="nav nav-tabs dropdown-tabs nav-tabs-custom" data-dropdown-tabs="true"
                                     id="notificationItemsTab" role="tablist">
-                                    <li class="nav-item waves-effect waves-light">
+                                    <li class="nav-item waves-effect waves-light" role="presentation">
                                         <a class="nav-link active" data-bs-toggle="tab" href="#all-noti-tab"
-                                            role="tab" aria-selected="true">
-                                            All (4)
+                                            role="tab" aria-selected="true" id="all-notifications">
                                         </a>
                                     </li>
-                                    <li class="nav-item waves-effect waves-light">
+                                    <li class="nav-item waves-effect waves-light" role="presentation">
                                         <a class="nav-link" data-bs-toggle="tab" href="#messages-tab" role="tab"
-                                            aria-selected="false">
-                                            Messages
+                                            aria-selected="false" tabindex="-1">
+                                            Tin nhắn
                                         </a>
                                     </li>
-                                    <li class="nav-item waves-effect waves-light">
+                                    <li class="nav-item waves-effect waves-light" role="presentation">
                                         <a class="nav-link" data-bs-toggle="tab" href="#alerts-tab" role="tab"
-                                            aria-selected="false">
-                                            Alerts
+                                            aria-selected="false" tabindex="-1">
+                                            ABC
                                         </a>
                                     </li>
                                 </ul>
@@ -462,24 +464,109 @@
 
                         <div class="tab-content position-relative" id="notificationItemsTabContent">
                             <div class="tab-pane fade show active py-2 ps-2" id="all-noti-tab" role="tabpanel">
-                                <div id="notificationMess" data-simplebar style="max-height: 300px; overflow-y: scroll" class="pe-2">
-                                   
+                                <div data-simplebar="init" style="max-height: 300px;"
+                                    class="pe-2 simplebar-scrollable-y">
+                                    <div class="simplebar-wrapper" style="margin: 0px -8px 0px 0px;">
+                                        <div class="simplebar-height-auto-observer-wrapper">
+                                            <div class="simplebar-height-auto-observer"></div>
+                                        </div>
+                                        <div class="simplebar-mask">
+                                            <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                                                <div class="simplebar-content-wrapper" tabindex="0" role="region"
+                                                    aria-label="scrollable content"
+                                                    style="height: auto; overflow: hidden scroll;">
+                                                    <div class="simplebar-content" style="padding: 0px 8px 0px 0px;"
+                                                        id="notificationMess">
+                                                        {{-- <div
+                                                            class="text-reset notification-item d-block dropdown-item position-relative">
+                                                            <div class="d-flex">
+                                                                <div class="avatar-xs me-3 flex-shrink-0">
+                                                                    <span
+                                                                        class="avatar-title bg-info-subtle text-info rounded-circle fs-16">
+                                                                        <i class="bx bx-badge-check"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <a href="#!" class="stretched-link">
+                                                                        <h6 class="mt-0 mb-2 lh-base">Your <b>Elite</b>
+                                                                            author Graphic
+                                                                            Optimization <span
+                                                                                class="text-secondary">reward</span> is
+                                                                            ready!
+                                                                        </h6>
+                                                                    </a>
+                                                                    <p
+                                                                        class="mb-0 fs-11 fw-medium text-uppercase text-muted">
+                                                                        <span><i class="mdi mdi-clock-outline"></i>
+                                                                            Just 30 sec ago</span>
+                                                                    </p>
+                                                                </div>
+                                                                <div class="px-2 fs-15">
+                                                                    <div class="form-check notification-check">
+                                                                        <input class="form-check-input"
+                                                                            type="checkbox" value=""
+                                                                            id="all-notification-check01">
+                                                                        <label class="form-check-label"
+                                                                            for="all-notification-check01"></label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
 
-                                    
+                                                        <div class="my-3 text-center view-all">
+                                                            <button type="button"
+                                                                class="btn btn-soft-success waves-effect waves-light">View
+                                                                All Notifications <i
+                                                                    class="ri-arrow-right-line align-middle"></i></button>
+                                                        </div> --}}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="simplebar-placeholder" style="width: 312px; height: 512px;"></div>
+                                    </div>
+                                    <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
+                                        <div class="simplebar-scrollbar" style="width: 0px; display: none;"></div>
+                                    </div>
+                                    <div class="simplebar-track simplebar-vertical" style="visibility: visible;">
+                                        <div class="simplebar-scrollbar"
+                                            style="height: 175px; display: block; transform: translate3d(0px, 0px, 0px);">
+                                        </div>
+                                    </div>
                                 </div>
 
                             </div>
 
                             <div class="tab-pane fade py-2 ps-2" id="messages-tab" role="tabpanel"
                                 aria-labelledby="messages-tab">
-                                <div id="" data-simplebar style="max-height: 300px;" class="pe-2">
-
-
-
-                                    <div class="my-3 text-center view-all">
-                                        <button type="button"
-                                            class="btn btn-soft-success waves-effect waves-light">View
-                                            All Messages <i class="ri-arrow-right-line align-middle"></i></button>
+                                <div data-simplebar="init" style="max-height: 300px;" class="pe-2">
+                                    <div class="simplebar-wrapper" style="margin: 0px -8px 0px 0px;">
+                                        <div class="simplebar-height-auto-observer-wrapper">
+                                            <div class="simplebar-height-auto-observer"></div>
+                                        </div>
+                                        <div class="simplebar-mask">
+                                            <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                                                <div class="simplebar-content-wrapper" tabindex="0" role="region"
+                                                    aria-label="scrollable content"
+                                                    style="height: auto; overflow: hidden;">
+                                                    <div class="simplebar-content" style="padding: 0px 8px 0px 0px;">
+                                                        <div class="my-3 text-center view-all">
+                                                            <button type="button"
+                                                                class="btn btn-soft-success waves-effect waves-light">View
+                                                                All Messages <i
+                                                                    class="ri-arrow-right-line align-middle"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="simplebar-placeholder" style="width: 0px; height: 0px;"></div>
+                                    </div>
+                                    <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
+                                        <div class="simplebar-scrollbar" style="width: 0px; display: none;"></div>
+                                    </div>
+                                    <div class="simplebar-track simplebar-vertical" style="visibility: hidden;">
+                                        <div class="simplebar-scrollbar" style="height: 0px; display: none;"></div>
                                     </div>
                                 </div>
                             </div>
@@ -557,3 +644,105 @@
         </div>
     </div>
 </header>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.6/dayjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.6/plugin/relativeTime.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.6/locale/vi.js"></script>
+
+<script>
+    dayjs.extend(dayjs_plugin_relativeTime)
+    dayjs.locale('vi')
+
+    // Lấy 10 thông báo
+    $(document).ready(function() {
+        // vứt token CSRF vào mỗi request ajax
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        // Hàm lấy số lượng thông báo
+        function fetchUnreadNotificationCount() {
+            $.ajax({
+                url: '/admin/notifications/unread-count',
+                method: 'GET',
+                success: function(data) {
+                    // số lượng thông báo chưa đọc
+                    if (data > 0) {
+                        $('#unread-notification-count').text(data.unreadCount).show();
+                    } else {
+                        $('#unread-notification-count').hide();
+                    }
+
+                    $('#unread-notification-count-2').text(data.unreadCount).append(' Thông báo mới')
+
+                    $('#all-notifications').html(`Tất cả (${data.allNotifications})`)
+                },
+                error: function(error) {
+                    console.error('Lỗi khi lấy số thông báo chưa đọc:', error)
+                }
+            })
+        }
+        fetchUnreadNotificationCount()
+
+        // Khi mở dropdown call api để lấy thông báo
+        $('#notificationDropdown').on('show.bs.dropdown', function() {
+            $.ajax({
+                url: '/admin/notifications',
+                method: 'GET',
+                success: function(data) {
+                    const notificationMess = $('#notificationMess')
+                    notificationMess.empty() // reset nội dung
+
+                    console.log(data)
+
+                    data.forEach(function(notification) {
+                        const item = `
+                                <a href="${notification.data.url}">
+                                    <div class="text-reset notification-item d-block dropdown-item position-relative" id="notification-item" data-id="${notification.id}">
+                                        <div class="d-flex">
+                                            <div class="avatar-xs me-3 flex-shrink-0">
+                                                <span class="avatar-title bg-info-subtle text-info rounded-circle fs-16">
+                                                    <i class="bx bx-book-open"></i>
+                                                </span>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <a href="${notification.data.url}" class="stretched-link">
+                                                    <span class="text-secondary">${notification.data.message}</span><br>
+                                                    <h5 class="mt-0 mb-2 lh-base badge bg-info">${notification.data.course_name}</h5>
+                                                </a>
+                                                <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
+                                                    <span><i class="mdi mdi-clock-outline"></i> ${dayjs(notification.created_at).fromNow()}</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>`
+                        notificationMess.append(item)
+                    })
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('Có lỗi khi lấy thông báo:', textStatus, errorThrown)
+                }
+            })
+        })
+
+        $(document).on('click', '#notification-item', function() {
+            const id = $(this).data('id') // lấy id thông báo
+
+            $.ajax({
+                url: `/admin/notifications/${id}/mark-as-read`,
+                method: 'POST',
+                success: function() {
+                    fetchUnreadNotificationCount()
+                },
+                error: function(error) {
+                    console.error('Lỗi khi đọc thông báo:', error)
+                }
+            })
+        })
+
+    })
+</script>
