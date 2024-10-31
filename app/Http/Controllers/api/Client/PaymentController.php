@@ -354,9 +354,11 @@ class PaymentController extends Controller
         $checkByCourse = UserCourse::where('id_user', $userId)->where('id_course', $courseId)->first();
         if ($checkByCourse) {
             return response()->json([
-                'status' => "error",
-                'message' => "Bạn đã mua khóa học này rồi"
-            ], 409);
+                'data' => [
+                    'status' => "error",
+                    'message' => "Bạn đã mua khóa học này rồi"
+                ]
+            ], 200);
         }
 
         return response()->json([
