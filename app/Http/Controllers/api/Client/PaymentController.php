@@ -18,9 +18,9 @@ use Illuminate\Support\Facades\Session;
 class PaymentController extends Controller
 {
     //TAG VU XUAN DUC
-    CONST COIN_CONVERTER = 1000;
+    const COIN_CONVERTER = 1000;
     //FIX CỨNG
-    CONST DISCOUNT = 30/100;
+    const DISCOUNT = 30 / 100;
 
     // Lấy số dư ví;
 
@@ -28,7 +28,7 @@ class PaymentController extends Controller
     {
         $wallet = PurchaseWallet::where('id_user', $request->user)->first();
 
-        if(!$wallet){
+        if (!$wallet) {
             return response()->json([
                 'code' => 204,
                 'status' => 'error',
@@ -47,7 +47,7 @@ class PaymentController extends Controller
     {
         $wallet = WithdrawalWallet::where('id_user', $request->user)->first();
 
-        if(!$wallet){
+        if (!$wallet) {
             return response()->json([
                 'code' => 204,
                 'status' => 'error',
@@ -62,17 +62,18 @@ class PaymentController extends Controller
         ]);
     }
 
-    public function paymentController(Request $request) {
+    public function paymentController(Request $request)
+    {
 
         $vnp_Url = env('VNP_URL');
         $vnp_ReturnUrl = env('VNP_RETURN_URL');
 
         $vnp_TmnCode = env('VNP_TMN_CODE');
         $vnp_HashSecret = env('VNP_HASH_SECRET');
-        $vnp_TxnRef = rand(100000000 , 999999999);
+        $vnp_TxnRef = rand(100000000, 999999999);
         $vnp_OrderInfo = "Nạp tiền vào ví";
         $vnp_OrderType = "Thanh toán online";
-        $vnp_Amount = $request->amount * 100 ;
+        $vnp_Amount = $request->amount * 100;
         $vnp_Locale = "VN";
         $vnp_BankCode = "";
         $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
@@ -120,32 +121,35 @@ class PaymentController extends Controller
             $vnpSecureHash =   hash_hmac('sha512', $hashdata, $vnp_HashSecret);
             $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
         }
-        $returnData = array('code' => '00'
-        , 'message' => 'success'
-        , 'data' => $vnp_Url);
+        $returnData = array(
+            'code' => '00',
+            'message' => 'success',
+            'data' => $vnp_Url
+        );
         if (isset($_POST['amount'])) {
-//            return redirect($vnp_Url) ;
+            //            return redirect($vnp_Url) ;
             return $vnp_Url;
         } else {
             echo json_encode($returnData);
         }
     }
 
-//     Về phần nạp tiền => cần auth
-    public function depositController(Request $request) {
-        if($request->vnp_TransactionStatus == '00') {
+    //     Về phần nạp tiền => cần auth
+    public function depositController(Request $request)
+    {
+        if ($request->vnp_TransactionStatus == '00') {
             $userId = $request->user;
             $user = User::find($userId);
 
-            if(!$user) {
-                return redirect(env('FE_URL'). 'wallet?status=error');
+            if (!$user) {
+                return redirect(env('FE_URL') . 'wallet?status=error');
             }
 
             $purchaseWallet = PurchaseWallet::where('id_user', $userId)->first();
             $amount = ($request->vnp_Amount) / 100;
             $coin =  $amount / self::COIN_CONVERTER;
 
-            if(!$purchaseWallet) {
+            if (!$purchaseWallet) {
                 $data = [
                     'id_user' => $userId,
                     'balance' => $coin,
@@ -153,8 +157,8 @@ class PaymentController extends Controller
 
                 $newPurchaseWallet = PurchaseWallet::query()->create($data);
 
-                if(!$newPurchaseWallet) {
-                    return redirect(env('FE_URL'). 'wallet?status=error');
+                if (!$newPurchaseWallet) {
+                    return redirect(env('FE_URL') . 'wallet?status=error');
                 }
 
                 $newPurchaseWallet->transactions()->create([
@@ -166,7 +170,7 @@ class PaymentController extends Controller
                     'status' => 'Thành công',
                 ]);
 
-                return redirect(env('FE_URL'). 'wallet?status=success');
+                return redirect(env('FE_URL') . 'wallet?status=success');
             }
 
             if ($purchaseWallet->update([
@@ -182,7 +186,7 @@ class PaymentController extends Controller
                     'status' => 'Thành công',
                 ]);
 
-                return redirect(env('FE_URL'). 'wallet?status=success');
+                return redirect(env('FE_URL') . 'wallet?status=success');
             }
 
             $purchaseWallet->transactions()->create([
@@ -194,10 +198,10 @@ class PaymentController extends Controller
                 'status' => 'Thất bại',
             ]);
 
-            return redirect(env('FE_URL'). 'wallet?status=error');
+            return redirect(env('FE_URL') . 'wallet?status=error');
         }
 
-        return redirect(env('FE_URL'). 'wallet?status=error');
+        return redirect(env('FE_URL') . 'wallet?status=error');
     }
 
     public function buyCourse(Request $request)
@@ -205,7 +209,7 @@ class PaymentController extends Controller
         $userId = $request->id_user;
         $courseId = $request->id_course;
 
-        if(!$request->total_coin || !$request->total_coin_after_discount) {
+        if (!$request->total_coin || !$request->total_coin_after_discount) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Thiếu thông tin thanh toán'
@@ -213,7 +217,7 @@ class PaymentController extends Controller
         }
 
         $course = Course::find($courseId);
-        if(!$course) {
+        if (!$course) {
             return response()->json([
                 'code' => 204,
                 'status' => 'error',
@@ -222,7 +226,7 @@ class PaymentController extends Controller
         }
 
         $user = User::find($userId);
-        if(!$user) {
+        if (!$user) {
             return response()->json([
                 'code' => 204,
                 'status' => 'error',
@@ -231,7 +235,7 @@ class PaymentController extends Controller
         }
 
         $checkByCourse = UserCourse::where('id_user', $userId)->where('id_course', $courseId)->first();
-        if($checkByCourse) {
+        if ($checkByCourse) {
             return response()->json([
                 'status' => "error",
                 'message' => "Bạn đã mua khóa học này rồi"
@@ -240,7 +244,7 @@ class PaymentController extends Controller
 
 
         $wallet = PurchaseWallet::where('id_user', $userId)->first();
-        if(!$wallet) {
+        if (!$wallet) {
             return response()->json([
                 'code' => 204,
                 'status' => 'error',
@@ -248,9 +252,9 @@ class PaymentController extends Controller
             ]);
         }
 
-        if($request->id_voucher) {
-            $voucher = Voucher::find($request->id_voucher);
-            if(!$voucher) {
+        if ($request->voucher_code) {
+            $voucher = Voucher::where('code', $request->voucher_code)->first();
+            if (!$voucher) {
                 return response()->json([
                     'code' => 204,
                     'status' => 'error',
@@ -259,7 +263,7 @@ class PaymentController extends Controller
             }
         }
 
-        if($wallet->balance < $request->total_coin_after_discount) {
+        if ($wallet->balance < $request->total_coin_after_discount) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Số dư không đủ, vui lòng nạp thêm xu'
@@ -283,7 +287,7 @@ class PaymentController extends Controller
             'status' => 'Thanh toán thành công'
         ]);
 
-        if(!$newUserCourse) {
+        if (!$newUserCourse) {
             return response()->json([
                 'code' => 500,
                 'status' => 'error',
@@ -297,7 +301,7 @@ class PaymentController extends Controller
             ]);
 
             // Cập nhật lại số lượng voucher chưa sử dụng
-            if($request->id_voucher) {
+            if ($request->id_voucher) {
                 Voucher::find($request->id_voucher)->update([
                     'count' => $voucher->count - 1,
                 ]);
@@ -305,7 +309,7 @@ class PaymentController extends Controller
 
             // Kiểm tra tác giả khóa học đã có ví rút chưa, nếu chưa thì tạo và cộng số tiền học viên vừa mua khóa học
             $withdrawalWallet = WithdrawalWallet::where('id_user', $course->id_user)->first();
-            if(!$withdrawalWallet) {
+            if (!$withdrawalWallet) {
                 WithdrawalWallet::query()->create([
                     'id_user' => $course->id_user,
                     'balance' => $request->total_coin - ($request->total_coin * self::DISCOUNT),
@@ -330,7 +334,7 @@ class PaymentController extends Controller
         $courseId = $request->id_course;
 
         $course = Course::find($courseId);
-        if(!$course) {
+        if (!$course) {
             return response()->json([
                 'code' => 204,
                 'status' => 'error',
@@ -339,7 +343,7 @@ class PaymentController extends Controller
         }
 
         $user = User::find($userId);
-        if(!$user) {
+        if (!$user) {
             return response()->json([
                 'code' => 204,
                 'status' => 'error',
@@ -348,11 +352,13 @@ class PaymentController extends Controller
         }
 
         $checkByCourse = UserCourse::where('id_user', $userId)->where('id_course', $courseId)->first();
-        if($checkByCourse) {
+        if ($checkByCourse) {
             return response()->json([
-                'status' => "error",
-                'message' => "Bạn đã mua khóa học này rồi"
-            ], 409);
+                'data' => [
+                    'status' => "error",
+                    'message' => "Bạn đã mua khóa học này rồi"
+                ]
+            ], 200);
         }
 
         return response()->json([
@@ -366,7 +372,7 @@ class PaymentController extends Controller
     {
         $userId = $request->id_user;
         $user = User::find($userId);
-        if(!$user) {
+        if (!$user) {
             return response()->json([
                 'code' => 204,
                 'status' => 'error',
@@ -389,7 +395,7 @@ class PaymentController extends Controller
             ->orderByDesc('date_of_purchase')
             ->get();
 
-        if($listHistoryByCourse->count() == 0) {
+        if ($listHistoryByCourse->count() == 0) {
             return response()->json([
                 'code' => 204,
                 'status' => 'error',
@@ -408,7 +414,7 @@ class PaymentController extends Controller
     {
         $userId = $request->id_user;
         $user = User::find($userId);
-        if(!$user) {
+        if (!$user) {
             return response()->json([
                 'code' => 204,
                 'status' => 'error',
@@ -433,7 +439,7 @@ class PaymentController extends Controller
             ->orderByDesc('date_of_transaction')
             ->get();
 
-        if($listHistoryTransactionsPurchase->count() == 0) {
+        if ($listHistoryTransactionsPurchase->count() == 0) {
             return response()->json([
                 'code' => 204,
                 'status' => 'error',
