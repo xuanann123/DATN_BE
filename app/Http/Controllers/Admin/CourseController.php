@@ -26,6 +26,8 @@ class CourseController extends Controller
         $title = 'Danh sách khóa học';
         $courses = Course::select('id', 'id_user', 'id_category', 'name', 'sort_description', 'thumbnail', 'created_at', 'updated_at')
             ->with(['user:id,avatar,name', 'userCourses'])
+            //Nếu phải là khoá học của thằng user đang đặp nhập sẽ không lấy
+            ->whereNot('id_user', auth()->id())
             ->orderByDesc('id')
             ->paginate(12);
 
