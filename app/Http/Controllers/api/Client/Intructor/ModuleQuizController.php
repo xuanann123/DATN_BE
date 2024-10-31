@@ -8,6 +8,7 @@ use App\Models\Option;
 use App\Models\Question;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Client\Quiz\StoreQuizRequest;
@@ -226,6 +227,7 @@ class ModuleQuizController extends Controller
 
     public function updateQuestionAndOption(Request $request, Question $question)
     {
+        DB::beginTransaction();
         try {
             // nếu không tồn tại câu hỏi
             if (!$question) {
@@ -238,27 +240,49 @@ class ModuleQuizController extends Controller
             //
             $questionData = $request->question;
 
+            // Tính total_points mới của quiz khi update question
+            $oldPoints = $question->points;
+            $newPoints = $questionData['points'];
+            $pointsDifference = $newPoints - $oldPoints;
+
+            $questionImage = $request->file('question.image') ?? null;
+
             // Xử lý việc xóa ảnh của question nếu có yêu cầu 'remove_image' gửi từ FE
-            if (isset($questionData['remove_image']) && $questionData['remove_image'] == true) {
+            if (!isset($questionData['image'])) {
                 if ($question->image_url) {
                     Storage::delete($question->image_url); // del ảnh trong storage
                 }
                 $question->image_url = null; // Xóa đường dẫn image trong db
-            } else {
                 // Kiểm tra nếu có ảnh mới upload
-                $questionImage = $request->file('question.image');
-                if ($questionImage) {
-                    $question->image_url = $this->uploadImage($questionImage, 'questions', $question->image_url);
-                }
+            } elseif ($questionImage) {
+                $question->image_url = $this->uploadImage($questionImage, 'questions', $question->image_url);
             }
 
             // update question
             $question->update([
                 'question' => $questionData['question'],
                 'type' => $questionData['type'],
-                'points' => $questionData['points'],
+                'points' => $newPoints,
                 'image_url' => $question->image_url,
             ]);
+
+            // tính lại điểm tổng của quiz
+            $quiz = $question->quiz;
+            if ($quiz) {
+                $quiz->total_points += $pointsDifference;
+                $quiz->save();
+            }
+
+            // Lấy danh sách id các options từ request
+            $requestOptionIds = collect($request->options)->pluck('id')->filter()->all();
+
+            // Xóa các options không có trong request
+            $question->options()->whereNotIn('id', $requestOptionIds)->each(function ($option) {
+                if ($option->image_url) {
+                    Storage::delete($option->image_url);
+                }
+                $option->delete(); // Xoa option
+            });
 
             // update or create options
             foreach ($request->options as $optionIndex => $optionData) {
@@ -297,6 +321,8 @@ class ModuleQuizController extends Controller
                 }
             }
 
+            DB::commit();
+
             // Lấy question cùng options vừa update
             $updatedQuestion = Question::with('options')->find($question->id);
 
@@ -304,9 +330,11 @@ class ModuleQuizController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Cập nhật thành công câu hỏi và lựa chọn.',
-                'data' => $updatedQuestion
+                'data' => $updatedQuestion,
+                'test' => $questionImage
             ], 200);
         } catch (\Exception $e) {
+            DB::rollBack();
             // Lỗi server
             return response()->json([
                 'status' => 'error',
@@ -343,6 +371,13 @@ class ModuleQuizController extends Controller
                     Storage::delete($option->image_url);
                 }
                 $option->delete();
+            }
+
+            // trừ điểm tổng của quiz
+            $quiz = $question->quiz;
+            if ($quiz) {
+                $quiz->total_points -= $question->points;
+                $quiz->save();
             }
 
             // Del question
