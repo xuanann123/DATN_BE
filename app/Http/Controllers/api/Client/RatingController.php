@@ -80,13 +80,19 @@ class RatingController extends Controller
         if ($checkProgressCourse->progress_percent == 100 && $checkProgressCourse->completed_at) {
             return response()->json([
                 'status' => 'success',
-                'message' => 'Đã hoàn thành khóa học'
+                'message' => 'Đã hoàn thành khóa học',
+                'data' => [
+                    'rating' => 'allow'
+                ]
             ], 200);
         }
 
         return response()->json([
             'status' => 'error',
-            'message' => 'Chưa hoàn thành khóa học'
+            'message' => 'Chưa hoàn thành khóa học',
+            'data' => [
+                'rating' => 'block'
+            ]
         ], 200);
     }
 
