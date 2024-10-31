@@ -19,12 +19,11 @@ class CreateCourseRequest extends FormRequest
             'slug' => 'required|unique:courses,slug|max:255',
             'description' => 'nullable|min:6',
             'sort_description' => 'nullable|min:6|max:255',
-            'learned' => 'nullable|min:6',
             'thumbnail' => 'required|image|max:5120',
             'trailer' => 'required|mimes:mp4,mov,avi,flv|max:102400',
             'id_category' => 'required|integer',
-            'price' => 'numeric|min:0',
-            'price_sale' => 'numeric|min:0',
+            'price' => 'required|numeric|min:0',
+            'price_sale' => 'nullable|numeric|min:0|lt:price',
         ];
     }
     public function messages()
@@ -63,9 +62,11 @@ class CreateCourseRequest extends FormRequest
 
             'price.numeric' => 'Giá khóa học không hợp lệ.',
             'price.min' => 'Giá khóa học phải lớn hơn hoặc bằng 0.',
+            
 
             'price_sale.numeric' => 'Giá khóa học không hợp lệ.',
             'price_sale.min' => 'Giá khóa học phải lớn hơn hoặc bằng 0.',
+            'price_sale.lt' => 'Giá khóa học phải lớn hơn hoặc bằng 0.',
         ];
     }
 }
