@@ -419,7 +419,7 @@
                             class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger"
                             id="unread-notification-count"></span>
                     </button>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"
+                    <div class="dropdown-menu dropdown-menu-xl dropdown-menu-end p-0"
                         aria-labelledby="page-header-notifications-dropdown"
                         style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate3d(0px, 58.4px, 0px);"
                         data-popper-placement="bottom-end">
@@ -464,7 +464,7 @@
 
                         <div class="tab-content position-relative" id="notificationItemsTabContent">
                             <div class="tab-pane fade show active py-2 ps-2" id="all-noti-tab" role="tabpanel">
-                                <div data-simplebar="init" style="max-height: 300px;"
+                                <div data-simplebar="init" style="max-height: 700px;"
                                     class="pe-2 simplebar-scrollable-y">
                                     <div class="simplebar-wrapper" style="margin: 0px -8px 0px 0px;">
                                         <div class="simplebar-height-auto-observer-wrapper">
@@ -670,13 +670,13 @@
                 method: 'GET',
                 success: function(data) {
                     // số lượng thông báo chưa đọc
-                    if (data > 0) {
+                    if (data.unreadCount > 0) {
                         $('#unread-notification-count').text(data.unreadCount).show();
                     } else {
                         $('#unread-notification-count').hide();
                     }
 
-                    $('#unread-notification-count-2').text(data.unreadCount).append(' Thông báo mới')
+                    $('#unread-notification-count-2').text(data.unreadCount).append(' Thông báo chưa đọc')
 
                     $('#all-notifications').html(`Tất cả (${data.allNotifications})`)
                 },
