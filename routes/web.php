@@ -57,12 +57,12 @@ Route::prefix("admin")
 
         #============================== NOTIFICATIONS DONE =============================
         Route::prefix("notifications")
-        ->as('notifications.')
-        ->group(function () {
-            Route::get("/", [NotificationController::class, 'index'])->name('index');
-            Route::get("/unread-count", [NotificationController::class, 'getUnreadCount'])->name('getUnreadCount');
-            Route::post("/{id}/mark-as-read", [NotificationController::class, 'markAsRead'])->name('markAsRead');
-        });
+            ->as('notifications.')
+            ->group(function () {
+                Route::get("/", [NotificationController::class, 'index'])->name('index');
+                Route::get("/unread-count", [NotificationController::class, 'getUnreadCount'])->name('getUnreadCount');
+                Route::post("/{id}/mark-as-read", [NotificationController::class, 'markAsRead'])->name('markAsRead');
+            });
         #============================== BANNERS DONE =============================
         Route::prefix("banners")
             ->as('banners.')
@@ -197,6 +197,7 @@ Route::prefix("admin")
                 Route::get('/detail-bill-course/{bill}', [TransactionController::class, 'detailBillCourse'])->name('detail-bill-course');
                 Route::get('/history-deposit', [TransactionController::class, 'historyDeposit'])->name('history-deposit');
                 Route::get('/history-withdraw', [TransactionController::class, 'historyWithdraw'])->name('history-withdraw');
+                Route::get('/withdraw-money', [TransactionController::class, 'withdrawMoneys'])->name('withdraw-money');
             });
         // route post
         Route::prefix('posts')

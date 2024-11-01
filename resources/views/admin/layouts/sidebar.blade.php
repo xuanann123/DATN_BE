@@ -15,20 +15,22 @@
                 <span class="ms-2" style="font-size: 30px; color: rgb(255, 255, 255); font-weight: 500">Coursea</span>
             </span>
             <span class="logo-lg">
-               <span class="logo-sm">
-                <img src="{{ asset("theme/admin/assets/images/Union_Yellow.png") }}" alt="" height="22">
-            </span>
-            <span class="logo-lg">
-                <img src="{{ asset("theme/admin/assets/images/logo-white-text.png") }}" alt="" width="180" height="auto">
-            </span>
+                <span class="logo-sm">
+                    <img src="{{ asset('theme/admin/assets/images/Union_Yellow.png') }}" alt="" height="22">
+                </span>
+                <span class="logo-lg">
+                    <img src="{{ asset('theme/admin/assets/images/logo-white-text.png') }}" alt=""
+                        width="180" height="auto">
+                </span>
             </span>
         </a>
         <a href="{{ route('admin.dashboard') }}" class="logo logo-light">
             <span class="logo-sm">
-                <img src="{{ asset("theme/admin/assets/images/Union_Yellow.png") }}" alt="" height="22">
+                <img src="{{ asset('theme/admin/assets/images/Union_Yellow.png') }}" alt="" height="22">
             </span>
             <span class="logo-lg">
-                <img src="{{ asset("theme/admin/assets/images/logo-white-text.png") }}" alt="" width="180" height="auto">
+                <img src="{{ asset('theme/admin/assets/images/logo-white-text.png') }}" alt="" width="180"
+                    height="auto">
             </span>
             {{-- <span class="logo-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="auto" viewBox="0 0 40 41"
@@ -116,7 +118,8 @@
                     <div class="collapse menu-dropdown" id="sidebarVouchers">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="{{ route('admin.vouchers.index') }}" class="nav-link" data-key="t-one-page">
+                                <a href="{{ route('admin.vouchers.index') }}" class="nav-link"
+                                    data-key="t-one-page">
                                     Danh sách mã</a>
                             </li>
                             <li class="nav-item">
@@ -134,7 +137,7 @@
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarCourses">
                         <ul class="nav nav-sm flex-column">
-                             <li class="nav-item">
+                            <li class="nav-item">
                                 <a href="{{ route('admin.courses.create') }}" class="nav-link" data-key="t-job">
                                     Thêm mới khoá học</a>
                             <li class="nav-item">
@@ -145,163 +148,163 @@
                                 <a href="{{ route('admin.courses.list') }}" class="nav-link" data-key="t-one-page">
                                     Khoá học hệ thống</a>
                             </li>
-                           
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarTags" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false" aria-controls="sidebarTags">
-                        <i class="bx bx-purchase-tag"></i> <span>Thẻ đính kèm</span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="sidebarTags">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="{{ route('admin.tags.index') }}" class="nav-link" data-key="t-one-page">
-                                    Danh sách thẻ</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('admin.tags.create') }}" class="nav-link" data-key="t-job">
-                                    Thêm mới thẻ</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarCertificate" data-bs-toggle="collapse"
-                        role="button" aria-expanded="false" aria-controls="sidebarCertificate">
-                        <i class="ri-graduation-cap-line"></i> <span>Chứng chỉ</span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="sidebarCertificate">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="{{ route('admin.courses.list') }}" class="nav-link" data-key="t-one-page">
-                                    Danh sách chứng chỉ</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
 
-                {{-- Bài viết --}}
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarPost" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false" aria-controls="sidebarPost">
-                        <i class=" ri-newspaper-line"></i> <span>Bài viết</span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="sidebarPost">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="{{ route('admin.posts.index') }}" class="nav-link" data-key="t-one-page">
-                                    Danh sách bài viết</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('admin.posts.create') }}" class="nav-link" data-key="t-one-page">
-                                    Thêm mới bài viết</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-
-                {{-- Giao dịch --}}
-                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý giao dịch</span>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ route('admin.transactions.history-buy-course') }}"
-                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class=" ri-chat-history-line"></i> <span>Khóa học đã bán</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{  route('admin.transactions.history-deposit') }}"
-                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class="ri-arrow-right-circle-line"></i> <span>Giao dịch nạp tiền</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{  route('admin.transactions.history-withdraw') }}"
-                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class="ri-arrow-left-circle-line"></i> <span>Giao dịch rút tiền</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#"
-                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class="ri-money-euro-circle-line"></i> <span>Yêu cầu rút tiền</span>
-                    </a>
-                </li>
-
-
-                {{-- Kiểm duyệt --}}
-                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý kiểm
-                        duyệt</span>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ route('admin.approval.ratings.list') }}"
-                        data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class="ri-star-fill"></i> <span>Kiểm duyệt đánh giá </span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ route('admin.approval.courses.list') }}"
-                        data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class="ri-book-open-line"></i> <span>Kiểm duyệt Khóa học </span>
-                    </a>
-                </li>
-
-                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components">Quản lý tài
-                        khoản</span></li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarStudent" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false" aria-controls="sidebarStudent">
-                        <i class="ri-account-circle-line"></i> <span data-key="t-base-ui">Quản lý thành viên</span>
-                    </a>
-                    <div class="collapse menu-dropdown mega-dropdown-menu" id="sidebarStudent">
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.users.list') }}" class="nav-link"
-                                            data-key="t-badges">Danh sách</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.users.create') }}" class="nav-link"
-                                            data-key="t-alerts">Thêm mới</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                    </div>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarPermission" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false" aria-controls="sidebarPermission">
-                        <i class="ri-angularjs-line"></i> <span data-key="t-base-ui">Quản lý phân quyền</span>
-                    </a>
-                    <div class="collapse menu-dropdown mega-dropdown-menu" id="sidebarPermission">
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="ui-alerts.html" class="nav-link" data-key="t-alerts">Thêm mới</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="ui-badges.html" class="nav-link" data-key="t-badges">Danh sách</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                    </div>
                 </li>
             </ul>
         </div>
-        <!-- Sidebar -->
-    </div>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link menu-link" href="#sidebarTags" data-bs-toggle="collapse" role="button"
+                aria-expanded="false" aria-controls="sidebarTags">
+                <i class="bx bx-purchase-tag"></i> <span>Thẻ đính kèm</span>
+            </a>
+            <div class="collapse menu-dropdown" id="sidebarTags">
+                <ul class="nav nav-sm flex-column">
+                    <li class="nav-item">
+                        <a href="{{ route('admin.tags.index') }}" class="nav-link" data-key="t-one-page">
+                            Danh sách thẻ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.tags.create') }}" class="nav-link" data-key="t-job">
+                            Thêm mới thẻ</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link menu-link" href="#sidebarCertificate" data-bs-toggle="collapse" role="button"
+                aria-expanded="false" aria-controls="sidebarCertificate">
+                <i class="ri-graduation-cap-line"></i> <span>Chứng chỉ</span>
+            </a>
+            <div class="collapse menu-dropdown" id="sidebarCertificate">
+                <ul class="nav nav-sm flex-column">
+                    <li class="nav-item">
+                        <a href="{{ route('admin.courses.list') }}" class="nav-link" data-key="t-one-page">
+                            Danh sách chứng chỉ</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
 
-    <div class="sidebar-background"></div>
+        {{-- Bài viết --}}
+        <li class="nav-item">
+            <a class="nav-link menu-link" href="#sidebarPost" data-bs-toggle="collapse" role="button"
+                aria-expanded="false" aria-controls="sidebarPost">
+                <i class=" ri-newspaper-line"></i> <span>Bài viết</span>
+            </a>
+            <div class="collapse menu-dropdown" id="sidebarPost">
+                <ul class="nav nav-sm flex-column">
+                    <li class="nav-item">
+                        <a href="{{ route('admin.posts.index') }}" class="nav-link" data-key="t-one-page">
+                            Danh sách bài viết</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.posts.create') }}" class="nav-link" data-key="t-one-page">
+                            Thêm mới bài viết</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+
+        {{-- Giao dịch --}}
+        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý giao dịch</span>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link menu-link" href="{{ route('admin.transactions.history-buy-course') }}"
+                data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                <i class=" ri-chat-history-line"></i> <span>Khóa học đã bán</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link menu-link" href="{{ route('admin.transactions.history-deposit') }}" data-bs-toggle=""
+                role="button" aria-expanded="false" aria-controls="">
+                <i class="ri-arrow-right-circle-line"></i> <span>Giao dịch nạp tiền</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link menu-link" href="{{ route('admin.transactions.history-withdraw') }}"
+                data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                <i class="ri-arrow-left-circle-line"></i> <span>Giao dịch rút tiền</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link menu-link" href="{{ route('admin.transactions.withdraw-money') }}" data-bs-toggle=""
+                role="button" aria-expanded="false" aria-controls="">
+                <i class="ri-money-euro-circle-line"></i> <span>Yêu cầu rút tiền</span>
+            </a>
+        </li>
+
+
+        {{-- Kiểm duyệt --}}
+        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý kiểm
+                duyệt</span>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link menu-link" href="{{ route('admin.approval.ratings.list') }}" data-bs-toggle=""
+                role="button" aria-expanded="false" aria-controls="">
+                <i class="ri-star-fill"></i> <span>Kiểm duyệt đánh giá </span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link menu-link" href="{{ route('admin.approval.courses.list') }}" data-bs-toggle=""
+                role="button" aria-expanded="false" aria-controls="">
+                <i class="ri-book-open-line"></i> <span>Kiểm duyệt Khóa học </span>
+            </a>
+        </li>
+
+        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components">Quản lý tài
+                khoản</span></li>
+        <li class="nav-item">
+            <a class="nav-link menu-link" href="#sidebarStudent" data-bs-toggle="collapse" role="button"
+                aria-expanded="false" aria-controls="sidebarStudent">
+                <i class="ri-account-circle-line"></i> <span data-key="t-base-ui">Quản lý thành viên</span>
+            </a>
+            <div class="collapse menu-dropdown mega-dropdown-menu" id="sidebarStudent">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="{{ route('admin.users.list') }}" class="nav-link" data-key="t-badges">Danh
+                                    sách</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.users.create') }}" class="nav-link"
+                                    data-key="t-alerts">Thêm mới</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link menu-link" href="#sidebarPermission" data-bs-toggle="collapse" role="button"
+                aria-expanded="false" aria-controls="sidebarPermission">
+                <i class="ri-angularjs-line"></i> <span data-key="t-base-ui">Quản lý phân quyền</span>
+            </a>
+            <div class="collapse menu-dropdown mega-dropdown-menu" id="sidebarPermission">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="ui-alerts.html" class="nav-link" data-key="t-alerts">Thêm mới</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="ui-badges.html" class="nav-link" data-key="t-badges">Danh sách</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </li>
+        </ul>
+    </div>
+    <!-- Sidebar -->
+</div>
+
+<div class="sidebar-background"></div>
 </div>

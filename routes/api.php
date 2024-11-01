@@ -119,9 +119,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     # ===================== ROUTE FOR RATING ===========================
     Route::prefix('ratings')->group(function () {
-
-        Route::get('/check-rating-course/{id_user}/{id_course}', [RatingController::class, 'checkRating']);
-        Route::get('/check-rated/{id_user}/{id_course}', [RatingController::class, 'checkRated']);
+        Route::get('/check-rating/{id_user}/{id_course}', [RatingController::class, 'checkRating']);
         Route::post('/add-rating-course', [RatingController::class, 'addRating']);
     });
 
@@ -203,7 +201,6 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::get('quiz/{question}/show-question-and-option', [ModuleQuizController::class, 'showQuestionAndOption']);
                 Route::put('quiz/{question}/update-question-and-option', [ModuleQuizController::class, 'updateQuestionAndOption']);
                 Route::delete('quiz/{question}/delete-question-and-option', [ModuleQuizController::class, 'deleteQuestionAndOption']);
-
             });
             // xoa khoa hoc vinh vien
             Route::delete('{course}/delete-course', [CourseController::class, 'deleteCourse']);
