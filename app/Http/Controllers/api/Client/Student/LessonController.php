@@ -154,13 +154,14 @@ class LessonController extends Controller
     public function checkQuiz(Request $request)
     {
 
-         try {
-             // Lấy người dùng đang đăng nhập
+        try {
+            // Lấy người dùng đang đăng nhập
             $user = auth()->user();
-
+            //Lấy id khoá học từ dưới client
+            $id_course = $request->id_course;
             // Kiểm tra người dùng đã mua khoá học đó chưa
             $userCourse = UserCourse::where('id_user', $user->id)
-                ->where('id_course', $lesson->module->id_course)
+                ->where('id_course', $id_course)
                 ->first();
             //Nếu chưa mua thì báo lỗi 403 cấm truy cập
             if (!$userCourse) {
@@ -170,64 +171,65 @@ class LessonController extends Controller
                     'data' => []
                 ], 403);
             }
-        //Lưu thông tin thằng nào làm bài
-        $userId = $request->user_id;
-        $quizId = $request->quiz_id;
-        //Và câu trả lời của thằng làm bài đó
-        $answers = $request->answers;
-        //Tôi muốn tính tổng điểm sẽ là số % câu trả lời đúng trên toàn bộ câu trả lời
-        $correctAnswersCount = 0;
-        //Tổng số lượng câu hỏi
-        $totalQuestions = Question::where('id_quiz', $quizId)->count();
-        //Duyệt qua mảng dữ liệu mảng câu trả lời
-        foreach ($answers as $answer) {
-            //Tìm xem câu hỏi đó là câu nào
-            $questionId = $answer['question_id'];
-            //Câu trả lời của nó gồm những thằng nào
-            $selectedOptions = $answer['selected_options'];
-            //Lấy thông tin của câu hỏi và đáp án đúng là câu nào
-            $question = Question::find($questionId);
-            //Kiểm tra xem câu trả lời nào đúng
-            $correctOptions = Option::where('id_question', $questionId)
-                ->where('is_correct', 1)
-                ->pluck('id')
-                ->toArray();
+            //Lưu thông tin thằng nào làm bài
+            $userId = $request->user_id;
+            //Truy vấn xem lấy id quiz của khoá học ra
+            $quizId = $request->quiz_id;
+            //Và câu trả lời của thằng làm bài đó
+            $answers = $request->answers;
+            //Tôi muốn tính tổng điểm sẽ là số % câu trả lời đúng trên toàn bộ câu trả lời
+            $correctAnswersCount = 0;
+            //Tổng số lượng câu hỏi
+            $totalQuestions = Question::where('id_quiz', $quizId)->count();
+            //Duyệt qua mảng dữ liệu mảng câu trả lời
+            foreach ($answers as $answer) {
+                //Tìm xem câu hỏi đó là câu nào
+                $questionId = $answer['question_id'];
+                //Câu trả lời của nó gồm những thằng nào
+                $selectedOptions = $answer['selected_options'];
+                //Lấy thông tin của câu hỏi và đáp án đúng là câu nào
+                $question = Question::find($questionId);
+                //Kiểm tra xem câu trả lời nào đúng
+                $correctOptions = Option::where('id_question', $questionId)
+                    ->where('is_correct', 1)
+                    ->pluck('id')
+                    ->toArray();
 
-            if ($question->type == 'one_choice') {
-                // Với câu hỏi chọn một đáp án đúng
-                if (count($selectedOptions) == 1 && $selectedOptions[0] == $correctOptions[0]) {
-                    $correctAnswersCount++;
-                }
-            } elseif ($question->type == 'multiple_choice') {
-                // Với câu hỏi chọn nhiều đáp án đúng, cần kiểm tra tất cả đáp án người dùng
-                sort($selectedOptions);
-                sort($correctOptions);
-                if ($selectedOptions == $correctOptions) {
-                    $correctAnswersCount++;
+                if ($question->type == 'one_choice') {
+                    // Với câu hỏi chọn một đáp án đúng
+                    if (count($selectedOptions) == 1 && $selectedOptions[0] == $correctOptions[0]) {
+                        $correctAnswersCount++;
+                    }
+                } elseif ($question->type == 'multiple_choice') {
+                    // Với câu hỏi chọn nhiều đáp án đúng, cần kiểm tra tất cả đáp án người dùng
+                    sort($selectedOptions);
+                    sort($correctOptions);
+                    if ($selectedOptions == $correctOptions) {
+                        $correctAnswersCount++;
+                    }
                 }
             }
-        }
-        $percentageScore = ($totalQuestions > 0)
-            ? ($correctAnswersCount / $totalQuestions) * 100
-            : 0;
-        $data = [
-            'user_id' => $userId,
-            'quiz_id' => $quizId,
-            'total_score' => $percentageScore
-        ];
-        if ($percentageScore == 100) {
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Bạn đã hoàn thành bài tập',
-                'data' => $data
-            ], 200);
-        }
+            $percentageScore = ($totalQuestions > 0)
+                ? ($correctAnswersCount / $totalQuestions) * 100
+                : 0;
+            $data = [
+                'user_id' => $userId,
+                'quiz_id' => $quizId,
+                'total_score' => $percentageScore
+            ];
+            if ($percentageScore == 100) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Bạn đã hoàn thành bài tập',
+                    'data' => $data
+                ], 200);
+            }
 
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Vui lòng thực hiện lại bài tập',
-            'data' => $data
-        ], status: 200);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Vui lòng thực hiện lại bài tập',
+                'data' => $data
+            ], status: 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -235,7 +237,6 @@ class LessonController extends Controller
                 'data' => []
             ]);
         }
-        
-       
+
     }
 }
