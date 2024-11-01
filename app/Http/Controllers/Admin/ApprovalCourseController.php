@@ -32,6 +32,7 @@ class ApprovalCourseController extends Controller
 
         $courses = Course::query()
             ->whereNotNull('submited_at')
+            ->where('status', '!=', 'draft')
             ->when($status != 'all', function ($query) use ($status) {
                 return match ($status) {
                     'pending' => $query->where('status', 'pending'),
@@ -43,7 +44,7 @@ class ApprovalCourseController extends Controller
             ->get();
 
         $count = [
-            'all' => Course::whereNotNull('submited_at')->count(),
+            'all' => Course::whereNotNull('submited_at')->where('status', '!=', 'draft')->count(),
             'approved' => Course::where('status', 'approved')->count(),
             'pending' => Course::where('status', 'pending')->count(),
             'rejected' => Course::where('status', 'rejected')->count(),
@@ -59,7 +60,9 @@ class ApprovalCourseController extends Controller
             'category',
             'user',
             'modules.lessons'
-        )->findOrFail($id);
+        )
+            ->where('status', '!=', 'draft')
+            ->findOrFail($id);
 
         $maxModulePosition = Module::where('id_course', $course->id)->max('position');
 
@@ -109,7 +112,7 @@ class ApprovalCourseController extends Controller
                 $course->status = 'approved';
                 $message = 'Đã chấp thuận khóa học.';
                 // Gửi email cho giảng viên khi từ chối
-                Mail::to($user->email)->send(new CourseApproveEmail($course));
+                Mail::to($user->email)->queue(new CourseApproveEmail($course));
             }
 
             // Xử lý từ chối
@@ -119,7 +122,7 @@ class ApprovalCourseController extends Controller
                 $message = 'Đã từ chối khóa học';
 
                 // Gửi email cho giảng viên khi từ chối
-                Mail::to($user->email)->send(new CourseRejectionEmail($course, $conditions));
+                Mail::to($user->email)->queue(new CourseRejectionEmail($course, $conditions));
             }
 
             $course->save();
