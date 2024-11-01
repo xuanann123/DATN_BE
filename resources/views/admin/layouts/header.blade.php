@@ -464,7 +464,7 @@
 
                         <div class="tab-content position-relative" id="notificationItemsTabContent">
                             <div class="tab-pane fade show active py-2 ps-2" id="all-noti-tab" role="tabpanel">
-                                <div data-simplebar="init" style="max-height: 700px;"
+                                <div data-simplebar="init" style="max-height: 70vh;"
                                     class="pe-2 simplebar-scrollable-y">
                                     <div class="simplebar-wrapper" style="margin: 0px -8px 0px 0px;">
                                         <div class="simplebar-height-auto-observer-wrapper">
@@ -645,6 +645,14 @@
     </div>
 </header>
 
+<style>
+    .unread-notification-dot {
+        top: 25%;
+        left: 95%;
+        transform: translate(-50%, -50%);
+    }
+</style>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.6/dayjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.6/plugin/relativeTime.min.js"></script>
@@ -676,7 +684,8 @@
                         $('#unread-notification-count').hide();
                     }
 
-                    $('#unread-notification-count-2').text(data.unreadCount).append(' Thông báo chưa đọc')
+                    $('#unread-notification-count-2').text(data.unreadCount).append(
+                        ' Thông báo chưa đọc')
 
                     $('#all-notifications').html(`Tất cả (${data.allNotifications})`)
                 },
@@ -699,6 +708,9 @@
                     console.log(data)
 
                     data.forEach(function(notification) {
+                        const unreadNoti = !notification.read_at ?
+                            '<span class="position-absolute translate-middle badge border border-light rounded-circle bg-danger p-1 unread-notification-dot"><span class="visually-hidden">unread messages</span></span>' :
+                            ''
                         const item = `
                                 <a href="${notification.data.url}">
                                     <div class="text-reset notification-item d-block dropdown-item position-relative" id="notification-item" data-id="${notification.id}">
@@ -716,6 +728,7 @@
                                                 <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
                                                     <span><i class="mdi mdi-clock-outline"></i> ${dayjs(notification.created_at).fromNow()}</span>
                                                 </p>
+                                                ${unreadNoti}
                                             </div>
                                         </div>
                                     </div>
@@ -743,6 +756,17 @@
                 }
             })
         })
-
     })
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const userId = '{{ Auth::id() }}'; // Lấy userId từ Blade
+        console.log('User ID:', userId);
+
+        window.Echo.private(`App.Models.User.${userId}`)
+            .notification((notification) => {
+                console.log(notification);
+                // Cập nhật số lượng thông báo chưa đọc
+                fetchUnreadNotificationCount();
+            });
+    });
 </script>
