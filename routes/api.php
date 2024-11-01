@@ -40,7 +40,6 @@ use App\Http\Controllers\api\Client\VoucherController;
 */
 
 
-
 Route::prefix('auth')->group(function () {
     Route::post('/signup', [AuthController::class, 'signup']);
     Route::post('/login', [AuthController::class, 'login']);
@@ -99,7 +98,6 @@ Route::middleware('auth:sanctum')->group(function () {
         //Kiểm tra đúng sai của quiz
         Route::post('quiz/check-quiz', [LessonController::class, 'checkQuiz']);
         Route::put('quiz/quiz-progress/{quiz}', [LessonController::class, 'updateQuizProgress']);
-
     });
 
     # ===================== ROUTE FOR NOTE ===========================
@@ -148,6 +146,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('teacher')->middleware('teacher')->group(function () {
         // Ví rút của giảng viên
         Route::get('/balance/{user}', [PaymentController::class, 'balanceWithdrawalWallets']);
+        // Tạo lệnh rút tiền
+        Route::post('/add-request-withdraw/{id_user}', [PaymentController::class, 'createCommandWithdrawMoney']);
+        // Lịch sử rút tiền;
+        Route::get('/history-withdraw/{id_user}', [PaymentController::class, 'historyWithdraw']);
         // Danh sách khóa học
         Route::get('/course', [CourseController::class, 'index']);
         //Thêm khoá học mới
