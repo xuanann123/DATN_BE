@@ -11,8 +11,10 @@ use Illuminate\Http\Request;
 use App\Models\LessonProgress;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\Lessons\LessonProgressRequest;
+use App\Http\Requests\Client\Lessons\QuizProgressRequest;
 use App\Models\Option;
 use App\Models\Question;
+use App\Models\QuizProgress;
 
 class LessonController extends Controller
 {
@@ -105,6 +107,7 @@ class LessonController extends Controller
             $userCourse = UserCourse::where('id_user', $user->id)
                 ->where('id_course', $lesson->module->id_course)
                 ->first();
+
             //Nếu chưa mua thì báo lỗi 403 cấm truy cập
             if (!$userCourse) {
                 return response()->json([
@@ -128,6 +131,7 @@ class LessonController extends Controller
 
             // Cập nhật hoặc tạo mới tiến độ bài học
             $lessonProgress = LessonProgress::updateOrCreate(
+                //Check điều kiện này đã tồn tại rồi thì đi update => còn không thì đi cập nhật
                 [
                     'id_user' => $user->id,
                     'id_lesson' => $lesson->id,
@@ -238,5 +242,60 @@ class LessonController extends Controller
             ]);
         }
 
+    }
+
+    //Cập nhật dữ liệu khi làm xong bài tập quiz
+    public function updateQuizProgress(QuizProgressRequest $request, Quiz $quiz)
+    {
+        try {
+            // Lấy người dùng đang đăng nhập
+            $user = auth()->user();
+
+            // Kiểm tra người dùng đã mua khoá học đó chưa
+            $userCourse = UserCourse::where('id_user', $user->id)
+                ->where('id_course', $quiz->module->id_course)
+                ->first();
+
+            //Nếu chưa mua thì báo lỗi 403 cấm truy cập
+            if (!$userCourse) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Bạn chưa mua khóa học này.',
+                    'data' => []
+                ], 403);
+            }
+
+            // Xác định loại bài học
+            $data = [
+                'user_id' => $user->id,
+                'quiz_id' => $quiz->id,
+                'is_completed' => $request->is_completed,
+            ];
+
+            // Cập nhật hoặc tạo mới tiến độ bài học
+            $quizProgress = QuizProgress::updateOrCreate(
+                //Check điều kiện này đã tồn tại rồi thì đi update => còn không thì đi cập nhật
+                [
+                    'user_id' => $user->id,
+                    'quiz_id' => $quiz->id,
+                ],
+                $data
+            );
+
+            // response cho client
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Tiến độ bài học đã được cập nhật.',
+                'data' => $quizProgress,
+            ], 200);
+
+        } catch (\Exception $e) {
+            // response lỗi
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi cập nhật tiến độ bài học.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

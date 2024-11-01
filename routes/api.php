@@ -98,6 +98,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/lesson-progress/{lesson}', [LessonController::class, 'updateLessonProgress']);
         //Kiểm tra đúng sai của quiz
         Route::post('quiz/check-quiz', [LessonController::class, 'checkQuiz']);
+        Route::post('quiz/quiz-progress/{quiz}', [LessonController::class, 'updateQuizProgress']);
 
     });
 
