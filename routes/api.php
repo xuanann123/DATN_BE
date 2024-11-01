@@ -189,6 +189,8 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::get('quiz/{question}/show-question-and-option', [ModuleQuizController::class, 'showQuestionAndOption']);
                 Route::put('quiz/{question}/update-question-and-option', [ModuleQuizController::class, 'updateQuestionAndOption']);
                 Route::delete('quiz/{question}/delete-question-and-option', [ModuleQuizController::class, 'deleteQuestionAndOption']);
+                //Kiểm tra đúng sai của quiz
+                Route::post('quiz/check-quiz', [ModuleQuizController::class, 'checkQuiz']);
             });
             // xoa khoa hoc vinh vien
             Route::delete('{course}/delete-course', [CourseController::class, 'deleteCourse']);

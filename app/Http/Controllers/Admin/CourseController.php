@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Audience;
+use App\Notifications\Admin\CourseSubmittedNotification;
 use Illuminate\Support\Facades\Session;
 
 use App\Models\Course;
@@ -16,6 +17,7 @@ use App\Models\Goal;
 use App\Models\Module;
 use App\Models\Requirement;
 use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -302,12 +304,13 @@ class CourseController extends Controller
 
         return back()->with(['message' => 'Xóa thành công!']);
     }
-
+    //Kiểm duyệt khoá học
     public function submit(Request $request)
     {
         $course = Course::query()->findOrFail($request->id);
 
         $act = $request->has('submit') ? 'submit' : ($request->has('enable') ? 'enable' : ($request->has('disable') ? 'disable' : null));
+
 
         match ($act) {
             'submit' => [
@@ -320,6 +323,10 @@ class CourseController extends Controller
         };
 
         $course->save();
+        $admins = User::where('user_type', User::TYPE_ADMIN)->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new CourseSubmittedNotification($course));
+        }
 
         return redirect()->back()->with('success', 'Cập nhật thành công.');
     }
