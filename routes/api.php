@@ -26,6 +26,7 @@ use App\Http\Controllers\api\Client\CommentController;
 use App\Http\Controllers\api\Client\Intructor\ModuleQuizController;
 use App\Http\Controllers\api\Client\Intructor\TargetController;
 use App\Http\Controllers\api\Client\Student\NoteController;
+use App\Http\Controllers\api\Client\VoucherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,7 @@ use App\Http\Controllers\api\Client\Student\NoteController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
 
 
 Route::prefix('auth')->group(function () {
@@ -70,6 +72,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('payment')->group(function () {
         Route::get('/course/{slug}', [CourseController::class, 'courseCheckout']);
+    });
+
+    # ===================== ROUTE FOR CHECKOUT ===========================
+
+    Route::prefix('vouchers')->group(function () {
+        Route::get('/apply-coupon/{id_user}/{voucher_code}', [VoucherController::class, 'applyCoupon']);
     });
 
 
