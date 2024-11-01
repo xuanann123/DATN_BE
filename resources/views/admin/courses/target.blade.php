@@ -451,119 +451,130 @@
 
                             </div>
                         </div>
-                        <div class="tab-pane fade show active" id="pills-info-desc" role="tabpanel"
-                            aria-labelledby="pills-info-desc-tab">
-                            <div>
-                                {{-- Mục tiêu required và hướng đến người dùng nào --}}
-                                <div class="mb-4">
-                                    <div>
-                                        <h5 class="mb-1">Mục Tiêu Học Viên</h5>
-                                        <p class="text-muted">Các mô tả sau sẻ hiển thị công khai trên Trang tổng quan
-                                            khoá học của bạn và sẽ tác động trực tiếp đến thành tích khoá học, đồng thời
-                                            giúp học viên quyết định xem khoá học đó có phù hợp với họ hay không.
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="mb-3">
-                                        <div class="title mb-3">
-                                            <h5>Học viên sẽ học được gì trong khoá học của bạn?</h5>
-                                            <p class="text-muted">Bạn phải nhập ít nhất 4 mục tiêu khoá học hoặc kết
-                                                quả học tập mà học viên có thể mong đợi sau khi hoàn thành khoá học.</p>
-                                        </div>
-                                        <div id="goals-container">
-                                            <input type="text" class="form-control mb-2 rounded" name="goals[]"
-                                                id="inputField" placeholder="Ví dụ: Sẽ làm được một project với Laravel"
-                                                required>
-                                            <input type="text" class="form-control mb-2" name="goals[]"
-                                                id="inputField"
-                                                placeholder="Ví dụ: Quản lý cơ sở dữ liệu với DatabaseMySQL" required>
-                                            <input type="text" class="form-control mb-2" name="goals[]"
-                                                id="inputField"
-                                                placeholder="Ví dụ: Hiểu và làm việc được với Laravel Realtime" required>
-                                            <input type="text" class="form-control mb-2" name="goals[]"
-                                                id="inputField" placeholder="Ví dụ: Sử dụng với Laravel một cách master"
-                                                required>
 
-                                        </div>
-                                        <button id="add-goal" class="inline-flex items-center btn btn-primary"><svg
-                                                stroke="currentColor" fill="currentColor" stroke-width="0"
-                                                viewBox="0 0 448 512" height="13px" width="13px"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z">
-                                                </path>
-                                            </svg>
-                                            <span class="ps-1">Thêm mục tiêu tham gia vào khoá học của
-                                                bạn</span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="mb-3">
-                                        <div class="title mb-3">
-                                            <h5>Yêu cầu hoặc điều kiện tiên quyết để tham gia khóa học của bạn là gì?
-                                            </h5>
-                                            <p class="text-muted">Liệt kê các kỹ năng, kinh nghiệm, công cụ hoặc thiết
-                                                bị mà học viên bắt buộc phải có trước khi tham gia khóa học.</p>
-                                        </div>
-                                        <div id="requirements-container">
-                                            <input type="text" class="form-control mb-2 rounded" name="requirements[]"
-                                                id="inputField" placeholder="Ví dụ: Sẽ làm được một project với Laravel"
-                                                required>
-                                        </div>
-                                        <button id="add-requirement" class="inline-flex items-center btn btn-primary"><svg
-                                                stroke="currentColor" fill="currentColor" stroke-width="0"
-                                                viewBox="0 0 448 512" height="13px" width="13px"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z">
-                                                </path>
-                                            </svg><span class="ps-1">Thêm mục điều kiện tham gia khoá học của
-                                                bạn</span></button>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="mb-3">
-                                        <div class="title mb-3">
-                                            <h5>Khóa học này dành cho đối tượng nào?</h5>
-                                            <p class="text-muted">Viết mô tả rõ ràng về học viên mục tiêu cho khóa học,
-                                                tức là những người sẽ thấy nội dung khóa học có giá trị. Điều này sẽ
-                                                giúp bạn thu hút học viên phù hợp tham gia khóa học.
+                        <form action="{{ route('admin.courses.target.store', $course->id) }}" method="post">
+                            @csrf
+                            <div class="tab-pane fade show active" id="pills-info-desc" role="tabpanel"
+                                aria-labelledby="pills-info-desc-tab">
 
+
+                                <div>
+                                    {{-- Mục tiêu required và hướng đến người dùng nào --}}
+                                    <div class="mb-4">
+                                        <div>
+                                            <h5 class="mb-1">Mục Tiêu Học Viên</h5>
+                                            <p class="text-muted">Các mô tả sau sẻ hiển thị công khai trên Trang tổng quan
+                                                khoá học của bạn và sẽ tác động trực tiếp đến thành tích khoá học, đồng thời
+                                                giúp học viên quyết định xem khoá học đó có phù hợp với họ hay không.
                                             </p>
                                         </div>
-                                        <div id="audiences-container">
-                                            <input type="text" class="form-control mb-2 rounded" name="audiences[]"
-                                                id="inputField" placeholder="Ví dụ: Sẽ làm được một project với Laravel"
-                                                required>
-                                        </div>
-                                        <button id="add-audience" class="inline-flex items-center btn btn-primary"
-                                            type="button"><svg stroke="currentColor" fill="currentColor"
-                                                stroke-width="0" viewBox="0 0 448 512" height="13px" width="13px"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z">
-                                                </path>
-                                            </svg><span class="ps-1">Thêm đối tượng tham gia vào khoá học của
-                                                bạn</span></button>
                                     </div>
+                                    <div class="row">
+                                        <div class="mb-3">
+                                            <div class="title mb-3">
+                                                <h5>Học viên sẽ học được gì trong khoá học của bạn?</h5>
+                                                <p class="text-muted">Bạn phải nhập ít nhất 4 mục tiêu khoá học hoặc kết
+                                                    quả học tập mà học viên có thể mong đợi sau khi hoàn thành khoá học.</p>
+                                            </div>
+                                            <div id="goals-container">
+                                                <input type="text" class="form-control mb-2 rounded" name="goals[]"
+                                                    id="inputField"
+                                                    placeholder="Ví dụ: Sẽ làm được một project với Laravel" required>
+                                                <input type="text" class="form-control mb-2" name="goals[]"
+                                                    id="inputField"
+                                                    placeholder="Ví dụ: Quản lý cơ sở dữ liệu với DatabaseMySQL" required>
+                                                <input type="text" class="form-control mb-2" name="goals[]"
+                                                    id="inputField"
+                                                    placeholder="Ví dụ: Hiểu và làm việc được với Laravel Realtime"
+                                                    required>
+                                                <input type="text" class="form-control mb-2" name="goals[]"
+                                                    id="inputField"
+                                                    placeholder="Ví dụ: Sử dụng với Laravel một cách master" required>
+
+                                            </div>
+                                            <button id="add-goal" class="inline-flex items-center btn btn-primary"><svg
+                                                    stroke="currentColor" fill="currentColor" stroke-width="0"
+                                                    viewBox="0 0 448 512" height="13px" width="13px"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z">
+                                                    </path>
+                                                </svg>
+                                                <span class="ps-1">Thêm mục tiêu tham gia vào khoá học của
+                                                    bạn</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="mb-3">
+                                            <div class="title mb-3">
+                                                <h5>Yêu cầu hoặc điều kiện tiên quyết để tham gia khóa học của bạn là gì?
+                                                </h5>
+                                                <p class="text-muted">Liệt kê các kỹ năng, kinh nghiệm, công cụ hoặc thiết
+                                                    bị mà học viên bắt buộc phải có trước khi tham gia khóa học.</p>
+                                            </div>
+                                            <div id="requirements-container">
+                                                <input type="text" class="form-control mb-2 rounded"
+                                                    name="requirements[]" id="inputField"
+                                                    placeholder="Ví dụ: Sẽ làm được một project với Laravel" required>
+                                            </div>
+                                            <button id="add-requirement"
+                                                class="inline-flex items-center btn btn-primary"><svg
+                                                    stroke="currentColor" fill="currentColor" stroke-width="0"
+                                                    viewBox="0 0 448 512" height="13px" width="13px"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z">
+                                                    </path>
+                                                </svg><span class="ps-1">Thêm mục điều kiện tham gia khoá học của
+                                                    bạn</span></button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="mb-3">
+                                            <div class="title mb-3">
+                                                <h5>Khóa học này dành cho đối tượng nào?</h5>
+                                                <p class="text-muted">Viết mô tả rõ ràng về học viên mục tiêu cho khóa học,
+                                                    tức là những người sẽ thấy nội dung khóa học có giá trị. Điều này sẽ
+                                                    giúp bạn thu hút học viên phù hợp tham gia khóa học.
+
+                                                </p>
+                                            </div>
+                                            <div id="audiences-container">
+                                                <input type="text" class="form-control mb-2 rounded"
+                                                    name="audiences[]" id="inputField"
+                                                    placeholder="Ví dụ: Sẽ làm được một project với Laravel" required>
+                                            </div>
+                                            <button id="add-audience" class="inline-flex items-center btn btn-primary"
+                                                type="button"><svg stroke="currentColor" fill="currentColor"
+                                                    stroke-width="0" viewBox="0 0 448 512" height="13px" width="13px"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z">
+                                                    </path>
+                                                </svg><span class="ps-1">Thêm đối tượng tham gia vào khoá học của
+                                                    bạn</span></button>
+                                        </div>
+                                    </div>
+
                                 </div>
 
+                                <div class="d-flex align-items-center gap-3 mt-4">
+                                    <button type="button" class="btn btn-link text-decoration-none btn-label previestab"
+                                        data-previous="pills-gen-info-tab"><i
+                                            class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> Quay lại
+                                        tổng quan</button>
+                                    <button type="submit" class="btn btn-success btn-label right ms-auto nexttab nexttab"
+                                        data-nexttab="pills-success-tab"><i
+                                            class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Thêm nội
+                                        dung bài học</button>
+                                </div>
                             </div>
+                        </form>
 
 
-                            <div class="d-flex align-items-center gap-3 mt-4">
-                                <button type="button" class="btn btn-link text-decoration-none btn-label previestab"
-                                    data-previous="pills-gen-info-tab"><i
-                                        class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> Quay lại
-                                    tổng quan</button>
-                                <button type="submit" class="btn btn-success btn-label right ms-auto nexttab nexttab"
-                                    data-nexttab="pills-success-tab"><i
-                                        class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Thêm nội
-                                    dung bài học</button>
-                            </div>
-                        </div>
+
+
                         <div class="tab-pane fade " id="pills-success" role="tabpanel"
                             aria-labelledby="pills-success-tab">
                             <div>

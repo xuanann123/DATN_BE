@@ -134,18 +134,17 @@
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarCourses">
                         <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="{{ route('admin.courses.list') }}" class="nav-link" data-key="t-one-page">
+                                     Danh sách khoá học</a>
+                            </li>
                              <li class="nav-item">
                                 <a href="{{ route('admin.courses.create') }}" class="nav-link" data-key="t-job">
                                     Thêm mới khoá học</a>
-                            <li class="nav-item">
+                            {{-- <li class="nav-item">
                                 <a href="{{ route('admin.courses.my') }}" class="nav-link" data-key="t-one-page">
                                     Khoá học của tôi</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('admin.courses.list') }}" class="nav-link" data-key="t-one-page">
-                                    Khoá học hệ thống</a>
-                            </li>
-                           
+                            </li> --}}
                             </li>
                         </ul>
                     </div>
