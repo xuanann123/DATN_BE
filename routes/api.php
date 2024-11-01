@@ -147,7 +147,9 @@ Route::middleware('auth:sanctum')->group(function () {
         // Ví rút của giảng viên
         Route::get('/balance/{user}', [PaymentController::class, 'balanceWithdrawalWallets']);
         // Tạo lệnh rút tiền
-        Route::post('add-request-withdraw/{id_user}', [PaymentController::class, 'createCommandWithdrawMoney']);
+        Route::post('/add-request-withdraw/{id_user}', [PaymentController::class, 'createCommandWithdrawMoney']);
+        // Lịch sử rút tiền;
+        Route::get('/history-withdraw/{id_user}', [PaymentController::class, 'historyWithdraw']);
         // Danh sách khóa học
         Route::get('/course', [CourseController::class, 'index']);
         //Thêm khoá học mới

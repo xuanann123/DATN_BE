@@ -548,4 +548,38 @@ class PaymentController extends Controller
             ]
         ], 200);
     }
+
+    public function historyWithdraw(Request $request)
+    {
+        $userId = $request->id_user;
+        $historyWithdraw = WithdrawMoney::select(
+            'withdraw_money.id',
+            'withdraw_money.coin',
+            'withdraw_money.amount',
+            'withdraw_money.bank_name',
+            'withdraw_money.account_number',
+            'withdraw_money.account_holder',
+            'withdraw_money.status',
+            'withdraw_money.note',
+            'users.name'
+        )
+            ->join('users', 'users.id', '=', 'withdraw_money.id_user')
+            ->where('withdraw_money.id_user', $userId)
+            ->orderbyDesc('withdraw_money.created_at')
+            ->get();
+
+        if (!$historyWithdraw) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Không có lịch sử rút tiền',
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Lịch sử giao dịch',
+            'data' => $historyWithdraw
+        ], 200);
+    }
 }
