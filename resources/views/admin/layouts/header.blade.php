@@ -663,7 +663,7 @@
     dayjs.locale('vi')
 
     // Lấy 10 thông báo
-    $(document).ready(function() {
+    document.addEventListener('DOMContentLoaded', function() {
         // vứt token CSRF vào mỗi request ajax
         $.ajaxSetup({
             headers: {
@@ -756,9 +756,7 @@
                 }
             })
         })
-    })
 
-    document.addEventListener('DOMContentLoaded', function() {
         const userId = '{{ Auth::id() }}'; // Lấy userId từ Blade
         console.log('User ID:', userId);
 
@@ -766,7 +764,7 @@
             .notification((notification) => {
                 console.log(notification);
                 // Cập nhật số lượng thông báo chưa đọc
-                fetchUnreadNotificationCount();
-            });
-    });
+                fetchUnreadNotificationCount()
+            })
+    })
 </script>

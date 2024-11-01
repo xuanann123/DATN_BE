@@ -119,6 +119,7 @@ class LessonController extends Controller
             }
 
             $newType = $request->new_type;
+            $newTitle = $request->title;
 
             if ($newType === 'video') {
 
@@ -154,6 +155,7 @@ class LessonController extends Controller
 
                 // update lesson
                 $lesson->update([
+                    'title' => $newTitle,
                     'content_type' => 'video',
                     'lessonable_type' => Video::class,
                     'lessonable_id' => $newVideo->id
@@ -177,6 +179,7 @@ class LessonController extends Controller
 
                 // Cập nhật bài học
                 $lesson->update([
+                    'title' => $newTitle,
                     'content_type' => 'document',
                     'lessonable_type' => Document::class,
                     'lessonable_id' => $newDocument->id
