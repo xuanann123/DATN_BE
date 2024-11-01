@@ -11,6 +11,7 @@ use App\Models\UserCourse;
 use App\Models\Voucher;
 use App\Models\VoucherUse;
 use App\Models\WithdrawalWallet;
+use App\Models\WithdrawMoney;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -474,6 +475,77 @@ class PaymentController extends Controller
             'status' => "success",
             'message' => 'Danh sách lịch sử giao dịch',
             'data' => $listHistoryTransactionsPurchase
+        ], 200);
+    }
+
+    public function createCommandWithdrawMoney(Request $request)
+    {
+        $userId = $request->id_user;
+
+        $user = User::find($userId);
+
+        if (!$user) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Người dùng không tồn tại'
+            ], 200);
+        }
+
+        $withdrawalWallet = WithdrawalWallet::where('id_user', $userId)->first();
+
+        if (!$withdrawalWallet) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Bạn chưa có ví',
+            ], 200);
+        }
+
+        if ($withdrawalWallet->status == 0) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Ví của bạn đã bị khóa',
+            ], 200);
+        }
+
+        if ($withdrawalWallet->balance < $request->coin) {
+            return response()->json([
+                'code' => 422,
+                'status' => 'error',
+                'message' => 'Số dư của bạn không đủ'
+            ], 200);
+        }
+
+        $newRequestWithdrawalWallet = WithdrawMoney::query()->create([
+            'id_user' => $userId,
+            'coin' => $request->coin,
+            'amount' => ($request->coin) * self::COIN_CONVERTER,
+            'bank_name' => $request->bank_name,
+            'account_number' => $request->account_number,
+            'account_holder' => $request->account_holder,
+        ]);
+
+        if (!$newRequestWithdrawalWallet) {
+            return response()->json([
+                'code' => '500',
+                'status' => 'error',
+                'message' => 'Đã có lỗi xảy ra khi tạo lệnh rút tiền'
+            ], 200);
+        }
+
+        $withdrawalWallet->update([
+            'balance' => ($withdrawalWallet->balance) - $request->coin,
+        ]);
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'message' => 'Tạo lệnh rút tiền thành công',
+            'data' => [
+                'balance' => $withdrawalWallet->balance
+            ]
         ], 200);
     }
 }
