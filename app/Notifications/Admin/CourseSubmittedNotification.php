@@ -3,12 +3,14 @@
 namespace App\Notifications\Admin;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\BroadcastMessage;
-use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
-class CourseSubmittedNotification extends Notification implements ShouldQueue
+class CourseSubmittedNotification extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
@@ -45,8 +47,19 @@ class CourseSubmittedNotification extends Notification implements ShouldQueue
         ];
     }
 
+    // public function toArray(object $notifiable): array
+    // {
+    //     return [
+    //         'course_id' => $this->course->id,
+    //         'course_name' => $this->course->name,
+    //         'message' => 'Có khóa học mới cần được kiểm duyệt.',
+    //         'url' => route('admin.approval.courses.detail', ['id' => $this->course->id]),
+    //     ];
+    // }
+
     public function toBroadcast(object $notifiable)
     {
+        Log::info('Phát sự kiện CourseSubmittedNotification cho user: ' . $notifiable->id);
         return new BroadcastMessage([
             'course_id' => $this->course->id,
             'course_name' => $this->course->name,
@@ -60,13 +73,4 @@ class CourseSubmittedNotification extends Notification implements ShouldQueue
      *
      * @return array<string, mixed>
      */
-    public function toArray(object $notifiable): array
-    {
-        return [
-            'course_id' => $this->course->id,
-            'course_name' => $this->course->name,
-            'message' => 'Có khóa học mới cần được kiểm duyệt.',
-            'url' => route('admin.approval.courses.detail', ['id' => $this->course->id]),
-        ];
-    }
 }

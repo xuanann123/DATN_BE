@@ -176,41 +176,41 @@
                     <h4 class="card-title mb-0">Tiến Trình Các Bước Đăng Khoá Học</h4>
                 </div><!-- end card header -->
                 <div class="card-body">
-                    <form action="{{ route('admin.courses.store') }}" method="post" class="form-steps"
-                        enctype="multipart/form-data">
-                        @csrf
-                        <div class="text-center pt-3 pb-4">
-                            <h4>Điền Đủ Thông Tin Hai Phân Để Thêm Dữ Liệu Tổng Quan Cho Khoá Học Mới</h4>
-                        </div>
-                        <div id="custom-progress-bar" class="progress-nav mb-4">
-                            <div class="progress" style="height: 1px;">
-                                <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0"
-                                    aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-
-                            <ul class="nav nav-pills progress-bar-tab custom-nav" role="tablist">
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link rounded-pill active" data-progressbar="custom-progress-bar"
-                                        id="pills-gen-info-tab" data-bs-toggle="pill" data-bs-target="#pills-gen-info"
-                                        type="button" role="tab" aria-controls="pills-gen-info"
-                                        aria-selected="true">1</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class=" nav-link rounded-pill" data-progressbar="custom-progress-bar"
-                                        id="pills-info-desc-tab" data-bs-toggle="pill" data-bs-target="#pills-info-desc"
-                                        type="button" role="tab" aria-controls="pills-info-desc"
-                                        aria-selected="false" >2</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="disabled nav-link rounded-pill" data-progressbar="custom-progress-bar"
-                                        id="pills-success-tab" data-bs-toggle="pill" data-bs-target="#pills-success"
-                                        type="button" role="tab" aria-controls="pills-success"
-                                        aria-selected="false">3</button>
-                                </li>
-                            </ul>
+                    <div class="text-center pt-3 pb-4">
+                        <h4>Thêm Thông Tin Khoá Học </h4>
+                    </div>
+                    <div id="custom-progress-bar" class="progress-nav mb-4">
+                        <div class="progress" style="height: 1px;">
+                            <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0"
+                                aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
 
-                        <div class="tab-content">
+                        <ul class="nav nav-pills progress-bar-tab custom-nav" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link rounded-pill active" data-progressbar="custom-progress-bar"
+                                    id="pills-gen-info-tab" data-bs-toggle="pill" data-bs-target="#pills-gen-info"
+                                    type="button" role="tab" aria-controls="pills-gen-info"
+                                    aria-selected="true">1</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="disabled nav-link rounded-pill" data-progressbar="custom-progress-bar"
+                                    id="pills-info-desc-tab" data-bs-toggle="pill" data-bs-target="#pills-info-desc"
+                                    type="button" role="tab" aria-controls="pills-info-desc"
+                                    aria-selected="false">2</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="disabled nav-link rounded-pill" data-progressbar="custom-progress-bar"
+                                    id="pills-success-tab" data-bs-toggle="pill" data-bs-target="#pills-success"
+                                    type="button" role="tab" aria-controls="pills-success"
+                                    aria-selected="false">3</button>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="tab-content">
+                        <form action="{{ route('admin.courses.store') }}" method="post" class="form-steps"
+                            enctype="multipart/form-data">
+                            @csrf
                             <div class="tab-pane fade show active" id="pills-gen-info" role="tabpanel"
                                 aria-labelledby="pills-gen-info-tab">
                                 <div>
@@ -222,6 +222,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="mb-3 col-lg-12">
+                                            <label for="name" class="form-label">Tên khoá học</label>
                                             <input type="text" class="form-control" id="name"
                                                 value="{{ old('name') }}" name="name" placeholder="Tên khóa học">
                                             <small class="help-block form-text text-danger">
@@ -233,21 +234,19 @@
                                         </div>
                                     </div>
                                     <div class="row">
-
                                         <div class="col-lg-4">
                                             <div class="mb-3">
                                                 <label for="code" class="form-label">Mã khóa học</label>
                                                 <input type="text" class="form-control" id="code" name="code"
-                                                    placeholder="Mã khóa học" value="{{ old('code') }}" required>
+                                                    placeholder="Mã khóa học" value="{{ old('code') }}">
                                                 <small class="help-block form-text text-danger">
                                                     @if ($errors->has('code'))
                                                         {{ $errors->first('code') }}
                                                     @endif
                                                 </small>
-                                        
+
                                             </div>
                                         </div>
-
                                         <div class="col-lg-8">
                                             <div class="mb-3">
                                                 <label for="slug" class="form-label">Đường dẫn thân thiện</label>
@@ -262,14 +261,39 @@
                                             </div>
                                         </div>
                                     </div>
+                                    {{-- mô tả ngắn và mô tả --}}
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="mb-3">
+                                                <label class="form-label">Mô tả ngắn</label>
+                                                <textarea name="sort_description" class="form-control">{{ old('sort_description') }}</textarea>
+                                                <small class="help-block form-text text-danger">
+                                                    @if ($errors->has('sort_description'))
+                                                        {{ $errors->first('sort_description') }}
+                                                    @endif
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="mb-3">
+                                                <label class="form-label">Mô tả</label>
+                                                <textarea name="description" id="ckeditor-classic-2">{{ old('description') }}</textarea>
+                                                <small class="help-block form-text text-danger">
+                                                    @if ($errors->has('description'))
+                                                        {{ $errors->first('description') }}
+                                                    @endif
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="row">
                                         <div class="mt-3">
                                             <h5>Thông tin cơ bản</h5>
                                         </div>
-
                                         <div class="col-lg-3">
                                             <div class="mb-3">
-
                                                 <select name="level" id="level" class="form-control">
                                                     <option value="">-- Trình độ --</option>
                                                     @foreach ($levels as $name)
@@ -319,10 +343,12 @@
                                             <h5>Giá khoá học</h5>
                                         </div>
                                         <div class="col-lg-3">
-                                            <div class="mb-3">
-
+                                            <div class="mb-3 input-group">
                                                 <input type="number" class="form-control" id="price" name="price"
                                                     placeholder="Giá khoá học" value="{{ old('price') }}">
+                                                    <span class="input-group-text">
+                                                    <img width="20px" height="auto" src="{{ asset('theme/admin/assets/images/coin.jpg') }}" alt="">
+                                                </span>
                                                 <small class="help-block form-text text-danger">
                                                     @if ($errors->has('price'))
                                                         {{ $errors->first('price') }}
@@ -331,11 +357,15 @@
 
                                             </div>
                                         </div>
-                                        <div class="col-lg-3">
-                                            <div class="mb-3">
+                                        <div class="col-lg-3 ">
+                                            <div class="mb-3 input-group">
                                                 <input type="number" class="form-control" id="price_sale"
                                                     name="price_sale" placeholder="Giá khuyến mái khoá học"
-                                                    value="{{ old('price_sale') }}">
+                                                    value="{{ old('price_sale') }}"
+                                                    aria-label="Amount (to the nearest dollar)">
+                                                <span class="input-group-text">
+                                                    <img width="20px" height="auto" src="{{ asset('theme/admin/assets/images/coin.jpg') }}" alt="">
+                                                </span>
                                                 <small class="help-block form-text text-danger">
                                                     @if ($errors->has('price_sale'))
                                                         {{ $errors->first('price_sale') }}
@@ -362,7 +392,7 @@
                                                 pixel; .jpg, .jpeg,. gif, hoặc .png. và không có chữ trên hình ảnh.
                                             </p>
                                             <input class="form-control" id="thumbnail" name="thumbnail" type="file"
-                                                accept="image/*">
+                                                accept="image/*" value="{{ old('thumbnail') }}">
                                             <small class="help-block form-text text-danger">
                                                 @if ($errors->has('thumbnail'))
                                                     {{ $errors->first('thumbnail') }}
@@ -377,6 +407,7 @@
                                         </div>
                                         <div class="col-lg-5">
                                             {{-- 1 hình ảnh đại diện bo góc hình ảnh --}}
+                                            
                                             <img src="{{ asset('theme/admin/assets/images/img1.jpg') }}"
                                                 class="img-fluid rounded" id="show-video" alt="">
                                         </div>
@@ -390,7 +421,7 @@
                                                 hiện
                                                 tốt.
                                             </p>
-                                            <input class="form-control" id="trailer" name="trailer" type="file"
+                                            <input class="form-control" id="trailer" name="trailer" type="file" value="{{ old('trailer') }}"
                                                 accept="video/*">
                                             <small class="help-block form-text text-danger">
                                                 @if ($errors->has('trailer'))
@@ -399,182 +430,150 @@
                                             </small>
                                         </div>
                                     </div>
-                                    {{-- Dữ liệu ẩn (phải cần để chạy được nextTab) --}}
-                                    <div class="row ">
-                                        <div class="col-lg-12">
-                                            <div class="mb-3 d-none">
-                                                <label class="form-label">Email nhận thông báo
-                                                    kiểm duyệt</label>
-                                                <input type="text" class="form-control"
-                                                    value="{{ auth()->user()->email }}"
-                                                    placeholder="Nhập địa chỉ nhận kiểm duyệt">
-                                                <div class="invalid-feedback">Please enter an email
-                                                    address</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6 d-none">
-                                            <div class="mb-3">
-                                                <label class="form-label" for="gen-info-username-input">User Name</label>
-                                                <input type="text" class="form-control" placeholder="Enter user name">
-                                                <div class="invalid-feedback">Please enter a user name
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3 d-none">
-                                        <label class="form-label" for="gen-info-password-input">Password</label>
-                                        <input type="password" class="form-control" placeholder="Enter Password">
-                                        <div class="invalid-feedback">Please enter a password</div>
-                                    </div>
-
 
                                 </div>
                                 <div class="d-flex align-items-start gap-3 mt-4">
-                                    <button type="button" class="btn btn-success btn-label right ms-auto nexttab nexttab"
+                                    <button type="submit" class="btn btn-success btn-label right ms-auto nexttab nexttab"
                                         data-nexttab="pills-info-desc-tab"><i
-                                            class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Thêm chỉ tiêu khoá học</button>
+                                            class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Thêm nội
+                                        dung chính khoá học</button>
                                 </div>
                             </div>
+                        </form>
+                        <div class="tab-pane fade" id="pills-info-desc" role="tabpanel"
+                            aria-labelledby="pills-info-desc-tab">
+                            <div>
+                                {{-- Mục tiêu required và hướng đến người dùng nào --}}
+                                <div class="mb-4">
+                                    <div>
+                                        <h5 class="mb-1">Mục Tiêu Học Viên</h5>
+                                        <p class="text-muted">Các mô tả sau sẻ hiển thị công khai trên Trang tổng quan
+                                            khoá học của bạn và sẽ tác động trực tiếp đến thành tích khoá học, đồng thời
+                                            giúp học viên quyết định xem khoá học đó có phù hợp với họ hay không.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="mb-3">
+                                        <div class="title mb-3">
+                                            <h5>Học viên sẽ học được gì trong khoá học của bạn?</h5>
+                                            <p class="text-muted">Bạn phải nhập ít nhất 4 mục tiêu khoá học hoặc kết
+                                                quả học tập mà học viên có thể mong đợi sau khi hoàn thành khoá học.</p>
+                                        </div>
+                                        <div id="goals-container">
+                                            <input type="text" class="form-control mb-2 rounded" name="goals[]"
+                                                id="inputField" placeholder="Ví dụ: Sẽ làm được một project với Laravel"
+                                                required>
+                                            <input type="text" class="form-control mb-2" name="goals[]"
+                                                id="inputField"
+                                                placeholder="Ví dụ: Quản lý cơ sở dữ liệu với DatabaseMySQL" required>
+                                            <input type="text" class="form-control mb-2" name="goals[]"
+                                                id="inputField"
+                                                placeholder="Ví dụ: Hiểu và làm việc được với Laravel Realtime" required>
+                                            <input type="text" class="form-control mb-2" name="goals[]"
+                                                id="inputField" placeholder="Ví dụ: Sử dụng với Laravel một cách master"
+                                                required>
 
-                            <div class="tab-pane fade" id="pills-info-desc" role="tabpanel"
-                                aria-labelledby="pills-info-desc-tab">
-                                <div>
-                                    {{-- Mục tiêu required và hướng đến người dùng nào --}}
-                                    <div class="mb-4">
-                                        <div>
-                                            <h5 class="mb-1">Mục Tiêu Học Viên</h5>
-                                            <p class="text-muted">Các mô tả sau sẻ hiển thị công khai trên Trang tổng quan
-                                                khoá học của bạn và sẽ tác động trực tiếp đến thành tích khoá học, đồng thời
-                                                giúp học viên quyết định xem khoá học đó có phù hợp với họ hay không.
+                                        </div>
+                                        <button id="add-goal" class="inline-flex items-center btn btn-primary"><svg
+                                                stroke="currentColor" fill="currentColor" stroke-width="0"
+                                                viewBox="0 0 448 512" height="13px" width="13px"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z">
+                                                </path>
+                                            </svg>
+                                            <span class="ps-1">Thêm mục tiêu tham gia vào khoá học của
+                                                bạn</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="mb-3">
+                                        <div class="title mb-3">
+                                            <h5>Yêu cầu hoặc điều kiện tiên quyết để tham gia khóa học của bạn là gì?
+                                            </h5>
+                                            <p class="text-muted">Liệt kê các kỹ năng, kinh nghiệm, công cụ hoặc thiết
+                                                bị mà học viên bắt buộc phải có trước khi tham gia khóa học.</p>
+                                        </div>
+                                        <div id="requirements-container">
+                                            <input type="text" class="form-control mb-2 rounded" name="requirements[]"
+                                                id="inputField" placeholder="Ví dụ: Sẽ làm được một project với Laravel"
+                                                required>
+                                        </div>
+                                        <button id="add-requirement" class="inline-flex items-center btn btn-primary"><svg
+                                                stroke="currentColor" fill="currentColor" stroke-width="0"
+                                                viewBox="0 0 448 512" height="13px" width="13px"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z">
+                                                </path>
+                                            </svg><span class="ps-1">Thêm mục điều kiện tham gia khoá học của
+                                                bạn</span></button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="mb-3">
+                                        <div class="title mb-3">
+                                            <h5>Khóa học này dành cho đối tượng nào?</h5>
+                                            <p class="text-muted">Viết mô tả rõ ràng về học viên mục tiêu cho khóa học,
+                                                tức là những người sẽ thấy nội dung khóa học có giá trị. Điều này sẽ
+                                                giúp bạn thu hút học viên phù hợp tham gia khóa học.
+
                                             </p>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="mb-3">
-                                            <div class="title mb-3">
-                                                <h5>Học viên sẽ học được gì trong khoá học của bạn?</h5>
-                                                <p class="text-muted">Bạn phải nhập ít nhất 4 mục tiêu khoá học hoặc kết
-                                                    quả học tập mà học viên có thể mong đợi sau khi hoàn thành khoá học.</p>
-                                            </div>
-                                            <div id="goals-container">
-                                                <input type="text" class="form-control mb-2 rounded" name="goals[]"
-                                                    id="inputField"
-                                                    placeholder="Ví dụ: Sẽ làm được một project với Laravel" required>
-                                                <input type="text" class="form-control mb-2" name="goals[]"
-                                                    id="inputField"
-                                                    placeholder="Ví dụ: Quản lý cơ sở dữ liệu với DatabaseMySQL" required>
-                                                <input type="text" class="form-control mb-2" name="goals[]"
-                                                    id="inputField"
-                                                    placeholder="Ví dụ: Hiểu và làm việc được với Laravel Realtime" required>
-                                                <input type="text" class="form-control mb-2" name="goals[]"
-                                                    id="inputField"
-                                                    placeholder="Ví dụ: Sử dụng với Laravel một cách master" required>
-
-                                            </div>
-                                            <button id="add-goal" class="inline-flex items-center btn btn-primary"><svg
-                                                    stroke="currentColor" fill="currentColor" stroke-width="0"
-                                                    viewBox="0 0 448 512" height="13px" width="13px"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z">
-                                                    </path>
-                                                </svg>
-                                                <span class="ps-1">Thêm mục tiêu tham gia vào khoá học của
-                                                    bạn</span>
-                                            </button>
+                                        <div id="audiences-container">
+                                            <input type="text" class="form-control mb-2 rounded" name="audiences[]"
+                                                id="inputField" placeholder="Ví dụ: Sẽ làm được một project với Laravel"
+                                                required>
                                         </div>
+                                        <button id="add-audience" class="inline-flex items-center btn btn-primary"
+                                            type="button"><svg stroke="currentColor" fill="currentColor"
+                                                stroke-width="0" viewBox="0 0 448 512" height="13px" width="13px"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z">
+                                                </path>
+                                            </svg><span class="ps-1">Thêm đối tượng tham gia vào khoá học của
+                                                bạn</span></button>
                                     </div>
-                                    <div class="row">
-                                        <div class="mb-3">
-                                            <div class="title mb-3">
-                                                <h5>Yêu cầu hoặc điều kiện tiên quyết để tham gia khóa học của bạn là gì?
-                                                </h5>
-                                                <p class="text-muted">Liệt kê các kỹ năng, kinh nghiệm, công cụ hoặc thiết
-                                                    bị mà học viên bắt buộc phải có trước khi tham gia khóa học.</p>
-                                            </div>
-                                            <div id="requirements-container">
-                                                <input type="text" class="form-control mb-2 rounded"
-                                                    name="requirements[]" id="inputField"
-                                                    placeholder="Ví dụ: Sẽ làm được một project với Laravel" required>
-                                            </div>
-                                            <button id="add-requirement"
-                                                class="inline-flex items-center btn btn-primary"><svg
-                                                    stroke="currentColor" fill="currentColor" stroke-width="0"
-                                                    viewBox="0 0 448 512" height="13px" width="13px"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z">
-                                                    </path>
-                                                </svg><span class="ps-1">Thêm mục điều kiện tham gia khoá học của
-                                                    bạn</span></button>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="mb-3">
-                                            <div class="title mb-3">
-                                                <h5>Khóa học này dành cho đối tượng nào?</h5>
-                                                <p class="text-muted">Viết mô tả rõ ràng về học viên mục tiêu cho khóa học,
-                                                    tức là những người sẽ thấy nội dung khóa học có giá trị. Điều này sẽ
-                                                    giúp bạn thu hút học viên phù hợp tham gia khóa học.
-
-                                                </p>
-                                            </div>
-                                            <div id="audiences-container">
-                                                <input type="text" class="form-control mb-2 rounded"
-                                                    name="audiences[]" id="inputField"
-                                                    placeholder="Ví dụ: Sẽ làm được một project với Laravel" required>
-                                            </div>
-                                            <button id="add-audience" class="inline-flex items-center btn btn-primary"
-                                                type="button"><svg stroke="currentColor" fill="currentColor"
-                                                    stroke-width="0" viewBox="0 0 448 512" height="13px" width="13px"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z">
-                                                    </path>
-                                                </svg><span class="ps-1">Thêm đối tượng tham gia vào khoá học của
-                                                    bạn</span></button>
-                                        </div>
-                                    </div>
-
                                 </div>
 
-
-                                <div class="d-flex align-items-center gap-3 mt-4">
-                                    <button type="button" class="btn btn-link text-decoration-none btn-label previestab"
-                                        data-previous="pills-gen-info-tab"><i
-                                            class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> Quay lại
-                                        tổng quan</button>
-                                    <button type="submit" class="btn btn-success btn-label right ms-auto nexttab nexttab"
-                                        data-nexttab="pills-success-tab"><i
-                                            class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Thêm nội dung bài học</button>
-                                </div>
                             </div>
-                            <div class="tab-pane fade" id="pills-success" role="tabpanel"
-                                aria-labelledby="pills-success-tab">
-                                <div>
-                                    <div class="text-center">
 
-                                        <div class="mb-4">
-                                            <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop"
-                                                colors="primary:#0ab39c,secondary:#405189"
-                                                style="width:120px;height:120px"></lord-icon>
-                                        </div>
-                                        <h5>Hoàn Thành Tốt !</h5>
-                                        <p class="text-muted">Bạn có thể thêm các chương học, bài học và bài tập của khoá
-                                            học này: <a href="{{ route('admin.courses.list') }}">Khoá học</a></p>
+
+                            <div class="d-flex align-items-center gap-3 mt-4">
+                                <button type="button" class="btn btn-link text-decoration-none btn-label previestab"
+                                    data-previous="pills-gen-info-tab"><i
+                                        class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> Quay lại
+                                    tổng quan</button>
+                                <button type="submit" class="btn btn-success btn-label right ms-auto nexttab nexttab"
+                                    data-nexttab="pills-success-tab"><i
+                                        class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Thêm nội
+                                    dung bài học</button>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="pills-success" role="tabpanel"
+                            aria-labelledby="pills-success-tab">
+                            <div>
+                                <div class="text-center">
+
+                                    <div class="mb-4">
+                                        <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop"
+                                            colors="primary:#0ab39c,secondary:#405189"
+                                            style="width:120px;height:120px"></lord-icon>
                                     </div>
+                                    <h5>Hoàn Thành Tốt !</h5>
+                                    <p class="text-muted">Bạn có thể thêm các chương học, bài học và bài tập của khoá
+                                        học này: <a href="{{ route('admin.courses.list') }}">Khoá học</a></p>
                                 </div>
                             </div>
                         </div>
-                        <!-- end tab pane -->
-
-
-                        <!-- end tab pane -->
-
-                        <!-- end tab pane -->
+                    </div>
+                    <!-- end tab pane -->
                 </div>
                 <!-- end tab content -->
-                </form>
+
             </div>
             <!-- end card body -->
         </div>
@@ -620,7 +619,7 @@
     </style>
 @endsection
 @section('script-libs')
-    <script src="{{ asset('theme/admin/assets/js/pages/form-wizard.init.js') }}"></script>
+    {{-- <script src="{{ asset('theme/admin/assets/js/pages/form-wizard.init.js') }}"></script> --}}
 
     <!-- ckeditor -->
     <script src="{{ asset('theme/admin/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js') }}"></script>

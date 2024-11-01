@@ -29,6 +29,7 @@ class ChangeTypeLessonRequest extends BaseFormRequest
                     }
                 },
             ],
+            'title' => 'required'
         ];
 
         if ($newType === 'video') {
@@ -72,6 +73,7 @@ class ChangeTypeLessonRequest extends BaseFormRequest
             // 'duration.min' => 'Thời lượng phải lớn hơn 0.',
             'video_youtube_id.required' => 'Vui lòng nhập ID video YouTube.',
             'content.required' => 'Vui lòng nhập nội dung tài liệu.',
+            'title' => 'Vui lòng nhập tiêu đề.'
         ];
     }
 

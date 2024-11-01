@@ -414,7 +414,7 @@
                                 @endif
                                 <form action="{{ route('admin.approval.courses.approve', $course->id) }}" method="post"
                                     class="" id="reject-form">
-                                    <h6 class="fs-15 mt-2">Đánh giá của người kiểm duyệt:</h6>
+                                    <h6 class="fs-15 mt-2">Lí do:</h6>
                                     <textarea name="admin_comments" id="ckeditor-classic-2"></textarea>
                             </div>
                             <div class="modal-footer">

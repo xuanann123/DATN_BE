@@ -98,6 +98,8 @@ Route::middleware('auth:sanctum')->group(function () {
         //Kiểm tra đúng sai của quiz
         Route::post('quiz/check-quiz', [LessonController::class, 'checkQuiz']);
         Route::put('quiz/quiz-progress/{quiz}', [LessonController::class, 'updateQuizProgress']);
+        //Kiểm tra kết quả khi bấm lại
+        // Route::get('quiz/result/{request}', [LessonController::class, 'getQuizResult']);
     });
 
     # ===================== ROUTE FOR NOTE ===========================

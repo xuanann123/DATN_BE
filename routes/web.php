@@ -141,12 +141,19 @@ Route::prefix("admin")
             ->as('courses.')
             ->group(function () {
                 Route::get("/", [CourseController::class, 'index'])->name('list');
-                Route::get("/my", [CourseController::class, 'myCourse'])->name('my');
+                
                 Route::get("/create", [CourseController::class, 'create'])->name('create');
                 Route::post('/store', [CourseController::class, 'store'])->name('store');
+                //Đẩy sang tabs thứ 2 view target
+                Route::get('/add-target/{id}', [CourseController::class, 'addTargetCourse'])->name('new');
+                //Lưu trữ mục tiêu target
+                Route::post('/store-target/{id}', [CourseController::class, 'storeTargetCourse'])->name('target.store');
+
+
                 Route::get("/detail/{id}", [CourseController::class, 'detail'])->name('detail');
                 Route::delete('/delete/{id}', [CourseController::class, 'delete'])->name('delete');
                 Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('edit');
+                //Cập nhật dữ liệu đang có của khoá học đó....
                 Route::put('/update/{id}', [CourseController::class, 'update'])->name('update');
                 Route::post('/submit/{id}', [CourseController::class, 'submit'])->name('submit');
             });
