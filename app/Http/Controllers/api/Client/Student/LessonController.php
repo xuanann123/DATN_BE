@@ -15,6 +15,7 @@ use App\Http\Requests\Client\Lessons\QuizProgressRequest;
 use App\Models\Option;
 use App\Models\Question;
 use App\Models\QuizProgress;
+use App\Models\UserAnswer;
 
 class LessonController extends Controller
 {
@@ -160,11 +161,11 @@ class LessonController extends Controller
 
         try {
             // Lấy người dùng đang đăng nhập
-            $user = auth()->user();
+            $id_user = $request->user_id;
             //Lấy id khoá học từ dưới client
-            $id_course = $request->id_course;
+            $id_course = $request->course_id;
             // Kiểm tra người dùng đã mua khoá học đó chưa
-            $userCourse = UserCourse::where('id_user', $user->id)
+            $userCourse = UserCourse::where('id_user', $id_user)
                 ->where('id_course', $id_course)
                 ->first();
             //Nếu chưa mua thì báo lỗi 403 cấm truy cập
@@ -191,7 +192,20 @@ class LessonController extends Controller
                 $questionId = $answer['question_id'];
                 //Câu trả lời của nó gồm những thằng nào
                 $selectedOptions = $answer['selected_options'];
+
+                // Lưu trữ câu trả lời vào bảng user_answers
+                foreach ($selectedOptions as $optionId) {
+                    UserAnswer::create([
+                        'user_id' => $userId,
+                        'quiz_id' => $quizId,
+                        'question_id' => $questionId,
+                        'option_id' => $optionId,
+                    ]);
+                }
+
                 //Lấy thông tin của câu hỏi và đáp án đúng là câu nào
+
+
                 $question = Question::find($questionId);
                 //Kiểm tra xem câu trả lời nào đúng
                 $correctOptions = Option::where('id_question', $questionId)
