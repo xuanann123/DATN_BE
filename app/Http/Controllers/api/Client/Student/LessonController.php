@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use App\Models\LessonProgress;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\Lessons\LessonProgressRequest;
+use App\Models\Option;
+use App\Models\Question;
 
 class LessonController extends Controller
 {
@@ -148,5 +150,66 @@ class LessonController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+    public function checkQuiz(Request $request)
+    {
+        //Lưu thông tin thằng nào làm bài
+        $userId = $request->user_id;
+        $quizId = $request->quiz_id;
+        //Và câu trả lời của thằng làm bài đó
+        $answers = $request->answers;
+        //Tôi muốn tính tổng điểm sẽ là số % câu trả lời đúng trên toàn bộ câu trả lời
+        $correctAnswersCount = 0;
+        //Tổng số lượng câu hỏi
+        $totalQuestions = Question::where('id_quiz', $quizId)->count();
+        //Duyệt qua mảng dữ liệu mảng câu trả lời
+        foreach ($answers as $answer) {
+            //Tìm xem câu hỏi đó là câu nào
+            $questionId = $answer['question_id'];
+            //Câu trả lời của nó gồm những thằng nào
+            $selectedOptions = $answer['selected_options'];
+            //Lấy thông tin của câu hỏi và đáp án đúng là câu nào
+            $question = Question::find($questionId);
+            //Kiểm tra xem câu trả lời nào đúng
+            $correctOptions = Option::where('id_question', $questionId)
+                ->where('is_correct', 1)
+                ->pluck('id')
+                ->toArray();
+
+            if ($question->type == 'one_choice') {
+                // Với câu hỏi chọn một đáp án đúng
+                if (count($selectedOptions) == 1 && $selectedOptions[0] == $correctOptions[0]) {
+                    $correctAnswersCount++;
+                }
+            } elseif ($question->type == 'multiple_choice') {
+                // Với câu hỏi chọn nhiều đáp án đúng, cần kiểm tra tất cả đáp án người dùng
+                sort($selectedOptions);
+                sort($correctOptions);
+                if ($selectedOptions == $correctOptions) {
+                    $correctAnswersCount++;
+                }
+            }
+        }
+        $percentageScore = ($totalQuestions > 0)
+            ? ($correctAnswersCount / $totalQuestions) * 100
+            : 0;
+        $data = [
+            'user_id' => $userId,
+            'quiz_id' => $quizId,
+            'total_score' => $percentageScore
+        ];
+        if ($percentageScore == 100) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Bạn đã hoàn thành bài tập',
+                'data' => $data
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Vui lòng thực hiện lại bài tập',
+            'data' => $data
+        ], status: 200);
     }
 }
