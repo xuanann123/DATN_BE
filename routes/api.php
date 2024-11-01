@@ -187,6 +187,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('/upload-video/{module}', [UploadVideoController::class, 'uploadVideo']);
                 Route::delete('/delete-lesson-video/{lesson}', [UploadVideoController::class, 'deleteLessonVideo']);
                 Route::put('/update-lesson-video/{lesson}', [UploadVideoController::class, 'updateLessonVideo']);
+                Route::post('/{lesson}/change-type', [LessonTeacherController::class, 'changeLessonType']);
                 # ========================== Route for quiz ===========================
                 //ADD QUIZ => Lấy thằng id của module để thêm
                 Route::post('{module}/add-quiz', [ModuleQuizController::class, 'addQuiz']);
@@ -202,6 +203,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::get('quiz/{question}/show-question-and-option', [ModuleQuizController::class, 'showQuestionAndOption']);
                 Route::put('quiz/{question}/update-question-and-option', [ModuleQuizController::class, 'updateQuestionAndOption']);
                 Route::delete('quiz/{question}/delete-question-and-option', [ModuleQuizController::class, 'deleteQuestionAndOption']);
+
             });
             // xoa khoa hoc vinh vien
             Route::delete('{course}/delete-course', [CourseController::class, 'deleteCourse']);
