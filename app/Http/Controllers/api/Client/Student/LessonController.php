@@ -153,6 +153,23 @@ class LessonController extends Controller
     }
     public function checkQuiz(Request $request)
     {
+
+         try {
+             // Lấy người dùng đang đăng nhập
+            $user = auth()->user();
+
+            // Kiểm tra người dùng đã mua khoá học đó chưa
+            $userCourse = UserCourse::where('id_user', $user->id)
+                ->where('id_course', $lesson->module->id_course)
+                ->first();
+            //Nếu chưa mua thì báo lỗi 403 cấm truy cập
+            if (!$userCourse) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Bạn chưa mua khóa học này.',
+                    'data' => []
+                ], 403);
+            }
         //Lưu thông tin thằng nào làm bài
         $userId = $request->user_id;
         $quizId = $request->quiz_id;
@@ -211,5 +228,14 @@ class LessonController extends Controller
             'message' => 'Vui lòng thực hiện lại bài tập',
             'data' => $data
         ], status: 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'data' => []
+            ]);
+        }
+        
+       
     }
 }
