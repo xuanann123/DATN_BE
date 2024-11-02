@@ -236,9 +236,10 @@
                                         <label for="code" class="form-label">Loại voucher</label>
                                         <select name="type" id="type" class="form-control">
                                             <option value="">Chọn loại giảm giá</option>
-                                            <option {{ old('type') == 'Percent' ? 'selected' : '' }} value="percent">
+                                            <option {{ old('type') == 'percent' ? 'selected' : '' }} value="percent">
                                                 Phần trăm</option>
-                                            <option {{ old('type') == 'Fixed' ? 'selected' : '' }} value="fixed">Giá tiền
+                                            <option {{ old('type') == 'fixed' ? 'selected' : '' }} value="fixed">Giá cố
+                                                định
                                             </option>
                                         </select>
                                         <small class="help-block form-text text-danger">
@@ -253,8 +254,8 @@
                                     <div class="mb-3">
                                         <label for="discount" class="form-label">Số phần trăm/xu giảm</label>
                                         <div class="input-group">
-                                            <input type="number" value="{{ old('discount') }}" id="discount" name="discount"
-                                            placeholder="Discount" class="form-control">
+                                            <input type="number" value="{{ old('discount') }}" id="discount"
+                                                name="discount" placeholder="Discount" class="form-control">
                                             <span class="input-group-text" id="unit">%</span>
                                         </div>
                                         <small class="help-block form-text text-danger">
@@ -389,8 +390,8 @@
     <script src="theme/admin/assets/js/pages/form-masks.init.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
-        $(document).ready(function () {
-            $('#type').change(function () {
+        $(document).ready(function() {
+            $('#type').change(function() {
                 const unitElement = $('#unit')
                 const discountInput = $('#discount')
                 if ($(this).val() === 'percent') {

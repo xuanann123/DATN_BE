@@ -228,8 +228,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="#" data-bs-toggle="" role="button"
-                        aria-expanded="false" aria-controls="">
+                    <a class="nav-link menu-link" href="{{ route('admin.transactions.withdraw-money') }}"
+                        data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
                         <i class="ri-money-euro-circle-line"></i> <span>Yêu cầu rút tiền</span>
                     </a>
                 </li>
