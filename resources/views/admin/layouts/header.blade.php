@@ -696,8 +696,7 @@
         }
         fetchUnreadNotificationCount()
 
-        // Khi mở dropdown call api để lấy thông báo
-        $('#notificationDropdown').on('show.bs.dropdown', function() {
+        function loadNotifications() {
             $.ajax({
                 url: '/admin/notifications',
                 method: 'GET',
@@ -740,6 +739,11 @@
                     console.error('Có lỗi khi lấy thông báo:', textStatus, errorThrown)
                 }
             })
+        }
+
+        // Khi mở dropdown call api để lấy thông báo
+        $('#notificationDropdown').on('show.bs.dropdown', function() {
+            loadNotifications()
         })
 
         $(document).on('click', '#notification-item', function() {
@@ -762,9 +766,11 @@
 
         window.Echo.private(`App.Models.User.${userId}`)
             .notification((notification) => {
-                console.log(notification);
+                console.log(notification)
                 // Cập nhật số lượng thông báo chưa đọc
                 fetchUnreadNotificationCount()
+
+                loadNotifications()
             })
     })
 </script>
