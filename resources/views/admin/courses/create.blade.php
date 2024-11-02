@@ -624,40 +624,7 @@
     <!-- ckeditor -->
     <script src="{{ asset('theme/admin/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#add-goal').click(function(e) {
-                e.preventDefault(); // Ngăn chặn việc gửi form nếu button nằm trong form
-
-                // Thêm một input mới vào container
-                $('#goals-container').append(`
-                <input type="text" class="form-control mb-2" name="goals[]" placeholder="Ví dụ: Một mục tiêu mới cho khoá học" required>
-            `);
-
-
-            });
-            $('#add-requirement').click(function(e) {
-                e.preventDefault(); // Ngăn chặn việc gửi form nếu button nằm trong form
-
-                // Thêm một input mới vào container
-                $('#requirements-container').append(`
-                <input type="text" class="form-control mb-2" name="goals[]" placeholder="Ví dụ: Một mục yêu cầu cần thiết cho khoá học" required>
-            `);
-
-            });
-            $('#add-audience').click(function(e) {
-                e.preventDefault(); // Ngăn chặn việc gửi form nếu button nằm trong form
-
-                // Thêm một input mới vào container
-                $('#audiences-container').append(`
-                <input type="text" class="form-control mb-2" name="goals[]" placeholder="Ví dụ: Một đối tượng mới khi tham gia vào khoá học" required>
-            `);
-
-            });
-
-        });
-    </script>
-    <!-- dropzone js -->
+    
     <script src="{{ asset('theme/admin/assets/libs/dropzone/dropzone-min.js') }}"></script>
     <!-- project-create init -->
     <script src="{{ asset('theme/admin/assets/js/pages/project-create.init.js') }}"></script>

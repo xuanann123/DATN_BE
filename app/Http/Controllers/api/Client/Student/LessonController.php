@@ -158,7 +158,10 @@ class LessonController extends Controller
     }
     public function checkQuiz(Request $request)
     {
+
         try {
+
+
             $userId = $request->user_id;
             $id_course = $request->course_id;
             $userCourse = UserCourse::where('id_user', $userId)
@@ -176,16 +179,20 @@ class LessonController extends Controller
             $userId = $request->user_id;
             $quizId = $request->quiz_id;
             $answers = $request->answers;
+            //Số câu trả lời đúng
             $correctAnswersCount = 0;
+            //Tổng số lượng câu hỏi
             $totalQuestions = Question::where('id_quiz', $quizId)->count();
             $resultDetails = []; // Mảng để lưu chi tiết kết quả từng câu hỏi
 
             foreach ($answers as $answer) {
+                //Câu hỏi nào
                 $questionId = $answer['question_id'];
+                //Mảng câu trả lời của user
                 $selectedOptions = $answer['selected_options'];
                 $question = Question::find($questionId);
 
-                // Lấy đáp án đúng của câu hỏi
+                // Lấy đáp án đúng của câu hỏi [1, 2] => is_correct
                 $correctOptions = Option::where('id_question', $questionId)
                     ->where('is_correct', 1)
                     ->pluck('id')
@@ -193,7 +200,12 @@ class LessonController extends Controller
 
                 // Lưu câu trả lời vào bảng user_answers
                 foreach ($selectedOptions as $optionId) {
-                    UserAnswer::create([
+                    UserAnswer::updateOrCreate([
+                        'user_id' => $userId,
+                        'quiz_id' => $quizId,
+                        'question_id' => $questionId,  // Thêm điều kiện này
+                        'option_id' => $optionId
+                    ], [
                         'user_id' => $userId,
                         'quiz_id' => $quizId,
                         'question_id' => $questionId,
@@ -227,25 +239,19 @@ class LessonController extends Controller
                     'is_correct' => $isCorrect,
                 ];
             }
-
             $percentageScore = ($totalQuestions > 0)
                 ? ($correctAnswersCount / $totalQuestions) * 100
                 : 0;
-
             $data = [
                 'user_id' => $userId,
                 'quiz_id' => $quizId,
                 'total_score' => $percentageScore,
-                'details' => $resultDetails // Chi tiết từng câu hỏi
+                'result_details' => $resultDetails
             ];
+            $quizProgress = QuizProgress::where('user_id', $request->user_id)
+                ->where('quiz_id', $request->quiz_id)
+                ->first();
 
-            if ($percentageScore == 100) {
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Bạn đã hoàn thành bài tập',
-                    'data' => $data
-                ], 200);
-            }
 
             return response()->json([
                 'status' => 'error',
@@ -283,14 +289,13 @@ class LessonController extends Controller
                     'data' => []
                 ], 403);
             }
-
             // Xác định loại bài học
             $data = [
                 'user_id' => $user->id,
                 'quiz_id' => $quiz->id,
                 'is_completed' => $request->is_completed,
+                'score' => $request->score,
             ];
-
             // Cập nhật hoặc tạo mới tiến độ bài học
             $quizProgress = QuizProgress::updateOrCreate(
                 //Check điều kiện này đã tồn tại rồi thì đi update => còn không thì đi cập nhật
@@ -300,7 +305,6 @@ class LessonController extends Controller
                 ],
                 $data
             );
-
             // response cho client
             return response()->json([
                 'status' => 'success',
@@ -318,53 +322,50 @@ class LessonController extends Controller
         }
     }
 
-    // public function getQuizResult(Request $request)
-    // {
-    //     try {
-    //         $userId = $request->user_id; // ID của người dùng
-    //         $quizId = $request->quiz_id; // ID của quiz
+    public function getQuizResult(Request $request, string $userId, string $quizId)
+    {
+        try {
 
-    //         // Truy vấn các câu trả lời của người dùng từ bảng user_answers
-    //         $userAnswers = UserAnswer::where('user_id', $userId)
-    //             ->where('quiz_id', $quizId)
-    //             ->with(['question', 'option']) // Lấy thông tin câu hỏi và đáp án
-    //             ->get();
 
-    //         // Kiểm tra nếu không có câu trả lời nào trong quiz
-    //         if ($userAnswers->isEmpty()) {
-    //             return response()->json([
-    //                 'status' => 'error',
-    //                 'message' => 'Không có kết quả cho bài quiz này.',
-    //                 'data' => []
-    //             ], 404);
-    //         }
+            // Truy vấn các câu trả lời của người dùng từ bảng user_answers
+            $userAnswers = UserAnswer::where('user_id', $userId)
+                ->where('quiz_id', $quizId)
+                ->with(['question', 'option']) // Lấy thông tin câu hỏi và đáp án
+                ->get();
 
-    //         // Chuẩn bị dữ liệu kết quả
-    //         $result = [];
-    //         foreach ($userAnswers as $answer) {
-    //             $result[] = [
-    //                 'question' => $answer->question->content, // Nội dung câu hỏi
-    //                 'selected_option' => $answer->option->content, // Nội dung đáp án người dùng chọn
-    //                 'is_correct' => $answer->option->is_correct, // Kiểm tra đáp án đúng
-    //             ];
-    //         }
+            // Kiểm tra nếu không có câu trả lời nào trong quiz
+            if ($userAnswers->isEmpty()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không có kết quả cho bài quiz này.',
+                    'data' => []
+                ], 404);
+            }
 
-    //         return response()->json([
-    //             'status' => 'success',
-    //             'message' => 'Kết quả bài quiz',
-    //             'data' => [
-    //                 'user_id' => $userId,
-    //                 'quiz_id' => $quizId,
-    //                 'answers' => $result, // Chi tiết câu trả lời
-    //             ]
-    //         ], 200);
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => $e->getMessage(),
-    //             'data' => []
-    //         ]);
-    //     }
-    // }
+            // Chuẩn bị dữ liệu kết quả
+            $result = [];
+            foreach ($userAnswers as $answer) {
+                $result[] = [
+                    'question_id' => $answer->question->id, // ID cấu hỏi
+                    'selected_option_id' => $answer->option->id, // ID đáp án người dùng chọn
+                ];
+            }
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Kết quả bài quiz',
+                'data' => [
+                    'user_id' => $userId,
+                    'quiz_id' => $quizId,
+                    'answers' => $result, // Chi tiết câu trả lời
+                ]
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'data' => []
+            ]);
+        }
+    }
 
 }
