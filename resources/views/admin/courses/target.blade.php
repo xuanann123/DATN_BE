@@ -185,7 +185,7 @@
                         </div>
                         <ul class="nav nav-pills progress-bar-tab custom-nav" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link rounded-pill done" data-progressbar="custom-progress-bar"
+                                <button class="nav-link rounded-pill done disabled" data-progressbar="custom-progress-bar"
                                     id="pills-gen-info-tab" data-bs-toggle="pill" data-bs-target="#pills-gen-info"
                                     type="button" role="tab" aria-controls="pills-gen-info"
                                     aria-selected="true">1</button>
@@ -206,8 +206,7 @@
                     </div>
 
                     <div class="tab-content">
-                        <div class="tab-pane fade " id="pills-gen-info" role="tabpanel"
-                            aria-labelledby="pills-gen-info-tab">
+                        <div class="tab-pane fade" id="pills-gen-info" role="tabpanel" aria-labelledby="pills-gen-info-tab">
                             <div>
                                 <div class="mb-4">
                                     <div>
@@ -477,20 +476,56 @@
                                                     quả học tập mà học viên có thể mong đợi sau khi hoàn thành khoá học.</p>
                                             </div>
                                             <div id="goals-container">
-                                                <input type="text" class="form-control mb-2 rounded" name="goals[]"
-                                                    id="inputField"
-                                                    placeholder="Ví dụ: Sẽ làm được một project với Laravel" required>
-                                                <input type="text" class="form-control mb-2" name="goals[]"
-                                                    id="inputField"
-                                                    placeholder="Ví dụ: Quản lý cơ sở dữ liệu với DatabaseMySQL" required>
-                                                <input type="text" class="form-control mb-2" name="goals[]"
-                                                    id="inputField"
-                                                    placeholder="Ví dụ: Hiểu và làm việc được với Laravel Realtime"
-                                                    required>
-                                                <input type="text" class="form-control mb-2" name="goals[]"
-                                                    id="inputField"
-                                                    placeholder="Ví dụ: Sử dụng với Laravel một cách master" required>
-
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control rounded" name="goals[]"
+                                                        id="inputField"
+                                                        placeholder="Ví dụ: Sẽ làm được một project với Laravel" required>
+                                                    <button type="button" class="btn btn-danger remove-goal">
+                                                        Xoá
+                                                    </button>
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control rounded" name="goals[]"
+                                                        id="inputField"
+                                                        placeholder="Ví dụ: Quản lý cơ sở dữ liệu với DatabaseMySQL"
+                                                        required>
+                                                    <button type="button" class="btn btn-danger remove-goal">
+                                                        Xoá
+                                                    </button>
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control rounded" name="goals[]"
+                                                        id="inputField"
+                                                        placeholder="Ví dụ: Hiểu và làm việc được với Laravel Realtime"
+                                                        required>
+                                                    <button type="button" class="btn btn-danger remove-goal">
+                                                        Xoá
+                                                    </button>
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control rounded" name="goals[]"
+                                                        id="inputField"
+                                                        placeholder="Ví dụ: Sử dụng với Laravel một cách master" required>
+                                                    <button type="button" class="btn btn-danger remove-goal">
+                                                        Xoá
+                                                    </button>
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control rounded" name="goals[]"
+                                                        id="inputField"
+                                                        placeholder="Ví dụ: Sử dụng với Laravel một cách master" required>
+                                                    <button type="button" class="btn btn-danger remove-goal">
+                                                        Xoá
+                                                    </button>
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control rounded" name="goals[]"
+                                                        id="inputField"
+                                                        placeholder="Ví dụ: Sử dụng với Laravel một cách master" required>
+                                                    <button type="button" class="btn btn-danger remove-goal">
+                                                        Xoá
+                                                    </button>
+                                                </div>
                                             </div>
                                             <button id="add-goal" class="inline-flex items-center btn btn-primary"><svg
                                                     stroke="currentColor" fill="currentColor" stroke-width="0"
@@ -514,9 +549,24 @@
                                                     bị mà học viên bắt buộc phải có trước khi tham gia khóa học.</p>
                                             </div>
                                             <div id="requirements-container">
-                                                <input type="text" class="form-control mb-2 rounded"
-                                                    name="requirements[]" id="inputField"
-                                                    placeholder="Ví dụ: Sẽ làm được một project với Laravel" required>
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control rounded"
+                                                        name="requirements[]" id="inputField"
+                                                        placeholder="Ví dụ: Sẽ làm được một project với Laravel" required>
+                                                    <button type="button" class="btn btn-danger remove-goal">
+                                                        Xoá
+                                                    </button>
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control rounded"
+                                                        name="requirements[]" id="inputField"
+                                                        placeholder="Ví dụ: Sẽ làm được một dự án thực tế" required>
+                                                    <button type="button" class="btn btn-danger remove-goal">
+                                                        Xoá
+                                                    </button>
+                                                </div>
+
                                             </div>
                                             <button id="add-requirement"
                                                 class="inline-flex items-center btn btn-primary"><svg
@@ -541,9 +591,22 @@
                                                 </p>
                                             </div>
                                             <div id="audiences-container">
-                                                <input type="text" class="form-control mb-2 rounded"
-                                                    name="audiences[]" id="inputField"
-                                                    placeholder="Ví dụ: Sẽ làm được một project với Laravel" required>
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control rounded" name="audiences[]"
+                                                        id="inputField"
+                                                        placeholder="Ví dụ: Dành cho sinh viên cao đẳng FPT" required>
+                                                    <button type="button" class="btn btn-danger remove-goal">
+                                                        Xoá
+                                                    </button>
+                                                </div>
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control rounded" name="audiences[]"
+                                                        id="inputField"
+                                                        placeholder="Ví dụ: Dành cho sinh viên cao đẳng FPT" required>
+                                                    <button type="button" class="btn btn-danger remove-goal">
+                                                        Xoá
+                                                    </button>
+                                                </div>
                                             </div>
                                             <button id="add-audience" class="inline-flex items-center btn btn-primary"
                                                 type="button"><svg stroke="currentColor" fill="currentColor"
@@ -556,26 +619,16 @@
                                                     bạn</span></button>
                                         </div>
                                     </div>
-
                                 </div>
-
                                 <div class="d-flex align-items-center gap-3 mt-4">
-                                    <button type="button" class="btn btn-link text-decoration-none btn-label previestab"
-                                        data-previous="pills-gen-info-tab"><i
-                                            class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> Quay lại
-                                        tổng quan</button>
+
                                     <button type="submit" class="btn btn-success btn-label right ms-auto nexttab nexttab"
                                         data-nexttab="pills-success-tab"><i
-                                            class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Thêm nội
-                                        dung bài học</button>
+                                            class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Cập nhật</button>
                                 </div>
                             </div>
                         </form>
-
-
-
-
-                        <div class="tab-pane fade " id="pills-success" role="tabpanel"
+                        <div class="tab-pane fade disabled" id="pills-success" role="tabpanel"
                             aria-labelledby="pills-success-tab">
                             <div>
                                 <div class="text-center">
@@ -621,8 +674,53 @@
     <script src="{{ asset('theme/admin/assets/js/pages/select2.init.js') }}"></script>
     <!-- ckeditor -->
     <script src="{{ asset('theme/admin/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js') }}"></script>
-
     <script>
+        $(document).ready(function() {
+            $('#add-goal').click(function(e) {
+                e.preventDefault(); // Ngăn chặn việc gửi form nếu button nằm trong form
+
+                // Kiểm tra số lượng ô input trong #goals-container
+                let inputCount = $('#goals-container input[name="goals[]"]').length;
+
+                // Thêm một input mới vào #goals-container
+                $('#goals-container').append(`
+                     <div class="input-group mb-2">
+                         <input type="text" class="form-control" name="goals[]" placeholder="Ví dụ: Một mục tiêu mới cho khoá học">
+                          <button class="btn btn-danger remove-goal" type="button">Xoá</button>
+                  </div>
+                `);
+
+                // Kiểm tra lại số lượng ô input sau khi thêm
+                inputCount++;
+
+                // Hiện/ẩn nút xóa cho tất cả các ô input
+                if (inputCount > 4) {
+                    $('#goals-container .remove-goal').show(); // Hiện nút xóa nếu nhiều hơn 4
+                } else {
+                    $('#goals-container .remove-goal').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
+                }
+            });
+
+            // Sự kiện xóa input khi nhấn vào nút xóa
+            $('#goals-container').on('click', '.remove-goal', function() {
+                $(this).closest('.input-group').remove(); // Xóa ô input và nút xóa
+
+                // Kiểm tra lại số lượng ô input sau khi xóa
+                let inputCount = $('#goals-container input[name="goals[]"]').length;
+
+                // Hiện/ẩn nút xóa cho tất cả các ô input
+                if (inputCount > 4) {
+                    $('#goals-container .remove-goal').show(); // Hiện nút xóa nếu nhiều hơn 4
+                } else {
+                    $('#goals-container .remove-goal').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
+                }
+            });
+
+
+            
+        });
+    </script>
+    {{-- <script>
         $(document).ready(function() {
             $('#add-goal').click(function(e) {
                 e.preventDefault(); // Ngăn chặn việc gửi form nếu button nằm trong form
@@ -683,7 +781,7 @@
             });
 
         });
-    </script>
+    </script> --}}
 
 
     <!-- dropzone js -->

@@ -472,18 +472,18 @@
                                                 quả học tập mà học viên có thể mong đợi sau khi hoàn thành khoá học.</p>
                                         </div>
                                         <div id="goals-container">
-                                            <input type="text" class="form-control mb-2 rounded" name="goals[]"
-                                                id="inputField" placeholder="Ví dụ: Sẽ làm được một project với Laravel"
-                                                required>
-                                            <input type="text" class="form-control mb-2" name="goals[]"
-                                                id="inputField"
-                                                placeholder="Ví dụ: Quản lý cơ sở dữ liệu với DatabaseMySQL" required>
-                                            <input type="text" class="form-control mb-2" name="goals[]"
-                                                id="inputField"
-                                                placeholder="Ví dụ: Hiểu và làm việc được với Laravel Realtime" required>
-                                            <input type="text" class="form-control mb-2" name="goals[]"
-                                                id="inputField" placeholder="Ví dụ: Sử dụng với Laravel một cách master"
-                                                required>
+                                            @foreach ($course->goals as $goal)
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control rounded" name="goals[]"
+                                                        id="inputField"
+                                                        placeholder="Ví dụ: Sẽ làm được một project với Laravel"
+                                                        value="{{ $goal->goal }}" required>
+                                                    <button type="button" class="btn btn-danger remove-goal">
+                                                        Xoá
+                                                    </button>
+                                                </div>
+                                            @endforeach
+
 
                                         </div>
                                         <button id="add-goal" class="inline-flex items-center btn btn-primary"><svg
@@ -499,7 +499,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="row">
+                                {{-- <div class="row">
                                     <div class="mb-3">
                                         <div class="title mb-3">
                                             <h5>Yêu cầu hoặc điều kiện tiên quyết để tham gia khóa học của bạn là gì?
@@ -508,9 +508,18 @@
                                                 bị mà học viên bắt buộc phải có trước khi tham gia khóa học.</p>
                                         </div>
                                         <div id="requirements-container">
-                                            <input type="text" class="form-control mb-2 rounded" name="requirements[]"
-                                                id="inputField" placeholder="Ví dụ: Sẽ làm được một project với Laravel"
-                                                required>
+                                            @foreach ($course->requirements as $requirement)
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control rounded" name="goals[]"
+                                                        id="inputField"
+                                                        placeholder="Ví dụ: Sẽ làm được một project với Laravel"
+                                                        value="{{ $requirement->requirement }}" required>
+                                                    <button type="button" class="btn btn-danger  remove-goal">
+                                                        Xoá
+                                                    </button>
+                                                </div>
+                                            @endforeach
+
                                         </div>
                                         <button id="add-requirement" class="inline-flex items-center btn btn-primary"><svg
                                                 stroke="currentColor" fill="currentColor" stroke-width="0"
@@ -534,9 +543,18 @@
                                             </p>
                                         </div>
                                         <div id="audiences-container">
-                                            <input type="text" class="form-control mb-2 rounded" name="audiences[]"
-                                                id="inputField" placeholder="Ví dụ: Sẽ làm được một project với Laravel"
-                                                required>
+                                            @foreach ($course->audiences as $audience)
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control rounded" name="goals[]"
+                                                        id="inputField"
+                                                        placeholder="Ví dụ: Sẽ làm được một project với Laravel"
+                                                        value="{{ $audience->audience }}" required>
+                                                    <button type="button" class="btn btn-danger  remove-goal">
+                                                        Xoá
+                                                    </button>
+                                                </div>
+                                            @endforeach
+
                                         </div>
                                         <button id="add-audience" class="inline-flex items-center btn btn-primary"
                                             type="button"><svg stroke="currentColor" fill="currentColor"
@@ -548,7 +566,7 @@
                                             </svg><span class="ps-1">Thêm đối tượng tham gia vào khoá học của
                                                 bạn</span></button>
                                     </div>
-                                </div>
+                                </div> --}}
 
                             </div>
 
@@ -610,8 +628,50 @@
     <script src="{{ asset('theme/admin/assets/js/pages/select2.init.js') }}"></script>
     <!-- ckeditor -->
     <script src="{{ asset('theme/admin/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js') }}"></script>
-
     <script>
+        $(document).ready(function() {
+            $('#add-goal').click(function(e) {
+                e.preventDefault(); // Ngăn chặn việc gửi form nếu button nằm trong form
+
+                // Kiểm tra số lượng ô input trong #goals-container
+                let inputCount = $('#goals-container input[name="goals[]"]').length;
+
+                // Thêm một input mới vào #goals-container
+                $('#goals-container').append(`
+                     <div class="input-group mb-2">
+                         <input type="text" class="form-control" name="goals[]" placeholder="Ví dụ: Một mục tiêu mới cho khoá học">
+                          <button class="btn btn-danger remove-goal" type="button">Xoá</button>
+                  </div>
+                `);
+
+                // Kiểm tra lại số lượng ô input sau khi thêm
+                inputCount++;
+
+                // Hiện/ẩn nút xóa cho tất cả các ô input
+                if (inputCount > 4) {
+                    $('#goals-container .remove-goal').show(); // Hiện nút xóa nếu nhiều hơn 4
+                } else {
+                    $('#goals-container .remove-goal').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
+                }
+            });
+
+            // Sự kiện xóa input khi nhấn vào nút xóa
+            $('#goals-container').on('click', '.remove-goal', function() {
+                $(this).closest('.input-group').remove(); // Xóa ô input và nút xóa
+
+                // Kiểm tra lại số lượng ô input sau khi xóa
+                let inputCount = $('#goals-container input[name="goals[]"]').length;
+
+                // Hiện/ẩn nút xóa cho tất cả các ô input
+                if (inputCount > 4) {
+                    $('#goals-container .remove-goal').show(); // Hiện nút xóa nếu nhiều hơn 4
+                } else {
+                    $('#goals-container .remove-goal').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
+                }
+            });
+        });
+    </script>
+    {{-- <script>
         $(document).ready(function() {
             $('#add-goal').click(function(e) {
                 e.preventDefault(); // Ngăn chặn việc gửi form nếu button nằm trong form
@@ -626,12 +686,12 @@
                     <input type="text" class="form-control" name="goals[]" placeholder="Ví dụ: Một mục tiêu mới cho khoá học">
                     <button class="btn btn-danger remove-goal" type="button">Xóa</button>
                 </div>
-            `);
+                  `);
                 } else {
                     // Thêm input mới không có nút xóa nếu chưa đến 4 ô input
                     $('#goals-container').append(`
                 <input type="text" class="form-control mb-2" name="goals[]" placeholder="Ví dụ: Một mục tiêu mới cho khoá học">
-            `);
+                 `);
                 }
             });
             // Sự kiện xóa input khi nhấn vào nút xóa
@@ -640,17 +700,16 @@
             });
 
 
-
             $('#add-requirement').click(function(e) {
                 e.preventDefault();
 
                 // Thêm một input mới với nút xóa vào #requirements-container
                 $('#requirements-container').append(`
-            <div class="input-group mb-2">
+                <div class="input-group mb-2">
                 <input type="text" class="form-control" name="goals[]" placeholder="Ví dụ: Một mục yêu cầu cần thiết cho khoá học">
                 <button class="btn btn-danger remove-goal" type="button">Xóa</button>
-            </div>
-        `);
+                </div>
+               `);
             });
 
             // Xử lý sự kiện khi nhấn nút "Thêm đối tượng"
@@ -672,7 +731,7 @@
             });
 
         });
-    </script>
+    </script> --}}
 
 
     <!-- dropzone js -->

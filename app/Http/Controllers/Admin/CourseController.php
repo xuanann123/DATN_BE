@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Admin\Courses\CreateCourseRequest;
+use App\Http\Requests\Admin\Courses\StoreTargerRequest;
 use App\Http\Requests\Admin\Courses\UpdateCourseRequest;
 use App\Models\Goal;
 use App\Models\Module;
@@ -177,8 +178,9 @@ class CourseController extends Controller
     //Đi lưu trữ dữ liệu mục tiêu
 
     //updateTarget
-    public function storeTargetCourse(Request $request, $id)
+    public function storeTargetCourse(StoreTargerRequest $request, $id)
     {
+        // dd($request->all());
         // Lấy khoá học đó ra
         $course = Course::findOrFail($id);
 
@@ -187,26 +189,39 @@ class CourseController extends Controller
             return redirect()->route('admin.courses.list')->with(['error' => 'Không có quyền truy cập khoá học này!']);
         }
 
-        // Cấu trúc dữ liệu để xử lý chung cho cả goals, requirements, và audiences
-        $targets = [
-            'goals' => ['data' => $request->goals ?? [], 'relation' => 'goals', 'column' => 'goal'],
-            'requirements' => ['data' => $request->requirements ?? [], 'relation' => 'requirements', 'column' => 'requirement'],
-            'audiences' => ['data' => $request->audiences ?? [], 'relation' => 'audiences', 'column' => 'audience']
-        ];
+        // Dữ liệu đầu vào
+        $goals = $request->goals ?? [];
+        $requirements = $request->requirements ?? [];
+        $audiences = $request->audiences ?? [];
 
         try {
             DB::beginTransaction();
- 
-            // Lặp qua các mục tiêu và thêm vào bảng tương ứng
-            foreach ($targets as $target) {
-                if (!empty($target['data'])) {
-                    $dataArray = array_map(fn($text) => [$target['column'] => $text], $target['data']);
-                    $course->{$target['relation']}()->createMany($dataArray);
-                }
+            // Lặp qua các mục tiêu và thêm hoặc cập nhật vào bảng tương ứng
+            // Thêm từng mục tiêu vào bảng `goals`
+            // Xử lý thêm mới hoặc cập nhật cho bảng `goals`
+            foreach ($goals as $goalText) {
+                $course->goals()->updateOrCreate(
+                    ['goal' => $goalText],  // Điều kiện tìm kiếm (cột 'goal' phải có giá trị 'goalText')
+                    ['goal' => $goalText]   // Dữ liệu cần thêm mới hoặc cập nhật
+                );
             }
-
+            // Xử lý thêm mới hoặc cập nhật cho bảng `requirements`
+            foreach ($requirements as $requirementText) {
+                $course->requirements()->updateOrCreate(
+                    ['requirement' => $requirementText],  // Điều kiện tìm kiếm
+                    ['requirement' => $requirementText]   // Dữ liệu cần thêm mới hoặc cập nhật
+                );
+            }
+            // Xử lý thêm mới hoặc cập nhật cho bảng `audiences`
+            foreach ($audiences as $audienceText) {
+                $course->audiences()->updateOrCreate(
+                    ['audience' => $audienceText],  // Điều kiện tìm kiếm
+                    ['audience' => $audienceText]   // Dữ liệu cần thêm mới hoặc cập nhật
+                );
+            }
             DB::commit();
-            return redirect()->back();
+
+            return redirect()->route('admin.courses.edit', $id)->with(['success' => 'Cập nhật mục tiêu thành công!']);
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->withErrors(['error' => 'Đã có lỗi xảy ra']);
@@ -245,17 +260,27 @@ class CourseController extends Controller
 
     public function edit(string $id)
     {
+
+
         //Kiểm tra quyền xem người đó sở hữu 
         if (auth()->id() !== Course::find($id)->id_user) {
             return redirect()->route('admin.courses.list')->with(['error' => 'Bạn không có quyền truy cập khoá học này!']);
         }
         //level modeule course 
+
+
         $levels = Course::LEVEL_ARRAY;
+
+
         $title = "Chỉnh sửa khóa học";
         $categories = Category::whereNull('parent_id')->with('children')->get();
         $options = $this->getCategoryOptions($categories);
+        //Dữ liệu của khoá học lấy luôn dữ liệu đang có của khoá học đó 
         $course = Course::find($id);
+   
+        
         $tags = Tag::all();
+
         return view('admin.courses.edit', compact('title', 'course', 'options', 'tags', 'levels'));
     }
 
@@ -267,7 +292,6 @@ class CourseController extends Controller
         if (auth()->id() !== $course->id_user) {
             return redirect()->route('admin.courses.list')->with(['error' => 'Bạn không có quyền sửa khoá học này!']);
         }
-
 
         $data = $request->except('thumbnail');
 

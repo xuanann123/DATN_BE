@@ -153,6 +153,15 @@
                     </div>
 
                 </li>
+
+                
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#sidebarTags" data-bs-toggle="collapse" role="button"
+                        aria-expanded="false" aria-controls="sidebarTags">
+                        <i class="bx bx-purchase-tag"></i> <span>Thẻ đính kèm</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarTags">
+
             </ul>
         </div>
         </li>
@@ -267,6 +276,7 @@
             <div class="collapse menu-dropdown mega-dropdown-menu" id="sidebarStudent">
                 <div class="row">
                     <div class="col-lg-4">
+
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
                                 <a href="{{ route('admin.users.list') }}" class="nav-link" data-key="t-badges">Danh
