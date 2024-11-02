@@ -160,8 +160,6 @@ class LessonController extends Controller
     {
 
         try {
-
-
             $userId = $request->user_id;
             $id_course = $request->course_id;
             $userCourse = UserCourse::where('id_user', $userId)
@@ -182,6 +180,7 @@ class LessonController extends Controller
             //Số câu trả lời đúng
             $correctAnswersCount = 0;
             //Tổng số lượng câu hỏi
+            $quizProgress = QuizProgress::where('user_id', $userId)->where('quiz_id', $quizId)->exists();
             $totalQuestions = Question::where('id_quiz', $quizId)->count();
             $resultDetails = []; // Mảng để lưu chi tiết kết quả từng câu hỏi
 
@@ -199,19 +198,22 @@ class LessonController extends Controller
                     ->toArray();
 
                 // Lưu câu trả lời vào bảng user_answers
-                foreach ($selectedOptions as $optionId) {
-                    UserAnswer::updateOrCreate([
-                        'user_id' => $userId,
-                        'quiz_id' => $quizId,
-                        'question_id' => $questionId,  // Thêm điều kiện này
-                        'option_id' => $optionId
-                    ], [
-                        'user_id' => $userId,
-                        'quiz_id' => $quizId,
-                        'question_id' => $questionId,
-                        'option_id' => $optionId,
-                    ]);
+                if ($quizProgress) {
+                    foreach ($selectedOptions as $optionId) {
+                        UserAnswer::updateOrCreate([
+                            'user_id' => $userId,
+                            'quiz_id' => $quizId,
+                            'question_id' => $questionId,  // Thêm điều kiện này
+                            'option_id' => $optionId
+                        ], [
+                            'user_id' => $userId,
+                            'quiz_id' => $quizId,
+                            'question_id' => $questionId,
+                            'option_id' => $optionId,
+                        ]);
+                    }
                 }
+
 
                 $isCorrect = false; // Biến để lưu trạng thái đúng/sai của câu trả lời
                 if ($question->type == 'one_choice') {

@@ -346,16 +346,14 @@
                                             <div class=" input-group">
                                                 <input type="number" class="form-control" id="price" name="price"
                                                     placeholder="Giá khoá học" value="{{ old('price', 0) }}">
-                                                <span class="input-group-text">
-                                                    <img width="20px" height="auto"
-                                                        src="{{ asset('theme/admin/assets/images/coin.jpg') }}"
-                                                        alt="">
+                                                <span class="input-group-text bg-primary">
+                                                    <i class=" ri-bit-coin-fill text-warning "></i>
                                                 </span>
                                             </div>
                                             <small class="help-block form-text text-danger">
-                                                  @if ($errors->has('price'))
-                                                        {{ $errors->first('price', 0) }}
-                                                    @endif
+                                                @if ($errors->has('price'))
+                                                    {{ $errors->first('price', 0) }}
+                                                @endif
                                             </small>
                                         </div>
                                         <div class="col-lg-3 mb-3">
@@ -364,18 +362,16 @@
                                                     name="price_sale" placeholder="Giá khuyến mái khoá học"
                                                     value="{{ old('price_sale') }}"
                                                     aria-label="Amount (to the nearest dollar)">
-                                                <span class="input-group-text">
-                                                    <img width="20px" height="auto"
-                                                        src="{{ asset('theme/admin/assets/images/coin.jpg') }}"
-                                                        alt="">
+                                                <span class="input-group-text bg-primary">
+                                                    <i class=" ri-bit-coin-fill text-warning " ></i>
                                                 </span>
-                                                
+
                                             </div>
                                             <small class="help-block form-text text-danger">
-                                                    @if ($errors->has('price_sale'))
-                                                        {{ $errors->first('price_sale', 0) }}
-                                                    @endif
-                                                </small>
+                                                @if ($errors->has('price_sale'))
+                                                    {{ $errors->first('price_sale', 0) }}
+                                                @endif
+                                            </small>
                                         </div>
 
                                     </div>
