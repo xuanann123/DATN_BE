@@ -147,6 +147,18 @@
             -webkit-box-shadow: var(--circle-checked-shadow);
             box-shadow: var(--circle-checked-shadow);
         }
+
+        #goals-container .input-group button {
+            display: none;
+        }
+
+        #requirements-container .input-group button {
+            display: none;
+        }
+
+        #audiences-container .input-group button {
+            display: none;
+        }
     </style>
 @endsection
 @section('content')
@@ -180,7 +192,7 @@
                     </div>
                     <div id="custom-progress-bar" class="progress-nav mb-4">
                         <div class="progress" style="height: 1px;">
-                            <div class="progress-bar" role="progressbar" style="width: 50%;" aria-valuenow="0"
+                            <div class="progress-bar" role="progressbar" style="width: 100%;" aria-valuenow="0"
                                 aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                         <ul class="nav nav-pills progress-bar-tab custom-nav" role="tablist">
@@ -191,13 +203,13 @@
                                     aria-selected="true">1</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link rounded-pill active" data-progressbar="custom-progress-bar"
+                                <button class="nav-link rounded-pill done" data-progressbar="custom-progress-bar"
                                     id="pills-info-desc-tab" data-bs-toggle="pill" data-bs-target="#pills-info-desc"
                                     type="button" role="tab" aria-controls="pills-info-desc"
                                     aria-selected="false">2</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link rounded-pill" data-progressbar="custom-progress-bar"
+                                <button class="nav-link rounded-pill active" data-progressbar="custom-progress-bar"
                                     id="pills-success-tab" data-bs-toggle="pill" data-bs-target="#pills-success"
                                     type="button" role="tab" aria-controls="pills-success"
                                     aria-selected="false">3</button>
@@ -206,6 +218,7 @@
                     </div>
 
                     <div class="tab-content">
+                        
                         <div class="tab-pane fade " id="pills-gen-info" role="tabpanel"
                             aria-labelledby="pills-gen-info-tab">
                             <div>
@@ -451,7 +464,8 @@
 
                             </div>
                         </div>
-                        <div class="tab-pane fade show active" id="pills-info-desc" role="tabpanel"
+
+                        <div class="tab-pane fade " id="pills-info-desc" role="tabpanel"
                             aria-labelledby="pills-info-desc-tab">
                             <div>
                                 {{-- Mục tiêu required và hướng đến người dùng nào --}}
@@ -499,7 +513,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                {{-- <div class="row">
+                                <div class="row">
                                     <div class="mb-3">
                                         <div class="title mb-3">
                                             <h5>Yêu cầu hoặc điều kiện tiên quyết để tham gia khóa học của bạn là gì?
@@ -510,11 +524,11 @@
                                         <div id="requirements-container">
                                             @foreach ($course->requirements as $requirement)
                                                 <div class="input-group mb-2">
-                                                    <input type="text" class="form-control rounded" name="goals[]"
-                                                        id="inputField"
+                                                    <input type="text" class="form-control rounded"
+                                                        name="requirements[]" id="inputField"
                                                         placeholder="Ví dụ: Sẽ làm được một project với Laravel"
                                                         value="{{ $requirement->requirement }}" required>
-                                                    <button type="button" class="btn btn-danger  remove-goal">
+                                                    <button type="button" class="btn btn-danger  remove-requirement">
                                                         Xoá
                                                     </button>
                                                 </div>
@@ -545,11 +559,11 @@
                                         <div id="audiences-container">
                                             @foreach ($course->audiences as $audience)
                                                 <div class="input-group mb-2">
-                                                    <input type="text" class="form-control rounded" name="goals[]"
+                                                    <input type="text" class="form-control rounded" name="audiences[]"
                                                         id="inputField"
                                                         placeholder="Ví dụ: Sẽ làm được một project với Laravel"
                                                         value="{{ $audience->audience }}" required>
-                                                    <button type="button" class="btn btn-danger  remove-goal">
+                                                    <button type="button" class="btn btn-danger  remove-audience">
                                                         Xoá
                                                     </button>
                                                 </div>
@@ -566,23 +580,21 @@
                                             </svg><span class="ps-1">Thêm đối tượng tham gia vào khoá học của
                                                 bạn</span></button>
                                     </div>
-                                </div> --}}
+                                </div>
 
                             </div>
 
 
                             <div class="d-flex align-items-center gap-3 mt-4">
-                                <button type="button" class="btn btn-link text-decoration-none btn-label previestab"
-                                    data-previous="pills-gen-info-tab"><i
-                                        class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> Quay lại
-                                    tổng quan</button>
+
                                 <button type="submit" class="btn btn-success btn-label right ms-auto nexttab nexttab"
                                     data-nexttab="pills-success-tab"><i
-                                        class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Thêm nội
-                                    dung bài học</button>
+                                        class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Cập nhật mục
+                                    tiêu</button>
                             </div>
                         </div>
-                        <div class="tab-pane fade " id="pills-success" role="tabpanel"
+
+                        <div class="tab-pane fade  show active" id="pills-success" role="tabpanel"
                             aria-labelledby="pills-success-tab">
                             <div>
                                 <div class="text-center">
@@ -593,9 +605,20 @@
                                             style="width:120px;height:120px"></lord-icon>
                                     </div>
                                     <h5>Hoàn Thành Tốt !</h5>
-                                    <p class="text-muted">Bạn có thể thêm các chương học, bài học và bài tập của khoá
-                                        học này: <a style="cursor: pointer"
-                                            href="{{ route('admin.courses.detail', $course->id) }}">Khoá học</a></p>
+                                    <p class="fs-15 ">Bạn có thể thêm các chương học, bài học và bài tập của khoá
+                                        học: <a style="cursor: pointer"
+                                            href="{{ route('admin.courses.detail', $course->id) }}"><b>{{ $course->name }}</b>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="size-6"
+                                                style="width: 20px">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                            </svg>
+
+                                        </a>
+                                    </p>
+
+
                                 </div>
                             </div>
                         </div>
@@ -618,18 +641,30 @@
     <!-- end row -->
 @endsection
 @section('script-libs')
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-
-    <script src="{{ asset('theme/admin/assets/js/pages/form-wizard.init.js') }}"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    <script src="{{ asset('theme/admin/assets/js/pages/select2.init.js') }}"></script>
-    <!-- ckeditor -->
-    <script src="{{ asset('theme/admin/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js') }}"></script>
     <script>
         $(document).ready(function() {
+
+            var inputCountGoal = $('#goals-container input[name="goals[]"]').length;
+            var inputCountRequirement = $('#requirements-container input[name="requirements[]"]').length;
+            var inputAudience = $('#audiences-container input[name="audiences[]"]').length;
+
+
+            if (inputCountGoal > 4) {
+                $('#goals-container .remove-goal').show(); // Hiện nút xóa nếu nhiều hơn 4
+            } else {
+                $('#goals-container .remove-goal').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
+            }
+            if (inputCountRequirement > 1) {
+                $('#requirements-container .remove-requirement').show(); // Hiện nút xóa nếu nhiều hơn 4
+            } else {
+                $('#requirements-container .remove-requirement').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
+            }
+            if (inputAudience > 1) {
+                $('#audiences-container .remove-audience').show(); // Hiện nút xóa nếu nhiều hơn 4
+            } else {
+                $('#audiences-container .remove-audience').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
+            }
+
             $('#add-goal').click(function(e) {
                 e.preventDefault(); // Ngăn chặn việc gửi form nếu button nằm trong form
 
@@ -669,69 +704,100 @@
                     $('#goals-container .remove-goal').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
                 }
             });
-        });
-    </script>
-    {{-- <script>
-        $(document).ready(function() {
-            $('#add-goal').click(function(e) {
+
+            $('#add-requirement').click(function(e) {
                 e.preventDefault(); // Ngăn chặn việc gửi form nếu button nằm trong form
 
                 // Kiểm tra số lượng ô input trong #goals-container
-                let inputCount = $('#goals-container input[name="goals[]"]').length;
+                let inputCount = $('#requirements-container input[name="requirements[]"]').length;
 
-                // Thêm một input mới kèm nút xóa nếu số lượng ô input > 4
-                if (inputCount >= 4) {
-                    $('#goals-container').append(`
-                <div class="input-group mb-2">
-                    <input type="text" class="form-control" name="goals[]" placeholder="Ví dụ: Một mục tiêu mới cho khoá học">
-                    <button class="btn btn-danger remove-goal" type="button">Xóa</button>
-                </div>
-                  `);
+                // Thêm một input mới vào #goals-container
+                $('#requirements-container').append(`
+                     <div class="input-group mb-2">
+                         <input type="text" class="form-control" name="requirements[]" placeholder="Ví dụ: Một mục tiêu mới cho khoá học">
+                          <button class="btn btn-danger remove-requirement" type="button">Xoá</button>
+                  </div>
+                `);
+
+                // Kiểm tra lại số lượng ô input sau khi thêm
+                inputCount++;
+
+                // Hiện/ẩn nút xóa cho tất cả các ô input
+                if (inputCount > 1) {
+                    $('#requirements-container .remove-requirement').show(); // Hiện nút xóa nếu nhiều hơn 4
                 } else {
-                    // Thêm input mới không có nút xóa nếu chưa đến 4 ô input
-                    $('#goals-container').append(`
-                <input type="text" class="form-control mb-2" name="goals[]" placeholder="Ví dụ: Một mục tiêu mới cho khoá học">
-                 `);
+                    $('#requirements-container .remove-requirement').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
                 }
             });
+
             // Sự kiện xóa input khi nhấn vào nút xóa
-            $('#goals-container').on('click', '.remove-goal', function() {
-                $(this).parent('.input-group').remove();
+            $('#requirements-container').on('click', '.remove-requirement', function() {
+                $(this).closest('.input-group').remove(); // Xóa ô input và nút xóa
+
+                // Kiểm tra lại số lượng ô input sau khi xóa
+                let inputCount = $('#requirements-container input[name="requirements[]"]').length;
+
+                // Hiện/ẩn nút xóa cho tất cả các ô input
+                if (inputCount > 4) {
+                    $('#requirements-container .remove-requirement').show(); // Hiện nút xóa nếu nhiều hơn 4
+                } else {
+                    $('#requirements-container .remove-requirement').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
+                }
             });
 
-
-            $('#add-requirement').click(function(e) {
-                e.preventDefault();
-
-                // Thêm một input mới với nút xóa vào #requirements-container
-                $('#requirements-container').append(`
-                <div class="input-group mb-2">
-                <input type="text" class="form-control" name="goals[]" placeholder="Ví dụ: Một mục yêu cầu cần thiết cho khoá học">
-                <button class="btn btn-danger remove-goal" type="button">Xóa</button>
-                </div>
-               `);
-            });
-
-            // Xử lý sự kiện khi nhấn nút "Thêm đối tượng"
             $('#add-audience').click(function(e) {
-                e.preventDefault();
+                e.preventDefault(); // Ngăn chặn việc gửi form nếu button nằm trong form
 
-                // Thêm một input mới với nút xóa vào #audiences-container
+                // Kiểm tra số lượng ô input trong #goals-container
+                let inputCount = $('#audiences-container input[name="audiences[]"]').length;
+
+                // Thêm một input mới vào #goals-container
                 $('#audiences-container').append(`
-            <div class="input-group mb-2">
-                <input type="text" class="form-control" name="goals[]" placeholder="Ví dụ: Một đối tượng mới khi tham gia vào khoá học">
-                <button class="btn btn-danger remove-goal" type="button">Xóa</button>
-            </div>
-        `);
+                     <div class="input-group mb-2">
+                         <input type="text" class="form-control" name="audiences[]" placeholder="Ví dụ: Một mục tiêu mới cho khoá học">
+                          <button class="btn btn-danger remove-audience" type="button">Xoá</button>
+                  </div>
+                `);
+
+                // Kiểm tra lại số lượng ô input sau khi thêm
+                inputCount++;
+
+                // Hiện/ẩn nút xóa cho tất cả các ô input
+                if (inputCount > 1) {
+                    $('#audiences-container .remove-audience').show(); // Hiện nút xóa nếu nhiều hơn 4
+                } else {
+                    $('#audiences-container .remove-audience').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
+                }
             });
 
-            // Sự kiện xóa input khi nhấn vào nút xóa trong cả hai container
-            $('#requirements-container, #audiences-container').on('click', '.remove-goal', function() {
-                $(this).parent('.input-group').remove();
-            });
+            // Sự kiện xóa input khi nhấn vào nút xóa
+            $('#audiences-container').on('click', '.remove-audience', function() {
+                $(this).closest('.input-group').remove(); // Xóa ô input và nút xóa
 
+                // Kiểm tra lại số lượng ô input sau khi xóa
+                let inputCount = $('#audiences-container input[name="audiences[]"]').length;
+
+                // Hiện/ẩn nút xóa cho tất cả các ô input
+                if (inputCount > 1) {
+                    $('#audiences-container .remove-audience').show(); // Hiện nút xóa nếu nhiều hơn 4
+                } else {
+                    $('#audiences-container .remove-audience').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
+                }
+            });
         });
-    </script> --}}
+    </script>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <script src="{{ asset('theme/admin/assets/js/pages/form-wizard.init.js') }}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script src="{{ asset('theme/admin/assets/js/pages/select2.init.js') }}"></script>
+    <!-- ckeditor -->
+    <script src="{{ asset('theme/admin/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js') }}"></script>
 
 
     <!-- dropzone js -->

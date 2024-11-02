@@ -41,7 +41,6 @@ class CreateCourseRequest extends FormRequest
             'slug.max' => 'Đường dẫn thân thiện không được vượt quá :max ký tự.',
 
             'description.min' => 'Mô tả khóa học phải có ít nhất :min ký tự.',
-            'description.max' => 'Mô tả khóa học không được vượt quá :max ký tự.',
 
             'sort_description.min' => 'Mô tả ngắn phải có ít nhất :min ký tự.',
             'sort_description.max' => 'Mô tả ngắn không được vượt quá :max ký tự.',

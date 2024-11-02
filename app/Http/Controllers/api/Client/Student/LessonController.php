@@ -325,8 +325,6 @@ class LessonController extends Controller
     public function getQuizResult(Request $request, string $userId, string $quizId)
     {
         try {
-
-
             // Truy vấn các câu trả lời của người dùng từ bảng user_answers
             $userAnswers = UserAnswer::where('user_id', $userId)
                 ->where('quiz_id', $quizId)
@@ -342,21 +340,27 @@ class LessonController extends Controller
                 ], 404);
             }
 
+            // Nhóm các câu trả lời cùng question_id lại với nhau
+            $groupedAnswers = $userAnswers->groupBy('question_id');
+
             // Chuẩn bị dữ liệu kết quả
             $result = [];
-            foreach ($userAnswers as $answer) {
+            foreach ($groupedAnswers as $questionId => $answers) {
+                $selectedOptions = $answers->pluck('option.id')->all(); // Lấy tất cả option_id cho question_id này
+
                 $result[] = [
-                    'question_id' => $answer->question->id, // ID cấu hỏi
-                    'selected_option_id' => $answer->option->id, // ID đáp án người dùng chọn
+                    'question_id' => $questionId,
+                    'selected_option_id' => $selectedOptions // Mảng các selected_option_id
                 ];
             }
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Kết quả bài quiz',
                 'data' => [
                     'user_id' => $userId,
                     'quiz_id' => $quizId,
-                    'answers' => $result, // Chi tiết câu trả lời
+                    'answers' => $result, // Chi tiết câu trả lời đã nhóm
                 ]
             ], 200);
         } catch (\Exception $e) {

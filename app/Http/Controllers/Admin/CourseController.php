@@ -146,7 +146,7 @@ class CourseController extends Controller
             // }
             // $newCourse->tags()->sync($tagIds);
             DB::commit();
-            return redirect()->route('admin.courses.new', $newCourse->id)->with(['success' => 'Thêm mới khoá học thành công!']);
+            return redirect()->route('admin.courses.new', $newCourse->id)->with(['success' => 'Thêm mới tổng quan khoá học thành công!']);
         } catch (\Throwable $th) {
             if (Storage::disk('public')->exists($data['thumbnail'])) {
                 Storage::disk('public')->delete($data['thumbnail']);
@@ -165,14 +165,9 @@ class CourseController extends Controller
         if (auth()->id() !== Course::find($id)->id_user) {
             return redirect()->route('admin.courses.list')->with(['error' => 'Bạn không có quyền truy cập khoá học này!']);
         }
-        //level modeule course 
-        $levels = Course::LEVEL_ARRAY;
         $title = "Cập nhật mục tiêu cho khoá học";
-        $categories = Category::whereNull('parent_id')->with('children')->get();
-        $options = $this->getCategoryOptions($categories);
         $course = Course::find($id);
-        $tags = Tag::all();
-        return view('admin.courses.target', compact('title', 'course', 'options', 'tags', 'levels'));
+        return view('admin.courses.target', compact('title','course'));
     }
 
     //Đi lưu trữ dữ liệu mục tiêu
@@ -220,8 +215,7 @@ class CourseController extends Controller
                 );
             }
             DB::commit();
-
-            return redirect()->route('admin.courses.edit', $id)->with(['success' => 'Cập nhật mục tiêu thành công!']);
+            return redirect()->route('admin.courses.edit', $id)->with(['success' => 'Cập nhật mục tiêu khoá học thành công!']);
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->withErrors(['error' => 'Đã có lỗi xảy ra']);
@@ -260,8 +254,6 @@ class CourseController extends Controller
 
     public function edit(string $id)
     {
-
-
         //Kiểm tra quyền xem người đó sở hữu 
         if (auth()->id() !== Course::find($id)->id_user) {
             return redirect()->route('admin.courses.list')->with(['error' => 'Bạn không có quyền truy cập khoá học này!']);
@@ -276,9 +268,8 @@ class CourseController extends Controller
         $categories = Category::whereNull('parent_id')->with('children')->get();
         $options = $this->getCategoryOptions($categories);
         //Dữ liệu của khoá học lấy luôn dữ liệu đang có của khoá học đó 
-        $course = Course::find($id);
-   
-        
+        $course = Course::with('goals', 'requirements', 'audiences')->findOrFail($id);
+
         $tags = Tag::all();
 
         return view('admin.courses.edit', compact('title', 'course', 'options', 'tags', 'levels'));
