@@ -119,8 +119,8 @@
                             <div class="d-flex flex-column mb-2">
                                 <div class="mb-2">
                                     <img src="{{ Storage::url($course->thumbnail) }}"
-                                        style="height: 150px!important; overflow: hidden !important" alt=""
-                                        class="w-100 px-1">
+                                        style="height: 150px!important; object-fit: cover; overflow: hidden !important"
+                                        alt="" class="w-100 px-1">
                                 </div>
                                 <div>
                                     <h5 class="mb-1 fs-15"><a href="{{ route('admin.courses.detail', $course->id) }}"
