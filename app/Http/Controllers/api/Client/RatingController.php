@@ -77,10 +77,14 @@ class RatingController extends Controller
             ->where('id_course', $courseId)
             ->first();
 
-        if ($checkProgressCourse->progress_percent == 100 && $checkProgressCourse->completed_at) {
+        $checkRating = Rating::where('id_user', $userId)
+            ->where('id_course', $courseId)
+            ->first();
+
+        if ($checkProgressCourse->progress_percent == 100 && $checkProgressCourse->completed_at && !$checkRating) {
             return response()->json([
                 'status' => 'success',
-                'message' => 'Đã hoàn thành khóa học',
+                'message' => 'Cho phép đánh giá',
                 'data' => [
                     'rating' => 'allow'
                 ]
@@ -89,55 +93,9 @@ class RatingController extends Controller
 
         return response()->json([
             'status' => 'error',
-            'message' => 'Chưa hoàn thành khóa học',
+            'message' => 'Không cho phép đánh giá',
             'data' => [
                 'rating' => 'block'
-            ]
-        ], 200);
-    }
-
-    public function checkRated(Request $request)
-    {
-        $userId = $request->id_user;
-        $courseId = $request->id_course;
-
-        $user = User::find($userId);
-        if (!$user) {
-            return response()->json([
-                'code' => 204,
-                'status' => 'error',
-                'message' => 'Người dùng không tồn tại'
-            ]);
-        }
-
-        $course = Course::find($courseId);
-        if (!$course) {
-            return response()->json([
-                'code' => 204,
-                'status' => 'error',
-                'message' => 'Khóa học không tồn tại'
-            ]);
-        }
-
-        $checkRating = Rating::where('id_user', $userId)
-            ->where('id_course', $courseId)
-            ->first();
-
-        if ($checkRating) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Đã đánh giá',
-                'data' => [
-                    'rated' => 'block'
-                ]
-            ], 200);
-        }
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Chưa đánh giá',
-            'data' => [
-                'rated' => 'allow'
             ]
         ], 200);
     }

@@ -7,6 +7,7 @@ use App\Models\Bill;
 use App\Models\PurchaseWallet;
 use App\Models\Transaction;
 use App\Models\WithdrawalWallet;
+use App\Models\WithdrawMoney;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -184,5 +185,56 @@ class TransactionController extends Controller
             ->paginate(10);
 
         return view('admin.transactions.history_withdraw', compact('title', 'historyWithdraw'));
+    }
+
+    public function withdrawMoneys(Request $request)
+    {
+        $title = "Yêu cầu rút tiền";
+
+        if ($request->keyword) {
+            $key = $request->keyword;
+            $withdrawMoneys = WithdrawMoney::select(
+                'withdraw_money.id',
+                'withdraw_money.coin',
+                'withdraw_money.amount',
+                'withdraw_money.bank_name',
+                'withdraw_money.account_number',
+                'withdraw_money.account_holder',
+                'withdraw_money.status',
+                'withdraw_money.note',
+                'users.name'
+            )
+                ->join('users', 'users.id', '=', 'withdraw_money.id_user')
+                ->where(function ($query) use ($key) {
+                    $query->where('users.name', 'LIKE', "%$key%")
+                        ->orWhere('withdraw_money.id', 'LIKE', "%$key%")
+                        ->orWhere('withdraw_money.bank_name', 'LIKE', "%$key%")
+                        ->orWhere('withdraw_money.account_number', 'LIKE', "%$key%")
+                        ->orWhere('withdraw_money.account_holder', 'LIKE', "%$key%")
+                        ->orWhere('withdraw_money.status', 'LIKE', "%$key%")
+                        ->orWhere('withdraw_money.created_at', 'LIKE', "%$key%");
+                })
+                ->orderbyDesc('withdraw_money.created_at')
+                ->paginate(10);
+
+            return view('admin.transactions.withdraw_money', compact('title', 'withdrawMoneys'));
+        }
+
+        $withdrawMoneys = WithdrawMoney::select(
+            'withdraw_money.id',
+            'withdraw_money.coin',
+            'withdraw_money.amount',
+            'withdraw_money.bank_name',
+            'withdraw_money.account_number',
+            'withdraw_money.account_holder',
+            'withdraw_money.status',
+            'withdraw_money.note',
+            'users.name'
+        )
+            ->join('users', 'users.id', '=', 'withdraw_money.id_user')
+            ->orderbyDesc('withdraw_money.created_at')
+            ->paginate(10);
+
+        return view('admin.transactions.withdraw_money', compact('title', 'withdrawMoneys'));
     }
 }
