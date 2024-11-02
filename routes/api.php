@@ -79,7 +79,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/apply-coupon/{id_user}/{voucher_code}', [VoucherController::class, 'applyCoupon']);
     });
 
-
     # ===================== ROUTE FOR COURSE ===========================
 
     Route::prefix('courses')->group(function () {
