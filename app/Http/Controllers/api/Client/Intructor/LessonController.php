@@ -104,7 +104,7 @@ class LessonController extends Controller
     public function changeLessonType(ChangeTypeLessonRequest $request, Lesson $lesson)
     {
         DB::beginTransaction();
-
+        //Có hai kiểu dữ liệu doc & video
         try {
             // NGười dùng đang đăng nhập
             $user = auth()->user();
@@ -117,15 +117,16 @@ class LessonController extends Controller
                     'data' => []
                 ], 403);
             }
-
+            //Kiểu dữ liệu mới
             $newType = $request->new_type;
+            //Vẫn lấy title cũ
             $newTitle = $request->title;
 
+            //Kiểm tra định dạng video
             if ($newType === 'video') {
-
                 $document = $lesson->lessonable;
                 if ($lesson->lessonable_type === Document::class) {
-                    // xoa bai hoc doc
+                    // Xoá bài học đó từ trước
                     $document->delete();
                 }
 
@@ -158,9 +159,11 @@ class LessonController extends Controller
                     'title' => $newTitle,
                     'content_type' => 'video',
                     'lessonable_type' => Video::class,
+                    'description' => $request->input('description'),
                     'lessonable_id' => $newVideo->id
                 ]);
             } elseif ($newType === 'document') {
+                //Nếu type == document
                 $video = $lesson->lessonable;
                 if ($lesson->lessonable_type === Video::class) {
                     // Xoa video cu
@@ -169,7 +172,6 @@ class LessonController extends Controller
                     }
                     $video->delete();
                 }
-
                 // Tạo nội dung tài liệu
                 $documentData = [
                     'content' => $request->input('content'),
@@ -180,6 +182,7 @@ class LessonController extends Controller
                 // Cập nhật bài học
                 $lesson->update([
                     'title' => $newTitle,
+                    'description' => $request->input('description'),
                     'content_type' => 'document',
                     'lessonable_type' => Document::class,
                     'lessonable_id' => $newDocument->id
