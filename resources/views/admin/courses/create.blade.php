@@ -342,37 +342,40 @@
                                         <div class="mt-3">
                                             <h5>Giá khoá học</h5>
                                         </div>
-                                        <div class="col-lg-3">
-                                            <div class="mb-3 input-group">
+                                        <div class="col-lg-3 mb-3">
+                                            <div class=" input-group">
                                                 <input type="number" class="form-control" id="price" name="price"
-                                                    placeholder="Giá khoá học" value="{{ old('price') }}">
-                                                    <span class="input-group-text">
-                                                    <img width="20px" height="auto" src="{{ asset('theme/admin/assets/images/coin.jpg') }}" alt="">
+                                                    placeholder="Giá khoá học" value="{{ old('price', 0) }}">
+                                                <span class="input-group-text">
+                                                    <img width="20px" height="auto"
+                                                        src="{{ asset('theme/admin/assets/images/coin.jpg') }}"
+                                                        alt="">
                                                 </span>
-                                                <small class="help-block form-text text-danger">
-                                                    @if ($errors->has('price'))
-                                                        {{ $errors->first('price') }}
-                                                    @endif
-                                                </small>
-
                                             </div>
+                                            <small class="help-block form-text text-danger">
+                                                  @if ($errors->has('price'))
+                                                        {{ $errors->first('price', 0) }}
+                                                    @endif
+                                            </small>
                                         </div>
-                                        <div class="col-lg-3 ">
-                                            <div class="mb-3 input-group">
+                                        <div class="col-lg-3 mb-3">
+                                            <div class=" input-group">
                                                 <input type="number" class="form-control" id="price_sale"
                                                     name="price_sale" placeholder="Giá khuyến mái khoá học"
                                                     value="{{ old('price_sale') }}"
                                                     aria-label="Amount (to the nearest dollar)">
                                                 <span class="input-group-text">
-                                                    <img width="20px" height="auto" src="{{ asset('theme/admin/assets/images/coin.jpg') }}" alt="">
+                                                    <img width="20px" height="auto"
+                                                        src="{{ asset('theme/admin/assets/images/coin.jpg') }}"
+                                                        alt="">
                                                 </span>
-                                                <small class="help-block form-text text-danger">
+                                                
+                                            </div>
+                                            <small class="help-block form-text text-danger">
                                                     @if ($errors->has('price_sale'))
-                                                        {{ $errors->first('price_sale') }}
+                                                        {{ $errors->first('price_sale', 0) }}
                                                     @endif
                                                 </small>
-
-                                            </div>
                                         </div>
 
                                     </div>
@@ -407,7 +410,7 @@
                                         </div>
                                         <div class="col-lg-5">
                                             {{-- 1 hình ảnh đại diện bo góc hình ảnh --}}
-                                            
+
                                             <img src="{{ asset('theme/admin/assets/images/img1.jpg') }}"
                                                 class="img-fluid rounded" id="show-video" alt="">
                                         </div>
@@ -421,8 +424,8 @@
                                                 hiện
                                                 tốt.
                                             </p>
-                                            <input class="form-control" id="trailer" name="trailer" type="file" value="{{ old('trailer') }}"
-                                                accept="video/*">
+                                            <input class="form-control" id="trailer" name="trailer" type="file"
+                                                value="{{ old('trailer') }}" accept="video/*">
                                             <small class="help-block form-text text-danger">
                                                 @if ($errors->has('trailer'))
                                                     {{ $errors->first('trailer') }}
@@ -624,7 +627,7 @@
     <!-- ckeditor -->
     <script src="{{ asset('theme/admin/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
+
     <script src="{{ asset('theme/admin/assets/libs/dropzone/dropzone-min.js') }}"></script>
     <!-- project-create init -->
     <script src="{{ asset('theme/admin/assets/js/pages/project-create.init.js') }}"></script>

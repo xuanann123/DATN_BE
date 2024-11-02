@@ -147,6 +147,17 @@
             -webkit-box-shadow: var(--circle-checked-shadow);
             box-shadow: var(--circle-checked-shadow);
         }
+
+
+        #goals-container .input-group button {
+            display: none;
+        }
+        #requirements-container .input-group button {
+            display: none;
+        }
+        #audiences-container .input-group button {
+            display: none;
+        }
     </style>
 @endsection
 @section('content')
@@ -206,7 +217,9 @@
                     </div>
 
                     <div class="tab-content">
-                        <div class="tab-pane fade" id="pills-gen-info" role="tabpanel" aria-labelledby="pills-gen-info-tab">
+                        {{-- 
+                        
+                         <div class="tab-pane fade" id="pills-gen-info" role="tabpanel" aria-labelledby="pills-gen-info-tab">
                             <div>
                                 <div class="mb-4">
                                     <div>
@@ -217,7 +230,7 @@
                                 <div class="row">
                                     <div class="mb-3 col-lg-12">
 
-                                        <input type="text" class="form-control" id="name" {{-- Nếu đã có thông tin thì sẽ lấy và đã chỉnh sửa thì giữ nguyên giá trị cũ --}}
+                                        <input type="text" class="form-control" id="name" 
                                             value="{{ old('name', $course->name) }}" name="name"
                                             placeholder="Tên khóa học">
                                         <small class="help-block form-text text-danger">
@@ -383,11 +396,11 @@
                                     <h5>Hình ảnh khoá học</h5>
                                 </div>
                                 <div class="col-lg-5">
-                                    {{-- {{ $urlImage = Storage::url($course->thumbnail) }} --}}
+                                 
                                     @php
                                         $urlImage = Storage::url($course->thumbnail);
                                     @endphp
-                                    {{-- 1 hình ảnh đại diện bo góc hình ảnh --}}
+                                
                                     @if ($urlImage)
                                         <img src="{{ $urlImage }}" class="img-fluid rounded" id="show-image"
                                             alt="">
@@ -418,8 +431,7 @@
                                     <h5>Video quảng cáo</h5>
                                 </div>
                                 <div class="col-lg-5">
-                                    {{-- 1 hình ảnh đại diện bo góc hình ảnh --}}
-                                    {{-- Cũng check như trên nếu có video hiển thị video còn không thì ảnh như dưới --}}
+                             
                                     @php
                                         $urlVideo = Storage::url($course->trailer);
                                     @endphp
@@ -450,6 +462,8 @@
 
                             </div>
                         </div>
+                        --}}
+
 
                         <form action="{{ route('admin.courses.target.store', $course->id) }}" method="post">
                             @csrf
@@ -475,6 +489,7 @@
                                                 <p class="text-muted">Bạn phải nhập ít nhất 4 mục tiêu khoá học hoặc kết
                                                     quả học tập mà học viên có thể mong đợi sau khi hoàn thành khoá học.</p>
                                             </div>
+
                                             <div id="goals-container">
                                                 <div class="input-group mb-2">
                                                     <input type="text" class="form-control rounded" name="goals[]"
@@ -505,28 +520,14 @@
                                                 <div class="input-group mb-2">
                                                     <input type="text" class="form-control rounded" name="goals[]"
                                                         id="inputField"
-                                                        placeholder="Ví dụ: Sử dụng với Laravel một cách master" required>
-                                                    <button type="button" class="btn btn-danger remove-goal">
-                                                        Xoá
-                                                    </button>
-                                                </div>
-                                                <div class="input-group mb-2">
-                                                    <input type="text" class="form-control rounded" name="goals[]"
-                                                        id="inputField"
-                                                        placeholder="Ví dụ: Sử dụng với Laravel một cách master" required>
-                                                    <button type="button" class="btn btn-danger remove-goal">
-                                                        Xoá
-                                                    </button>
-                                                </div>
-                                                <div class="input-group mb-2">
-                                                    <input type="text" class="form-control rounded" name="goals[]"
-                                                        id="inputField"
-                                                        placeholder="Ví dụ: Sử dụng với Laravel một cách master" required>
+                                                        placeholder="Ví dụ: Hiểu và làm việc được với Laravel Realtime"
+                                                        required>
                                                     <button type="button" class="btn btn-danger remove-goal">
                                                         Xoá
                                                     </button>
                                                 </div>
                                             </div>
+
                                             <button id="add-goal" class="inline-flex items-center btn btn-primary"><svg
                                                     stroke="currentColor" fill="currentColor" stroke-width="0"
                                                     viewBox="0 0 448 512" height="13px" width="13px"
@@ -549,20 +550,12 @@
                                                     bị mà học viên bắt buộc phải có trước khi tham gia khóa học.</p>
                                             </div>
                                             <div id="requirements-container">
-
                                                 <div class="input-group mb-2">
                                                     <input type="text" class="form-control rounded"
                                                         name="requirements[]" id="inputField"
                                                         placeholder="Ví dụ: Sẽ làm được một project với Laravel" required>
-                                                    <button type="button" class="btn btn-danger remove-goal">
-                                                        Xoá
-                                                    </button>
-                                                </div>
-                                                <div class="input-group mb-2">
-                                                    <input type="text" class="form-control rounded"
-                                                        name="requirements[]" id="inputField"
-                                                        placeholder="Ví dụ: Sẽ làm được một dự án thực tế" required>
-                                                    <button type="button" class="btn btn-danger remove-goal">
+                                                    {{-- Sự kiện ẩn luôn cho cái required --}}
+                                                    <button type="button" class="btn btn-danger remove-requirement">
                                                         Xoá
                                                     </button>
                                                 </div>
@@ -595,15 +588,7 @@
                                                     <input type="text" class="form-control rounded" name="audiences[]"
                                                         id="inputField"
                                                         placeholder="Ví dụ: Dành cho sinh viên cao đẳng FPT" required>
-                                                    <button type="button" class="btn btn-danger remove-goal">
-                                                        Xoá
-                                                    </button>
-                                                </div>
-                                                <div class="input-group mb-2">
-                                                    <input type="text" class="form-control rounded" name="audiences[]"
-                                                        id="inputField"
-                                                        placeholder="Ví dụ: Dành cho sinh viên cao đẳng FPT" required>
-                                                    <button type="button" class="btn btn-danger remove-goal">
+                                                    <button type="button" class="btn btn-danger remove-audience">
                                                         Xoá
                                                     </button>
                                                 </div>
@@ -624,7 +609,8 @@
 
                                     <button type="submit" class="btn btn-success btn-label right ms-auto nexttab nexttab"
                                         data-nexttab="pills-success-tab"><i
-                                            class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Cập nhật</button>
+                                            class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Cập
+                                        nhật</button>
                                 </div>
                             </div>
                         </form>
@@ -664,18 +650,30 @@
     <!-- end row -->
 @endsection
 @section('script-libs')
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-
-    <script src="{{ asset('theme/admin/assets/js/pages/form-wizard.init.js') }}"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    <script src="{{ asset('theme/admin/assets/js/pages/select2.init.js') }}"></script>
-    <!-- ckeditor -->
-    <script src="{{ asset('theme/admin/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js') }}"></script>
     <script>
         $(document).ready(function() {
+
+            var inputCountGoal = $('#goals-container input[name="goals[]"]').length;
+            var inputCountRequirement = $('#requirements-container input[name="requirements[]"]').length;
+            var inputAudience = $('#audiences-container input[name="audiences[]"]').length;
+
+
+            if (inputCountGoal > 4) {
+                $('#goals-container .remove-goal').show(); // Hiện nút xóa nếu nhiều hơn 4
+            } else {
+                $('#goals-container .remove-goal').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
+            }
+            if (inputCountRequirement > 1) {
+                $('#requirements-container .remove-requirement').show(); // Hiện nút xóa nếu nhiều hơn 4
+            } else {
+                $('#requirements-container .remove-requirement').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
+            }
+            if (inputAudience > 1) {
+                $('#audiences-container .remove-audience').show(); // Hiện nút xóa nếu nhiều hơn 4
+            } else {
+                $('#audiences-container .remove-audience').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
+            }
+
             $('#add-goal').click(function(e) {
                 e.preventDefault(); // Ngăn chặn việc gửi form nếu button nằm trong form
 
@@ -716,81 +714,100 @@
                 }
             });
 
-
-            
-        });
-    </script>
-    {{-- <script>
-        $(document).ready(function() {
-            $('#add-goal').click(function(e) {
+            $('#add-requirement').click(function(e) {
                 e.preventDefault(); // Ngăn chặn việc gửi form nếu button nằm trong form
 
                 // Kiểm tra số lượng ô input trong #goals-container
-                let inputCount = $('#goals-container input[name="goals[]"]').length;
+                let inputCount = $('#requirements-container input[name="requirements[]"]').length;
 
-                // Thêm một input mới kèm nút xóa nếu số lượng ô input > 4
-                if (inputCount >= 4) {
-                    $('#goals-container').append(`
-                <div class="input-group mb-2">
-                    <input type="text" class="form-control" name="goals[]" placeholder="Ví dụ: Một mục tiêu mới cho khoá học">
-                    <button class="btn btn-danger remove-goal" type="button">Xóa</button>
-                </div>
-            `);
+                // Thêm một input mới vào #goals-container
+                $('#requirements-container').append(`
+                     <div class="input-group mb-2">
+                         <input type="text" class="form-control" name="requirements[]" placeholder="Ví dụ: Một mục tiêu mới cho khoá học">
+                          <button class="btn btn-danger remove-requirement" type="button">Xoá</button>
+                  </div>
+                `);
+
+                // Kiểm tra lại số lượng ô input sau khi thêm
+                inputCount++;
+
+                // Hiện/ẩn nút xóa cho tất cả các ô input
+                if (inputCount > 1) {
+                    $('#requirements-container .remove-requirement').show(); // Hiện nút xóa nếu nhiều hơn 4
                 } else {
-                    // Thêm input mới không có nút xóa nếu chưa đến 4 ô input
-                    $('#goals-container').append(`
-                <input type="text" class="form-control mb-2" name="goals[]" placeholder="Ví dụ: Một mục tiêu mới cho khoá học">
-            `);
+                    $('#requirements-container .remove-requirement').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
                 }
             });
+
             // Sự kiện xóa input khi nhấn vào nút xóa
-            $('#goals-container').on('click', '.remove-goal', function() {
-                $(this).parent('.input-group').remove();
+            $('#requirements-container').on('click', '.remove-requirement', function() {
+                $(this).closest('.input-group').remove(); // Xóa ô input và nút xóa
+
+                // Kiểm tra lại số lượng ô input sau khi xóa
+                let inputCount = $('#requirements-container input[name="requirements[]"]').length;
+
+                // Hiện/ẩn nút xóa cho tất cả các ô input
+                if (inputCount > 4) {
+                    $('#requirements-container .remove-requirement').show(); // Hiện nút xóa nếu nhiều hơn 4
+                } else {
+                    $('#requirements-container .remove-requirement').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
+                }
             });
 
-
-
-            $('#add-requirement').click(function(e) {
-                e.preventDefault();
-
-                // Thêm một input mới với nút xóa vào #requirements-container
-                $('#requirements-container').append(`
-            <div class="input-group mb-2">
-                <input type="text" class="form-control" name="goals[]" placeholder="Ví dụ: Một mục yêu cầu cần thiết cho khoá học">
-                <button class="btn btn-danger remove-goal" type="button">Xóa</button>
-            </div>
-        `);
-            });
-
-            // Xử lý sự kiện khi nhấn nút "Thêm đối tượng"
             $('#add-audience').click(function(e) {
-                e.preventDefault();
+                e.preventDefault(); // Ngăn chặn việc gửi form nếu button nằm trong form
 
-                // Thêm một input mới với nút xóa vào #audiences-container
+                // Kiểm tra số lượng ô input trong #goals-container
+                let inputCount = $('#audiences-container input[name="audiences[]"]').length;
+
+                // Thêm một input mới vào #goals-container
                 $('#audiences-container').append(`
-            <div class="input-group mb-2">
-                <input type="text" class="form-control" name="goals[]" placeholder="Ví dụ: Một đối tượng mới khi tham gia vào khoá học">
-                <button class="btn btn-danger remove-goal" type="button">Xóa</button>
-            </div>
-        `);
+                     <div class="input-group mb-2">
+                         <input type="text" class="form-control" name="audiences[]" placeholder="Ví dụ: Một mục tiêu mới cho khoá học">
+                          <button class="btn btn-danger remove-audience" type="button">Xoá</button>
+                  </div>
+                `);
+
+                // Kiểm tra lại số lượng ô input sau khi thêm
+                inputCount++;
+
+                // Hiện/ẩn nút xóa cho tất cả các ô input
+                if (inputCount > 1) {
+                    $('#audiences-container .remove-audience').show(); // Hiện nút xóa nếu nhiều hơn 4
+                } else {
+                    $('#audiences-container .remove-audience').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
+                }
             });
 
-            // Sự kiện xóa input khi nhấn vào nút xóa trong cả hai container
-            $('#requirements-container, #audiences-container').on('click', '.remove-goal', function() {
-                $(this).parent('.input-group').remove();
-            });
+            // Sự kiện xóa input khi nhấn vào nút xóa
+            $('#audiences-container').on('click', '.remove-audience', function() {
+                $(this).closest('.input-group').remove(); // Xóa ô input và nút xóa
 
+                // Kiểm tra lại số lượng ô input sau khi xóa
+                let inputCount = $('#audiences-container input[name="audiences[]"]').length;
+
+                // Hiện/ẩn nút xóa cho tất cả các ô input
+                if (inputCount > 1) {
+                    $('#audiences-container .remove-audience').show(); // Hiện nút xóa nếu nhiều hơn 4
+                } else {
+                    $('#audiences-container .remove-audience').hide(); // Ẩn nút xóa nếu 4 hoặc ít hơn
+                }
+            });
         });
-    </script> --}}
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="{{ asset('theme/admin/assets/js/pages/form-wizard.init.js') }}"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+    <script src="{{ asset('theme/admin/assets/js/pages/select2.init.js') }}"></script>
+    <!-- ckeditor -->
+    <script src="{{ asset('theme/admin/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js') }}"></script>
     <!-- dropzone js -->
     <script src="{{ asset('theme/admin/assets/libs/dropzone/dropzone-min.js') }}"></script>
     <!-- project-create init -->
     <script src="{{ asset('theme/admin/assets/js/pages/project-create.init.js') }}"></script>
-
-
-
     <script>
         document.getElementById('name').addEventListener('input', function() {
             let nameValue = this.value;
