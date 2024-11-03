@@ -158,10 +158,13 @@ class LessonController extends Controller
     }
     public function checkQuiz(Request $request)
     {
-
         try {
             $userId = $request->user_id;
             $id_course = $request->course_id;
+            $quizId = $request->quiz_id;
+            $answers = $request->answers;
+
+            // Verify if the user has purchased the course
             $userCourse = UserCourse::where('id_user', $userId)
                 ->where('id_course', $id_course)
                 ->first();
@@ -174,65 +177,46 @@ class LessonController extends Controller
                 ], 403);
             }
 
-            $userId = $request->user_id;
-            $quizId = $request->quiz_id;
-            $answers = $request->answers;
-            //Số câu trả lời đúng
+            // Initialize counters and storage
             $correctAnswersCount = 0;
-            //Tổng số lượng câu hỏi
-            $quizProgress = QuizProgress::where('user_id', $userId)->where('quiz_id', $quizId)->exists();
             $totalQuestions = Question::where('id_quiz', $quizId)->count();
-            $resultDetails = []; // Mảng để lưu chi tiết kết quả từng câu hỏi
+            $resultDetails = [];
 
+            // Collect all answers' correctness
             foreach ($answers as $answer) {
-                //Câu hỏi nào
                 $questionId = $answer['question_id'];
-                //Mảng câu trả lời của user
                 $selectedOptions = $answer['selected_options'];
                 $question = Question::find($questionId);
 
-                // Lấy đáp án đúng của câu hỏi [1, 2] => is_correct
+                if (!$question) {
+                    throw new \Exception("Câu hỏi với ID {$questionId} không tồn tại.");
+                }
+
+                // Get correct options for the question
                 $correctOptions = Option::where('id_question', $questionId)
                     ->where('is_correct', 1)
                     ->pluck('id')
                     ->toArray();
 
-                // Lưu câu trả lời vào bảng user_answers
-                if ($quizProgress) {
-                    foreach ($selectedOptions as $optionId) {
-                        UserAnswer::updateOrCreate([
-                            'user_id' => $userId,
-                            'quiz_id' => $quizId,
-                            'question_id' => $questionId,  // Thêm điều kiện này
-                            'option_id' => $optionId
-                        ], [
-                            'user_id' => $userId,
-                            'quiz_id' => $quizId,
-                            'question_id' => $questionId,
-                            'option_id' => $optionId,
-                        ]);
-                    }
-                }
-
-
-                $isCorrect = false; // Biến để lưu trạng thái đúng/sai của câu trả lời
+                // Determine if the answer is correct
+                $isCorrect = false;
                 if ($question->type == 'one_choice') {
-                    // Kiểm tra với câu hỏi chọn một đáp án đúng
                     if (count($selectedOptions) == 1 && $selectedOptions[0] == $correctOptions[0]) {
                         $isCorrect = true;
-                        $correctAnswersCount++;
                     }
                 } elseif ($question->type == 'multiple_choice') {
-                    // Kiểm tra với câu hỏi chọn nhiều đáp án đúng
                     sort($selectedOptions);
                     sort($correctOptions);
                     if ($selectedOptions == $correctOptions) {
                         $isCorrect = true;
-                        $correctAnswersCount++;
                     }
                 }
 
-                // Thêm kết quả chi tiết vào mảng kết quả
+                if ($isCorrect) {
+                    $correctAnswersCount++;
+                }
+
+                // Store detailed result
                 $resultDetails[] = [
                     'question_id' => $questionId,
                     'question_content' => $question->question,
@@ -241,32 +225,64 @@ class LessonController extends Controller
                     'is_correct' => $isCorrect,
                 ];
             }
+
+            // Calculate the percentage score
             $percentageScore = ($totalQuestions > 0)
                 ? ($correctAnswersCount / $totalQuestions) * 100
                 : 0;
+
+            // Prepare the response data
             $data = [
                 'user_id' => $userId,
                 'quiz_id' => $quizId,
                 'total_score' => $percentageScore,
                 'result_details' => $resultDetails
             ];
-            $quizProgress = QuizProgress::where('user_id', $request->user_id)
-                ->where('quiz_id', $request->quiz_id)
-                ->first();
 
+            // Check if all answers are correct
+            if ($correctAnswersCount === $totalQuestions) {
+                // Save user answers
+                foreach ($answers as $answer) {
+                    $questionId = $answer['question_id'];
+                    $selectedOptions = $answer['selected_options'];
 
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Vui lòng thực hiện lại bài tập',
-                'data' => $data
-            ], 200);
+                    foreach ($selectedOptions as $optionId) {
+                        UserAnswer::updateOrCreate(
+                            [
+                                'user_id' => $userId,
+                                'quiz_id' => $quizId,
+                                'question_id' => $questionId,
+                                'option_id' => $optionId
+                            ],
+                            [
+                                'user_id' => $userId,
+                                'quiz_id' => $quizId,
+                                'question_id' => $questionId,
+                                'option_id' => $optionId,
+                            ]
+                        );
+                    }
+                }
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Chúc mừng! Bạn đã trả lời đúng tất cả các câu hỏi.',
+                    'data' => $data
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Vui lòng thực hiện lại bài tập.',
+                    'data' => $data
+                ], 200);
+            }
 
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage(),
                 'data' => []
-            ]);
+            ], 500);
         }
     }
 
