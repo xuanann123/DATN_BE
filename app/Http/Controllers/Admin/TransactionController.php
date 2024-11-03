@@ -266,6 +266,7 @@ class TransactionController extends Controller
         ];
         $requestMoney = WithdrawMoney::find($requestId);
         if (!$requestMoney) {
+            session()->flash('error', 'Không tồn tại yêu cầu');
             return response()->json([
                 'status' => 'error',
                 'message' => 'Không có yêu cầu rút tiền'
