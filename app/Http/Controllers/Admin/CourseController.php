@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Admin\Courses\CreateCourseRequest;
+use App\Http\Requests\Admin\Courses\StoreTargerRequest;
 use App\Http\Requests\Admin\Courses\UpdateCourseRequest;
 use App\Models\Goal;
 use App\Models\Module;
@@ -29,7 +30,7 @@ class CourseController extends Controller
         $courses = Course::select('id', 'id_user', 'id_category', 'name', 'sort_description', 'thumbnail', 'created_at', 'updated_at')
             ->with(['user:id,avatar,name', 'userCourses'])
             //Nếu phải là khoá học của thằng user đang đặp nhập sẽ không lấy
-            ->whereNot('id_user', auth()->id())
+            ->where('id_user', auth()->id())
             ->orderByDesc('id')
             ->paginate(12);
 
@@ -39,18 +40,6 @@ class CourseController extends Controller
         return view('admin.courses.index', compact('title', 'courses'));
     }
 
-
-    public function myCourse()
-    {
-        $title = "Danh sách khoá học của tôi";
-        $courses = Course::select('id', 'id_user', 'id_category', 'name', 'sort_description', 'thumbnail', 'created_at', 'updated_at')
-            ->with(['user:id,avatar,name', 'userCourses'])
-            ->where('id_user', auth()->id())
-            ->orderByDesc('id')
-            ->paginate(12);
-
-        return view('admin.courses.my_course', compact('title', 'courses'));
-    }
 
     private function getCategoryOptions($categories, $level = 0)
     {
@@ -79,31 +68,31 @@ class CourseController extends Controller
 
     public function store(CreateCourseRequest $request)
     {
-        $data = $request->except('thumbnail', 'trailer', 'goals', 'requirements', 'audiences');
+        $data = $request->except('thumbnail', 'trailer');
         //Kiểm tra khoá học xem có free không?
         $data['is_free'] = $request->price != 0 ? 0 : 1;
         //Lấy người tạo ra khoá học này?
         $data['id_user'] = auth()->id();
-        //Lấy dữ liệu các mảng liên quan
-        $goals = $request->goals ?? [];
-        //Chuyển hoá dữ liệu 
-        if (!empty($goals)) {
-            $goalsArray = array_map(function ($goalText) {
-                return ['goal' => $goalText]; // Thay 'goal_text' bằng tên cột trong bảng 'goals'
-            }, $goals);
-        }
-        $requirements = $request->requirements ?? [];
-        if (!empty($requirements)) {
-            $requirementsArray = array_map(function ($requirementText) {
-                return ['requirement' => $requirementText]; // Thay 'goal_text' bằng tên cột trong bảng 'goals'
-            }, $requirements);
-        }
-        $audiences = $request->audiences ?? [];
-        if (!empty($audiences)) {
-            $audiencesArray = array_map(function ($audienceText) {
-                return ['audience' => $audienceText]; // Thay 'goal_text' bằng tên cột trong bảng 'goals'
-            }, $audiences);
-        }
+        // //Lấy dữ liệu các mảng liên quan
+        // $goals = $request->goals ?? [];
+        // //Chuyển hoá dữ liệu 
+        // if (!empty($goals)) {
+        //     $goalsArray = array_map(function ($goalText) {
+        //         return ['goal' => $goalText]; // Thay 'goal_text' bằng tên cột trong bảng 'goals'
+        //     }, $goals);
+        // }
+        // $requirements = $request->requirements ?? [];
+        // if (!empty($requirements)) {
+        //     $requirementsArray = array_map(function ($requirementText) {
+        //         return ['requirement' => $requirementText]; // Thay 'goal_text' bằng tên cột trong bảng 'goals'
+        //     }, $requirements);
+        // }
+        // $audiences = $request->audiences ?? [];
+        // if (!empty($audiences)) {
+        //     $audiencesArray = array_map(function ($audienceText) {
+        //         return ['audience' => $audienceText]; // Thay 'goal_text' bằng tên cột trong bảng 'goals'
+        //     }, $audiences);
+        // }
 
         try {
             DB::beginTransaction();
@@ -127,11 +116,11 @@ class CourseController extends Controller
             $newCourse = Course::query()->create($data);
             //Thêm dữ liệu 1-n những mảng liên quan
             // goals
-            $newCourse->goals()->createMany($goalsArray);
-            // requirements
-            $newCourse->requirements()->createMany($requirementsArray);
-            //  audiences
-            $newCourse->audiences()->createMany($audiencesArray);
+            // $newCourse->goals()->createMany($goalsArray);
+            // // requirements
+            // $newCourse->requirements()->createMany($requirementsArray);
+            // //  audiences
+            // $newCourse->audiences()->createMany($audiencesArray);
             //Xử lý tags
             // foreach ($data['tags'] as $tag) {
             //     $tag = trim($tag);
@@ -145,7 +134,7 @@ class CourseController extends Controller
             // }
             // $newCourse->tags()->sync($tagIds);
             DB::commit();
-            return redirect()->route('admin.courses.edit', $newCourse->id)->with(['success' => 'Thêm mới thành công!']);
+            return redirect()->route('admin.courses.new', $newCourse->id)->with(['success' => 'Thêm mới tổng quan khoá học thành công!']);
         } catch (\Throwable $th) {
             if (Storage::disk('public')->exists($data['thumbnail'])) {
                 Storage::disk('public')->delete($data['thumbnail']);
@@ -157,6 +146,81 @@ class CourseController extends Controller
             return redirect()->route('admin.courses.list')->with(['error' => 'Thêm mới không thành công!']);
         }
     }
+    //Cập nhật mục tiêu cho nó tiếp => Ngay sau khi thêm khoá học mới
+    public function addTargetCourse($id)
+    {
+        //Kiểm tra quyền xem người đó sở hữu 
+        if (auth()->id() !== Course::find($id)->id_user) {
+            return redirect()->route('admin.courses.list')->with(['error' => 'Bạn không có quyền truy cập khoá học này!']);
+        }
+        $title = "Cập nhật mục tiêu cho khoá học";
+        $course = Course::find($id);
+        return view('admin.courses.target', compact('title', 'course'));
+    }
+
+    //Đi lưu trữ dữ liệu mục tiêu
+
+    //updateTarget
+    public function storeTargetCourse(StoreTargerRequest $request, $id)
+    {
+        // Lấy khoá học đó ra
+        $course = Course::findOrFail($id);
+
+        // Kiểm tra quyền xem người đó sở hữu
+        if (auth()->id() !== $course->id_user) {
+            return redirect()->route('admin.courses.list')->with(['error' => 'Không có quyền truy cập khoá học này!']);
+        }
+
+        // Dữ liệu đầu vào
+        $goals = $request->goals ?? [];
+        $requirements = $request->requirements ?? [];
+        $audiences = $request->audiences ?? [];
+
+        try {
+            DB::beginTransaction();
+
+            // Xử lý cập nhật cho bảng `goals`
+            $existingGoals = $course->goals()->pluck('goal')->toArray();
+            $goalsToAdd = array_diff($goals, $existingGoals); // Những mục tiêu mới cần thêm
+            $goalsToDelete = array_diff($existingGoals, $goals); // Những mục tiêu cần xoá
+
+            // Xóa các mục tiêu không còn trong mảng goals
+            $course->goals()->whereIn('goal', $goalsToDelete)->delete();
+
+            // Thêm các mục tiêu mới
+            foreach ($goalsToAdd as $goalText) {
+                $course->goals()->create(['goal' => $goalText]);
+            }
+
+            // Tương tự cho bảng `requirements`
+            $existingRequirements = $course->requirements()->pluck('requirement')->toArray();
+            $requirementsToAdd = array_diff($requirements, $existingRequirements);
+            $requirementsToDelete = array_diff($existingRequirements, $requirements);
+
+            $course->requirements()->whereIn('requirement', $requirementsToDelete)->delete();
+            foreach ($requirementsToAdd as $requirementText) {
+                $course->requirements()->create(['requirement' => $requirementText]);
+            }
+
+            // Tương tự cho bảng `audiences`
+            $existingAudiences = $course->audiences()->pluck('audience')->toArray();
+            $audiencesToAdd = array_diff($audiences, $existingAudiences);
+            $audiencesToDelete = array_diff($existingAudiences, $audiences);
+
+            $course->audiences()->whereIn('audience', $audiencesToDelete)->delete();
+            foreach ($audiencesToAdd as $audienceText) {
+                $course->audiences()->create(['audience' => $audienceText]);
+            }
+
+            DB::commit();
+            return redirect()->route('admin.courses.edit', $id)->with(['success' => 'Cập nhật mục tiêu khoá học thành công!']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Đã có lỗi xảy ra']);
+        }
+    }
+
+
 
     public function detail($id)
     {
@@ -184,6 +248,7 @@ class CourseController extends Controller
         return view('admin.courses.detail', compact('title', 'course', 'lecturesCount', 'quizzesCount', 'maxModulePosition'));
     }
 
+
     public function edit(string $id)
     {
         //Kiểm tra quyền xem người đó sở hữu 
@@ -191,91 +256,104 @@ class CourseController extends Controller
             return redirect()->route('admin.courses.list')->with(['error' => 'Bạn không có quyền truy cập khoá học này!']);
         }
         //level modeule course 
+
+
         $levels = Course::LEVEL_ARRAY;
+
+
         $title = "Chỉnh sửa khóa học";
         $categories = Category::whereNull('parent_id')->with('children')->get();
         $options = $this->getCategoryOptions($categories);
-        $course = Course::find($id);
+        //Dữ liệu của khoá học lấy luôn dữ liệu đang có của khoá học đó 
+        $course = Course::with('goals', 'requirements', 'audiences')->findOrFail($id);
+
         $tags = Tag::all();
+
         return view('admin.courses.edit', compact('title', 'course', 'options', 'tags', 'levels'));
     }
 
     public function update(UpdateCourseRequest $request, string $id)
     {
-        $course = Course::find($id);
+        // Lấy khóa học ra
+        $course = Course::findOrFail($id);
 
-        if (!$course) {
-            return redirect()->route('admin.courses.list')->with(['error' => 'Khóa học không tồn tại!']);
+        // Kiểm tra quyền sở hữu
+        if (auth()->id() !== $course->id_user) {
+            return redirect()->route('admin.courses.list')->with(['error' => 'Bạn không có quyền sửa khoá học này!']);
         }
 
-        $data = $request->except('thumbnail');
-
+        // Lấy dữ liệu trừ thumbnail và trailer
+        $data = $request->except('thumbnail', 'trailer');
         $data['is_free'] = $request->price != 0 ? 0 : 1;
 
-        $data['is_active'] = !$request->is_active ? 0 : 1;
+        // Biến lưu đường dẫn ảnh và trailer mới để rollback nếu xảy ra lỗi
+        $newImagePath = null;
+        $newTrailerPath = null;
 
-        if ($request->thumbnail && $request->hasFile('thumbnail')) {
-            $image = $request->file('thumbnail');
-            $newNameImage = 'course_' . time() . '.' . $image->getClientOriginalExtension();
-            $pathImage = Storage::putFileAs('courses', $image, $newNameImage);
+        try {
+            DB::beginTransaction();
 
-            $data['thumbnail'] = $pathImage;
-            if ($course->thumbnail) {
-                $fileExists = Storage::disk('public')->exists($course->thumbnail);
-                if ($fileExists) {
-                    Storage::disk('public')->delete($course->thumbnail);
-                }
-            }
-        } else {
-            $data['thumbnail'] = $course->thumbnail;
-        }
+            // Xử lý ảnh thumbnail nếu có upload
+            if ($request->hasFile('thumbnail')) {
+                $image = $request->file('thumbnail');
+                $newImageName = 'course_' . time() . '.' . $image->getClientOriginalExtension();
+                $newImagePath = Storage::putFileAs('courses', $image, $newImageName);
+                $oldImagePath = $course->thumbnail;
 
-        if ($request->trailer && $request->hasFile('trailer')) {
-            $trailer = $request->file('trailer');
-            $newNameTrailer = 'course_' . time() . '.' . $trailer->getClientOriginalExtension();
-            $pathTrailer = Storage::putFileAs('videos/trailers', $trailer, $newNameTrailer);
-
-            $data['trailer'] = $pathTrailer;
-
-            if ($course->trailer) {
-                $fileExists = Storage::disk('public')->exists($course->trailer);
-                if ($fileExists) {
-                    Storage::disk('public')->delete($course->trailer);
-                }
-            }
-        } else {
-            $data['trailer'] = $course->trailer;
-        }
-
-        // tags
-        // xoa tags
-        if (empty($data['tags'])) {
-            $data['tags'] = '';
-            $course->tags()->sync([]);
-        }
-
-        // update tags
-        if (isset($data['tags']) && is_array($data['tags'])) {
-            foreach ($data['tags'] as $tag) {
-                $tag = trim($tag);
-                if (!empty($tag)) {
-                    $tag = Tag::firstOrCreate([
-                        'name' => $tag,
-                        'slug' => Str::slug($tag),
-                    ]);
-                    $tagIds[] = $tag->id;
+                // Chỉ cập nhật vào `$data` nếu upload thành công
+                if ($newImagePath) {
+                    $data['thumbnail'] = $newImagePath;
+                } else {
+                    throw new \Exception('Không thể upload ảnh mới');
                 }
             }
 
-            $course->tags()->sync($tagIds);
-        }
+            // Xử lý trailer nếu có upload
+            if ($request->hasFile('trailer')) {
+                $trailer = $request->file('trailer');
+                $newTrailerName = 'course_' . time() . '.' . $trailer->getClientOriginalExtension();
+                $newTrailerPath = Storage::putFileAs('videos/trailers', $trailer, $newTrailerName);
+                $oldTrailerPath = $course->trailer;
 
-        if ($course->update($data)) {
-            return redirect()->back()->with(['success' => 'Cập nhật thành công!']);
-        }
+                // Chỉ cập nhật vào `$data` nếu upload thành công
+                if ($newTrailerPath) {
+                    $data['trailer'] = $newTrailerPath;
+                } else {
+                    throw new \Exception('Không thể upload trailer mới');
+                }
+            }
+            // dd($data);
+            
 
-        return redirect()->route('admin.courses.list')->with(['error' => 'Cập nhật thất bại!']);
+            // Cập nhật dữ liệu khóa học
+            $course->update($data);
+
+            // Xóa ảnh và trailer cũ sau khi mọi thứ thành công
+            if ($request->hasFile('thumbnail') && $oldImagePath) {
+                Storage::disk('public')->delete($oldImagePath);
+            }
+            if ($request->hasFile('trailer') && $oldTrailerPath) {
+                Storage::disk('public')->delete($oldTrailerPath);
+            }
+    
+
+            DB::commit();
+            return redirect()->back()->with(['success' => 'Cập nhật tổng quan khoá học thành công!']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            // Xóa ảnh hoặc trailer mới upload nếu có lỗi
+            if ($newImagePath) {
+                Storage::disk('public')->delete($newImagePath);
+            }
+            if ($newTrailerPath) {
+                Storage::disk('public')->delete($newTrailerPath);
+            }
+
+            return redirect()->route('admin.courses.list')->with(['error' => 'Cập nhật tổng quan khoá học thất bại!']);
+        }
     }
+
 
     public function delete(string $id)
     {
@@ -302,7 +380,7 @@ class CourseController extends Controller
         }
         $course->delete();
 
-        return back()->with(['message' => 'Xóa thành công!']);
+        return back()->with(['success' => 'Xóa khoá học thành công thành công!']);
     }
     //Kiểm duyệt khoá học
     public function submit(Request $request)

@@ -57,12 +57,12 @@ Route::prefix("admin")
 
         #============================== NOTIFICATIONS DONE =============================
         Route::prefix("notifications")
-        ->as('notifications.')
-        ->group(function () {
-            Route::get("/", [NotificationController::class, 'index'])->name('index');
-            Route::get("/unread-count", [NotificationController::class, 'getUnreadCount'])->name('getUnreadCount');
-            Route::post("/{id}/mark-as-read", [NotificationController::class, 'markAsRead'])->name('markAsRead');
-        });
+            ->as('notifications.')
+            ->group(function () {
+                Route::get("/", [NotificationController::class, 'index'])->name('index');
+                Route::get("/unread-count", [NotificationController::class, 'getUnreadCount'])->name('getUnreadCount');
+                Route::post("/{id}/mark-as-read", [NotificationController::class, 'markAsRead'])->name('markAsRead');
+            });
         #============================== BANNERS DONE =============================
         Route::prefix("banners")
             ->as('banners.')
@@ -141,12 +141,19 @@ Route::prefix("admin")
             ->as('courses.')
             ->group(function () {
                 Route::get("/", [CourseController::class, 'index'])->name('list');
-                Route::get("/my", [CourseController::class, 'myCourse'])->name('my');
+
                 Route::get("/create", [CourseController::class, 'create'])->name('create');
                 Route::post('/store', [CourseController::class, 'store'])->name('store');
+                //Đẩy sang tabs thứ 2 view target
+                Route::get('/add-target/{id}', [CourseController::class, 'addTargetCourse'])->name('new');
+                //Lưu trữ mục tiêu target
+                Route::post('/store-target/{id}', [CourseController::class, 'storeTargetCourse'])->name('target.store');
+
+
                 Route::get("/detail/{id}", [CourseController::class, 'detail'])->name('detail');
                 Route::delete('/delete/{id}', [CourseController::class, 'delete'])->name('delete');
                 Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('edit');
+                //Cập nhật dữ liệu đang có của khoá học đó....
                 Route::put('/update/{id}', [CourseController::class, 'update'])->name('update');
                 Route::post('/submit/{id}', [CourseController::class, 'submit'])->name('submit');
             });
@@ -197,6 +204,9 @@ Route::prefix("admin")
                 Route::get('/detail-bill-course/{bill}', [TransactionController::class, 'detailBillCourse'])->name('detail-bill-course');
                 Route::get('/history-deposit', [TransactionController::class, 'historyDeposit'])->name('history-deposit');
                 Route::get('/history-withdraw', [TransactionController::class, 'historyWithdraw'])->name('history-withdraw');
+                Route::get('/withdraw-money', [TransactionController::class, 'withdrawMoneys'])->name('withdraw-money');
+                Route::get('/get-status-request-money/{id}', [TransactionController::class, 'getStatusRequestMoney'])->name('status-request-money');
+                Route::put('/update-status-request-money', [TransactionController::class, 'updateStatusRequest'])->name('update-status-request-money');
             });
         // route post
         Route::prefix('posts')

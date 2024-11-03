@@ -9,7 +9,9 @@ use App\Models\PurchaseWallet;
 use App\Models\User;
 use App\Models\UserCourse;
 use App\Models\Voucher;
+use App\Models\VoucherUse;
 use App\Models\WithdrawalWallet;
+use App\Models\WithdrawMoney;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -209,7 +211,7 @@ class PaymentController extends Controller
         $userId = $request->id_user;
         $courseId = $request->id_course;
 
-        if (!$request->total_coin || !$request->total_coin_after_discount) {
+        if (!$request->total_coin) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Thiếu thông tin thanh toán'
@@ -252,16 +254,27 @@ class PaymentController extends Controller
             ]);
         }
 
+        if ($request->total_coin != $request->total_coin_after_discount) {
+            if (!$request->voucher_code) {
+                return response()->json([
+                    'code' => 204,
+                    'status' => 'error',
+                    'message' => 'Vui lòng nhập mã giảm giá'
+                ]);
+            }
+        }
+
         if ($request->voucher_code) {
             $voucher = Voucher::where('code', $request->voucher_code)->first();
             if (!$voucher) {
                 return response()->json([
                     'code' => 204,
                     'status' => 'error',
-                    'message' => 'Voucher không tồn tại'
+                    'message' => 'Mã giảm giá không tồn tại'
                 ]);
             }
         }
+
 
         if ($wallet->balance < $request->total_coin_after_discount) {
             return response()->json([
@@ -280,7 +293,7 @@ class PaymentController extends Controller
         $newBill = Bill::query()->create([
             'id_user' => $userId,
             'id_course' => $courseId,
-            'voucher_code' => Voucher::find($request->id_voucher)->code ?? null,
+            'voucher_code' => $request->voucher_code ?? null,
             'voucher_discount' => $request->coin_discount,
             'total_coin' => $request->total_coin,
             'total_coin_after_discount' => $request->total_coin_after_discount,
@@ -288,6 +301,9 @@ class PaymentController extends Controller
         ]);
 
         if (!$newUserCourse) {
+
+            $newBill->delete();
+
             return response()->json([
                 'code' => 500,
                 'status' => 'error',
@@ -301,9 +317,17 @@ class PaymentController extends Controller
             ]);
 
             // Cập nhật lại số lượng voucher chưa sử dụng
-            if ($request->id_voucher) {
-                Voucher::find($request->id_voucher)->update([
-                    'count' => $voucher->count - 1,
+            if ($request->voucher_code) {
+                $voucher = Voucher::where('code', $request->voucher_code)->first();
+                $voucher->update([
+                    'used_count' => $voucher->used_count + 1,
+                ]);
+
+                // Đánh dấu người dùng đã sử dụng voucher này rồi;
+                $voucherUse = VoucherUse::where('id_user', $userId)
+                    ->where('id_voucher', $voucher->id)->first();
+                $voucherUse->update([
+                    'is_used' => true,
                 ]);
             }
 
@@ -451,6 +475,111 @@ class PaymentController extends Controller
             'status' => "success",
             'message' => 'Danh sách lịch sử giao dịch',
             'data' => $listHistoryTransactionsPurchase
+        ], 200);
+    }
+
+    public function createCommandWithdrawMoney(Request $request)
+    {
+        $userId = $request->id_user;
+
+        $user = User::find($userId);
+
+        if (!$user) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Người dùng không tồn tại'
+            ], 200);
+        }
+
+        $withdrawalWallet = WithdrawalWallet::where('id_user', $userId)->first();
+
+        if (!$withdrawalWallet) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Bạn chưa có ví',
+            ], 200);
+        }
+
+        if ($withdrawalWallet->status == 0) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Ví của bạn đã bị khóa',
+            ], 200);
+        }
+
+        if ($withdrawalWallet->balance < $request->coin) {
+            return response()->json([
+                'code' => 422,
+                'status' => 'error',
+                'message' => 'Số dư của bạn không đủ'
+            ], 200);
+        }
+
+        $newRequestWithdrawalWallet = WithdrawMoney::query()->create([
+            'id_user' => $userId,
+            'coin' => $request->coin,
+            'amount' => ($request->coin) * self::COIN_CONVERTER,
+            'bank_name' => $request->bank_name,
+            'account_number' => $request->account_number,
+            'account_holder' => $request->account_holder,
+        ]);
+
+        if (!$newRequestWithdrawalWallet) {
+            return response()->json([
+                'code' => '500',
+                'status' => 'error',
+                'message' => 'Đã có lỗi xảy ra khi tạo lệnh rút tiền'
+            ], 200);
+        }
+
+        $withdrawalWallet->update([
+            'balance' => ($withdrawalWallet->balance) - $request->coin,
+        ]);
+
+        return response()->json([
+            'code' => 200,
+            'status' => 'success',
+            'message' => 'Tạo lệnh rút tiền thành công',
+            'data' => [
+                'balance' => $withdrawalWallet->balance
+            ]
+        ], 200);
+    }
+
+    public function historyWithdraw(Request $request)
+    {
+        $userId = $request->id_user;
+        $historyWithdraw = WithdrawMoney::select(
+            'withdraw_money.id',
+            'withdraw_money.coin',
+            'withdraw_money.amount',
+            'withdraw_money.bank_name',
+            'withdraw_money.account_number',
+            'withdraw_money.account_holder',
+            'withdraw_money.status',
+            'withdraw_money.note',
+            'users.name'
+        )
+            ->join('users', 'users.id', '=', 'withdraw_money.id_user')
+            ->where('withdraw_money.id_user', $userId)
+            ->orderbyDesc('withdraw_money.created_at')
+            ->get();
+
+        if (!$historyWithdraw) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Không có lịch sử rút tiền',
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Lịch sử giao dịch',
+            'data' => $historyWithdraw
         ], 200);
     }
 }

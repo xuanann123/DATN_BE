@@ -238,9 +238,10 @@
                                         <label for="code" class="form-label">Loại voucher</label>
                                         <select name="type" id="type" class="form-control">
                                             <option value="">Select type voucher</option>
-                                            <option {{ $voucher->type == 'Percent' ? 'selected' : '' }} value="Percent">
-                                                Percent</option>
-                                            <option {{ $voucher->type == 'Fixed' ? 'selected' : '' }} value="Fixed">Fixed
+                                            <option {{ $voucher->type == 'percent' ? 'selected' : '' }} value="percent">
+                                                Phần trăm</option>
+                                            <option {{ $voucher->type == 'fixed' ? 'selected' : '' }} value="fixed">Giá cố
+                                                định
                                             </option>
                                         </select>
                                         <small class="help-block form-text text-danger">

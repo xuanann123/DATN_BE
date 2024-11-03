@@ -15,20 +15,22 @@
                 <span class="ms-2" style="font-size: 30px; color: rgb(255, 255, 255); font-weight: 500">Coursea</span>
             </span>
             <span class="logo-lg">
-               <span class="logo-sm">
-                <img src="{{ asset("theme/admin/assets/images/Union_Yellow.png") }}" alt="" height="22">
-            </span>
-            <span class="logo-lg">
-                <img src="{{ asset("theme/admin/assets/images/logo-white-text.png") }}" alt="" width="180" height="auto">
-            </span>
+                <span class="logo-sm">
+                    <img src="{{ asset('theme/admin/assets/images/Union_Yellow.png') }}" alt="" height="22">
+                </span>
+                <span class="logo-lg">
+                    <img src="{{ asset('theme/admin/assets/images/logo-white-text.png') }}" alt=""
+                        width="180" height="auto">
+                </span>
             </span>
         </a>
         <a href="{{ route('admin.dashboard') }}" class="logo logo-light">
             <span class="logo-sm">
-                <img src="{{ asset("theme/admin/assets/images/Union_Yellow.png") }}" alt="" height="22">
+                <img src="{{ asset('theme/admin/assets/images/Union_Yellow.png') }}" alt="" height="22">
             </span>
             <span class="logo-lg">
-                <img src="{{ asset("theme/admin/assets/images/logo-white-text.png") }}" alt="" width="180" height="auto">
+                <img src="{{ asset('theme/admin/assets/images/logo-white-text.png') }}" alt="" width="180"
+                    height="auto">
             </span>
             {{-- <span class="logo-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="auto" viewBox="0 0 40 41"
@@ -116,7 +118,8 @@
                     <div class="collapse menu-dropdown" id="sidebarVouchers">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="{{ route('admin.vouchers.index') }}" class="nav-link" data-key="t-one-page">
+                                <a href="{{ route('admin.vouchers.index') }}" class="nav-link"
+                                    data-key="t-one-page">
                                     Danh sách mã</a>
                             </li>
                             <li class="nav-item">
@@ -134,22 +137,22 @@
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarCourses">
                         <ul class="nav nav-sm flex-column">
-                             <li class="nav-item">
-                                <a href="{{ route('admin.courses.create') }}" class="nav-link" data-key="t-job">
-                                    Thêm mới khoá học</a>
-                            <li class="nav-item">
-                                <a href="{{ route('admin.courses.my') }}" class="nav-link" data-key="t-one-page">
-                                    Khoá học của tôi</a>
-                            </li>
                             <li class="nav-item">
                                 <a href="{{ route('admin.courses.list') }}" class="nav-link" data-key="t-one-page">
-                                    Khoá học hệ thống</a>
+                                    Danh sách khoá học</a>
                             </li>
-                           
+                            <li class="nav-item">
+                                <a href="{{ route('admin.courses.create') }}" class="nav-link" data-key="t-job">
+                                    Thêm mới khoá học</a>
+                                {{-- <li class="nav-item">
+                                <a href="{{ route('admin.courses.my') }}" class="nav-link" data-key="t-one-page">
+                                    Khoá học của tôi</a>
+                            </li> --}}
                             </li>
                         </ul>
                     </div>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarTags" data-bs-toggle="collapse" role="button"
                         aria-expanded="false" aria-controls="sidebarTags">
@@ -208,25 +211,25 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('admin.transactions.history-buy-course') }}"
-                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                        data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
                         <i class=" ri-chat-history-line"></i> <span>Khóa học đã bán</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{  route('admin.transactions.history-deposit') }}"
-                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                    <a class="nav-link menu-link" href="{{ route('admin.transactions.history-deposit') }}"
+                        data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
                         <i class="ri-arrow-right-circle-line"></i> <span>Giao dịch nạp tiền</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{  route('admin.transactions.history-withdraw') }}"
-                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                    <a class="nav-link menu-link" href="{{ route('admin.transactions.history-withdraw') }}"
+                        data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
                         <i class="ri-arrow-left-circle-line"></i> <span>Giao dịch rút tiền</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="#"
-                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                    <a class="nav-link menu-link" href="{{ route('admin.transactions.withdraw-money') }}"
+                        data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
                         <i class="ri-money-euro-circle-line"></i> <span>Yêu cầu rút tiền</span>
                     </a>
                 </li>

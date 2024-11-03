@@ -7,6 +7,7 @@ use App\Models\Bill;
 use App\Models\PurchaseWallet;
 use App\Models\Transaction;
 use App\Models\WithdrawalWallet;
+use App\Models\WithdrawMoney;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -184,5 +185,132 @@ class TransactionController extends Controller
             ->paginate(10);
 
         return view('admin.transactions.history_withdraw', compact('title', 'historyWithdraw'));
+    }
+
+    public function withdrawMoneys(Request $request)
+    {
+        $title = "Yêu cầu rút tiền";
+
+        if ($request->keyword) {
+            $key = $request->keyword;
+            $withdrawMoneys = WithdrawMoney::select(
+                'withdraw_money.id',
+                'withdraw_money.coin',
+                'withdraw_money.amount',
+                'withdraw_money.bank_name',
+                'withdraw_money.account_number',
+                'withdraw_money.account_holder',
+                'withdraw_money.status',
+                'withdraw_money.note',
+                'users.name'
+            )
+                ->join('users', 'users.id', '=', 'withdraw_money.id_user')
+                ->where(function ($query) use ($key) {
+                    $query->where('users.name', 'LIKE', "%$key%")
+                        ->orWhere('withdraw_money.id', 'LIKE', "%$key%")
+                        ->orWhere('withdraw_money.bank_name', 'LIKE', "%$key%")
+                        ->orWhere('withdraw_money.account_number', 'LIKE', "%$key%")
+                        ->orWhere('withdraw_money.account_holder', 'LIKE', "%$key%")
+                        ->orWhere('withdraw_money.status', 'LIKE', "%$key%")
+                        ->orWhere('withdraw_money.created_at', 'LIKE', "%$key%");
+                })
+                ->orderbyDesc('withdraw_money.created_at')
+                ->paginate(10);
+
+            return view('admin.transactions.withdraw_money', compact('title', 'withdrawMoneys'));
+        }
+
+        $withdrawMoneys = WithdrawMoney::select(
+            'withdraw_money.id',
+            'withdraw_money.coin',
+            'withdraw_money.amount',
+            'withdraw_money.bank_name',
+            'withdraw_money.account_number',
+            'withdraw_money.account_holder',
+            'withdraw_money.status',
+            'withdraw_money.note',
+            'withdraw_money.created_at',
+            'users.name'
+        )
+            ->join('users', 'users.id', '=', 'withdraw_money.id_user')
+            ->orderbyDesc('withdraw_money.created_at')
+            ->paginate(10);
+
+        return view('admin.transactions.withdraw_money', compact('title', 'withdrawMoneys'));
+    }
+
+    public function getStatusRequestMoney(Request $request)
+    {
+        $requestId = $request->id;
+        $requestMoney = WithdrawMoney::select('status', 'note')->where('id', $requestId)->first();
+        if (!$requestMoney) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Không có yêu cầu rút tiền',
+            ], 204);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Thông tin yêu cầu rút tiền',
+            'data' => $requestMoney
+        ], 200);
+    }
+
+    public function updateStatusRequest(Request $request)
+    {
+        $requestId = $request->id_withdraw_money;
+        $data = [
+            'status' => $request->status,
+            'note' => $request->status == 'Đã hủy' ? 'Hủy bởi quản trị viên: ' . $request->note : $request->note
+        ];
+        $requestMoney = WithdrawMoney::find($requestId);
+        if (!$requestMoney) {
+            session()->flash('error', 'Không tồn tại yêu cầu');
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Không có yêu cầu rút tiền'
+            ], 204);
+        }
+        $check = $requestMoney->update($data);
+        if (!$check) {
+            session()->flash('error', 'Cập nhật thất bại');
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Cập nhật thất bại'
+            ], 500);
+        }
+
+        if ($data['status'] == 'Đã hủy' || $data['status'] == 'Thất bại') {
+            $withdrawWallet = WithdrawalWallet::where('id_user', $requestMoney->id_user)->first();
+            $withdrawWallet->update([
+                'balance' => $withdrawWallet->balance + $requestMoney->coin
+            ]);
+            $withdrawWallet = WithdrawalWallet::where('id_user', $requestMoney->id_user)->first();
+            Transaction::query()->create([
+                'transactionable_type' => 'App\Models\WithdrawalWallet',
+                'transactionable_id' => $withdrawWallet->id,
+                'coin_unit' => 1000,
+                'amount' => $requestMoney->amount,
+                'coin' => $requestMoney->coin,
+                'status' => 'Thất bại'
+            ]);
+        } else if ($data['status'] == 'Hoàn thành') {
+            $withdrawWallet = WithdrawalWallet::where('id_user', $requestMoney->id_user)->first();
+            Transaction::query()->create([
+                'transactionable_type' => 'App\Models\WithdrawalWallet',
+                'transactionable_id' => $withdrawWallet->id,
+                'coin_unit' => 1000,
+                'amount' => $requestMoney->amount,
+                'coin' => $requestMoney->coin,
+                'status' => 'Thành công'
+            ]);
+        }
+
+        session()->flash('success', 'Cập nhật thành công');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Cập nhật thành công'
+        ], 200);
     }
 }

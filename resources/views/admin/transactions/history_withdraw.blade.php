@@ -91,7 +91,8 @@
                                         {{ $withdraw->created_at }}
                                     </td>
                                     <td>
-                                        <span class="badge bg-success">
+                                        <span
+                                            class="badge bg-{{ $withdraw->status == 'Thành công' ? 'success' : 'danger' }}">
                                             {{ $withdraw->status }}
                                         </span>
                                     </td>

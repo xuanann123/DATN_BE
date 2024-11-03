@@ -40,7 +40,6 @@ use App\Http\Controllers\api\Client\VoucherController;
 */
 
 
-
 Route::prefix('auth')->group(function () {
     Route::post('/signup', [AuthController::class, 'signup']);
     Route::post('/login', [AuthController::class, 'login']);
@@ -65,7 +64,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('transactions')->group(function () {
         Route::post('/payment/{user}', [PaymentController::class, 'paymentController']);
-        Route::post('buy-course/{id_user}/{id_course}', [PaymentController::class, 'buyCourse']);
+        Route::post('/buy-course/{id_user}/{id_course}', [PaymentController::class, 'buyCourse']);
     });
 
     # ===================== ROUTE FOR CHECKOUT ===========================
@@ -79,7 +78,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('vouchers')->group(function () {
         Route::get('/apply-coupon/{id_user}/{voucher_code}', [VoucherController::class, 'applyCoupon']);
     });
-
 
     # ===================== ROUTE FOR COURSE ===========================
 
@@ -98,7 +96,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/lesson-progress/{lesson}', [LessonController::class, 'updateLessonProgress']);
         //Kiểm tra đúng sai của quiz
         Route::post('quiz/check-quiz', [LessonController::class, 'checkQuiz']);
-
+        Route::put('quiz/quiz-progress/{quiz}', [LessonController::class, 'updateQuizProgress']);
+        //Kiểm tra kết quả khi bấm lại
+        Route::get('quiz/result/{userId}/{quizId}', [LessonController::class, 'getQuizResult']);
     });
 
     # ===================== ROUTE FOR NOTE ===========================
@@ -120,9 +120,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     # ===================== ROUTE FOR RATING ===========================
     Route::prefix('ratings')->group(function () {
-
-        Route::get('/check-rating-course/{id_user}/{id_course}', [RatingController::class, 'checkRating']);
-        Route::get('/check-rated/{id_user}/{id_course}', [RatingController::class, 'checkRated']);
+        Route::get('/check-rating/{id_user}/{id_course}', [RatingController::class, 'checkRating']);
         Route::post('/add-rating-course', [RatingController::class, 'addRating']);
     });
 
@@ -147,6 +145,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('teacher')->middleware('teacher')->group(function () {
         // Ví rút của giảng viên
         Route::get('/balance/{user}', [PaymentController::class, 'balanceWithdrawalWallets']);
+        // Tạo lệnh rút tiền
+        Route::post('/add-request-withdraw/{id_user}', [PaymentController::class, 'createCommandWithdrawMoney']);
+        // Lịch sử rút tiền;
+        Route::get('/history-withdraw/{id_user}', [PaymentController::class, 'historyWithdraw']);
         // Danh sách khóa học
         Route::get('/course', [CourseController::class, 'index']);
         //Thêm khoá học mới
@@ -184,6 +186,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('/upload-video/{module}', [UploadVideoController::class, 'uploadVideo']);
                 Route::delete('/delete-lesson-video/{lesson}', [UploadVideoController::class, 'deleteLessonVideo']);
                 Route::put('/update-lesson-video/{lesson}', [UploadVideoController::class, 'updateLessonVideo']);
+                Route::post('/{lesson}/change-type', [LessonTeacherController::class, 'changeLessonType']);
                 # ========================== Route for quiz ===========================
                 //ADD QUIZ => Lấy thằng id của module để thêm
                 Route::post('{module}/add-quiz', [ModuleQuizController::class, 'addQuiz']);
@@ -199,7 +202,6 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::get('quiz/{question}/show-question-and-option', [ModuleQuizController::class, 'showQuestionAndOption']);
                 Route::put('quiz/{question}/update-question-and-option', [ModuleQuizController::class, 'updateQuestionAndOption']);
                 Route::delete('quiz/{question}/delete-question-and-option', [ModuleQuizController::class, 'deleteQuestionAndOption']);
-                
             });
             // xoa khoa hoc vinh vien
             Route::delete('{course}/delete-course', [CourseController::class, 'deleteCourse']);
