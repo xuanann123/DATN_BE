@@ -286,6 +286,15 @@ class TransactionController extends Controller
             $withdrawWallet->update([
                 'balance' => $withdrawWallet->balance + $requestMoney->coin
             ]);
+            $withdrawWallet = WithdrawalWallet::where('id_user', $requestMoney->id_user)->first();
+            Transaction::query()->create([
+                'transactionable_type' => 'App\Models\WithdrawalWallet',
+                'transactionable_id' => $withdrawWallet->id,
+                'coin_unit' => 1000,
+                'amount' => $requestMoney->amount,
+                'coin' => $requestMoney->coin,
+                'status' => 'Thất bại'
+            ]);
         } else if ($data['status'] == 'Hoàn thành') {
             $withdrawWallet = WithdrawalWallet::where('id_user', $requestMoney->id_user)->first();
             Transaction::query()->create([
