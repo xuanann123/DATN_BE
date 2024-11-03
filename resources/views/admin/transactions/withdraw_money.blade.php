@@ -70,6 +70,7 @@
                                 <th>Số tài khoản</th>
                                 <th>Chủ tài khoản</th>
                                 <th>Trạng thái</th>
+                                <th>Ngày tạo</th>
                                 <th>Ghi chú</th>
                                 <th>Thao tác</th>
                             </tr>
@@ -102,6 +103,9 @@
                                         {{ $withdraw->created_at }}
                                     </td>
                                     <td>
+                                        {{ $withdraw->note }}
+                                    </td>
+                                    <td>
                                         <a class="dropdown-item edit-item-btn cursor-pointer" data-bs-toggle="modal"
                                             data-bs-target="#addModuleModal" data-request-id="{{ $withdraw->id }}"><i
                                                 class="ri-pencil-fill align-bottom me-2 text-muted"></i>
@@ -128,28 +132,30 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="edit-status" method="POST" action="{{ route('admin.modules.store') }}">
+                    <form id="edit-status" method="POST"
+                        action="{{ route('admin.transactions.update-status-request-money') }}">
                         @csrf
+                        @method('PUT')
                         <input type="hidden" name="id_withdraw_money" id="id_withdraw_money">
                         <div class="mb-3">
                             <label for="status_withdraw" class="form-label">Trạng thái</label>
                             <select name="status" id="status_withdraw" class="form-control">
-                                <option value="Chờ xác nhận">Chờ xác nhận</option>
                                 <option value="Đang xử lí">Đang xử lí</option>
-                                <option value="Thành công">Thành công</option>
+                                <option value="Hoàn thành">Hoàn thành</option>
                                 <option value="Thất bại">Thất bại</option>
                                 <option value="Đã hủy">Đã hủy</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label for="note" class="form-label">Ghi chú</label>
-                            <textarea class="form-control" name="note" rows="3" placeholder="Ghi chú..."></textarea>
+                            <textarea class="form-control" name="note" id="note" rows="3" placeholder="Ghi chú..."></textarea>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="submit" form="edit-status" class="btn btn-primary">Cập nhật</button>
+                    <button type="submit" form="edit-status" id="btn-update-status" class="btn btn-primary">Cập
+                        nhật</button>
                 </div>
             </div>
         </div>
@@ -165,10 +171,64 @@
             }
         });
     </script>
-    <script></script>
     <!--datatable js-->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.edit-item-btn').on('click', function() {
+                var requestId = $(this).data('request-id');
+                $('#id_withdraw_money').val(requestId);
+                $.ajax({
+                    url: '/admin/transactions/get-status-request-money/' + requestId,
+                    method: 'GET',
+                    success: function(response) {
+                        var status = response.data.status;
+                        $('#status_withdraw option').each(function() {
+                            if ($(this).val() == status) {
+                                $(this).prop('selected', true);
+                            } else {
+                                $(this).prop('selected', false);
+                            }
+                        });
+                        $('#note').text(response.data.note);
+                        if (response.data.status == 'Đã hủy' || response.data.status ==
+                            'Hoàn thành' || response.data.status == 'Thất bại') {
+                            $('#note').prop('readonly', true);
+                            $('#status_withdraw').prop('disabled', true);
+                            $('#btn-update-status').prop('disabled', true);
+                        } else if (response.data.status == 'Đang xử lí') {
+                            $('#status_withdraw').prop('disabled', false);
+                            $('#note').prop('readonly', false);
+                            $('#btn-update-status').prop('disabled', false);
+                        }
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            });
+
+            $('#edit-status').on('submit', function(e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        $('#addModuleModal').modal('hide');
+                        location.reload();
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
+
 
     {{-- <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script> --}}
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>

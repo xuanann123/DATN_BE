@@ -758,7 +758,7 @@
         })
 
         const userId = '{{ Auth::id() }}'; // Lấy userId từ Blade
-        console.log('User ID:', userId);
+        // console.log('User ID:', userId);
 
         window.Echo.private(`App.Models.User.${userId}`)
             .notification((notification) => {

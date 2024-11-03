@@ -141,7 +141,7 @@ Route::prefix("admin")
             ->as('courses.')
             ->group(function () {
                 Route::get("/", [CourseController::class, 'index'])->name('list');
-                
+
                 Route::get("/create", [CourseController::class, 'create'])->name('create');
                 Route::post('/store', [CourseController::class, 'store'])->name('store');
                 //Đẩy sang tabs thứ 2 view target
@@ -205,6 +205,8 @@ Route::prefix("admin")
                 Route::get('/history-deposit', [TransactionController::class, 'historyDeposit'])->name('history-deposit');
                 Route::get('/history-withdraw', [TransactionController::class, 'historyWithdraw'])->name('history-withdraw');
                 Route::get('/withdraw-money', [TransactionController::class, 'withdrawMoneys'])->name('withdraw-money');
+                Route::get('/get-status-request-money/{id}', [TransactionController::class, 'getStatusRequestMoney'])->name('status-request-money');
+                Route::put('/update-status-request-money', [TransactionController::class, 'updateStatusRequest'])->name('update-status-request-money');
             });
         // route post
         Route::prefix('posts')
