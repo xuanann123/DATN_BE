@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\Module;
+use App\Notifications\Client\Instructor\CourseApprovalStatusNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -111,8 +112,10 @@ class ApprovalCourseController extends Controller
             if ($request->has('approval')) {
                 $course->status = 'approved';
                 $message = 'Đã chấp thuận khóa học.';
-                // Gửi email cho giảng viên khi từ chối
+                // Gửi email cho giảng viên khi chấp thuận
                 Mail::to($user->email)->queue(new CourseApproveEmail($course));
+                // Gửi thông báo cho giảng viên khi chấp thuận
+                $user->notify(new CourseApprovalStatusNotification($course, $course->status));
             }
 
             // Xử lý từ chối
@@ -120,9 +123,13 @@ class ApprovalCourseController extends Controller
                 $course->status = 'rejected';
                 $course->admin_comments = $request->admin_comments;
                 $message = 'Đã từ chối khóa học';
+                // lấy những điều kiện không đạt
+                $failedConditions = collect($conditions)->filter(fn($condition) => !$condition['status'])->values()->all();
 
                 // Gửi email cho giảng viên khi từ chối
                 Mail::to($user->email)->queue(new CourseRejectionEmail($course, $conditions));
+                // Gửi thông báo cho giảng viên khi từ chối
+                $user->notify(new CourseApprovalStatusNotification($course, $course->status, $failedConditions, $course->admin_comments));
             }
 
             $course->save();

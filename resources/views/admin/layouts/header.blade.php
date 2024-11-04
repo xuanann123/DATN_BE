@@ -710,18 +710,70 @@
                         const unreadNoti = !notification.read_at ?
                             '<span class="position-absolute translate-middle badge border border-light rounded-circle bg-danger p-1 unread-notification-dot"><span class="visually-hidden">unread messages</span></span>' :
                             ''
+
+                        let iconClass, bgColorClass, title
+
+                        // custom type thong bao
+                        switch (notification.data.type) {
+                            case 'course_approval_for_admin':
+                                iconClass = 'bx bx-book-open'
+                                bgColorClass = 'bg-info-subtle'
+                                title = notification.data.message
+                                break
+
+                            case 'course_approved':
+                                iconClass = ' bx bxs-check-circle'
+                                bgColorClass = 'bg-success-subtle'
+                                title = notification.data.message
+                                break
+
+                            case 'course_rejected':
+                                iconClass = 'bx bxs-x-circle text-danger'
+                                bgColorClass = 'bg-danger-subtle'
+
+                                const conditions = notification.data.conditions &&
+                                    notification.data.conditions.length > 0 ?
+                                    notification.data.conditions.map(
+                                        condition => {
+                                            return `<a href="" class="list-group-item list-group-item-action"><i class="mdi mdi-close-thick text-danger align-middle lh-1 me-2"></i><strong>${condition.label}</strong> ${condition.value}/${condition.required}</a>`
+                                        }).join('') : null
+
+                                const adminComments = notification.data.admin_comments ?
+                                    `<div class="mt-2"><strong>Lí do:</strong> ${notification.data.admin_comments}</div>` :
+                                    null
+
+                                title = `${notification.data.message}`
+                                if (conditions) {
+                                    title += `<br>
+                                                <div class="list-group list-group-fill-success mt-2 bg-danger">
+                                                    <a href="" class="list-group-item list-group-item-action active bg-danger">Điều kiện chưa đạt</a>
+                                                    ${conditions}
+                                                </div>`
+                                }
+                                if (adminComments) {
+                                    title += `${adminComments}`
+                                }
+                                break
+
+                            default:
+                                iconClass = 'bx bx-bell'
+                                bgColorClass = 'bg-light'
+                                title = 'Thông báo mới!'
+                                break
+                        }
+
                         const item = `
                                 <a href="${notification.data.url}">
                                     <div class="text-reset notification-item d-block dropdown-item position-relative" id="notification-item" data-id="${notification.id}">
                                         <div class="d-flex">
                                             <div class="avatar-xs me-3 flex-shrink-0">
-                                                <span class="avatar-title bg-info-subtle text-info rounded-circle fs-16">
-                                                    <i class="bx bx-book-open"></i>
+                                                <span class="avatar-title ${bgColorClass} text-info rounded-circle fs-16">
+                                                    <i class="${iconClass}"></i>
                                                 </span>
                                             </div>
                                             <div class="flex-grow-1">
                                                 <a href="${notification.data.url}" class="stretched-link">
-                                                    <span class="text-secondary">${notification.data.message}</span><br>
+                                                    <span class="text-secondary">${title}</span>
                                                     <h5 class="mt-0 mb-2 lh-base badge bg-info">${notification.data.course_name}</h5>
                                                 </a>
                                                 <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
