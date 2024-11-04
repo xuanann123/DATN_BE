@@ -248,9 +248,11 @@ class PaymentController extends Controller
         $wallet = PurchaseWallet::where('id_user', $userId)->first();
         if (!$wallet) {
             return response()->json([
-                'code' => 204,
-                'status' => 'error',
-                'message' => 'Bạn chưa có ví, vui lòng nạp tiền để tạo ví'
+                'data' => [
+                    'code' => 204,
+                    'status' => 'error',
+                    'message' => 'Bạn chưa có ví, vui lòng nạp tiền để tạo ví'
+                ]
             ]);
         }
 
@@ -345,9 +347,11 @@ class PaymentController extends Controller
             }
 
             return response()->json([
-                'status' => 'success',
-                'message' => 'Mua khóa học thành công',
-                'data' => $newBill
+                'data' => [
+                    'status' => 'success',
+                    'message' => 'Mua khóa học thành công',
+                    'data' => $newBill
+                ]
             ], 201);
         }
     }
