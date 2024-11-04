@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\api\Client;
 
+use App\Events\RequestWithdrawMoney;
 use App\Http\Controllers\Controller;
 use App\Models\Bill;
 use App\Models\Course;
+use App\Models\Notification;
 use App\Models\PurchaseWallet;
 use App\Models\User;
 use App\Models\UserCourse;
@@ -542,6 +544,20 @@ class PaymentController extends Controller
         $withdrawalWallet->update([
             'balance' => ($withdrawalWallet->balance) - $request->coin,
         ]);
+
+        $newNotification = Notification::query()->create([
+            'notifiable_type' => WithdrawMoney::class,
+            'notifiable_id' => $newRequestWithdrawalWallet->id,
+            'type' => 'request_withdraw_money',
+            'data' => json_encode([
+                'amount' => $newRequestWithdrawalWallet->amount,
+                'message' => 'Có yêu cầu rút ' . number_format($newRequestWithdrawalWallet->amount) . 'đ',
+                'url' => 'http://localhost:8000/admin/transactions/withdraw-money',
+                'created_at' => $newRequestWithdrawalWallet->created_at
+            ]),
+        ]);
+
+        broadcast(new RequestWithdrawMoney($newNotification->data));
 
         return response()->json([
             'code' => 200,
