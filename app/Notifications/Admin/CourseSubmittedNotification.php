@@ -40,6 +40,7 @@ class CourseSubmittedNotification extends Notification implements ShouldBroadcas
     public function toDatabase(object $notifiable)
     {
         return [
+            'type' => 'course_approval_for_admin',
             'course_id' => $this->course->id,
             'course_name' => $this->course->name,
             'message' => 'Có khóa học mới cần được kiểm duyệt.',
@@ -59,8 +60,9 @@ class CourseSubmittedNotification extends Notification implements ShouldBroadcas
 
     public function toBroadcast(object $notifiable)
     {
-        Log::info('Phát sự kiện CourseSubmittedNotification cho user: ' . $notifiable->id);
+        // Log::info('CourseSubmittedNotification cho user: ' . $notifiable->id);
         return new BroadcastMessage([
+            'type' => 'course_approval_for_admin',
             'course_id' => $this->course->id,
             'course_name' => $this->course->name,
             'message' => 'Có khóa học mới cần được kiểm duyệt.',
