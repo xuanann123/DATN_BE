@@ -25,8 +25,15 @@ class VoucherController extends Controller
                 ->first();
 
 
-            if (!$voucher || $voucher->count == $voucher->used_count) {
+            if (!$voucher) {
                 $message = "Mã giảm giá không hợp lệ";
+                $data = [
+                    'status' => 'error',
+                    'message' => $message,
+                ];
+                return;
+            } else if ($voucher->count == $voucher->used_count || $voucher->used_count > $voucher->count) {
+                $message = "Mã đã hết lượt sử dụng";
                 $data = [
                     'status' => 'error',
                     'message' => $message,
@@ -34,20 +41,20 @@ class VoucherController extends Controller
                 return;
             }
 
-            $checkRated = VoucherUse::where('id_voucher', $voucher->id)
+            $checkVoucher = VoucherUse::where('id_voucher', $voucher->id)
                 ->where('id_user', $userId)
                 ->first();
 
-            if ($checkRated) {
-                if ($checkRated->is_used == true) {
+            if ($checkVoucher) {
+                if ($checkVoucher->is_used == true) {
                     $message = "Bạn đã sử dụng mã này rồi";
                     $data = [
                         'status' => 'error',
                         'message' => $message,
                     ];
                     return;
-                } else if ($checkRated->expires_at < now()) {
-                    $checkRated->update([
+                } else if ($checkVoucher->expires_at < now()) {
+                    $checkVoucher->update([
                         'applied_at' => now(),
                         'expires_at' => now()->addMinutes(10)
                     ]);
@@ -73,15 +80,6 @@ class VoucherController extends Controller
                         'type' => $voucher->type,
                         'discount' => $voucher->discount
                     ]
-                ];
-                return;
-            }
-
-            if ($voucher->count == $voucher->used_count) {
-                $message = "Mã đã hết lượt sử dụng";
-                $data = [
-                    'status' => 'error',
-                    'message' => $message,
                 ];
                 return;
             }
