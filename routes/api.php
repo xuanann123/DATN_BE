@@ -39,7 +39,6 @@ use App\Http\Controllers\api\Client\VoucherController;
 |
 */
 
-Route::post('add-request-withdraw/{id_user}', [PaymentController::class, 'createCommandWithdrawMoney']);
 Route::prefix('auth')->group(function () {
     Route::post('/signup', [AuthController::class, 'signup']);
     Route::post('/login', [AuthController::class, 'login']);
@@ -146,7 +145,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Ví rút của giảng viên
         Route::get('/balance/{user}', [PaymentController::class, 'balanceWithdrawalWallets']);
         // Tạo lệnh rút tiền
-        // Route::post('/add-request-withdraw/{id_user}', [PaymentController::class, 'createCommandWithdrawMoney']);
+        Route::post('/add-request-withdraw/{id_user}', [PaymentController::class, 'createCommandWithdrawMoney']);
         // Lịch sử rút tiền;
         Route::get('/history-withdraw/{id_user}', [PaymentController::class, 'historyWithdraw']);
         // Danh sách khóa học
