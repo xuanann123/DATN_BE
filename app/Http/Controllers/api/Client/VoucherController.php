@@ -15,98 +15,86 @@ class VoucherController extends Controller
     {
         $userId = $request->id_user;
         $voucherCode = $request->voucher_code;
-        $message = '';
-        $data = [];
-        DB::transaction(function () use ($userId, $voucherCode, &$message, &$data) {
-            $voucher = Voucher::where('code', $voucherCode)
-                ->where('start_time', '<', now())
-                ->where('end_time', '>', now())
-                ->lockForUpdate()
-                ->first();
 
+        $voucher = Voucher::where('code', $voucherCode)
+            ->where('start_time', '<', now())
+            ->where('end_time', '>', now())
+            ->first();
 
-            if (!$voucher) {
-                $message = "Mã giảm giá không hợp lệ";
-                $data = [
+        if (!$voucher) {
+            return response()->json([
+                'data' => [
                     'status' => 'error',
-                    'message' => $message,
-                ];
-                return;
-            } else if ($voucher->count == $voucher->used_count || $voucher->used_count > $voucher->count) {
-                $message = "Mã đã hết lượt sử dụng";
-                $data = [
+                    'message' => 'Mã giảm giá không hợp lệ'
+                ]
+            ]);
+        } else if ($voucher->count == $voucher->used_count || $voucher->used_count > $voucher->count) {
+            return response()->json([
+                'data' => [
                     'status' => 'error',
-                    'message' => $message,
-                ];
-                return;
-            }
+                    'message' => 'Mã đã hết lượt sử dụng'
+                ]
+            ]);
+        }
 
-            $checkVoucher = VoucherUse::where('id_voucher', $voucher->id)
-                ->where('id_user', $userId)
-                ->first();
+        $checkVoucher = VoucherUse::where('id_voucher', $voucher->id)
+            ->where('id_user', $userId)
+            ->first();
 
-            if ($checkVoucher) {
-                if ($checkVoucher->is_used == true) {
-                    $message = "Bạn đã sử dụng mã này rồi";
-                    $data = [
+        if ($checkVoucher) {
+            if ($checkVoucher->is_used == true) {
+                return response()->json([
+                    'data' => [
                         'status' => 'error',
-                        'message' => $message,
-                    ];
-                    return;
-                } else if ($checkVoucher->expires_at < now()) {
-                    $checkVoucher->update([
-                        'applied_at' => now(),
-                        'expires_at' => now()->addMinutes(10)
-                    ]);
-                    $message = "Áp dụng mã giảm giá thành công";
-                    $data = [
+                        'message' => 'Bạn đã dùng mã này rồi'
+                    ]
+                ]);
+            } else if ($checkVoucher->expires_at < now()) {
+                $checkVoucher->update([
+                    'applied_at' => now(),
+                    'expires_at' => now()->addMinutes(10)
+                ]);
+                return response()->json([
+                    'data' => [
                         'status' => 'success',
-                        'message' => $message,
+                        'message' => 'Áp dụng mã giảm giá thành công',
                         'voucher' => [
                             'code' => $voucher->code,
                             'type' => $voucher->type,
                             'discount' => $voucher->discount
                         ]
-                    ];
-                    return;
-                }
-
-                $message = "Áp dụng mã giảm giá thành công";
-                $data = [
-                    'status' => 'success',
-                    'message' => $message,
-                    'voucher' => [
-                        'code' => $voucher->code,
-                        'type' => $voucher->type,
-                        'discount' => $voucher->discount
                     ]
-                ];
-                return;
+                ], 200);
             }
+        }
 
-            VoucherUse::query()->create([
-                'id_voucher' => $voucher->id,
-                'id_user' => $userId,
-                'applied_at' => now(),
-                'expires_at' => now()->addMinutes(10)
+        $newVoucherUse = VoucherUse::query()->create([
+            'id_voucher' => $voucher->id,
+            'id_user' => $userId,
+            'applied_at' => now(),
+            'expires_at' => now()->addMinutes(10)
+        ]);
+
+
+        if (!$newVoucherUse) {
+            return response()->json([
+                'data' => [
+                    'status' => 'error',
+                    'message' => 'Áp dụng mã giảm giá thất bại'
+                ]
             ]);
+        }
 
-
-            $message = "Áp dụng mã giảm giá thành công";
-            $data = [
+        return response()->json([
+            'data' => [
                 'status' => 'success',
-                'message' => $message,
+                'message' => 'Áp dụng mã giảm giá thành công',
                 'voucher' => [
                     'code' => $voucher->code,
                     'type' => $voucher->type,
                     'discount' => $voucher->discount
                 ]
-            ];
-            return;
-        });
-
-        return response()->json([
-            'data' => $data
+            ]
         ], 200);
     }
 }
