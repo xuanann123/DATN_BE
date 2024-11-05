@@ -53,7 +53,7 @@ class TargetController extends Controller
         $requirements = $request->requirements ?? [];
         $audiences = $request->audiences ?? [];
 
-        
+
         try {
             DB::beginTransaction();
             // goals
@@ -113,6 +113,7 @@ class TargetController extends Controller
                     'course_target' => $course_target,
                     'course_curriculum' => $course_curriculum,
                     'course_overview' => $course_overview,
+                    'course_status' => $course->status
                 ],
             ], 200);
         } catch (\Exception $e) {
