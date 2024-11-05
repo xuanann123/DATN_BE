@@ -288,6 +288,7 @@ class PaymentController extends Controller
                 $voucher = Voucher::where('code', $request->voucher_code)
                     ->where('start_time', '<', now())
                     ->where('end_time', '>', now())
+                    ->where('is_active', 1)
                     ->first();
                 if (!$voucher) {
                     return response()->json([
