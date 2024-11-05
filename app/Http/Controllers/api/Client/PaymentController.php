@@ -291,14 +291,18 @@ class PaymentController extends Controller
                     ->first();
                 if (!$voucher) {
                     return response()->json([
-                        'code' => 204,
-                        'status' => 'error',
-                        'message' => 'Mã giảm giá không hợp lệ'
+                        'data' => [
+                            'code' => 204,
+                            'status' => 'error',
+                            'message' => 'Mã giảm giá không hợp lệ'
+                        ]
                     ]);
                 } else if ($voucher->count <= $voucher->used_count) {
                     return response()->json([
-                        'status' => 'error',
-                        'message' => 'Mã giảm giá đã hết lượt sử dụng'
+                        'data' => [
+                            'status' => 'error',
+                            'message' => 'Mã giảm giá đã hết lượt sử dụng'
+                        ]
                     ]);
                 } else {
                     $checkVoucher = VoucherUse::where('id_voucher', $voucher->id)
@@ -352,9 +356,11 @@ class PaymentController extends Controller
             $newBill->delete();
 
             return response()->json([
-                'code' => 500,
-                'status' => 'error',
-                'message' => 'Mua khóa học thất bại'
+                'data' => [
+                    'code' => 500,
+                    'status' => 'error',
+                    'message' => 'Mua khóa học thất bại'
+                ]
             ]);
         } else {
             $withdrawalWallet = WithdrawalWallet::where('id_user', $course->id_user)->first();
