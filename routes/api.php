@@ -75,7 +75,7 @@ Route::middleware('auth:sanctum')->group(function () {
     # ===================== ROUTE FOR CHECKOUT ===========================
 
     Route::prefix('vouchers')->group(function () {
-        Route::get('/', [VoucherController::class, 'listVouchers']);
+        Route::get('/new-voucher', [VoucherController::class, 'newVoucher']);
         Route::get('/apply-coupon/{id_user}/{voucher_code}', [VoucherController::class, 'applyCoupon']);
     });
 
