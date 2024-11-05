@@ -29,8 +29,14 @@ class CurriculumController extends Controller
                 'lessons.lessonable',
                 'quiz'
             ])
-            ->orderBy('position')
-            ->get();
+                ->orderBy('position')
+                ->get()
+                ->map(function ($module) {
+                    // Gán tổng số lessons vào module
+                    $module->total_lessons = $module->lessons->count();
+                    return $module;
+                });
+            ;
             return response()->json([
                 'status' => 200,
                 'message' => "Danh sách chương trình giảng dạy.",

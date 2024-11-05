@@ -56,13 +56,14 @@ class UploadVideoController extends Controller
 
     public function addLessonVideo($data, $moduleId, $description)
     {
+        $maxPosition = Lesson::where('id_module', $moduleId)->max('position');
         $newLessonVideo = Video::query()->create($data);
         $newLessonVideo->lessons()->create([
             'id_module' => $moduleId,
             'title' => $data['title'],
             'description' => $description,
             'content_type' => 'video',
-            'position' => $newLessonVideo->id,
+            'position' => $maxPosition + 1,
         ]);
         return $newLessonVideo;
     }
