@@ -831,33 +831,9 @@
 
         window.Echo.channel('request-withdraw-money')
             .listen('RequestWithdrawMoney', (event) => {
-                const data = JSON.parse(event.requestWithdraw);
-
                 if (data && data.url && data.message && data.created_at) {
-                    const notificationMess = $('#notificationMess');
-                    const item = `
-                <a href="${data.url}">
-                    <div class="text-reset notification-item d-block dropdown-item position-relative" id="notification-item" data-id="${data.id || ''}">
-                        <div class="d-flex">
-                            <div class="avatar-xs me-3 flex-shrink-0">
-                                <span class="avatar-title bg-info-subtle text-info rounded-circle fs-16">
-                                    <i class="ri-money-dollar-circle-line"></i>
-                                </span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <a href="${data.url}" class="stretched-link">
-                                    <span class="text-secondary">${data.message}</span><br>
-                                </a>
-                                <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                                    <span><i class="mdi mdi-clock-outline"></i> ${dayjs(data.created_at).fromNow()}</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </a>`;
-                    if(data.notifiable_id == "<?= auth()->id()?>") {
-                        notificationMess.prepend(item);
-                    }
+                    fetchUnreadNotificationCount()
+                    loadNotifications()
                 } else {
                     console.error('Invalid data received:', data);
                 }
