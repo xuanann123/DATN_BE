@@ -89,9 +89,24 @@ class CourseDetailController extends Controller // di ve sinh
 
         try {
             //Lấy bài học với các mục liên quan tránh n+1 egger loading
-            $course = Course::with(['category', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons', 'modules.quiz'])
+            $course = Course::with([
+                'category',
+                'tags',
+                'goals',
+                'requirements',
+                'audiences',
+                'modules' => function ($query) {
+                    $query->orderBy('position'); // sort theo position
+                },
+                'modules.lessons' => function ($query) {
+                    $query->orderBy('position'); // sort theo position
+                },
+                'modules.quiz'
+            ])
                 ->where('slug', $slug)
                 ->firstOrFail();
+            ;
+
             //Lấy người dùng hiện tại
             $user = auth()->user();
 
@@ -126,7 +141,7 @@ class CourseDetailController extends Controller // di ve sinh
                 return response()->json([
                     'status' => 'success',
                     'message' => "Thông tin khóa học.",
-                    'data' => [$course],
+                    'data' => $course,
                 ], 200);
             }
             //tiếp tục với luồng dữ liệu đăng kí khoá học rồi
@@ -143,18 +158,6 @@ class CourseDetailController extends Controller // di ve sinh
                 ->whereIn('quiz_id', $course->modules->pluck('quiz.id'))
                 ->count();
 
-            // Gán giá trị is_completed cho quiz trong khóa học
-            foreach ($course->modules as $module) {
-                if ($module->quiz) {
-                    $quizProgress = QuizProgress::where('user_id', $user->id)
-                        ->where('quiz_id', $module->quiz->id)
-                        ->first();
-
-                    // Gán giá trị is_completed cho quiz
-                    $module->quiz->is_completed = $quizProgress ? $quizProgress->is_completed : 0;
-                }
-            }
-
             // Tổng số lượng bài học và quiz đã hoàn thành
             $total_completed_items = $completed_lessons + $completed_quizzes;
 
@@ -164,9 +167,9 @@ class CourseDetailController extends Controller // di ve sinh
             // Biến check khoá học đã hoàn thành => bài học cuối cùng.
             $last_completed_lesson = NULL;
             // Lấy ra bài học cuối cùng đã hoàn thành => đánh dấu khi người dùng bấm vào khoá học đó sẽ hiển thị bài đã học
-            foreach ($course->modules->sortBy('posittion') as $module) {
+            foreach ($course->modules->sortBy('position') as $module) {
                 //Lấy danh sách bài học được sort theo posittion
-                foreach ($module->lessons->sortBy('posittion') as $lesson) {
+                foreach ($module->lessons->sortBy('position') as $lesson) {
                     //Tiến độ học tập
                     $lessonProgress = LessonProgress::where('id_user', $user->id)
                         ->where('id_lesson', $lesson->id)
@@ -182,48 +185,60 @@ class CourseDetailController extends Controller // di ve sinh
                         $last_completed_lesson = $lesson->makeHidden('module');
                     }
                 }
-                //
-                // $next_lesson = NULL;
-                if (!$last_completed_lesson) {
-                    $next_lesson = $course->modules->sortBy('posittion')->first()->lessons->sortBy('posittion')->first();
-                } else {
-                    // check lesson tiep theo dua vao bai hoc hoan thanh cuoi cung trong 1 chuong
-                    $current_module = $last_completed_lesson->module;
-                    $next_lesson_in_module = $current_module->lessons
-                        ->where('position', '>', $last_completed_lesson->position)
-                        ->sortBy('position')
+
+                // Gán giá trị is_completed cho quiz trong khóa học
+                if ($module->quiz) {
+                    $quizProgress = QuizProgress::where('user_id', $user->id)
+                        ->where('quiz_id', $module->quiz->id)
                         ->first();
 
-                    if ($next_lesson_in_module) {
-                        // bài học tiếp theo trong cùng chương
-                        $next_lesson = $next_lesson_in_module;
-                    } else {
-                        // nếu chưa làm quiz chương đó thì "next_lesson" sẽ là quiz của chương
-                        $quizProgress = QuizProgress::where('user_id', $user->id)
-                            ->where('quiz_id', $current_module->quiz->id)
-                            ->first();
+                    // Gán giá trị is_completed cho quiz
+                    $module->quiz->is_completed = $quizProgress ? $quizProgress->is_completed : 0;
+                }
+            }
+            //
+            // $next_lesson = NULL;
+            if (!$last_completed_lesson) {
+                $next_lesson = $course->modules->sortBy('position')->first()->lessons->sortBy('position')->first();
+            } else {
+                // check lesson tiep theo dua vao bai hoc hoan thanh cuoi cung trong 1 chuong
+                $current_module = $last_completed_lesson->module;
+                $next_lesson_in_module = $current_module->lessons
+                    ->where('position', '>', $last_completed_lesson->position)
+                    ->sortBy('position')
+                    ->first();
 
-                        if (!$quizProgress || !$quizProgress->is_completed) {
-                            $next_lesson = $current_module->quiz;
-                        } else {
-                            //  neu la bai hoc cuoi cung trong chuong va quiz da hoan thanh thi chuyen sang chuong sau
-                            $next_module = $course->modules
-                                ->where('position', '>', $current_module->position)
-                                ->sortBy('posittion')
-                                ->first();
-                            if ($next_module) {
-                                $next_lesson = $next_module->lessons->sortBy('posittion')->first();
-                            }
+                if ($next_lesson_in_module) {
+                    // bài học tiếp theo trong cùng chương
+                    $next_lesson = $next_lesson_in_module;
+                } else {
+                    // nếu chưa làm quiz chương đó thì "next_lesson" sẽ là quiz của chương
+                    $quizProgress = QuizProgress::where('user_id', $user->id)
+                        ->where('quiz_id', $current_module->quiz->id)
+                        ->first();
+
+                    if (!$quizProgress || !$quizProgress->is_completed) {
+                        $next_lesson = $current_module->quiz;
+                    } else {
+                        //  neu la bai hoc cuoi cung trong chuong va quiz da hoan thanh thi chuyen sang chuong sau
+                        $next_module = $course->modules
+                            ->where('position', '>', $current_module->position)
+                            ->sortBy('position')
+                            ->first();
+                        if ($next_module) {
+                            $next_lesson = $next_module->lessons->sortBy('position')->first();
                         }
                     }
                 }
             }
+
             //Trả về dữ liệu phía client
             return response()->json([
                 'status' => 'success',
                 'message' => "Bài học của bạn.",
                 'data' => [
                     // 'course' => $course,
+                    'course_name' => $course->name,
                     'progress_percent' => $progress_percent,
                     'total_lessons' => $total_items,
                     'completed_lessons' => $total_completed_items,
