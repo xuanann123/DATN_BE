@@ -652,8 +652,6 @@
         transform: translate(-50%, -50%);
     }
 </style>
-<script></script>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.6/dayjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.6/plugin/relativeTime.min.js"></script>
@@ -705,7 +703,7 @@
                     const notificationMess = $('#notificationMess')
                     notificationMess.empty() // reset nội dung
 
-                    console.log(data)
+                    // console.log(data)
 
                     data.forEach(function(notification) {
                         const unreadNoti = !notification.read_at ?
@@ -755,6 +753,11 @@
                                     title += `${adminComments}`
                                 }
                                 break
+                            case 'request_withdraw_money':
+                                iconClass = 'ri-money-dollar-circle-line'
+                                bgColorClass = 'bg-info-subtle'
+                                title = notification.data.message
+                                break;
 
                             default:
                                 iconClass = 'bx bx-bell'
@@ -775,7 +778,7 @@
                                             <div class="flex-grow-1">
                                                 <a href="${notification.data.url}" class="stretched-link">
                                                     <span class="text-secondary">${title}</span>
-                                                    <h5 class="mt-0 mb-2 lh-base badge bg-info">${notification.data.course_name}</h5>
+                                                    ${!notification.data.amount ? `<h5 class="mt-0 mb-2 lh-base badge bg-info">${notification.data.course_name}</h5>` : ''}
                                                 </a>
                                                 <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
                                                     <span><i class="mdi mdi-clock-outline"></i> ${dayjs(notification.created_at).fromNow()}</span>
@@ -831,7 +834,6 @@
                 const data = JSON.parse(event.requestWithdraw);
 
                 if (data && data.url && data.message && data.created_at) {
-                    console.log(data.amount);
                     const notificationMess = $('#notificationMess');
                     const item = `
                 <a href="${data.url}">
@@ -853,7 +855,9 @@
                         </div>
                     </div>
                 </a>`;
-                    notificationMess.prepend(item);
+                    if(data.notifiable_id == "<?= auth()->id()?>") {
+                        notificationMess.prepend(item);
+                    }
                 } else {
                     console.error('Invalid data received:', data);
                 }
