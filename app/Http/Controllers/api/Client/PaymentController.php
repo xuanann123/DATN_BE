@@ -595,19 +595,24 @@ class PaymentController extends Controller
             'balance' => ($withdrawalWallet->balance) - $request->coin,
         ]);
 
-        $newNotification = Notification::query()->create([
-            'notifiable_type' => WithdrawMoney::class,
-            'notifiable_id' => $newRequestWithdrawalWallet->id,
-            'type' => 'request_withdraw_money',
-            'data' => json_encode([
-                'amount' => $newRequestWithdrawalWallet->amount,
-                'message' => 'Có yêu cầu rút ' . number_format($newRequestWithdrawalWallet->amount) . 'đ',
-                'url' => 'http://localhost:8000/admin/transactions/withdraw-money',
-                'created_at' => $newRequestWithdrawalWallet->created_at
-            ]),
-        ]);
+        $usersAdmin = User::where('user_type', 'admin')->get();
 
-        broadcast(new RequestWithdrawMoney($newNotification->data));
+        foreach ($usersAdmin as $user) {
+            $newNotification = Notification::query()->create([
+                'notifiable_type' => User::class,
+                'notifiable_id' => $user->id,
+                'type' => 'request_withdraw_money',
+                'data' => json_encode([
+                    'notifiable_id' => $user->id,
+                    'type' => 'request_withdraw_money',
+                    'amount' => $newRequestWithdrawalWallet->amount,
+                    'message' => 'Có yêu cầu rút ' . number_format($newRequestWithdrawalWallet->amount) . 'đ',
+                    'url' => 'http://localhost:8000/admin/transactions/withdraw-money',
+                    'created_at' => $newRequestWithdrawalWallet->created_at
+                ]),
+            ]);
+            broadcast(new RequestWithdrawMoney($newNotification->data));
+        }
 
         return response()->json([
             'code' => 200,

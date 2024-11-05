@@ -11,6 +11,32 @@ use Illuminate\Support\Facades\DB;
 
 class VoucherController extends Controller
 {
+
+    public function listVouchers() {
+        $vouchers = Voucher::where('start_time', '<', now())
+            ->where('end_time', '>', now())
+            ->whereColumn('count', '>', 'used_count')
+            ->where('is_active', 1)
+            ->get();
+
+        if(count($vouchers) <= 0) {
+            return response()->json([
+                'data' => [
+                    'code' => 204,
+                    'status' => 'error',
+                    'message' => 'Danh sách mã giảm giá trống'
+                ]
+            ]);
+        }
+
+        return response()->json([
+            'data' => [
+                'status' => 'success',
+                'message' => 'Danh sách mã giảm giá',
+                'voucher' => $vouchers
+            ]
+        ], 200);
+    }
     public function applyCoupon(Request $request)
     {
         $userId = $request->id_user;
