@@ -375,6 +375,14 @@ class CourseController extends Controller
     {
         DB::beginTransaction();
         try {
+            // if ($course->status !== 'draft' || $course->status !== 'rejected') {
+            //     return response()->json([
+            //         'status' => 400,
+            //         'message' => 'Chỉ những khóa học ở trạng thái bản nháp hoặc bị từ chối mới được gửi để xem xét.',
+            //         'data' => []
+            //     ], 400);
+            // }
+
             $course->update([
                 'status' => 'pending',
                 'submited_at' => now()
