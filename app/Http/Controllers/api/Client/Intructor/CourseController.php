@@ -374,30 +374,98 @@ class CourseController extends Controller
     public function submit(Course $course)
     {
         DB::beginTransaction();
-        try {
-            $course->update([
-                'status' => 'pending',
-                'submited_at' => now()
-            ]);
 
-            // Gửi thông báo đến admin
-            $admins = User::where('user_type', User::TYPE_ADMIN)->get();
-            foreach ($admins as $admin) {
-                $admin->notify(new CourseSubmittedNotification($course));
+        $requestStatus = request()->input('status');
+
+        // status gửi từ request phải = status hiện tại trong db
+        if ($requestStatus !== $course->status) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Trạng thái không hợp lệ',
+                'data' => [],
+            ], 400);
+        }
+
+        try {
+            switch ($course->status) {
+                case 'draft':
+                    // gui cho admin xem xet
+                    $course->update([
+                        'status' => 'pending',
+                        'submited_at' => now()
+                    ]);
+                    $message = 'Khóa học của bạn đã được gửi đi để xem xét.';
+                    // Gửi thông báo đến admin
+                    $admins = User::where('user_type', User::TYPE_ADMIN)->get();
+                    foreach ($admins as $admin) {
+                        $admin->notify(new CourseSubmittedNotification($course));
+                    }
+                    break;
+
+                case 'pending':
+                    // hủy gửi xem xét
+                    $course->update([
+                        'status' => 'draft',
+                        'submited_at' => NULL
+                    ]);
+                    $message = 'Khóa học của bạn đã hủy gửi đi để xem xét.';
+                    // Xóa thông báo
+                    $admins = User::where('user_type', User::TYPE_ADMIN)->get();
+                    foreach ($admins as $admin) {
+                        $admin->notifications->each(function ($notification) use ($course) {
+                            if (
+                                isset($notification->data['course_id'], $notification->data['type']) &&
+                                $notification->data['course_id'] == $course->id &&
+                                $notification->data['type'] === 'course_approval_for_admin'
+                            ) {
+                                $notification->delete();
+                            }
+                        });
+                    }
+                    break;
+
+                case 'approved':
+                    // khong cho phep thay doi khi khoa hoc da duoc chap thuan
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Thao tác không hợp lệ khi khóa học này đã được chấp thuận.',
+                        'data' => []
+                    ], 400);
+
+                case 'rejected':
+                    // Gửi xem xét lại
+                    $course->update([
+                        'status' => 'pending',
+                        'submited_at' => now()
+                    ]);
+                    $message = 'Khóa học của bạn đã được gửi đi để xem xét lại.';
+                    // Gửi thông báo đến admin
+                    $admins = User::where('user_type', User::TYPE_ADMIN)->get();
+                    foreach ($admins as $admin) {
+                        $admin->notify(new CourseSubmittedNotification($course));
+                    }
+                    break;
+
+                default:
+                    return response()->json([
+                        'status' => 400,
+                        'message' => 'Thao tác không hợp lệ.',
+                        'data' => []
+                    ], 400);
             }
 
             DB::commit();
 
             return response()->json([
                 'status' => 200,
-                'message' => 'Khóa học của bạn đã được gửi đi để xem xét.',
+                'message' => $message,
                 'data' => []
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'status' => 500,
-                'message' => 'Cập nhật không thành công! ' . $e->getMessage(),
+                'message' => 'Thao tác không thành công! ' . $e->getMessage(),
                 'data' => []
             ], 500);
         }
