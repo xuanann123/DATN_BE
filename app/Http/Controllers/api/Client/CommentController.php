@@ -140,7 +140,8 @@ class CommentController extends Controller
     }
 
     //Thêm bình luận bài học
-    public function addCommentLesson(CommentLessonRequest $request) {
+    public function addCommentLesson(CommentLessonRequest $request)
+    {
         try {
             //Lấy dữ liệu
             $dataComment = $request->all();

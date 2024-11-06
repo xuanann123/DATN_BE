@@ -407,6 +407,65 @@ class PaymentController extends Controller
         }
     }
 
+    public function registerCourse(Request $request)
+    {
+        $userId = $request->id_user;
+        $courseId = $request->id_course;
+
+        $course = Course::find($courseId);
+        if (!$course) {
+            return response()->json([
+                'data' => [
+                    'code' => 204,
+                    'status' => 'error',
+                    'message' => 'Khóa học không tồn tại'
+                ]
+            ]);
+        }
+
+        $user = User::find($userId);
+        if (!$user) {
+            return response()->json([
+                'data' => [
+                    'code' => 204,
+                    'status' => 'error',
+                    'message' => 'Người dùng không tồn tại'
+                ]
+            ]);
+        }
+
+        $checkByCourse = UserCourse::where('id_user', $userId)->where('id_course', $courseId)->first();
+        if ($checkByCourse) {
+            return response()->json([
+                'status' => "error",
+                'message' => "Bạn đã mua khóa học này rồi"
+
+            ], 409);
+        }
+
+        $newUserCourse = UserCourse::query()->create([
+            'id_user' => $userId,
+            'id_course' => $courseId,
+        ]);
+
+        if (!$newUserCourse) {
+            return response()->json([
+                'data' => [
+                    'code' => 500,
+                    'status' => 'error',
+                    'message' => 'Đăng kí khóa học thất bại'
+                ]
+            ]);
+        }
+
+        return response()->json([
+            'data' => [
+                'status' => 'success',
+                'message' => 'Đăng kí khóa học thành công',
+            ]
+        ], 201);
+    }
+
 
     public function checkBuyCourse(Request $request)
     {
