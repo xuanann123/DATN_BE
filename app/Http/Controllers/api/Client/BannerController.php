@@ -24,7 +24,7 @@ class BannerController extends Controller
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Danh sách banner rỗng',
-                ], status: 404);
+                ], 204);
             }
             //Nếu thành thông trả về dữ liệu 200
             return response()->json([
