@@ -83,6 +83,7 @@ class CourseController extends Controller
                     ])
                 ->where('is_active', 1)
                 ->where('status', 'approved')
+                ->where('price_sale', '!=', null)
                 ->orderByDesc('price_sale')->limit(6)->get();
 
             $courses->each(function ($course) {
