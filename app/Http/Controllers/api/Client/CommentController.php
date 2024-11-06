@@ -139,6 +139,21 @@ class CommentController extends Controller
         }
     }
 
+    // Số lượng bình luận của mỗi lesson;
+    public function  countCommentPost(Request $request)
+    {
+        $slug = $request->slug;
+        $countComment = Comment::join('posts', 'posts.id', '=', 'comments.commentable_id')
+        ->where('slug', $slug)->where('commentable_type', Post::class)->count();
+        return response()->json([
+            'data' => [
+                'status' => 'success',
+                'message' => 'Số lượng bình luận',
+                'count' => $countComment
+            ]
+        ], 200);
+    }
+
     //Thêm bình luận bài học
     public function addCommentLesson(CommentLessonRequest $request)
     {
