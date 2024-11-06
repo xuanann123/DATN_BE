@@ -20,13 +20,13 @@ class CourseController extends Controller
                 'tags'
                 // Đếm số lượng khi lấy dữ liệu
             ])->withCount([
-                        'modules as lessons_count' => function ($query) {
-                            $query->whereHas('lessons');
-                        },
-                        'modules as quiz_count' => function ($query) {
-                            $query->whereHas('quiz');
-                        }
-                    ])
+                'modules as lessons_count' => function ($query) {
+                    $query->whereHas('lessons');
+                },
+                'modules as quiz_count' => function ($query) {
+                    $query->whereHas('quiz');
+                }
+            ])
                 ->where('is_active', 1)
                 ->where('status', 'approved')
                 ->orderByDesc('created_at')->limit(6)->get();
@@ -42,7 +42,6 @@ class CourseController extends Controller
                 })->sum();
 
                 $course->makeHidden('modules');
-
             });
             if (count($courses) == 0) {
                 return response()->json([
@@ -74,13 +73,13 @@ class CourseController extends Controller
                 'tags'
                 // Đếm số lượng khi lấy dữ liệu
             ])->withCount([
-                        'modules as lessons_count' => function ($query) {
-                            $query->whereHas('lessons');
-                        },
-                        'modules as quiz_count' => function ($query) {
-                            $query->whereHas('quiz');
-                        }
-                    ])
+                'modules as lessons_count' => function ($query) {
+                    $query->whereHas('lessons');
+                },
+                'modules as quiz_count' => function ($query) {
+                    $query->whereHas('quiz');
+                }
+            ])
                 ->where('is_active', 1)
                 ->where('status', 'approved')
                 ->orderByDesc('price_sale')->limit(6)->get();
@@ -96,7 +95,6 @@ class CourseController extends Controller
                 })->sum();
 
                 $course->makeHidden('modules');
-
             });
             if (count($courses) == 0) {
                 return response()->json([
@@ -117,7 +115,6 @@ class CourseController extends Controller
                 'data' => []
             ]);
         }
-
     }
 
     // Lấy khóa học nổi bật
