@@ -15,10 +15,7 @@ use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
-    public function getTags()
-    {
-
-    }
+    public function getTags() {}
     public function getPosts()
     {
         try {
@@ -236,10 +233,9 @@ class PostController extends Controller
                 'data' => []
             ], 500);
         }
-
     }
 
-    //Cấp nhật bài viết
+    //Cập nhật bài viết
     public function update(UpdatePostRequest $request, string $slug)
     {
         $post = Post::where('slug', $slug)->where('is_active', '=', 1)->firstOrFail();
@@ -352,8 +348,6 @@ class PostController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
-
-
     }
     public function myListPost()
     {
@@ -475,4 +469,35 @@ class PostController extends Controller
         }
     }
 
+    public function listPostOutstanding()
+    {
+        $listPosts = Post::select(
+            'posts.title',
+            'posts.slug',
+            'posts.thumbnail',
+            'posts.views',
+            'users.name',
+            'users.avatar',
+        )
+            ->join('users', 'posts.user_id', '=', 'users.id')
+            ->where('posts.is_active', '=', 1)
+            ->orderBy('posts.views', 'desc')
+            ->limit(6)
+            ->get();
+
+
+        if (count($listPosts) <= 0) {
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Danh sách bài viết trống'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Danh sách bài viết nổi bật',
+            'data' => $listPosts
+        ], 200);
+    }
 }

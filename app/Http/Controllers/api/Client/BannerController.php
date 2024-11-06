@@ -11,7 +11,7 @@ class BannerController extends Controller
 {
     public function getBanners()
     {
-        
+
         try {
             //Lấy danh sách banner
             $banners = Banner::select('id', 'title', 'redirect_url', 'image', 'content', 'position', 'start_time', 'end_time')
@@ -39,6 +39,6 @@ class BannerController extends Controller
                 'data' => []
             ], 500);
         }
-        
+
     }
 }
