@@ -64,6 +64,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('transactions')->group(function () {
         Route::post('/payment/{user}', [PaymentController::class, 'paymentController']);
         Route::post('/buy-course/{id_user}/{id_course}', [PaymentController::class, 'buyCourse']);
+        Route::post('/register-course/{id_user}/{id_course}', [PaymentController::class, 'registerCourse']);
     });
 
     # ===================== ROUTE FOR CHECKOUT ===========================
