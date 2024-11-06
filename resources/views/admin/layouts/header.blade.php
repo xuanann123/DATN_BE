@@ -822,22 +822,16 @@
 
         window.Echo.private(`App.Models.User.${userId}`)
             .notification((notification) => {
-                console.log(notification)
+                // console.log(notification)
                 // Cập nhật số lượng thông báo chưa đọc
                 fetchUnreadNotificationCount()
-
                 loadNotifications()
             })
 
         window.Echo.channel('request-withdraw-money')
             .listen('RequestWithdrawMoney', (event) => {
-                if (data && data.url && data.message && data.created_at) {
                     fetchUnreadNotificationCount()
                     loadNotifications()
-                } else {
-                    console.error('Invalid data received:', data);
-                }
             });
-
     })
 </script>
