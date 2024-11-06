@@ -247,6 +247,8 @@ Route::prefix('posts')->group(function () {
     Route::get('', [PostController::class, 'getPosts']);
     Route::get('/{slug}', [PostController::class, 'show']);
 });
+// Danh sách bài viết nổi bật;
+Route::get('/post-outstanding', [PostController::class, 'listPostOutstanding']);
 
 # ===================== ROUTE FOR TEACHER ===========================
 
