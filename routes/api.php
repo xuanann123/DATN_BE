@@ -28,6 +28,7 @@ use App\Http\Controllers\api\Client\Intructor\TargetController;
 use App\Http\Controllers\api\Client\NotificationController;
 use App\Http\Controllers\api\Client\Student\NoteController;
 use App\Http\Controllers\api\Client\VoucherController;
+use App\Http\Controllers\api\Client\FollowController;
 
 /*
 |--------------------------------------------------------------------------
@@ -131,7 +132,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('user')->group(function () {
         Route::get('/profile', [UserController::class, 'show']);
-        
+
         Route::post('/profile', [UserController::class, 'updateProfile']);
         Route::post('/change-password', [UserController::class, 'changePassword']);
         Route::get('/posts', [PostController::class, 'myListPost']);
@@ -145,8 +146,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/history-transactions/{id_user}', [PaymentController::class, 'historyTransactionsPurchase']);
 
         //Chức năng theo dõi 1 giảng viên
-        Route::post('/follow', [UserController::class, 'follow']);
-        Route::post('/unfollow', [UserController::class, 'unfollow']);
+        Route::post('/follow', [FollowController::class, 'follow']);
+        Route::post('/unfollow', [FollowController::class, 'unfollow']);
+        Route::get('/check-follow/{id_user}/{id_teacher}', [FollowController::class, 'checkFollow']);
+
 
         //Danh sách giảng viên theo tháng
         Route::get('/list-teacher-month', [UserController::class, 'listTeacherMonth']);
@@ -278,6 +281,8 @@ Route::prefix('teachers')->group(function () {
 
     // Tìm kiếm giảng viên;
     Route::get('/search-teacher', [TeacherController::class, 'searchTeachers']);
+
+    //
 });
 
 # ===================== ROUTE FOR COURSE ===========================
