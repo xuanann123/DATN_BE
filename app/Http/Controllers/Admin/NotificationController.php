@@ -19,13 +19,19 @@ class NotificationController extends Controller
     {
         $user = auth()->user();
 
+        $counts = request()->get('counts', 10);
+
         $notifications = $user->notifications()
             ->where('notifiable_id', $user->id)
             ->orderBy('created_at', 'DESC')
-            ->take(20)
+            ->take($counts)
             ->get();
 
-        return response()->json($notifications);
+        return response()->json([
+            'status' => 'success',
+            'data' => $notifications,
+            'message' => ''
+        ]);
     }
 
     public function getUnreadCount()

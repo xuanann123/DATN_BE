@@ -25,6 +25,7 @@ use App\Http\Controllers\api\Client\RatingController;
 use App\Http\Controllers\api\Client\CommentController;
 use App\Http\Controllers\api\Client\Intructor\ModuleQuizController;
 use App\Http\Controllers\api\Client\Intructor\TargetController;
+use App\Http\Controllers\api\Client\NotificationController;
 use App\Http\Controllers\api\Client\Student\NoteController;
 use App\Http\Controllers\api\Client\VoucherController;
 
@@ -141,6 +142,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/my-course-bought', [UserController::class, 'myCourseBought']);
         Route::get('/history-buy-course/{id_user}', [PaymentController::class, 'historyBuyCourse']);
         Route::get('/history-transactions/{id_user}', [PaymentController::class, 'historyTransactionsPurchase']);
+
+        // Thông báo
+        Route::prefix('notifications')->group(function () {
+            Route::get('/', [NotificationController::class, 'index']);
+            Route::get('/all-and-unread', [NotificationController::class, 'getUnreadCount']);
+            Route::post('/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
+            Route::delete('/{id}/delete', [NotificationController::class, 'delete']);
+        });
     });
 
     Route::prefix('teacher')->middleware('teacher')->group(function () {
