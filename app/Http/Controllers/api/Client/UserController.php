@@ -248,13 +248,17 @@ class UserController extends Controller
     }
     public function listTeacherMonth(Request $request)
     {
+      
         // Lấy danh sách giảng viên trong 1 tháng gần nhất (hoặc theo yêu cầu của bạn)
         $oneMonthAgo = Carbon::now()->subMonth();
         $teachers = User::where('user_type', 'teacher')
             ->where('created_at', '>=', $oneMonthAgo)->get();
         //Dùng phương thức map lấy ra số lượng khoá học, số lượng comment, số lượng rating
         $teachers->map(function ($teacher) {
+            $user = Auth::user();
             $courses = $teacher->userCourses;
+            //Kiểm tra thằng $user đã follow thằng $teacher hay chưa
+            $follow = $user->following()->where("following_id", $teacher->id)->exists();
 
             // Tính tổng số comment của tất cả các khóa học của giảng viên
             $total_comments = $courses->flatMap(function ($course) {
@@ -270,6 +274,7 @@ class UserController extends Controller
             $teacher->total_courses = $courses->count();
             $teacher->total_comments = $total_comments;
             $teacher->total_ratings = $total_ratings;
+            $teacher->follow = $follow;
             $teacher->makeHidden(['userCourses']);
             return $teacher;
         });
