@@ -15,6 +15,7 @@ use App\Http\Requests\Client\User\ChangePasswordRequest;
 use App\Models\User;
 use App\Models\UserCourse;
 use App\Models\Video;
+use Carbon\Carbon;
 use Flasher\Prime\EventDispatcher\Event\ResponseEvent;
 
 class UserController extends Controller
@@ -198,11 +199,11 @@ class UserController extends Controller
             return response()->json([
                 "status" => "error",
                 'message' => "Không tồn tại người mà bạn muốn theo dõi",
-                "data" =>[],
+                "data" => [],
             ], 404);
         }
         //Kiểm tra xem người dùng này đã follow chưa
-        if(!$follower->following()->where("following_id", $following_id)->exists()){
+        if (!$follower->following()->where("following_id", $following_id)->exists()) {
             $follower->following()->attach($following_id);
             return response()->json([
                 "status" => "success",
@@ -217,7 +218,8 @@ class UserController extends Controller
             "data" => [],
         ], 400);
     }
-    public function unfollow(Request $request) {
+    public function unfollow(Request $request)
+    {
         $follower = Auth::user();
         $following_id = $request->following_id;
         //Kiểm tra xem tài khoản trên đã được follow chưa và tồn tại không
@@ -230,7 +232,7 @@ class UserController extends Controller
             ], 404);
         }
         //Kiểm tra xem nó có follow không
-        if($follower->following()->where("following_id", $following_id)->exists()) {
+        if ($follower->following()->where("following_id", $following_id)->exists()) {
             $follower->following()->detach($following_id);
             return response()->json([
                 "status" => "success",
@@ -243,5 +245,48 @@ class UserController extends Controller
             "message" => "Tài khoản này chưa được theo dõi",
             "data" => [],
         ], 400);
+    }
+    public function listTeacherMonth(Request $request)
+    {
+        // Lấy danh sách giảng viên trong 1 tháng gần nhất (hoặc theo yêu cầu của bạn)
+        $oneMonthAgo = Carbon::now()->subMonth();
+        $teachers = User::where('user_type', 'teacher')
+            ->where('created_at', '>=', $oneMonthAgo)->get();
+        //Dùng phương thức map lấy ra số lượng khoá học, số lượng comment, số lượng rating
+        $teachers->map(function ($teacher) {
+            $courses = $teacher->userCourses;
+
+            // Tính tổng số comment của tất cả các khóa học của giảng viên
+            $total_comments = $courses->flatMap(function ($course) {
+                return $course->comments;
+            })->count();
+
+            // Tính tổng số rating của tất cả các khóa học của giảng viên
+            $total_ratings = $courses->flatMap(function ($course) {
+                return $course->ratings;
+            })->count();
+
+            // Tính tổng số khóa học của giảng viên
+            $teacher->total_courses = $courses->count();
+            $teacher->total_comments = $total_comments;
+            $teacher->total_ratings = $total_ratings;
+            $teacher->makeHidden(['userCourses']);
+            return $teacher;
+        });
+
+
+        // Sắp xếp giảng viên theo tổng số khóa học, bình luận, và rating cao nhất
+        $teachers = $teachers->sortByDesc(function ($teacher) {
+            return $teacher->total_courses + $teacher->total_comments + $teacher->total_ratings;
+        });
+
+        // Lấy ra 5 giảng viên đầu tiên (có tổng số khóa học, bình luận và rating cao nhất)
+        $topTeachers = $teachers->take(5);
+
+        return response()->json([
+            "status" => "success",
+            "message" => "Danh sách top 5 giảng viên theo tháng",
+            "data" => $topTeachers,
+        ], 200);
     }
 }

@@ -94,4 +94,21 @@ class Course extends Model
         return $this->belongsToMany(User::class, 'user_courses', 'id_course', 'id_user');
     }
 
+    public function getCommentsCountAttribute(): int
+    {
+        // Lấy tất cả bình luận liên quan đến giảng viên
+        return $this->comments()->count();
+    }
+
+
+
+    public function getAverageRatingAttribute(): float
+    {
+        // Tránh trường hợp không có rating, trả về 0 nếu không có đánh giá
+        $averageRating = $this->ratings()->avg('rating');
+
+        // Nếu không có đánh giá, trả về 0.0 để tránh trả về null
+        return $averageRating !== null ? $averageRating : 0.0;
+    }
+
 }

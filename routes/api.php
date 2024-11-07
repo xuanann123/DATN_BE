@@ -131,10 +131,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('user')->group(function () {
         Route::get('/profile', [UserController::class, 'show']);
-        //Nhấn nút theo dõi 1 giảng viên
-        Route::post('/follow', [UserController::class, 'follow']);
-        //Chức năng huỷ follow
-        Route::post('/unfollow', [UserController::class, 'unfollow']);
+        
         Route::post('/profile', [UserController::class, 'updateProfile']);
         Route::post('/change-password', [UserController::class, 'changePassword']);
         Route::get('/posts', [PostController::class, 'myListPost']);
@@ -146,6 +143,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/my-course-bought', [UserController::class, 'myCourseBought']);
         Route::get('/history-buy-course/{id_user}', [PaymentController::class, 'historyBuyCourse']);
         Route::get('/history-transactions/{id_user}', [PaymentController::class, 'historyTransactionsPurchase']);
+
+        //Chức năng theo dõi 1 giảng viên
+        Route::post('/follow', [UserController::class, 'follow']);
+        Route::post('/unfollow', [UserController::class, 'unfollow']);
+
+        //Danh sách giảng viên theo tháng
+        Route::get('/list-teacher-month', [UserController::class, 'listTeacherMonth']);
 
         // Thông báo
         Route::prefix('notifications')->group(function () {
