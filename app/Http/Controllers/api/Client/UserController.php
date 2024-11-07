@@ -209,7 +209,7 @@ class UserController extends Controller
                 "status" => "success",
                 "message" => "Theo dõi thành công",
                 "data" => [],
-            ], 200);
+            ], 201);
         }
         //Đã theo dõi từ trước sẽ báo lỗi 400
         return response()->json([
