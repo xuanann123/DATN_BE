@@ -84,17 +84,21 @@ class TeacherController extends Controller
         if(!$teacher) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Teacher not found',
+                'message' => 'Không tồn tại giảng viên',
             ], 204);
         }
         $courses = DB::table('courses as c')
             ->selectRaw('
-                c.id as course_id,
-                c.name as course_name,
-                c.thumbnail as course_thumbnail,
+                c.id,
+                c.name,
+                c.thumbnail,
+                c.slug,
+                c.level,
+                c.price,
+                c.price_sale,
                 c.total_student,
                 COUNT(DISTINCT l.id) as total_lessons,
-                c.duration as course_duration,
+                c.duration as total_duration_video,
                 ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
             ')
             ->leftJoin('modules as m', 'm.id_course', '=', 'c.id')
