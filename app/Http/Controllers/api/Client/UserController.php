@@ -15,6 +15,7 @@ use App\Http\Requests\Client\User\ChangePasswordRequest;
 use App\Models\User;
 use App\Models\UserCourse;
 use App\Models\Video;
+use Flasher\Prime\EventDispatcher\Event\ResponseEvent;
 
 class UserController extends Controller
 {
@@ -153,7 +154,7 @@ class UserController extends Controller
             $total_lessons = $course->modules->flatMap->lessons->count();
             //Kiểm tra quiz có hay không và truy vấn vào quiz lấy ra số lượng
             $total_quizzes = $course->modules->whereNotNull('quiz')->count();
-       
+
             // Set thời gian cho từng bài học (cần có hàm setLessonDurations)
             $this->setLessonDurations($course);
             $total_duration_video = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
@@ -184,5 +185,63 @@ class UserController extends Controller
                 $lesson->duration = null;
             }
         });
+    }
+
+    public function follow(Request $request, )
+    {
+        //id người sẽ được theo dõi
+        $following_id = $request->following_id;
+        //Lấy id người dùng đang online hiện tại
+        $follower = Auth::user();
+        $following = User::find($following_id);
+        if (!$following) {
+            return response()->json([
+                "status" => "error",
+                'message' => "Không tồn tại người mà bạn muốn theo dõi",
+                "data" =>[],
+            ], 404);
+        }
+        //Kiểm tra xem người dùng này đã follow chưa
+        if(!$follower->following()->where("following_id", $following_id)->exists()){
+            $follower->following()->attach($following_id);
+            return response()->json([
+                "status" => "success",
+                "message" => "Theo dõi thành công",
+                "data" => [],
+            ], 200);
+        }
+        //Đã theo dõi từ trước sẽ báo lỗi 400
+        return response()->json([
+            "status" => "error",
+            "message" => "Bạn đã theo dõi user này",
+            "data" => [],
+        ], 400);
+    }
+    public function unfollow(Request $request) {
+        $follower = Auth::user();
+        $following_id = $request->following_id;
+        //Kiểm tra xem tài khoản trên đã được follow chưa và tồn tại không
+        $following = User::find($following_id);
+        if (!$following) {
+            return response()->json([
+                "status" => "error",
+                'message' => "Không tồn tại người mà có theo dõi",
+                "data" => [],
+            ], 404);
+        }
+        //Kiểm tra xem nó có follow không
+        if($follower->following()->where("following_id", $following_id)->exists()) {
+            $follower->following()->detach($following_id);
+            return response()->json([
+                "status" => "success",
+                "message" => "Huỷ theo dõi tài khoản thành công",
+                "data" => [],
+            ], 200);
+        }
+        return response()->json([
+            "status" => "error",
+            "message" => "Tài khoản này chưa được theo dõi",
+            "data" => [],
+        ], 400);
     }
 }

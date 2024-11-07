@@ -73,4 +73,15 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Course::class, 'user_courses', 'id_user', 'id_course');
     }
+    //Định nghĩa mối quan hệ người được theo dõi
+    public function following()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'following_id');
+    }
+    //Người mà user này đang theo dõi
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'following_id', 'follower_id');
+    }
+
 }
