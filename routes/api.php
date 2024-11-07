@@ -131,6 +131,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('user')->group(function () {
         Route::get('/profile', [UserController::class, 'show']);
+        //Nhấn nút theo dõi 1 giảng viên
+        Route::post('/follow', [UserController::class, 'follow']);
+        //Chức năng huỷ follow
+        Route::post('/unfollow', [UserController::class, 'unfollow']);
         Route::post('/profile', [UserController::class, 'updateProfile']);
         Route::post('/change-password', [UserController::class, 'changePassword']);
         Route::get('/posts', [PostController::class, 'myListPost']);
