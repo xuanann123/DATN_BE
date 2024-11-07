@@ -464,8 +464,8 @@
 
                         <div class="tab-content position-relative" id="notificationItemsTabContent">
                             <div class="tab-pane fade show active py-2 ps-2" id="all-noti-tab" role="tabpanel">
-                                <div data-simplebar="init" style="max-height: 70vh;"
-                                    class="pe-2 simplebar-scrollable-y">
+                                <div data-simplebar style="max-height: 70vh;" class="pe-2"
+                                    id="notificationContainer">
                                     <div class="simplebar-wrapper" style="margin: 0px -8px 0px 0px;">
                                         <div class="simplebar-height-auto-observer-wrapper">
                                             <div class="simplebar-height-auto-observer"></div>
@@ -697,15 +697,15 @@
 
         function loadNotifications() {
             $.ajax({
-                url: '/admin/notifications',
+                url: '/admin/notifications?counts=' + counts,
                 method: 'GET',
-                success: function(data) {
+                success: function(response) {
                     const notificationMess = $('#notificationMess')
                     notificationMess.empty() // reset nội dung
 
-                    // console.log(data)
+                    // console.log(response)
 
-                    data.forEach(function(notification) {
+                    response.data.forEach(function(notification) {
                         const unreadNoti = !notification.read_at ?
                             '<span class="position-absolute translate-middle badge border border-light rounded-circle bg-danger p-1 unread-notification-dot"><span class="visually-hidden">unread messages</span></span>' :
                             ''
@@ -790,6 +790,24 @@
                                 </a>`
                         notificationMess.append(item)
                     })
+
+                    const totalNotifications = parseInt($('#all-notifications').text().match(/\d+/)[
+                        0]) // lấy tổng số luọng thông báo
+
+                    if (response.data.length < totalNotifications) {
+                        const loadMoreButton = `
+                                        <div class="text-center mt-3 w-100">
+                                            <button id="loadMoreNotifications" class="btn btn-primary w-100">Xem thông báo trước đó</button>
+                                        </div>`;
+                        notificationMess.append(loadMoreButton)
+
+                        $('#loadMoreNotifications').on('click', function() {
+                            counts += counts
+                            loadNotifications()
+                        })
+                    } else {
+                        $('#loadMoreNotifications').hide()
+                    }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     console.error('Có lỗi khi lấy thông báo:', textStatus, errorThrown)
@@ -799,6 +817,7 @@
 
         // Khi mở dropdown call api để lấy thông báo
         $('#notificationDropdown').on('show.bs.dropdown', function() {
+            counts = 10
             loadNotifications()
         })
 
@@ -830,8 +849,8 @@
 
         window.Echo.channel('request-withdraw-money')
             .listen('RequestWithdrawMoney', (event) => {
-                    fetchUnreadNotificationCount()
-                    loadNotifications()
+                fetchUnreadNotificationCount()
+                loadNotifications()
             });
     })
 </script>

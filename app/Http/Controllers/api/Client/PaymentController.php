@@ -666,7 +666,7 @@ class PaymentController extends Controller
                     'type' => 'request_withdraw_money',
                     'amount' => $newRequestWithdrawalWallet->amount,
                     'message' => 'Có yêu cầu rút ' . number_format($newRequestWithdrawalWallet->amount) . 'đ',
-                    'url' => 'http://localhost:8000/admin/transactions/withdraw-money',
+                    'url' => route('admin.transactions.withdraw-money'),
                     'created_at' => $newRequestWithdrawalWallet->created_at
                 ]),
             ]);
