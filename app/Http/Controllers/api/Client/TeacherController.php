@@ -18,6 +18,8 @@ class TeacherController extends Controller
         // Số bản ghi trên một trang;
         $perPage = $request->perPage ?? 12;
 
+        $idUserLogin = $request->user()->id;
+
         $teachers = DB::table('users as u')
             ->selectRaw('
                 u.id as user_id,
@@ -31,6 +33,7 @@ class TeacherController extends Controller
             ->leftJoin('ratings as r', 'c.id', '=', 'r.id_course')
             ->where('u.user_type', 'teacher')
             ->where('u.is_active', 1)
+            ->where('u.id', '!=', $idUserLogin)
             ->groupBy('u.id', 'u.name', 'u.avatar')
             ->orderByDesc('average_rating')
             ->paginate($perPage, ['*'], 'page', $page);
