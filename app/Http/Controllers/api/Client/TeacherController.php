@@ -20,9 +20,9 @@ class TeacherController extends Controller
 
         $teachers = DB::table('users as u')
             ->selectRaw('
-                u.id as user_id,
-                u.name as user_name,
-                u.avatar as user_avatar,
+                u.id,
+                u.name,
+                u.avatar,
                 COUNT(DISTINCT c.id) as total_courses,
                 COUNT(DISTINCT r.id) as total_ratings,
                 ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
@@ -57,9 +57,9 @@ class TeacherController extends Controller
     {
         $teacher = DB::table('users as u')
             ->selectRaw('
-                u.id as user_id,
-                u.name as user_name,
-                u.avatar as user_avatar,
+                u.id,
+                u.name,
+                u.avatar,
                 COUNT(c.id) as total_courses,
                 COUNT(r.id) as total_ratings,
                 ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
