@@ -183,54 +183,67 @@ class TeacherController extends Controller
 
     public function listTeacherMonth(Request $request)
     {
-
-        // Lấy danh sách giảng viên trong 1 tháng gần nhất (hoặc theo yêu cầu của bạn)
+        // Lấy danh sách giảng viên trong 1 tháng gần nhất
         $oneMonthAgo = Carbon::now()->subMonth();
         $teachers = User::where('user_type', 'teacher')
             ->where('created_at', '>=', $oneMonthAgo)->get();
-        //Dùng phương thức map lấy ra số lượng khoá học, số lượng comment, số lượng rating
-        $teachers->map(function ($teacher) {
+        $data = [];
+        // Map qua từng giảng viên và xử lý các thông tin cần thiết
+        $teachers = $teachers->map(function ($teacher) {
             $user = Auth::user();
             $courses = $teacher->userCourses;
-            //Nếu thằng $user trùng với thằng giảng viên lập tức ẩn đi
 
-            //Kiểm tra thằng $user đã follow thằng $teacher hay chưa
+            // Kiểm tra xem user hiện tại đã follow giáo viên này chưa
             $follow = $user->following()->where("following_id", $teacher->id)->exists();
 
-            // Tính tổng số comment của tất cả các khóa học của giảng viên
+            // Tính tổng số comment và rating của tất cả các khóa học của giảng viên
             $total_comments = $courses->flatMap(function ($course) {
                 return $course->comments;
             })->count();
 
-            // Tính tổng số rating của tất cả các khóa học của giảng viên
             $total_ratings = $courses->flatMap(function ($course) {
                 return $course->ratings;
             })->count();
 
-            // Tính tổng số khóa học của giảng viên
-            $teacher->total_courses = $courses->count();
-            $teacher->total_comments = $total_comments;
-            $teacher->total_ratings = $total_ratings;
+            $data = [
+                "id" => $teacher->id,
+                "name" => $teacher->name,
+                "email" => $teacher->email,
+                "avatar" => $teacher->avatar,
+                "is_active" => $teacher->is_active,
+                "email_verified_at" => $teacher->email_verified_at,
+                "verification_token" => $teacher->verification_token,
+                "user_type" => $teacher->user_type,
+                "created_at" => $teacher->created_at,
+                "updated_at" => $teacher->updated_at,
+                "total_courses" => $courses->count(),
+                "total_comments" => $total_comments,
+                "total_ratings" => $total_ratings,
+            ];
             if ($user->id != $teacher->id) {
-                $teacher->follow = $follow;
+                $data["follow"] = $follow;
             }
-            $teacher->makeHidden(['userCourses']);
-            return $teacher;
-        });
 
+            // Trả về dữ liệu của giảng viên dưới dạng mảng
+            return $data;
+        });
 
         // Sắp xếp giảng viên theo tổng số khóa học, bình luận, và rating cao nhất
-        $teachers = $teachers->sortByDesc(function ($teacher) {
-            return $teacher->total_courses + $teacher->total_comments + $teacher->total_ratings;
+        $sortedTeachers = $teachers->sortByDesc(function ($teacher) {
+            return $teacher['total_courses'] + $teacher['total_comments'] + $teacher['total_ratings'];
+        })->values();
+
+        // Chuyển top 5 giảng viên thành đối tượng với key là chỉ số
+        $topTeachers = $sortedTeachers->take(5)->mapWithKeys(function ($teacher, $index) {
+            return [$index => $teacher];
         });
 
-        // Lấy ra 5 giảng viên đầu tiên (có tổng số khóa học, bình luận và rating cao nhất)
-        $topTeachers = $teachers->take(5);
-
+        // Trả về response dạng JSON với cấu trúc mong muốn
         return response()->json([
             "status" => "success",
             "message" => "Danh sách top 5 giảng viên theo tháng",
-            "data" => $topTeachers,
+            "data" => $topTeachers
         ], 200);
     }
+
 }
