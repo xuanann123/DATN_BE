@@ -236,6 +236,12 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
+    # ===================== ROUTE FOR TEACHER ===========================
+
+    Route::prefix('teachers')->group(function () {
+        Route::get('/', [TeacherController::class, 'getTeachers']);
+    });
+
 
     // Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
@@ -275,7 +281,7 @@ Route::get('/post-outstanding', [PostController::class, 'listPostOutstanding']);
 # ===================== ROUTE FOR TEACHER ===========================
 
 Route::prefix('teachers')->group(function () {
-    Route::get('/', [TeacherController::class, 'getTeachers']);
+//    Route::get('/', [TeacherController::class, 'getTeachers']);
 
     // Danh sách khóa học của một teacher cụ thể
     Route::get('/list-courses/{id}', [TeacherController::class, 'getCoursesTeacher']);
