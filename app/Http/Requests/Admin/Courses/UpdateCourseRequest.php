@@ -26,8 +26,10 @@ class UpdateCourseRequest extends FormRequest
             'thumbnail' => 'nullable|image|max:5120',
             'trailer' => 'nullable|mimes:mp4,mov,avi,flv|max:102400',
             'id_category' => 'required|integer',
-            'price' => 'numeric|min:0',
-            'price_sale' => 'numeric|min:0',
+            'price' => 'required|numeric|min:0',
+            'price_sale' => 'nullable|numeric|min:0|lt:price',
+            'tags' => 'nullable|array',
+            'tags.*' => 'nullable',
         ];
     }
 
@@ -67,8 +69,12 @@ class UpdateCourseRequest extends FormRequest
             'price.numeric' => 'Giá khóa học không hợp lệ.',
             'price.min' => 'Giá khóa học phải lớn hơn hoặc bằng 0.',
 
+
             'price_sale.numeric' => 'Giá khóa học không hợp lệ.',
             'price_sale.min' => 'Giá khóa học phải lớn hơn hoặc bằng 0.',
+            'price_sale.lt' => 'Giá khoá khuyến mãi phải nhỏ hơn giá khoá học.',
+
+            'tags.array' => 'Danh sách tags phải hợp lệ.',
         ];
     }
 }

@@ -58,11 +58,10 @@ class CourseController extends Controller
     {
         $title = 'Thêm mới khóa học';
         $levels = Course::LEVEL_ARRAY;
-
         $categories = Category::whereNull('parent_id')->with('children')->get();
         $options = $this->getCategoryOptions($categories);
-        $tags = Tag::query()->pluck('name', 'id')->toArray();
-
+        // dd($tags);
+        $tags = Tag::query()->get();
         return view('admin.courses.create', compact('title', 'options', 'tags', 'levels'));
     }
 
@@ -73,27 +72,6 @@ class CourseController extends Controller
         $data['is_free'] = $request->price != 0 ? 0 : 1;
         //Lấy người tạo ra khoá học này?
         $data['id_user'] = auth()->id();
-        // //Lấy dữ liệu các mảng liên quan
-        // $goals = $request->goals ?? [];
-        // //Chuyển hoá dữ liệu 
-        // if (!empty($goals)) {
-        //     $goalsArray = array_map(function ($goalText) {
-        //         return ['goal' => $goalText]; // Thay 'goal_text' bằng tên cột trong bảng 'goals'
-        //     }, $goals);
-        // }
-        // $requirements = $request->requirements ?? [];
-        // if (!empty($requirements)) {
-        //     $requirementsArray = array_map(function ($requirementText) {
-        //         return ['requirement' => $requirementText]; // Thay 'goal_text' bằng tên cột trong bảng 'goals'
-        //     }, $requirements);
-        // }
-        // $audiences = $request->audiences ?? [];
-        // if (!empty($audiences)) {
-        //     $audiencesArray = array_map(function ($audienceText) {
-        //         return ['audience' => $audienceText]; // Thay 'goal_text' bằng tên cột trong bảng 'goals'
-        //     }, $audiences);
-        // }
-
         try {
             DB::beginTransaction();
             //Xử lý hình ảnh
@@ -114,25 +92,18 @@ class CourseController extends Controller
 
             //Đi tạo khoá học
             $newCourse = Course::query()->create($data);
-            //Thêm dữ liệu 1-n những mảng liên quan
-            // goals
-            // $newCourse->goals()->createMany($goalsArray);
-            // // requirements
-            // $newCourse->requirements()->createMany($requirementsArray);
-            // //  audiences
-            // $newCourse->audiences()->createMany($audiencesArray);
             //Xử lý tags
-            // foreach ($data['tags'] as $tag) {
-            //     $tag = trim($tag);
-            //     if (!empty($tag)) {
-            //         $tag = Tag::firstOrCreate([
-            //             'name' => $tag,
-            //             'slug' => Str::slug($tag),
-            //         ]);
-            //         $tagIds[] = $tag->id;
-            //     }
-            // }
-            // $newCourse->tags()->sync($tagIds);
+            foreach ($data['tags'] as $tag) {
+                $tag = trim($tag);
+                if (!empty($tag)) {
+                    $tag = Tag::firstOrCreate([
+                        'name' => $tag,
+                        'slug' => Str::slug($tag),
+                    ]);
+                    $tagIds[] = $tag->id;
+                }
+            }
+            $newCourse->tags()->sync($tagIds);
             DB::commit();
             return redirect()->route('admin.courses.new', $newCourse->id)->with(['success' => 'Thêm mới tổng quan khoá học thành công!']);
         } catch (\Throwable $th) {
@@ -157,9 +128,6 @@ class CourseController extends Controller
         $course = Course::find($id);
         return view('admin.courses.target', compact('title', 'course'));
     }
-
-    //Đi lưu trữ dữ liệu mục tiêu
-
     //updateTarget
     public function storeTargetCourse(StoreTargerRequest $request, $id)
     {
@@ -285,6 +253,7 @@ class CourseController extends Controller
         // Lấy dữ liệu trừ thumbnail và trailer
         $data = $request->except('thumbnail', 'trailer');
         $data['is_free'] = $request->price != 0 ? 0 : 1;
+        //Lấy danh sách tags
 
         // Biến lưu đường dẫn ảnh và trailer mới để rollback nếu xảy ra lỗi
         $newImagePath = null;
@@ -327,6 +296,28 @@ class CourseController extends Controller
 
             // Cập nhật dữ liệu khóa học
             $course->update($data);
+
+            // xoa tags
+            if (empty($data['tags'])) {
+                $data['tags'] = '';
+                $course->tags()->sync([]);
+            }
+            // update tags
+            if (isset($data['tags']) && is_array($data['tags'])) {
+                foreach ($data['tags'] as $tag) {
+                    $tag = trim($tag);
+                    if (!empty($tag)) {
+                        $tag = Tag::firstOrCreate([
+                            'name' => $tag,
+                            'slug' => Str::slug($tag),
+                        ]);
+                        $tagIds[] = $tag->id;
+                    }
+                }
+
+                // dd($da);
+                $course->tags()->sync($tagIds);
+            }
 
             // Xóa ảnh và trailer cũ sau khi mọi thứ thành công
             if ($request->hasFile('thumbnail') && $oldImagePath) {

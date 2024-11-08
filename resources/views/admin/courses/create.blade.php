@@ -289,92 +289,129 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="mt-3">
-                                            <h5>Thông tin cơ bản</h5>
-                                        </div>
-                                        <div class="col-lg-3">
-                                            <div class="mb-3">
-                                                <select name="level" id="level" class="form-control">
-                                                    <option value="">-- Trình độ --</option>
-                                                    @foreach ($levels as $name)
-                                                        <option {{ old('name') == $name ? 'selected' : '' }}
-                                                            value="{{ $name }}">
-                                                            {!! $name !!}</option>
-                                                    @endforeach
-                                                </select>
-                                                <small class="help-block form-text text-danger">
-                                                    @if ($errors->has('id_category'))
-                                                        {{ $errors->first('id_category') }}
-                                                    @endif
-                                                </small>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3">
-                                            <div class="mb-3 ">
-                                                <div class="border-1"><select name="id_category" id="id_category"
-                                                        class="form-control">
-                                                        <option value="">-- Thể Loại --</option>
-                                                        @foreach ($options as $id => $name)
-                                                            <option {{ old('id_category') == $id ? 'selected' : '' }}
-                                                                value="{{ $id }}">
-                                                                {!! $name !!}</option>
-                                                        @endforeach
+                                        <div class="col-md-9">
+                                            <div class="row">
+                                                <div class="mt-3 mb-1">
+                                                    <h5>Thông tin cơ bản</h5>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        <select name="level" id="level" class="form-control">
+                                                            <option value="">-- Trình độ --</option>
+                                                            @foreach ($levels as $name)
+                                                                <option {{ old('name') == $name ? 'selected' : '' }}
+                                                                    value="{{ $name }}">
+                                                                    {!! $name !!}</option>
+                                                            @endforeach
+                                                        </select>
+                                                        <small class="help-block form-text text-danger">
+                                                            @if ($errors->has('id_category'))
+                                                                {{ $errors->first('id_category') }}
+                                                            @endif
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3 ">
+                                                        <div class="border-1"><select name="id_category" id="id_category"
+                                                                class="form-control">
+                                                                <option value="">-- Thể Loại --</option>
+                                                                @foreach ($options as $id => $name)
+                                                                    <option
+                                                                        {{ old('id_category') == $id ? 'selected' : '' }}
+                                                                        value="{{ $id }}">
+                                                                        {!! $name !!}</option>
+                                                                @endforeach
+                                                            </select>
+                                                            <small class="help-block form-text text-danger">
+                                                                @if ($errors->has('id_category'))
+                                                                    {{ $errors->first('id_category') }}
+                                                                @endif
+                                                            </small>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 ">
+                                                    <select name="is_active" id="is_active" class="form-select">
+                                                        <option value="0"
+                                                            {{ old('is_active') == 0 ? 'selected' : '' }}>
+                                                            Không công khai </option>
+                                                        <option value="1"
+                                                            {{ old('is_active') == 1 ? 'selected' : '' }}>
+                                                            Công khai</option>
                                                     </select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="mt-4 mb-1">
+                                                    <h5>Giá khoá học</h5>
+                                                </div>
+                                                <div class="col-lg-4 mb-3">
+                                                    <div class=" input-group">
+                                                        <input type="number" class="form-control" id="price"
+                                                            name="price" placeholder="Giá khoá học"
+                                                            value="{{ old('price', 0) }}">
+                                                        <span class="input-group-text bg-primary">
+                                                            <i class=" ri-bit-coin-fill text-warning "></i>
+                                                        </span>
+                                                    </div>
                                                     <small class="help-block form-text text-danger">
-                                                        @if ($errors->has('id_category'))
-                                                            {{ $errors->first('id_category') }}
+                                                        @if ($errors->has('price'))
+                                                            {{ $errors->first('price', 0) }}
                                                         @endif
                                                     </small>
                                                 </div>
+                                                <div class="col-lg-4 mb-3">
+                                                    <div class=" input-group">
+                                                        <input type="number" class="form-control" id="price_sale"
+                                                            name="price_sale" placeholder="Giá khuyến mái khoá học"
+                                                            value="{{ old('price_sale') }}"
+                                                            aria-label="Amount (to the nearest dollar)">
+                                                        <span class="input-group-text bg-primary">
+                                                            <i class=" ri-bit-coin-fill text-warning "></i>
+                                                        </span>
 
+                                                    </div>
+                                                    <small class="help-block form-text text-danger">
+                                                        @if ($errors->has('price_sale'))
+                                                            {{ $errors->first('price_sale', 0) }}
+                                                        @endif
+                                                    </small>
+                                                </div>
                                             </div>
+
                                         </div>
-                                        <div class="col-lg-3 ">
-                                            <select name="is_active" id="is_active" class="form-select">
-                                                <option value="0" {{ old('is_active') == 0 ? 'selected' : '' }}>
-                                                    Không công khai </option>
-                                                <option value="1" {{ old('is_active') == 1 ? 'selected' : '' }}>
-                                                    Công khai</option>
-                                            </select>
+                                        <div class="col-md-3" style="margin-top: 43px">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h5 class="card-title mb-0">Thẻ đính kèm</h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <span class="text-muted">Chọn tags ("," hoặc dấu cách để ngăn cách
+                                                        nhau)</span>
+                                                    <select class="js-example-basic-multiple" name="tags[]"
+                                                        multiple="multiple" value>
+                                                        @foreach ($tags as $tag)
+                                                            <option value="{{ $tag->name }}"
+                                                                {{ in_array($tag->id, old('tags', [])) ? 'selected' : '' }}>
+                                                                {{ $tag->name }}
+                                                            </option>
+                                                        @endforeach
+                                                        @foreach (old('tags', []) as $oldTag)
+                                                            @if (!in_array($oldTag, $tags->pluck('id')->toArray()) && !empty($oldTag))
+                                                                <option value="{{ $oldTag }}" selected>
+                                                                    {{ $oldTag }}
+                                                                </option>
+                                                            @endif
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="mt-3">
-                                            <h5>Giá khoá học</h5>
-                                        </div>
-                                        <div class="col-lg-3 mb-3">
-                                            <div class=" input-group">
-                                                <input type="number" class="form-control" id="price" name="price"
-                                                    placeholder="Giá khoá học" value="{{ old('price', 0) }}">
-                                                <span class="input-group-text bg-primary">
-                                                    <i class=" ri-bit-coin-fill text-warning "></i>
-                                                </span>
-                                            </div>
-                                            <small class="help-block form-text text-danger">
-                                                @if ($errors->has('price'))
-                                                    {{ $errors->first('price', 0) }}
-                                                @endif
-                                            </small>
-                                        </div>
-                                        <div class="col-lg-3 mb-3">
-                                            <div class=" input-group">
-                                                <input type="number" class="form-control" id="price_sale"
-                                                    name="price_sale" placeholder="Giá khuyến mái khoá học"
-                                                    value="{{ old('price_sale') }}"
-                                                    aria-label="Amount (to the nearest dollar)">
-                                                <span class="input-group-text bg-primary">
-                                                    <i class=" ri-bit-coin-fill text-warning " ></i>
-                                                </span>
 
-                                            </div>
-                                            <small class="help-block form-text text-danger">
-                                                @if ($errors->has('price_sale'))
-                                                    {{ $errors->first('price_sale', 0) }}
-                                                @endif
-                                            </small>
-                                        </div>
-
-                                    </div>
+                          
                                     <div class="row">
                                         <div class="mt-3">
                                             <h5>Hình ảnh khoá học</h5>
