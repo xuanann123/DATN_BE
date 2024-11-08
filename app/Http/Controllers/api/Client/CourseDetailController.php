@@ -213,9 +213,13 @@ class CourseDetailController extends Controller // di ve sinh
                     $next_lesson = $next_lesson_in_module;
                 } else {
                     // nếu chưa làm quiz chương đó thì "next_lesson" sẽ là quiz của chương
-                    $quizProgress = QuizProgress::where('user_id', $user->id)
-                        ->where('quiz_id', $current_module->quiz->id)
-                        ->first();
+                    if (isset($current_module->quiz) && isset($current_module->quiz->id)) {
+                        $quizProgress = QuizProgress::where('user_id', $user->id)
+                            ->where('quiz_id', $current_module->quiz->id)
+                            ->first();
+                    } else {
+                        $quizProgress = null;
+                    }
 
                     if (!$quizProgress || !$quizProgress->is_completed) {
                         $next_lesson = $current_module->quiz;
