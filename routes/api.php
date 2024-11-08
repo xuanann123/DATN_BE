@@ -175,8 +175,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/course', [CourseController::class, 'storeNewCourse']);
         // Route::get('/course/{course}', [CourseController::class, 'showCourseTeacher']);
 
-        //Danh sách giảng viên theo tháng
-        Route::get('/list-teacher-month', [TeacherController::class, 'listTeacherMonth']);
+        
 
         Route::prefix('manage')->group(function () {
             // Check điều kiện để gửi khóa học đi xem xét
@@ -240,6 +239,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('teachers')->group(function () {
         Route::get('/', [TeacherController::class, 'getTeachers']);
+        //Danh sách giảng viên theo tháng
+        Route::get('/list-teacher-month', [TeacherController::class, 'listTeacherMonth']);
     });
 
 
