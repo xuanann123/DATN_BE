@@ -150,6 +150,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/unfollow', [FollowController::class, 'unfollow']);
         Route::get('/check-follow/{id_user}/{id_teacher}', [FollowController::class, 'checkFollow']);
 
+        //Đăng kí thành giảng viên
+        Route::post('/register-teacher', [UserController::class, 'registerTeacher']);
+
 
        
 
