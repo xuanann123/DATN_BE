@@ -570,4 +570,5 @@ class CourseController extends Controller
             'data' => $course
         ], 200);
     }
+
 }

@@ -13,4 +13,5 @@ class WishList extends Model
         'id_user',
         'id_course',
     ];
+    
 }

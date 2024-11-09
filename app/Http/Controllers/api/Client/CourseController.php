@@ -8,6 +8,7 @@ use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
@@ -20,13 +21,13 @@ class CourseController extends Controller
                 'tags'
                 // Đếm số lượng khi lấy dữ liệu
             ])->withCount([
-                'modules as lessons_count' => function ($query) {
-                    $query->whereHas('lessons');
-                },
-                'modules as quiz_count' => function ($query) {
-                    $query->whereHas('quiz');
-                }
-            ])
+                        'modules as lessons_count' => function ($query) {
+                            $query->whereHas('lessons');
+                        },
+                        'modules as quiz_count' => function ($query) {
+                            $query->whereHas('quiz');
+                        }
+                    ])
                 ->where('is_active', 1)
                 ->where('status', 'approved')
                 ->orderByDesc('created_at')->limit(6)->get();
@@ -73,13 +74,13 @@ class CourseController extends Controller
                 'tags'
                 // Đếm số lượng khi lấy dữ liệu
             ])->withCount([
-                'modules as lessons_count' => function ($query) {
-                    $query->whereHas('lessons');
-                },
-                'modules as quiz_count' => function ($query) {
-                    $query->whereHas('quiz');
-                }
-            ])
+                        'modules as lessons_count' => function ($query) {
+                            $query->whereHas('lessons');
+                        },
+                        'modules as quiz_count' => function ($query) {
+                            $query->whereHas('quiz');
+                        }
+                    ])
                 ->where('is_active', 1)
                 ->where('status', 'approved')
                 ->where('price_sale', '!=', null)
@@ -249,4 +250,40 @@ class CourseController extends Controller
             }
         });
     }
+    public function listFavoriteCourse()
+    {
+        $user = Auth::user();
+        $courses = $user->wishlists;
+        return response()->json([
+            "status" => "success",
+            "message" => "Danh sách yêu thích",
+            "data" => $courses
+        ], 200);
+
+    }
+    public function favoriteCourse($id_course)
+    {
+        $course = Course::findOrFail($id_course);
+        //Đi yêu thích 1 khoá học
+        $user = Auth::user();
+        $user->wishlists()->attach($course->id);
+        return response()->json([
+            "status" => "success",
+            "message" => "Yêu thích khoá học thành công.",
+            "data" => []
+        ], 201);
+
+    }
+    public function unfavoriteCourse($id_course) {
+        $course = Course::findOrFail($id_course);
+        //Đi yêu thích 1 khoá học
+        $user = Auth::user();
+        $user->wishlists()->detach($course->id);
+        return response()->json([
+            "status" => "success",
+            "message" => "Bỏ yêu thích khoá học thành công.",
+            "data" => []
+        ], 200);
+    }
+
 }
