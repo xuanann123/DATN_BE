@@ -85,8 +85,13 @@ Route::middleware('auth:sanctum')->group(function () {
     # ===================== ROUTE FOR COURSE ===========================
 
     Route::prefix('courses')->group(function () {
+        //Danh sách yêu thích khoá học
+        Route::get('favorite', [CourseHomePageController::class, 'listFavoriteCourse']);
+        //Yêu thích khoá học
+        Route::post('favorite/{is_course}', [CourseHomePageController::class, 'favoriteCourse']);
+        //Bỏ yêu thích
+        Route::post('unfavorite/{is_course}', [CourseHomePageController::class, 'unfavoriteCourse']);
         // Route::get('/{course}', [CourseDetailController::class, 'courseDetail']);
-        // Check xem đã mua khóa học hay chưa;
         Route::get('check-buy-course/{id_user}/{id_course}', [PaymentController::class, 'checkBuyCourse']);
         //Chi tiết bài học khi đăng kí khoá học
         Route::get('detail/check/{slug}', [CourseDetailController::class, 'courseDetailForAuthUser']);
@@ -249,7 +254,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
-    // post
+
     # ===================== ROUTE FOR POSTS ===========================
     Route::prefix('posts')->group(function () {
         Route::post('', [PostController::class, 'store']);

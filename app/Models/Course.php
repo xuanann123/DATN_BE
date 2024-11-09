@@ -111,4 +111,10 @@ class Course extends Model
         return $averageRating !== null ? $averageRating : 0.0;
     }
 
+    //Danh sách yêu thích khoá học
+    public function wishlists()
+    {
+        return $this->belongsToMany(User::class, 'wish_lists', 'id_course', 'id_user');
+    }
+
 }
