@@ -154,7 +154,7 @@ class ModuleQuizController extends Controller
 
             $questionData = $request->question;
             // Kiểm tra nếu không có 'correct_answer' trong câu hỏi, trả về lỗi
-            if (empty($questionData['correct_answer'])) {
+            if (!isset($questionData['correct_answer'])) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Phải chọn đáp án đúng cho câu hỏi.',
@@ -256,6 +256,14 @@ class ModuleQuizController extends Controller
             }
             //
             $questionData = $request->question;
+            // Kiểm tra nếu không có 'correct_answer' trong câu hỏi, trả về lỗi
+            if (!isset($questionData['correct_answer'])) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Phải chọn đáp án đúng cho câu hỏi.',
+                    'data' => []
+                ], 400);
+            }
 
             // Tính total_points mới của quiz khi update question
             $oldPoints = $question->points;
