@@ -151,7 +151,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/check-follow/{id_user}/{id_teacher}', [FollowController::class, 'checkFollow']);
 
 
-       
+
 
         // Thông báo
         Route::prefix('notifications')->group(function () {
@@ -175,7 +175,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/course', [CourseController::class, 'storeNewCourse']);
         // Route::get('/course/{course}', [CourseController::class, 'showCourseTeacher']);
 
-        
+
 
         Route::prefix('manage')->group(function () {
             // Check điều kiện để gửi khóa học đi xem xét

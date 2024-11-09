@@ -77,27 +77,47 @@ class RatingController extends Controller
             ->where('id_course', $courseId)
             ->first();
 
+        if(!$checkProgressCourse){
+            return response()->json([
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Bạn chưa mua khóa học'
+            ]);
+        }
+
+        if($checkProgressCourse->progress_percent != 100) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Bạn chưa hoàn thành khóa học',
+                'data' => [
+                    'status' => 'pending'
+                ]
+            ]);
+        }
+
         $checkRating = Rating::where('id_user', $userId)
             ->where('id_course', $courseId)
             ->first();
 
-        if ($checkProgressCourse->progress_percent == 100 && $checkProgressCourse->completed_at && !$checkRating) {
+        if($checkRating){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Bạn đã đánh giá khóa học này rồi',
+                'data' => [
+                    'status' => 'completed'
+                ]
+            ]);
+        }
+
+        if ($checkProgressCourse->progress_percent == 100 && !$checkRating) {
             return response()->json([
                 'status' => 'success',
                 'message' => 'Cho phép đánh giá',
                 'data' => [
-                    'rating' => 'allow'
+                    'status' => 'allow'
                 ]
             ], 200);
         }
-
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Không cho phép đánh giá',
-            'data' => [
-                'rating' => 'block'
-            ]
-        ], 200);
     }
 
     public function addRating(RatingRequest $request)
