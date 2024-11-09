@@ -141,6 +141,7 @@ class ModuleQuizController extends Controller
     //Thêm dữ liệu question và options cho Quiz
     public function addQuestionAndOption(Request $request, Quiz $quiz)
     {
+        DB::beginTransaction();
         try {
             //Nếu không tồn tại quiz
             if (!$quiz) {
@@ -152,6 +153,14 @@ class ModuleQuizController extends Controller
             }
 
             $questionData = $request->question;
+            // Kiểm tra nếu không có 'correct_answer' trong câu hỏi, trả về lỗi
+            if (empty($questionData['correct_answer'])) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Phải chọn đáp án đúng cho câu hỏi.',
+                    'data' => []
+                ], 400);
+            }
             // // Thêm dữ liệu bằng cách như sau
             $quizQuestion = Question::create([
                 'id_quiz' => $quiz->id,  // Thêm quiz_id nếu cần
@@ -172,6 +181,13 @@ class ModuleQuizController extends Controller
                 ]);
             }
 
+            Db::commit();
+
+            // // Tạm thời bỏ điểm quiz
+            // $quiz->update([
+            //     'total_points' => $quiz->total_points += $questionData['points']
+            // ]);
+
             // Lấy câu hỏi vừa tạo cùng với các options
             $questionWithOptions = Question::with('options')->find($quizQuestion->id);
 
@@ -185,6 +201,7 @@ class ModuleQuizController extends Controller
                 ],
             ], 201);
         } catch (\Exception $e) {
+            DB::rollBack();
             //Lỗi server
             return response()->json([
                 'status' => 'error',
@@ -266,12 +283,13 @@ class ModuleQuizController extends Controller
                 'image_url' => $question->image_url,
             ]);
 
-            // tính lại điểm tổng của quiz
-            $quiz = $question->quiz;
-            if ($quiz) {
-                $quiz->total_points += $pointsDifference;
-                $quiz->save();
-            }
+            // // Tạm thời bỏ điểm quiz
+            // // tính lại điểm tổng của quiz
+            // $quiz = $question->quiz;
+            // if ($quiz) {
+            //     $quiz->total_points += $pointsDifference;
+            //     $quiz->save();
+            // }
 
             // Lấy danh sách id các options từ request
             $requestOptionIds = collect($request->options)->pluck('id')->filter()->all();
@@ -373,12 +391,13 @@ class ModuleQuizController extends Controller
                 $option->delete();
             }
 
-            // trừ điểm tổng của quiz
-            $quiz = $question->quiz;
-            if ($quiz) {
-                $quiz->total_points -= $question->points;
-                $quiz->save();
-            }
+            // // Tạm thời bỏ điểm quiz
+            // // trừ điểm tổng của quiz
+            // $quiz = $question->quiz;
+            // if ($quiz) {
+            //     $quiz->total_points -= $question->points;
+            //     $quiz->save();
+            // }
 
             // Del question
             $question->delete();
@@ -425,6 +444,6 @@ class ModuleQuizController extends Controller
         }
         return null;
     }
-   
+
 
 }

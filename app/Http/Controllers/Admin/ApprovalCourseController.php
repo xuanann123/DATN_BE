@@ -236,6 +236,20 @@ class ApprovalCourseController extends Controller
                 'value' => $course->thumbnail ? 1 : 0,
                 'required' => 1
             ],
+            // Kiểm tra tất cả các chương đều có ít nhất 1 bài học
+            [
+                'label' => 'Tất cả các chương đều có ít nhất 1 bài học.',
+                'value' => $course->modules->filter(fn($module) => $module->lessons->isNotEmpty())->count(),
+                'required' => $course->modules->count()
+            ],
+            // Kiểm tra tất cả các quiz đều có ít nhất 1 câu hỏi
+            [
+                'label' => 'Tất cả bài tập đều có ít nhất 1 câu hỏi.',
+                'value' => $course->modules->filter(function($module){
+                    return $module->quiz && $module->quiz->questions->count() > 0;
+                })->count(),
+                'required' => $course->modules->filter(fn($module) => $module->quiz)->count(),
+            ]
         ];
 
         foreach ($conditions as &$condition) {
