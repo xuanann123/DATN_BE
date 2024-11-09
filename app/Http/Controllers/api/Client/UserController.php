@@ -187,5 +187,26 @@ class UserController extends Controller
             }
         });
     }
+    public function registerTeacher()
+    {
+        $user = Auth::user();
+        //Kiểm tra phải là user mí cậo nhật lên thành giảng viên
+        if ($user->user_type != User::TYPE_MEMBER) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Vui lòng kiểm tra lại bạn có phải thành viên không?',
+                'data' => []
+            ], 403);
+        }
+        //Đi cập nhật dữ liệu và thông báo
+        $user->update([
+            'user_type' => User::TYPE_TEACHER
+        ]);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Đăng kí trở thành giảng viên thành công.',
+            'data' => []
+        ], 200);
+    }
 
 }
