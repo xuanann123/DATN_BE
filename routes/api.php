@@ -29,6 +29,7 @@ use App\Http\Controllers\api\Client\NotificationController;
 use App\Http\Controllers\api\Client\Student\NoteController;
 use App\Http\Controllers\api\Client\VoucherController;
 use App\Http\Controllers\api\Client\FollowController;
+use App\Http\Controllers\api\Client\SocialAuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,11 @@ Route::prefix('auth')->group(function () {
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('/verify-otp-resetpassword', [AuthController::class, 'verifyOtpForResetPassword']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+
+    Route::middleware(['web'])->group(function () {
+        Route::get('/{social}/redirect', [SocialAuthController::class, 'redirectToSocial']);
+        Route::get('/{social}/callback', [SocialAuthController::class, 'handleSocialCallback']);
+    });
 });
 
 //Xác thực cần đăng nhập để thao tác
@@ -290,7 +296,7 @@ Route::get('/post-outstanding', [PostController::class, 'listPostOutstanding']);
 # ===================== ROUTE FOR TEACHER ===========================
 
 Route::prefix('teachers')->group(function () {
-//    Route::get('/', [TeacherController::class, 'getTeachers']);
+    //    Route::get('/', [TeacherController::class, 'getTeachers']);
 
     // Danh sách khóa học của một teacher cụ thể
     Route::get('/list-courses/{id}', [TeacherController::class, 'getCoursesTeacher']);
