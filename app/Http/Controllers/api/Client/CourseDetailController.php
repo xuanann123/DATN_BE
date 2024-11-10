@@ -231,9 +231,27 @@ class CourseDetailController extends Controller // di ve sinh
                             ->first();
                         if ($next_module) {
                             $next_lesson = $next_module->lessons->sortBy('position')->first();
+                        } else {
+                            $next_lesson = null;
                         }
                     }
                 }
+            }
+
+            // neu khong con lesson hoac quiz nao -> hoan thanh khoa hoc
+            if (!$next_lesson) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => "Bạn đã hoàn thành khóa học.",
+                    'data' => [
+                        'course_name' => $course->name,
+                        'progress_percent' => $progress_percent,
+                        'total_lessons' => $total_items,
+                        'completed_lessons' => $total_completed_items,
+                        'modules' => $course->modules,
+                        'next_lesson' => null,
+                    ],
+                ], 200);
             }
 
             //Trả về dữ liệu phía client
@@ -255,7 +273,7 @@ class CourseDetailController extends Controller // di ve sinh
             return response()->json([
                 'status' => 'error',
                 'message' => 'Đã xảy ra lỗi khi lấy ra bài học.',
-                'error' => $e->getMessage(),
+                'error' => $e->getMessage() . '|' . $e->getLine(),
             ], 500);
         }
 

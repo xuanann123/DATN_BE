@@ -264,7 +264,7 @@ class AuthController extends Controller
                     'message' => 'Refresh token không hợp lệ hoặc đã hết hạn.',
                     'data' => [],
                     'status' => 400
-                ], 400);
+                ], 400)->withCookie(cookie('refresh_token', '', -1));
             }
 
             $user = $token->user;
