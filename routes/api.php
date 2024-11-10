@@ -52,10 +52,10 @@ Route::prefix('auth')->group(function () {
     Route::post('/verify-otp-resetpassword', [AuthController::class, 'verifyOtpForResetPassword']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
-    Route::middleware(['web'])->group(function () {
-        Route::get('/{social}/redirect', [SocialAuthController::class, 'redirectToSocial']);
-        Route::get('/{social}/callback', [SocialAuthController::class, 'handleSocialCallback']);
-    });
+    // Route::middleware(['web'])->group(function () {
+    //     Route::get('/{social}/redirect', [SocialAuthController::class, 'redirectToSocial']);
+    //     Route::get('/{social}/callback', [SocialAuthController::class, 'handleSocialCallback']);
+    // });
 });
 
 //Xác thực cần đăng nhập để thao tác
@@ -84,7 +84,7 @@ Route::middleware('auth:sanctum')->group(function () {
     # ===================== ROUTE FOR CHECKOUT ===========================
 
     Route::prefix('vouchers')->group(function () {
-        Route::get('/new-voucher', [VoucherController::class, 'newVoucher']);
+        // Route::get('/new-voucher', [VoucherController::class, 'newVoucher']);
         Route::get('/apply-coupon/{id_user}/{voucher_code}', [VoucherController::class, 'applyCoupon']);
     });
 
@@ -267,6 +267,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{slug}', [PostController::class, 'update']);
         Route::delete('/{slug}', [PostController::class, 'destroy']);
     });
+});
+
+// route voucher chưa đăng nhập
+Route::prefix('vouchers')->group(function () {
+    Route::get('/new-voucher', [VoucherController::class, 'newVoucher']);
 });
 
 // Redirect vnpay

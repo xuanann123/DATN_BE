@@ -87,7 +87,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-auto">
-                                        <form action="{{ route('admin.approval.courses.approve', $course->id) }}"
+                                        {{-- <form action="{{ route('admin.approval.courses.approve', $course->id) }}"
                                             method="post">
                                             @csrf
                                             <input type="hidden" name="id" id=""
@@ -106,7 +106,7 @@
                                                     Kích hoạt
                                                 </button>
                                             @endif
-                                        </form>
+                                        </form> --}}
                                     </div>
                                     <div class="col-md-auto">
                                         @php

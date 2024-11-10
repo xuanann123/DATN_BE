@@ -24,7 +24,7 @@ class TeacherAuthenticated
             //Trả về API cấm truy cập
             return response()->json([
                 'status' => 'error',
-                'message' => 'Bạn không có quyền truy cập',
+                'message' => 'Bạn không có quyền truy cập, bạn không phải giảng viên !',
                 'data' => []
             ], 403);
         }
