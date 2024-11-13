@@ -33,7 +33,6 @@ class ModuleQuizController extends Controller
                 'id_module' => $module->id,
                 'title' => $request->input('title'),
                 'description' => $request->input('description'),
-                'total_points' => 0,
             ]);
             return response()->json([
                 'status' => 'success',
@@ -166,7 +165,6 @@ class ModuleQuizController extends Controller
                 'id_quiz' => $quiz->id,  // Thêm quiz_id nếu cần
                 'question' => $questionData['question'],
                 'type' => $questionData['type'],
-                'points' => $questionData['points'],
                 'image_url' => $this->uploadImage($questionData['image'] ?? NULL, 'questions')
             ]);
             // Tạo 1 vòng duyệt qua từng option rồi thêm dữ liệu vào database
@@ -182,11 +180,6 @@ class ModuleQuizController extends Controller
             }
 
             Db::commit();
-
-            // // Tạm thời bỏ điểm quiz
-            // $quiz->update([
-            //     'total_points' => $quiz->total_points += $questionData['points']
-            // ]);
 
             // Lấy câu hỏi vừa tạo cùng với các options
             $questionWithOptions = Question::with('options')->find($quizQuestion->id);
@@ -265,11 +258,6 @@ class ModuleQuizController extends Controller
                 ], 400);
             }
 
-            // Tính total_points mới của quiz khi update question
-            $oldPoints = $question->points;
-            $newPoints = $questionData['points'];
-            $pointsDifference = $newPoints - $oldPoints;
-
             $questionImage = $request->file('question.image') ?? null;
 
             // Xử lý việc xóa ảnh của question nếu có yêu cầu 'remove_image' gửi từ FE
@@ -287,17 +275,8 @@ class ModuleQuizController extends Controller
             $question->update([
                 'question' => $questionData['question'],
                 'type' => $questionData['type'],
-                'points' => $newPoints,
                 'image_url' => $question->image_url,
             ]);
-
-            // // Tạm thời bỏ điểm quiz
-            // // tính lại điểm tổng của quiz
-            // $quiz = $question->quiz;
-            // if ($quiz) {
-            //     $quiz->total_points += $pointsDifference;
-            //     $quiz->save();
-            // }
 
             // Lấy danh sách id các options từ request
             $requestOptionIds = collect($request->options)->pluck('id')->filter()->all();
@@ -398,14 +377,6 @@ class ModuleQuizController extends Controller
                 }
                 $option->delete();
             }
-
-            // // Tạm thời bỏ điểm quiz
-            // // trừ điểm tổng của quiz
-            // $quiz = $question->quiz;
-            // if ($quiz) {
-            //     $quiz->total_points -= $question->points;
-            //     $quiz->save();
-            // }
 
             // Del question
             $question->delete();
