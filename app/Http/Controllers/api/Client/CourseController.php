@@ -253,12 +253,27 @@ class CourseController extends Controller
     public function listFavoriteCourse()
     {
         $user = Auth::user();
-        $courses = $user->wishlists;
-        return response()->json([
-            "status" => "success",
-            "message" => "Danh sách yêu thích",
-            "data" => $courses
-        ], 200);
+        //phân trang 6 bản ghi 
+        try {
+            $courses = $user->wishlists()->paginate(6);
+            return response()->json([
+                "status" => "success",
+                "message" => "Danh sách yêu thích",
+                "data" => $courses
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => "error",
+                "message" => "Lỗi trong quá trình lấy danh sách yêu thích",
+                "error" => $e->getMessage()
+            ], 500);
+        }
+        // $courses = $user->wishlists;
+        // return response()->json([
+        //     "status" => "success",
+        //     "message" => "Danh sách yêu thích",
+        //     "data" => $courses
+        // ], 200);
 
     }
     public function favoriteCourse($id_course)
