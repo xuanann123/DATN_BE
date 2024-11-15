@@ -95,6 +95,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('favorite', [CourseHomePageController::class, 'listFavoriteCourse']);
         //Yêu thích khoá học
         Route::post('favorite/{is_course}', [CourseHomePageController::class, 'favoriteCourse']);
+
+        //Check xem đã yêu thích khoá học này chưa 
+        Route::post('favorite-check/{is_course}', [CourseHomePageController::class, 'checkFavoriteCourse']);
         //Bỏ yêu thích
         Route::post('unfavorite/{is_course}', [CourseHomePageController::class, 'unfavoriteCourse']);
         // Route::get('/{course}', [CourseDetailController::class, 'courseDetail']);

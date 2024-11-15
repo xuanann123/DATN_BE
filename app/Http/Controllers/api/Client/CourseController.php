@@ -280,8 +280,18 @@ class CourseController extends Controller
     {
         $course = Course::findOrFail($id_course);
         //Đi yêu thích 1 khoá học
+
         $user = Auth::user();
+        //Kiểm tra khoá học này đã được yêu thích từ trước chauw
+        if ($user->wishlists()->where('id_course', $course->id)->exists()) {
+            return response()->json([
+                "status" => "error",
+                "message" => "Khoá học này đã được yêu thích từ trước.",
+                "data" => []
+            ], status: 404);
+        }
         $user->wishlists()->attach($course->id);
+
         return response()->json([
             "status" => "success",
             "message" => "Yêu thích khoá học thành công.",
@@ -289,7 +299,33 @@ class CourseController extends Controller
         ], 201);
 
     }
-    public function unfavoriteCourse($id_course) {
+    public function checkFavoriteCourse($id_course)
+    {
+        $course = Course::findOrFail($id_course);
+        //Đi yêu thích 1 khoá học
+
+        $user = Auth::user();
+        //Kiểm tra khoá học này đã được yêu thích từ trước chauw
+        if ($user->wishlists()->where('id_course', $course->id)->exists()) {
+            return response()->json([
+                'message' => 'Đã yêu thích khoá học',
+                'data' => [
+                    'action' => 'unfavorite'
+                ]
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Chưa yêu thích khoá học',
+                'data' => [
+                    'action' => 'favorite'
+                ]
+            ]);
+        }
+    }
+
+
+    public function unfavoriteCourse($id_course)
+    {
         $course = Course::findOrFail($id_course);
         //Đi yêu thích 1 khoá học
         $user = Auth::user();
