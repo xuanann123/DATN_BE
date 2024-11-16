@@ -117,4 +117,8 @@ class Course extends Model
         return $this->belongsToMany(User::class, 'wish_lists', 'id_course', 'id_user');
     }
 
+    public function certificates() {
+        return $this->hasMany(Certificate::class);
+    }
+
 }

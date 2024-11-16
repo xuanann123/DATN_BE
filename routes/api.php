@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\Client\Student\CertificateController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use PHPUnit\Framework\Attributes\Group;
@@ -101,6 +102,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('check-buy-course/{id_user}/{id_course}', [PaymentController::class, 'checkBuyCourse']);
         //Chi tiết bài học khi đăng kí khoá học
         Route::get('detail/check/{slug}', [CourseDetailController::class, 'courseDetailForAuthUser']);
+    });
+
+    # ===================== ROUTE FOR CERTIFICATE ===========================
+
+    Route::prefix('certificates')->group(function () {
+        // tạo chứng chỉ
+        Route::post("{course}/certificate", [CertificateController::class, "storeCertificate"]);
+        // preview chứng chỉ
+        Route::get("{code}/preview-certificate", [CertificateController::class, "previewCertificate"]);
+        // tải xuống chứng chỉ
+        Route::get("{code}/download-certificate", [CertificateController::class, "downloadCertificate"]);
     });
 
     # ===================== ROUTE FOR LESSON ===========================
