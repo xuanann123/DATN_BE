@@ -129,8 +129,21 @@ class TeacherController extends Controller
             'data' => [
                 'dataCourses' => $courses,
                 'dataTeacher' => $teacher,
+                'raring' => $this->ratingTeacher($id)
             ]
         ], 200);
+    }
+
+    public function ratingTeacher($id)
+    {
+        $teacher = User::find($id);
+        $totalRatings = $teacher->ratings()->count();
+        $averageRating = $teacher->ratings()->avg('rate');
+        $rating = [
+            'totalRatings' => $totalRatings,
+            'averageRating' => $averageRating,
+        ];
+        return $rating;
     }
 
     public function searchTeachers(Request $request)
