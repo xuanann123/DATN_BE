@@ -19,4 +19,8 @@ class Rating extends Model
     public function ratings() {
         return $this->belongsTo(Course::class, 'id_course');
     }
+
+    public function course() {
+        return $this->belongsTo(Course::class, 'id_course');
+    }
 }
