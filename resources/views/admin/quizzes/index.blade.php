@@ -10,6 +10,44 @@
             display: flex;
             justify-content: end;
         }
+
+        /* Lớp overlay để phủ lên hình nền */
+        .course-module-wrapper .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            /* Màu đen với độ mờ 50% */
+            z-index: 1;
+        }
+
+        /* Điều chỉnh văn bản */
+        .course-module-wrapper .card-body {
+            position: relative;
+            z-index: 2;
+            /* Đảm bảo văn bản nằm trên overlay */
+        }
+
+        /* Style cho văn bản để nổi bật */
+        .course-module-wrapper .text-light {
+            color: #ffffff;
+            /* Màu trắng để dễ đọc trên nền tối */
+        }
+
+        /* Điều chỉnh tiêu đề */
+        .course-module-wrapper h4#course-title {
+            font-size: 1.8rem;
+            /* Tăng kích thước chữ */
+            font-weight: bold;
+        }
+
+        /* Điều chỉnh khoảng cách giữa các phần */
+        .course-module-wrapper .hstack.gap-3 {
+            gap: 1.5rem;
+            /* Khoảng cách giữa các mục */
+        }
     </style>
 @endsection
 
@@ -17,61 +55,46 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card mt-n4 mx-n4">
-                <div class="bg-warning-subtle">
-                    <div class="card-body pb-0 px-4">
+                <div class="course-module-wrapper bg-warning-subtle"
+                    style="background-image: url('{{ Storage::url($module->course->thumbnail) }}'); position: relative; overflow: hidden;">
+                    <!-- Overlay để làm mờ nền -->
+                    <div class="overlay"></div>
+
+                    <div class="card-body pb-0 px-4 position-relative">
                         <div class="row mb-3">
                             <div class="col-md">
                                 <div class="row align-items-center g-3">
-                                    <div class="col-md-auto">
-                                        <div class="avatar-md">
-                                            <div class="avatar-title bg-white rounded-circle">
-                                                <img src="{{ Storage::url($module->course->thumbnail) }}" alt=""
-                                                    class="avatar-fluid w-100">
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div class="col-md">
                                         <div>
-                                            <h4 class="fw-bold" id="course-title">Chương {{ $module->title }}</h4>
+                                            <h4 class="fw-bold text-light" id="course-title">Chương {{ $module->title }}
+                                            </h4>
                                             <div class="hstack gap-3">
-                                                <div>
-                                                    <i>{{ $module->description }}</i>
-                                                </div>
-                                                <div class="hstack gap-3 flex-wrap">
-                                                    <div><i class="ri-building-line align-bottom me-1"></i>
+                                                <div class="hstack gap-3 flex-wrap text-light">
+                                                    <div>
+                                                        <i class="ri-building-line align-bottom me-1"></i>
                                                         <span id="instructor-name">{{ $module->course->user->name }}</span>
                                                     </div>
                                                     <div class="vr"></div>
-                                                    <div>Category : <span class="fw-medium"
+                                                    <div>
+                                                        Category : <span class="fw-medium"
                                                             id="course-category">{{ $module->course->category->name }}</span>
                                                     </div>
                                                     <div class="vr"></div>
-                                                    <div>Ngày tạo : <span class="fw-medium"
+                                                    <div>
+                                                        Ngày tạo : <span class="fw-medium"
                                                             id="submitted-date">{{ $module->course->created_at->format('d-m-Y') }}</span>
                                                     </div>
                                                     <div class="vr"></div>
-                                                    <div>Trạng thái: <span
-                                                            class="badge rounded-pill
-                                                    {{ $module->course->status == 'draft'
-                                                        ? 'bg-primary'
-                                                        : ($module->course->status == 'pending'
-                                                            ? 'bg-warning'
-                                                            : ($module->course->status == 'approved'
-                                                                ? 'bg-success'
-                                                                : ($module->course->status == 'rejected'
-                                                                    ? 'bg-danger'
-                                                                    : ''))) }}">
-                                                            {{ $module->course->status == 'draft'
-                                                                ? 'Bản nháp'
-                                                                : ($module->course->status == 'pending'
-                                                                    ? 'Chờ phê duyệt'
-                                                                    : ($module->course->status == 'approved'
-                                                                        ? 'Đã phê duyệt'
-                                                                        : ($module->course->status == 'rejected'
-                                                                            ? 'Đã từ chối'
-                                                                            : ''))) }}</span>
+                                                    <div>
+                                                        Trạng thái:
+                                                        <span
+                                                            class="badge rounded-pill 
+                                            {{ $module->course->status == 'draft' ? 'bg-primary' : ($module->course->status == 'pending' ? 'bg-warning' : ($module->course->status == 'approved' ? 'bg-success' : ($module->course->status == 'rejected' ? 'bg-danger' : ''))) }}">
+                                                            {{ $module->course->status == 'draft' ? 'Bản nháp' : ($module->course->status == 'pending' ? 'Chờ phê duyệt' : ($module->course->status == 'approved' ? 'Đã phê duyệt' : ($module->course->status == 'rejected' ? 'Đã từ chối' : ''))) }}
+                                                        </span>
                                                     </div>
-                                                    <div>Hiển thị:
+                                                    <div>
+                                                        Hiển thị:
                                                         <span
                                                             class="badge {{ $module->course->is_active ? 'bg-success-subtle badge-border text-success' : 'bg-danger-subtle badge-border text-danger' }}"
                                                             id="course-is-active">
@@ -82,21 +105,24 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-md-auto">
+                                        <a class="btn btn-primary" href="{{ route('admin.courses.detail', $module->course->id) }}">Quay lại</a>
+                                    </div>
                                 </div>
                             </div>
 
                             <ul class="nav nav-tabs-custom border-bottom-0" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link active fw-semibold" data-bs-toggle="tab" href="#course-overview"
-                                        role="tab">
+                                    <a class="nav-link active fw-semibold text-light" data-bs-toggle="tab"
+                                        href="#course-overview" role="tab">
                                         Nội dung câu hỏi
                                     </a>
                                 </li>
-
                             </ul>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
 
