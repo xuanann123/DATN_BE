@@ -45,6 +45,7 @@ class CourseApprovalStatusNotification extends Notification implements ShouldBro
     {
         return [
             'type' => $this->status === 'approved' ? 'course_approved' : 'course_rejected',
+            'user_role' => 'instructor',
             'course_id' => $this->course->id,
             'course_name' => $this->course->name,
             'status' => $this->status,
