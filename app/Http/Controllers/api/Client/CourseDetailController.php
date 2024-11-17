@@ -196,7 +196,7 @@ class CourseDetailController extends Controller // di ve sinh
                     $module->quiz->is_completed = $quizProgress ? $quizProgress->is_completed : 0;
 
                     // Gán giá trị is_last_quiz cho quiz
-                    $module->quiz->is_last_quiz = $module === $course->modules->sortByDesc('position')->first();
+                    $module->quiz->is_last_quiz = $module === $course->modules->sortByDesc('position')->first() ? 1 : 0;
                 }
             }
             //

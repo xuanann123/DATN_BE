@@ -31,6 +31,7 @@ use App\Http\Controllers\api\Client\Student\NoteController;
 use App\Http\Controllers\api\Client\VoucherController;
 use App\Http\Controllers\api\Client\FollowController;
 use App\Http\Controllers\api\Client\SocialAuthController;
+use App\Http\Controllers\api\Client\Student\CourseController as StudentCourseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -97,7 +98,7 @@ Route::middleware('auth:sanctum')->group(function () {
         //Yêu thích khoá học
         Route::post('favorite/{is_course}', [CourseHomePageController::class, 'favoriteCourse']);
 
-        //Check xem đã yêu thích khoá học này chưa 
+        //Check xem đã yêu thích khoá học này chưa
         Route::get('check-favorite/{is_course}', [CourseHomePageController::class, 'checkFavoriteCourse']);
         //Bỏ yêu thích
         Route::post('unfavorite/{is_course}', [CourseHomePageController::class, 'unfavoriteCourse']);
@@ -105,6 +106,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('check-buy-course/{id_user}/{id_course}', [PaymentController::class, 'checkBuyCourse']);
         //Chi tiết bài học khi đăng kí khoá học
         Route::get('detail/check/{slug}', [CourseDetailController::class, 'courseDetailForAuthUser']);
+        // cập nhật tiến độ khóa học (khi học xong tất cả bài học)
+        Route::post('{course}/update-progress', [StudentCourseController::class, 'updateProgress']);
     });
 
     # ===================== ROUTE FOR CERTIFICATE ===========================

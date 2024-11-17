@@ -157,91 +157,91 @@ class LessonController extends Controller
         }
     }
     public function checkQuiz(Request $request)
-{
-    try {
-        $userId = $request->user_id;
-        $id_course = $request->course_id;
-        $quizId = $request->quiz_id;
-        $answers = $request->answers;
+    {
+        try {
+            $userId = $request->user_id;
+            $id_course = $request->course_id;
+            $quizId = $request->quiz_id;
+            $answers = $request->answers;
 
-        // Verify if the user has purchased the course
-        $userCourse = UserCourse::where('id_user', $userId)
-            ->where('id_course', $id_course)
-            ->first();
+            // Verify if the user has purchased the course
+            $userCourse = UserCourse::where('id_user', $userId)
+                ->where('id_course', $id_course)
+                ->first();
 
-        if (!$userCourse) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Bạn chưa mua khóa học này.',
-                'data' => []
-            ], 403);
-        }
-
-        // Initialize counters and storage
-        $correctAnswersCount = 0;
-        $totalQuestions = Question::where('id_quiz', $quizId)->count();
-        $resultDetails = [];
-
-        // Collect all answers' correctness
-        foreach ($answers as $answer) {
-            $questionId = $answer['question_id'];
-            $selectedOptions = $answer['selected_options'];
-            $question = Question::find($questionId);
-
-            if (!$question) {
-                throw new \Exception("Câu hỏi với ID {$questionId} không tồn tại.");
+            if (!$userCourse) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Bạn chưa mua khóa học này.',
+                    'data' => []
+                ], 403);
             }
 
-            // Get correct options for the question
-            $correctOptions = Option::where('id_question', $questionId)
-                ->where('is_correct', 1)
-                ->pluck('id')
-                ->toArray();
+            // Initialize counters and storage
+            $correctAnswersCount = 0;
+            $totalQuestions = Question::where('id_quiz', $quizId)->count();
+            $resultDetails = [];
 
-            // Determine if the answer is correct
-            $isCorrect = false;
-            if ($question->type == 'one_choice') {
-                if (count($selectedOptions) == 1 && $selectedOptions[0] == $correctOptions[0]) {
-                    $isCorrect = true;
+            // Collect all answers' correctness
+            foreach ($answers as $answer) {
+                $questionId = $answer['question_id'];
+                $selectedOptions = $answer['selected_options'];
+                $question = Question::find($questionId);
+
+                if (!$question) {
+                    throw new \Exception("Câu hỏi với ID {$questionId} không tồn tại.");
                 }
-            } elseif ($question->type == 'multiple_choice') {
-                sort($selectedOptions);
-                sort($correctOptions);
-                if ($selectedOptions == $correctOptions) {
-                    $isCorrect = true;
+
+                // Get correct options for the question
+                $correctOptions = Option::where('id_question', $questionId)
+                    ->where('is_correct', 1)
+                    ->pluck('id')
+                    ->toArray();
+
+                // Determine if the answer is correct
+                $isCorrect = false;
+                if ($question->type == 'one_choice') {
+                    if (count($selectedOptions) == 1 && $selectedOptions[0] == $correctOptions[0]) {
+                        $isCorrect = true;
+                    }
+                } elseif ($question->type == 'multiple_choice') {
+                    sort($selectedOptions);
+                    sort($correctOptions);
+                    if ($selectedOptions == $correctOptions) {
+                        $isCorrect = true;
+                    }
                 }
+
+                if ($isCorrect) {
+                    $correctAnswersCount++;
+                }
+
+                // Store detailed result
+                $resultDetails[] = [
+                    'question_id' => $questionId,
+                    'question_content' => $question->question,
+                    'selected_options' => $selectedOptions,
+                    'correct_options' => $correctOptions,
+                    'is_correct' => $isCorrect,
+                ];
             }
 
-            if ($isCorrect) {
-                $correctAnswersCount++;
-            }
+            // Calculate the percentage score
+            $percentageScore = ($totalQuestions > 0)
+                ? ($correctAnswersCount / $totalQuestions) * 100
+                : 0;
 
-            // Store detailed result
-            $resultDetails[] = [
-                'question_id' => $questionId,
-                'question_content' => $question->question,
-                'selected_options' => $selectedOptions,
-                'correct_options' => $correctOptions,
-                'is_correct' => $isCorrect,
+            // Prepare the response data
+            $data = [
+                'user_id' => $userId,
+                'quiz_id' => $quizId,
+                'total_score' => $percentageScore,
+                'result_details' => $resultDetails
             ];
-        }
 
-        // Calculate the percentage score
-        $percentageScore = ($totalQuestions > 0)
-            ? ($correctAnswersCount / $totalQuestions) * 100
-            : 0;
-
-        // Prepare the response data
-        $data = [
-            'user_id' => $userId,
-            'quiz_id' => $quizId,
-            'total_score' => $percentageScore,
-            'result_details' => $resultDetails
-        ];
-
-        // Check if all answers are correct
-        if ($correctAnswersCount === $totalQuestions) {
-            // Save user answers
+            // Check if all answers are correct
+            if ($correctAnswersCount === $totalQuestions) {
+                // Save user answers
                 foreach ($answers as $answer) {
                     $questionId = $answer['question_id'];
                     $selectedOptions = $answer['selected_options'];

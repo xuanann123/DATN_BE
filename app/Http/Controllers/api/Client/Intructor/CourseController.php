@@ -30,8 +30,13 @@ class CourseController extends Controller
     public function index()
     {
         try {
+            // số bản ghi muốn hiển thị trên 1 trang, nếu không có thì mặc định là 8
+            $limit = request()->get('limit', 8);
             //Lấy danh sách khoá học của tác giả đó.
-            $courses = Course::with('user', 'category', 'tags')->where('id_user', auth()->id())->latest('id')->paginate(8);
+            $courses = Course::with('user', 'category', 'tags')
+                ->where('id_user', auth()->id())
+                ->latest('id')
+                ->paginate($limit);
             //Khi lấy về đúng
             return response()->json([
                 'status' => 200,
