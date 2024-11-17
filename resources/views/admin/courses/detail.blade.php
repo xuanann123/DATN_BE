@@ -46,6 +46,124 @@
         .is_loading {
             display: none;
         }
+
+        /* Định dạng tổng thể cho phần nền ảnh */
+        .bg-warning-subtle {
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            padding: 20px;
+            color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        /* Tạo lớp phủ màu đen bán trong suốt cho hình ảnh nền */
+        .bg-warning-subtle::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Lớp phủ màu đen với độ mờ 50% */
+            z-index: 0;
+        }
+
+        /* Định dạng cho nội dung hiển thị trên lớp phủ */
+        .card-body {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Tiêu đề khóa học */
+        h4#course-title {
+            font-size: 2rem;
+            /* Tăng kích thước tiêu đề */
+            font-weight: 700;
+            /* Đậm hơn */
+            margin-bottom: 15px;
+            color: #ffffff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            /* Tạo bóng cho chữ để nổi bật hơn */
+        }
+
+        /* Định dạng cho các chi tiết khóa học */
+        .hstack {
+            font-size: 14px;
+            font-weight: 500;
+            color: #f1f1f1;
+            text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.7);
+            /* Tạo bóng nhẹ để chữ rõ ràng hơn */
+        }
+
+        /* Định dạng cho các badge */
+        .hstack .badge {
+            font-size: 14px;
+            padding: 0.4rem 0.6rem;
+            font-weight: 600;
+            text-shadow: none;
+        }
+
+        /* Định dạng cho các nút bấm */
+        .btn {
+            font-size: 14rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        /* Định dạng cho các tab */
+        .nav-tabs-custom .nav-item .nav-link {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 15px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            /* Nền nhẹ cho các tab */
+            margin-right: 5px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        /* Đổi màu khi tab được chọn */
+        .nav-tabs-custom .nav-item .nav-link.active {
+            background-color: #ffc107;
+            /* Màu nền nổi bật khi được chọn */
+            color: #000;
+        }
+
+        /* Hiệu ứng khi di chuột vào tab */
+        .nav-tabs-custom .nav-item .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Định dạng khoảng cách và canh chỉnh */
+        .mb-3 {
+            margin-bottom: 1.5rem !important;
+        }
+
+        .pe-2 {
+            padding-right: 0.5rem !important;
+        }
+
+        /* Định dạng cho thông tin cá nhân giảng viên */
+        #instructor-name {
+            font-weight: bold;
+            color: #e6e6e6;
+        }
+
+        /* Tạo khoảng cách và canh giữa các chi tiết */
+        .hstack div {
+            padding: 5px 0;
+        }
+
+        /* Tạo hiệu ứng hover cho các badge */
+        .hstack .badge:hover {
+            opacity: 0.9;
+            cursor: pointer;
+        }
     </style>
 @endsection
 
@@ -53,19 +171,11 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card mt-n4 mx-n4">
-                <div class="bg-warning-subtle">
+                <div class="bg-warning-subtle" style="background-image: url('{{ Storage::url($course->thumbnail) }}');">
                     <div class="card-body pb-0 px-4">
                         <div class="row mb-3">
                             <div class="col-md">
                                 <div class="row align-items-center g-3">
-                                    <div class="col-md-auto">
-                                        <div class="avatar-md">
-                                            <div class="avatar-title bg-white rounded-circle">
-                                                <img src="{{ Storage::url($course->thumbnail) }}" alt=""
-                                                    class="rounded-circle img-fluid h-100">
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div class="col-md">
                                         <div>
                                             <h4 class="fw-bold" id="course-title">{{ $course->name }}</h4>
@@ -119,7 +229,7 @@
 
                                                         @csrf
                                                         <input type="hidden" name="id" value="{{ $course->id }}">
-                                                        <div class="">
+                                                        <div class="pe-2">
                                                             @if (is_null($course->submited_at))
                                                                 <button type="submit" name="submit"
                                                                     class="btn btn-success btn-label waves-effect waves-light">
@@ -151,12 +261,13 @@
                                     </div>
                                 </div>
                             </div>
+
                         </div>
 
                         <ul class="nav nav-tabs-custom border-bottom-0" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#course-overview" role="tab">
-                                    Tổng quan
+                                    Thông tin
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -180,10 +291,12 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div class="text-muted">
-                                        <h6 class="mb-3 fw-semibold text-uppercase">Mô tả
+                                        <h6 class="mb-3 fw-semibold text-uppercase">Video trailer khoá học
                                         </h6>
-                                        <div id="course-description">{!! $course->description !!}</div>
-
+                                        <div id="course-description">
+                                            <video src="{{ Storage::url($course->trailer) }}" class="img-fluid rounded"
+                                                style="width: 100%!important" controls></video>
+                                        </div>
                                         <div class="pt-3 border-top border-top-dashed mt-4" data-simplebar
                                             style="max-height: 500px">
                                             {!! $course->learned !!}
@@ -195,7 +308,7 @@
                         <div class="col-xl-3 col-lg-4">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5 class="card-title mb-0">Tổng quan khóa học</h5>
+                                    <h5 class="card-title mb-0 text-uppercase">Tổng quan khóa học</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive table-card">

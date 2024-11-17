@@ -192,14 +192,13 @@ class CourseController extends Controller
 
     public function detail($id)
     {
-
         $title = 'Chi tiết khóa học';
+        //Eggloading dữ liệu khoá học
         $course = Course::with(
             'category',
             'user',
             'modules.lessons'
         )->findOrFail($id);
-
 
         Session::put('course_id', $id);
 
@@ -212,6 +211,7 @@ class CourseController extends Controller
         $quizzesCount = $course->modules->sum(function ($module) {
             return $module->quiz !== NULL;
         });
+        //Xác định số lượng bài giảng
 
         return view('admin.courses.detail', compact('title', 'course', 'lecturesCount', 'quizzesCount', 'maxModulePosition'));
     }
