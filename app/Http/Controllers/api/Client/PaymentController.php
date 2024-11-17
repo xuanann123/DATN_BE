@@ -379,6 +379,10 @@ class PaymentController extends Controller
                 'balance' => $wallet->balance - $request->total_coin_after_discount,
             ]);
 
+            $course->update([
+                'total_student' => $course->total_student + 1,
+            ]);
+
             if ($request->voucher_code) {
                 DB::transaction(function () use ($request) {
                     $voucher = Voucher::where('code', $request->voucher_code)->lockForUpdate()->first();
