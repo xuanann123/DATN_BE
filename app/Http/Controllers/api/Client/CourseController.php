@@ -30,7 +30,7 @@ class CourseController extends Controller
                     ])
                 ->where('is_active', 1)
                 ->where('status', 'approved')
-                ->orderByDesc('created_at')->limit(6)->get();
+                ->orderByDesc('id')->limit(6)->get();
 
             $courses->each(function ($course) {
                 $course->total_lessons = $course->lessons_count + $course->quiz_count;
@@ -253,7 +253,7 @@ class CourseController extends Controller
     public function listFavoriteCourse()
     {
         $user = Auth::user();
-        //phân trang 6 bản ghi 
+        //phân trang 6 bản ghi
         try {
             $courses = $user->wishlists()->paginate(6);
             return response()->json([
