@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api\Client;
 
+use App\Models\Rating;
 use App\Models\Video;
 use App\Models\Course;
 use App\Models\UserCourse;
@@ -9,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\LessonProgress;
 use App\Http\Controllers\Controller;
 use App\Models\QuizProgress;
+use Illuminate\Support\Facades\DB;
 
 class CourseDetailController extends Controller // di ve sinh
 {
@@ -47,11 +49,23 @@ class CourseDetailController extends Controller // di ve sinh
             //Set giá trị trong khoá học là tổng bài học và tổng số lượng bài học
             $course->total_lessons = $total_lessons + $total_quiz;
             $course->total_duration_video = $total_duration_video;
+
+            // Lấy số lượng rating và điểm trung bình;
+            $ratings = DB::table('ratings')
+            ->select(
+                DB::raw('COUNT(*) as total_reviews'),
+                DB::raw('AVG(rate) as average_rating')
+            )
+                ->where('id_course', $course->id)
+                ->first();
             // Trả về dữ liệu bên phía client khi lấy được thành công
             return response()->json([
                 'status' => 'success',
                 'message' => "Thông tin khóa học.",
-                'data' => $course,
+                'data' => [
+                    'course' => $course,
+                    'ratings' => $ratings,
+                ]
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
