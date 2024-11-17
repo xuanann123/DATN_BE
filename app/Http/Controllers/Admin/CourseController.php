@@ -197,7 +197,7 @@ class CourseController extends Controller
         $course = Course::with(
             'category',
             'user',
-            'modules.lessons'
+            'modules.lessons',
         )->findOrFail($id);
 
         Session::put('course_id', $id);
@@ -211,9 +211,25 @@ class CourseController extends Controller
         $quizzesCount = $course->modules->sum(function ($module) {
             return $module->quiz !== NULL;
         });
-        //Xác định số lượng bài giảng
+        //Xác định thời giang khoá học
 
-        return view('admin.courses.detail', compact('title', 'course', 'lecturesCount', 'quizzesCount', 'maxModulePosition'));
+
+        // Tính tổng duration của các lesson vid
+        $totalDurationVideo = $course->total_duration_video = $course->modules->flatMap(function ($module) {
+            return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                return $lesson->lessonable->duration ?? 0;
+            });
+        })->sum();
+        //Điểm nổi bật 
+        $goals = $course->goals;
+        $requirements = $course->requirements;
+        $audiences = $course->audiences;
+        //Lấy ra phần danh sách đánh giá của khoá học này
+        $ratings = $course->ratings;
+
+        // dd($ratings);
+
+        return view('admin.courses.detail', compact('title', 'course', 'lecturesCount', 'quizzesCount', 'maxModulePosition', 'totalDurationVideo', 'goals', 'requirements', 'audiences', 'ratings'));
     }
 
 
@@ -292,7 +308,7 @@ class CourseController extends Controller
                 }
             }
             // dd($data);
-            
+
 
             // Cập nhật dữ liệu khóa học
             $course->update($data);
@@ -326,7 +342,7 @@ class CourseController extends Controller
             if ($request->hasFile('trailer') && $oldTrailerPath) {
                 Storage::disk('public')->delete($oldTrailerPath);
             }
-    
+
 
             DB::commit();
             return redirect()->back()->with(['success' => 'Cập nhật tổng quan khoá học thành công!']);
@@ -398,5 +414,24 @@ class CourseController extends Controller
         }
 
         return redirect()->back()->with('success', 'Cập nhật thành công.');
+    }
+  
+    public function getUserDetails(Request $request, $id)
+    {
+       // Lấy ID từ query string
+
+        // Truy vấn lấy thông tin người dùng từ cơ sở dữ liệu
+        $user = User::find($id);  // Giả sử bạn có model User
+
+        // Kiểm tra nếu không tìm thấy người dùng
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        // Trả về dữ liệu dưới dạng JSON
+        return response()->json([
+            'status' => 'success',
+            'data' => $user
+        ]);
     }
 }

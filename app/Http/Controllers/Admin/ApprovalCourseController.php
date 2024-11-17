@@ -56,6 +56,7 @@ class ApprovalCourseController extends Controller
 
     public function show($id)
     {
+        //Hiển thị những thông tin như bên khoá detail
         $title = 'Phê duyệt khóa học';
         $course = Course::with(
             'category',
@@ -68,7 +69,7 @@ class ApprovalCourseController extends Controller
         $maxModulePosition = Module::where('id_course', $course->id)->max('position');
 
         // Tổng thời gian video của tất cả bài học vid trong khóa học
-        $totalDurationVideo = $course->modules->flatMap(function ($module) {
+        $totalDurationVideo = $course->total_duration_video = $course->modules->flatMap(function ($module) {
             return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
                 return $lesson->lessonable->duration ?? 0;
             });
@@ -87,8 +88,14 @@ class ApprovalCourseController extends Controller
         });
 
         $conditions = $this->getCourseConditions($course);
+        //Điểm nổi bật 
+        $goals = $course->goals;
+        $requirements = $course->requirements;
+        $audiences = $course->audiences;
+        //Lấy ra phần danh sách đánh giá của khoá học này
+        $ratings = $course->ratings;
 
-        return view('admin.course_censors.detail', compact('title', 'course', 'totalDurationVideo', 'lecturesCount', 'quizzesCount', 'maxModulePosition', 'conditions'));
+        return view('admin.course_censors.detail', compact('title', 'course', 'totalDurationVideo', 'lecturesCount', 'quizzesCount', 'maxModulePosition', 'conditions','goals','requirements','audiences','ratings'));
     }
 
     public function approve(Request $request)
