@@ -23,10 +23,10 @@ class Rating extends Model
 
     public function course() {
         return $this->belongsTo(Course::class, 'id_course');
+    }
 
     //Người nào comment
     public function user() {
         return $this->belongsTo(User::class, 'id_user');
-
     }
 }
