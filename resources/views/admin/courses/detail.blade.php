@@ -235,21 +235,21 @@
                                                                     class="btn btn-success btn-label waves-effect waves-light">
                                                                     <i
                                                                         class="ri-check-double-line label-icon align-middle fs-16 me-2"></i>
-                                                                    Xuất bản
+                                                                    <b>Xuất bản</b>
                                                                 </button>
                                                             @elseif ($course->is_active === 1)
                                                                 <button type="submit" name="disable"
                                                                     class="btn btn-danger btn-label waves-effect waves-light">
                                                                     <i
                                                                         class="ri-eye-off-line label-icon align-middle fs-16 me-2"></i>
-                                                                    Ẩn
+                                                                    <b>Ẩn</b>
                                                                 </button>
                                                             @elseif ($course->is_active === 0)
                                                                 <button type="submit" name="enable"
                                                                     class="btn btn-info btn-label waves-effect waves-light">
                                                                     <i
                                                                         class="ri-eye-line label-icon align-middle fs-16 me-2"></i>
-                                                                    Hiện
+                                                                    <b>Hiện</b>
                                                                 </button>
                                                             @endif
                                                         </div>
@@ -267,6 +267,12 @@
                         <ul class="nav nav-tabs-custom border-bottom-0" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#course-overview" role="tab">
+                                    Tổng quan
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#course-information"
+                                    role="tab">
                                     Thông tin
                                 </a>
                             </li>
@@ -275,6 +281,12 @@
                                     Nội dung
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#course-rating" role="tab">
+                                    Đánh giá
+                                </a>
+                            </li>
+
                         </ul>
                     </div>
                 </div>
@@ -291,8 +303,8 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div class="text-muted">
-                                        <h6 class="mb-3 fw-semibold text-uppercase">Video trailer khoá học
-                                        </h6>
+                                        <h5 class="mb-3 fw-semibold text-uppercase">Video trailer khoá học
+                                        </h5>
                                         <div id="course-description">
                                             <video src="{{ Storage::url($course->trailer) }}" class="img-fluid rounded"
                                                 style="width: 100%!important" controls></video>
@@ -308,7 +320,7 @@
                         <div class="col-xl-3 col-lg-4">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5 class="card-title mb-0 text-uppercase">Tổng quan khóa học</h5>
+                                    <h6 class="card-title mb-0 text-uppercase">Tổng quan khóa học</h6>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive table-card">
@@ -317,7 +329,9 @@
                                                 <tr>
                                                     <td class="fw-medium">Thời gian</td>
                                                     <td id="course-duration">
-                                                        {{ $course->duration ? $course->duration . ' tuần' : 'Chưa xác định' }}
+                                                        {{-- Hiển thị số lượng phút ra đây --}}
+                                                        {{ ceil($totalDurationVideo / 60) }}
+                                                        phút</i>
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -330,10 +344,16 @@
                                                 </tr>
                                                 <tr>
                                                     <td class="fw-medium">Học viên</td>
-                                                    <td id="course-language">Tạm thời chưa làm</td>
+                                                    <td id="course-language">
+                                                        @if ($course->total_student <= 0)
+                                                            Không có học viên
+                                                        @else
+                                                            {{ $course->total_student . ' sinh viên' }}
+                                                        @endif
+                                                    </td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="fw-medium">Price</td>
+                                                    <td class="fw-medium">Giá khoá học</td>
                                                     <td>
                                                         @if ($course->is_free)
                                                             <span class="badge bg-success">Free</span>
@@ -360,6 +380,75 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="tab-pane fade" id="course-information" role="tabpanel">
+                    <div class="row">
+                        <div class="col-xl-7 col-lg-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="card-title mb-0 text-uppercase">Mô tả về khoá học khóa học</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="text-muted">
+                                        <p class="mb-3 fw-semibold text-uppercase">Mô tả ngắn khoá học</p>
+                                        <span>{!! $course->sort_description !!}</span>
+                                    </div>
+                                    <hr>
+                                    <div class="text-muted mt-3">
+                                        <p class="mb-3 fw-semibold text-uppercase">Mô tả khoá học</p>
+
+                                        <span class="d-flex"> {!! $course->description !!}</span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-5 col-lg-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="text-muted">
+                                        <h5 class="mb-3 fw-semibold text-uppercase">Mục tiêu tham gia khoá học</h5>
+                                        <ul class="list-unstyled mb-0">
+                                            @foreach ($goals as $goal)
+                                                <li>
+                                                    <i class="ri-check-double-line label-icon align-middle fs-16 me-2"></i>
+                                                    <span>{{ $goal->goal }}</span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                    <hr>
+                                    <div class="text-muted mt-3">
+                                        <h5 class="mb-3 fw-semibold text-uppercase">Yêu cầu tham gia khoá học</h5>
+                                        <ul class="list-unstyled mb-0">
+                                            @foreach ($requirements as $requirement)
+                                                <li>
+                                                    <i class="ri-check-double-line label-icon align-middle fs-16 me-2"></i>
+                                                    <span>{{ $requirement->requirement }}</span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                    <hr>
+                                    <div class="text-muted mt-3">
+                                        <h5 class="mb-3 fw-semibold text-uppercase">Yêu cầu tham gia khoá học</h5>
+                                        <ul class="list-unstyled mb-0">
+                                            @foreach ($audiences as $audience)
+                                                <li>
+                                                    <i class="ri-check-double-line label-icon align-middle fs-16 me-2"></i>
+                                                    <span>{{ $audience->audience }}</span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
                 <div class="tab-pane fade" id="course-content" role="tabpanel">
                     <div class="card">
                         <div class="card-body">
@@ -518,292 +607,457 @@
                 </div>
 
 
-                <!-- Modal Thêm Module -->
-                <div class="modal fade mt-5" id="addModuleModal" tabindex="-1">
-                    <div class="modal-dialog mt-5">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Thêm Chương Mới</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Đóng"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="addModuleForm" method="POST" action="{{ route('admin.modules.store') }}">
-                                    @csrf
-                                    <input type="hidden" name="id_course" value="{{ $course->id }}">
-                                    <div class="mb-3">
-                                        <label for="moduleTitle" class="form-label">Tiêu Đề chương</label>
-                                        <input type="text" class="form-control" name="title"
-                                            placeholder="Nhập tiêu đề chương {{ $maxModulePosition + 1 }}...">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="moduleDescription" class="form-label">Mô Tả</label>
-                                        <textarea class="form-control" name="description" rows="3"></textarea>
-                                    </div>
-                                    <div class="mb-3">
-                                        {{-- <label for="modulePosition">Vị Trí</label>
-                                        <span class="form-control bg-primary-subtle">{{ $maxModulePosition + 1 }}</span> --}}
-                                        <input type="hidden" name="position" value="{{ $maxModulePosition + 1 }}">
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                <button type="submit" form="addModuleForm" class="btn btn-primary">Thêm chương</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div class="tab-pane fade" id="course-rating" role="tabpanel">
+                    @if ($ratings->count() <= 0)
+                        <h4 class="alert alert-warning">Khoá học này chưa có đánh giá nào!</h4>
+                    @else
+                        <div class="row">
+                            <div class="col-xxl-9">
+                                <div class="card" id="companyList">
 
-                <!-- Add Video Lesson Modal -->
-                <div class="modal fade" id="addVideoLessonModal" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Bài học video</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="addVideoLessonForm" method="POST" enctype="multipart/form-data"
-                                    action="{{ route('admin.lessons.store-lesson-video') }}">
-                                    @csrf
-                                    <input type="hidden" class="form-control" id="module-id-lesson-video"
-                                        name="id_module">
-                                    <div class="mb-3">
-                                        <label for="lesson-title" class="form-label">Tiêu đề bài học</label>
-                                        <input type="text" class="form-control" id="lesson-title" name="title">
-                                        <small id="title_err" class="help-block form-text text-danger err">
-                                            {{-- @if ($errors->has('title'))
-                                                {{ $errors->first('title') }}
-                                            @endif --}}
-                                        </small>
-                                    </div>
+                                    <div class="card-body">
+                                        <div>
+                                            <div class="table-responsive table-card mb-3">
+                                                <table class="table align-middle table-nowrap mb-0" id="customerTable">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Thành viên
+                                                            </th>
+                                                            <th>
+                                                                Địa chỉ email</th>
+                                                            <th>Đánh giá
+                                                            </th>
+                                                            <th>Thời gian đánh giá
+                                                            </th>
+                                                            <th scope="col">Thao tác</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="list form-check-all">
+                                                        @foreach ($ratings as $rating)
+                                                            <tr>
 
-                                    <div class="mb-3">
-                                        <label for="textContent" class="form-label">Mô tả video</label>
-                                        <textarea class="form-control" id="ckeditor-classic-video" name="description" rows="4"></textarea>
-                                    </div>
+                                                                <td class="id" style="display:none;"><a
+                                                                        href="javascript:void(0);"
+                                                                        class="fw-medium link-primary">#VZ001</a></td>
+                                                                <td>
+                                                                    <div class="d-flex align-items-center">
+                                                                        <div class="flex-shrink-0">
+                                                                            @php
+                                                                                $user_avt = Storage::url(
+                                                                                    $rating->user->avatar,
+                                                                                );
+                                                                            @endphp
+                                                                            <img src="{{ $user_avt }}" alt=""
+                                                                                class="avatar-xxs rounded-circle image_src object-fit-cover">
+                                                                        </div>
+                                                                        <div class="flex-grow-1 ms-2 name">
+                                                                            {{ $rating->user->name }}</div>
+                                                                    </div>
 
-                                    <div class="mb-3">
-                                        <label>
-                                            <input type="radio" checked name="check" value="upload"
-                                                id="upload-video-option">
-                                            <span class="mx-1">Tải video lên</span>
-                                        </label>
-                                        <label>
-                                            <input type="radio" name="check" value="url" id="url-video-option">
-                                            <span class="mx-1">Nhập url</span>
-                                        </label>
-                                    </div>
 
-                                    <div class="mb-3 box-input-url" id="box-url" style="display: none;">
-                                        <label for="lesson-title" class="form-label">Nhập id video</label>
-                                        <input type="text" class="form-control" id="url-video"
-                                            name="video_youtube_id">
-                                        <small class="help-block form-text text-danger err" id="video_youtube_id_err">
-                                            {{-- @if ($errors->has('url'))
-                                                {{ $errors->first('url') }}
-                                            @endif --}}
-                                        </small>
-                                    </div>
-
-                                    <div class="mb-3 box-upload-video" id="box-upload">
-                                        <label for="video" class="form-label">Tải video lên</label>
-                                        <label for="video" class="drop-container" id="dropcontainer">
-                                            <span class="drop-title">Tải video lên</span>
-                                            <input type="file" id="video" accept="video/*" name="video">
-                                            <small class="help-block form-text text-danger err" id="video_err">
-                                                {{-- @if ($errors->has('video'))
-                                                    {{ $errors->first('video') }}
-                                                @endif --}}
-                                            </small>
-                                        </label>
-                                    </div>
-                                    <input type="hidden" name="duration" id="duration">
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary btn-close-modal-lesson-video"
-                                    data-bs-dismiss="modal">Đóng</button>
-                                <button type="submit" form="addVideoLessonForm"
-                                    class="btn btn-primary btn-submit-lesson-video">
-                                    <span class="is_loading">
-                                        <i class="fa fa-circle-o-notch fa-spin"></i><span class="mx-1">Đang tải
-                                            lên</span>
-                                    </span>
-                                    <span class="btn-span-add">Thêm</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Add Text Lesson Modal -->
-                <div class="modal fade" id="addTextLessonModal" tabindex="-1">
-                    <div class="modal-dialog modal-xl">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Bài học text</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="addTextLessonForm" method="POST"
-                                    action="{{ route('admin.lessons.store-lesson-text') }}">
-                                    @csrf
-                                    <input type="hidden" name="id_module">
-                                    <div class="mb-3">
-                                        <label for="textLessonTitle" class="form-label">Tiêu đề bài học</label>
-                                        <input type="text" class="form-control" id="textLessonTitle" name="title">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="textContent" class="form-label">Nội dung</label>
-                                        <div data-simplebar style="max-height: 370px; max-width: 100%;">
-                                            <textarea class="form-control" id="ckeditor-classic-lesson-text" name="content">
-                                            </textarea>
-                                        </div>
-                                    </div>
-
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                <button type="submit" form="addTextLessonForm" class="btn btn-primary">Thêm</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Add Quiz Lesson Modal -->
-                <div class="modal fade" id="addQuizLessonModal" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Add Quiz</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-
-                                {{-- Khi thêm câu hỏi về quiz nó sẽ nhẩy ra ở đây --}}
-                                <form id="addQuizLessonForm">
-                                    <div class="mb-3">
-                                        <label for="quizTitle" class="form-label">Quiz Title</label>
-                                        <input type="text" class="form-control" id="quizTitle" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="quizDescription" class="form-label">Quiz
-                                            Description</label>
-                                        <textarea class="form-control" id="quizDescription" rows="3" required></textarea>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="quizDuration" class="form-label">Time Limit
-                                            (minutes)</label>
-                                        <input type="number" class="form-control" id="quizDuration" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Questions</label>
-                                        <div id="quizQuestions">
-                                            <div class="card mb-3">
-                                                <div class="card-body">
-                                                    <h6 class="card-title">Question 1</h6>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Question Text</label>
-                                                        <input type="text" class="form-control" name="question_1"
-                                                            required>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Options</label>
-                                                        <div class="input-group mb-2">
-                                                            <div class="input-group-text">
-                                                                <input class="form-check-input mt-0" type="radio"
-                                                                    name="correct_answer_1" required>
-                                                            </div>
-                                                            <input type="text" class="form-control"
-                                                                placeholder="Option 1" name="option_1_1" required>
-                                                        </div>
-                                                        <div class="input-group mb-2">
-                                                            <div class="input-group-text">
-                                                                <input class="form-check-input mt-0" type="radio"
-                                                                    name="correct_answer_1" required>
-                                                            </div>
-                                                            <input type="text" class="form-control"
-                                                                placeholder="Option 2" name="option_1_2" required>
-                                                        </div>
-                                                        <div class="input-group mb-2">
-                                                            <div class="input-group-text">
-                                                                <input class="form-check-input mt-0" type="radio"
-                                                                    name="correct_answer_1" required>
-                                                            </div>
-                                                            <input type="text" class="form-control"
-                                                                placeholder="Option 3" name="option_1_3" required>
-                                                        </div>
-                                                        <div class="input-group mb-2">
-                                                            <div class="input-group-text">
-                                                                <input class="form-check-input mt-0" type="radio"
-                                                                    name="correct_answer_1" required>
-                                                            </div>
-                                                            <input type="text" class="form-control"
-                                                                placeholder="Option 4" name="option_1_4" required>
-                                                        </div>
-                                                    </div>
-                                                </div>
                                             </div>
-                                        </div>
-                                        <button type="button" class="btn btn-sm btn-secondary mt-2"
-                                            id="addQuestionBtn">Add Question</button>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" form="addQuizLessonForm" class="btn btn-primary">Add Quiz</button>
-                            </div>
+                                            </td>
+
+                                            <td class="industry_type">{{ $rating->user->email }}</td>
+
+
+                                            <td><span class="star_value">{{ $rating->rate }}</span> <i
+                                                    class="ri-star-fill text-warning align-bottom"></i></td>
+                                            <td>{{ $rating->created_at }}</td>
+                                            <td>
+                                                <ul class="list-inline hstack gap-2 mb-0">
+
+                                                    <li class="list-inline-item view-user-detail"
+                                                        data-id="{{ $rating->user->id }}" data-bs-toggle="tooltip"
+                                                        data-bs-trigger="hover" data-bs-placement="top" title="View">
+                                                        <a href="javascript:void(0);" class="view-item-btn"><i
+                                                                class="ri-eye-fill align-bottom "></i></a>
+                                                    </li>
+
+                                                    <li class="list-inline-item" data-bs-toggle="tooltip"
+                                                        data-bs-trigger="hover" data-bs-placement="top" title="Delete">
+                                                        <a class="remove-item-btn color-primary" data-bs-toggle="modal"
+                                                            href="#deleteRecordModal">
+                                                            <i class="ri-delete-bin-fill align-bottom "></i>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                            </tr>
+                    @endforeach
+
+
+
+                    </tbody>
+                    </table>
+                    <div class="noresult" style="display: none">
+                        <div class="text-center">
+                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px"></lord-icon>
+                            <h5 class="mt-2">Sorry! No Result Found</h5>
+                            <p class="text-muted mb-0">We've searched more than 150+ companies
+                                We did not find any companies for you search.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Preview Lesson Modal -->
-                <div class="modal fade" id="previewLessonModal" tabindex="-1" aria-labelledby="previewLessonModal"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-xl">
-                        <div class="modal-content border-0 shadow-lg">
-                            <div class="modal-header bg-primary-subtle">
-                                <h5 class="modal-title mb-3" id="previewLessonModalLabel">Lesson Preview</h5>
-                                <button type="button" class="btn-close mb-2" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body p-4">
-                            </div>
-                            <div class="modal-footer border-top-0">
-                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Đóng</button>
-                            </div>
+
+                <div class="d-flex justify-content-end mt-3">
+                    <div class="pagination-wrap hstack gap-2">
+                        <a class="page-item pagination-prev disabled" href="#">
+                            Quay lại
+                        </a>
+                        <ul class="pagination listjs-pagination mb-0"></ul>
+                        <a class="page-item pagination-next" href="#">
+                            Hiển thị thêm
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!--end add modal-->
+
+
+        </div>
+    </div>
+    <!--end card-->
+    </div>
+
+    <div class="col-xxl-3">
+        <div class="card" id="company-view-detail">
+            <div class="card-body text-center">
+                <div class="position-relative d-inline-block">
+                    <div class="avatar-md">
+                        <div class="avatar-title bg-light rounded-circle">
+                            <img id="user-avatar"
+                                src="https://png.pngtree.com/png-clipart/20210608/ourlarge/pngtree-dark-gray-simple-avatar-png-image_3418404.jpg"
+                                alt="" class="avatar-sm rounded-circle object-fit-cover">
                         </div>
                     </div>
                 </div>
-                {{-- Preview Quiz --}}
-                <div class="modal fade" id="previewQuizModal" tabindex="-1" aria-labelledby="previewQuizModal"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-lg">
-                        <div class="modal-content border-0 shadow-lg">
-                            <div class="modal-header bg-primary-subtle">
-                                <h4 class="modal-title mb-3" id="previewQuizModalLabel">Lesson Preview</h4>
-                                <button type="button" class="btn-close mb-2" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body p-4">
+                <h5 id="user-name" class="mt-3 mb-1">Tên người dùng</h5>
+                <p id="user-email" class="text-muted"></p>
 
-                            </div>
-                            <div class="modal-footer border-top-0">
-                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
+                <ul class="list-inline mb-0">
+                    <li class="list-inline-item avatar-xs">
+                        <a href="javascript:void(0);" class="avatar-title bg-success-subtle text-success fs-15 rounded">
+                            <i class="ri-global-line"></i>
+                        </a>
+                    </li>
+                    <li class="list-inline-item avatar-xs">
+                        <a href="javascript:void(0);" class="avatar-title bg-danger-subtle text-danger fs-15 rounded">
+                            <i class="ri-mail-line"></i>
+                        </a>
+                    </li>
+                    <li class="list-inline-item avatar-xs">
+                        <a href="javascript:void(0);" class="avatar-title bg-warning-subtle text-warning fs-15 rounded">
+                            <i class="ri-question-answer-line"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase fw-semibold mb-3">Thông tin</h6>
+
+                <div class="table-responsive table-card">
+                    <table class="table table-borderless mb-0">
+                        <tbody>
+                            <tr>
+                                <td class="fw-medium" scope="row">Địa chỉ email</td>
+                                <td id="user-email-info"></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-medium" scope="row">Tham gia vào lúc</td>
+                                <td id="user-join-date"></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-
             </div>
         </div>
+        <!--end card-->
+    </div>
+
+    <!--end col-->
+    </div>
+    @endif
+
+
+    <!--end row-->
+    </div>
+
+    <!-- Modal Thêm Module -->
+    <div class="modal fade mt-5" id="addModuleModal" tabindex="-1">
+        <div class="modal-dialog mt-5">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm Chương Mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addModuleForm" method="POST" action="{{ route('admin.modules.store') }}">
+                        @csrf
+                        <input type="hidden" name="id_course" value="{{ $course->id }}">
+                        <div class="mb-3">
+                            <label for="moduleTitle" class="form-label">Tiêu Đề chương</label>
+                            <input type="text" class="form-control" name="title"
+                                placeholder="Nhập tiêu đề chương {{ $maxModulePosition + 1 }}...">
+                        </div>
+                        <div class="mb-3">
+                            <label for="moduleDescription" class="form-label">Mô Tả</label>
+                            <textarea class="form-control" name="description" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            {{-- <label for="modulePosition">Vị Trí</label>
+                                        <span class="form-control bg-primary-subtle">{{ $maxModulePosition + 1 }}</span> --}}
+                            <input type="hidden" name="position" value="{{ $maxModulePosition + 1 }}">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" form="addModuleForm" class="btn btn-primary">Thêm chương</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Video Lesson Modal -->
+    <div class="modal fade" id="addVideoLessonModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bài học video</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addVideoLessonForm" method="POST" enctype="multipart/form-data"
+                        action="{{ route('admin.lessons.store-lesson-video') }}">
+                        @csrf
+                        <input type="hidden" class="form-control" id="module-id-lesson-video" name="id_module">
+                        <div class="mb-3">
+                            <label for="lesson-title" class="form-label">Tiêu đề bài học</label>
+                            <input type="text" class="form-control" id="lesson-title" name="title">
+                            <small id="title_err" class="help-block form-text text-danger err">
+                                {{-- @if ($errors->has('title'))
+                                                {{ $errors->first('title') }}
+                                            @endif --}}
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="textContent" class="form-label">Mô tả video</label>
+                            <textarea class="form-control" id="ckeditor-classic-video" name="description" rows="4"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>
+                                <input type="radio" checked name="check" value="upload" id="upload-video-option">
+                                <span class="mx-1">Tải video lên</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="check" value="url" id="url-video-option">
+                                <span class="mx-1">Nhập url</span>
+                            </label>
+                        </div>
+
+                        <div class="mb-3 box-input-url" id="box-url" style="display: none;">
+                            <label for="lesson-title" class="form-label">Nhập id video</label>
+                            <input type="text" class="form-control" id="url-video" name="video_youtube_id">
+                            <small class="help-block form-text text-danger err" id="video_youtube_id_err">
+                                {{-- @if ($errors->has('url'))
+                                                {{ $errors->first('url') }}
+                                            @endif --}}
+                            </small>
+                        </div>
+
+                        <div class="mb-3 box-upload-video" id="box-upload">
+                            <label for="video" class="form-label">Tải video lên</label>
+                            <label for="video" class="drop-container" id="dropcontainer">
+                                <span class="drop-title">Tải video lên</span>
+                                <input type="file" id="video" accept="video/*" name="video">
+                                <small class="help-block form-text text-danger err" id="video_err">
+                                    {{-- @if ($errors->has('video'))
+                                                    {{ $errors->first('video') }}
+                                                @endif --}}
+                                </small>
+                            </label>
+                        </div>
+                        <input type="hidden" name="duration" id="duration">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-close-modal-lesson-video"
+                        data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" form="addVideoLessonForm" class="btn btn-primary btn-submit-lesson-video">
+                        <span class="is_loading">
+                            <i class="fa fa-circle-o-notch fa-spin"></i><span class="mx-1">Đang tải
+                                lên</span>
+                        </span>
+                        <span class="btn-span-add">Thêm</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Text Lesson Modal -->
+    <div class="modal fade" id="addTextLessonModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bài học text</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addTextLessonForm" method="POST" action="{{ route('admin.lessons.store-lesson-text') }}">
+                        @csrf
+                        <input type="hidden" name="id_module">
+                        <div class="mb-3">
+                            <label for="textLessonTitle" class="form-label">Tiêu đề bài học</label>
+                            <input type="text" class="form-control" id="textLessonTitle" name="title">
+                        </div>
+                        <div class="mb-3">
+                            <label for="textContent" class="form-label">Nội dung</label>
+                            <div data-simplebar style="max-height: 370px; max-width: 100%;">
+                                <textarea class="form-control" id="ckeditor-classic-lesson-text" name="content">
+                                            </textarea>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" form="addTextLessonForm" class="btn btn-primary">Thêm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Quiz Lesson Modal -->
+    <div class="modal fade" id="addQuizLessonModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Quiz</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    {{-- Khi thêm câu hỏi về quiz nó sẽ nhẩy ra ở đây --}}
+                    <form id="addQuizLessonForm">
+                        <div class="mb-3">
+                            <label for="quizTitle" class="form-label">Quiz Title</label>
+                            <input type="text" class="form-control" id="quizTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quizDescription" class="form-label">Quiz
+                                Description</label>
+                            <textarea class="form-control" id="quizDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quizDuration" class="form-label">Time Limit
+                                (minutes)</label>
+                            <input type="number" class="form-control" id="quizDuration" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Questions</label>
+                            <div id="quizQuestions">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h6 class="card-title">Question 1</h6>
+                                        <div class="mb-3">
+                                            <label class="form-label">Question Text</label>
+                                            <input type="text" class="form-control" name="question_1" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Options</label>
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-text">
+                                                    <input class="form-check-input mt-0" type="radio"
+                                                        name="correct_answer_1" required>
+                                                </div>
+                                                <input type="text" class="form-control" placeholder="Option 1"
+                                                    name="option_1_1" required>
+                                            </div>
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-text">
+                                                    <input class="form-check-input mt-0" type="radio"
+                                                        name="correct_answer_1" required>
+                                                </div>
+                                                <input type="text" class="form-control" placeholder="Option 2"
+                                                    name="option_1_2" required>
+                                            </div>
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-text">
+                                                    <input class="form-check-input mt-0" type="radio"
+                                                        name="correct_answer_1" required>
+                                                </div>
+                                                <input type="text" class="form-control" placeholder="Option 3"
+                                                    name="option_1_3" required>
+                                            </div>
+                                            <div class="input-group mb-2">
+                                                <div class="input-group-text">
+                                                    <input class="form-check-input mt-0" type="radio"
+                                                        name="correct_answer_1" required>
+                                                </div>
+                                                <input type="text" class="form-control" placeholder="Option 4"
+                                                    name="option_1_4" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-secondary mt-2" id="addQuestionBtn">Add
+                                Question</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" form="addQuizLessonForm" class="btn btn-primary">Add Quiz</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Lesson Modal -->
+    <div class="modal fade" id="previewLessonModal" tabindex="-1" aria-labelledby="previewLessonModal"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-primary-subtle">
+                    <h5 class="modal-title mb-3" id="previewLessonModalLabel">Lesson Preview</h5>
+                    <button type="button" class="btn-close mb-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- Preview Quiz --}}
+    <div class="modal fade" id="previewQuizModal" tabindex="-1" aria-labelledby="previewQuizModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-primary-subtle">
+                    <h4 class="modal-title mb-3" id="previewQuizModalLabel">Lesson Preview</h4>
+                    <button type="button" class="btn-close mb-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+    </div>
     </div>
 
 @endsection
@@ -812,6 +1066,38 @@
     <script src="{{ asset('theme/admin/assets/js/pages/project-create.init.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+    <script>
+        $(document).ready(function() {
+            // Lắng nghe sự kiện click vào nút view-item-btn
+            $('.view-user-detail').on('click', function() {
+                var userId = $(this).data('id'); // Lấy ID của người dùng
+
+                // Gọi Ajax để lấy thông tin người dùng
+                $.ajax({
+                    url: '/admin/courses/user-rating/' +
+                        userId, // Địa chỉ API hoặc URL để lấy thông tin người dùng
+                    type: 'GET',
+                    data: {
+                        id: userId
+                    }, // Truyền ID người dùng vào request
+                    success: function(response) {
+                        console.log(response.data.avatar);
+                        $('#user-avatar').attr('src', '/storage/' + response.data.avatar ||
+                            'https://png.pngtree.com/png-clipart/20210608/ourlarge/pngtree-dark-gray-simple-avatar-png-image_3418404.jpg'
+                        );
+                        $('#user-name').text(response.data.name || 'Tên người dùng');
+                        $('#user-email-info').text(response.data.email || 'Email');
+
+                        $('#user-join-date').text(response.data.created_at ||
+                            'Tham gia vào lúc');
+                    },
+                    error: function() {
+                        alert("Có lỗi xảy ra khi tải thông tin người dùng.");
+                    }
+                });
+            });
+        });
+    </script>
     <script>
         // select tab default
         $(document).ready(function() {

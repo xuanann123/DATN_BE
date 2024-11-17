@@ -141,6 +141,8 @@ Route::prefix("admin")
             ->as('courses.')
             ->group(function () {
                 Route::get("/", [CourseController::class, 'index'])->name('list');
+                Route::get("/user-rating/{id}", [CourseController::class, 'getUserDetails']);
+
 
                 Route::get("/create", [CourseController::class, 'create'])->name('create');
                 Route::post('/store', [CourseController::class, 'store'])->name('store');
