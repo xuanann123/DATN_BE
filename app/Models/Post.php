@@ -99,5 +99,9 @@ class Post extends Model
     {
         return $this->morphMany(Comment::class, 'commentable');
     }
-
+//Lưu bài viết
+    public function saveposts()
+    {
+        return $this->belongsToMany(Post::class, 'save_posts', 'post_id', 'user_id');
+    }
 }

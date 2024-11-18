@@ -86,6 +86,7 @@ class TeacherController extends Controller
         $id = $request->id;
 
         $teacher = $this->teacherId($id);
+        $totalStudent = 0;
 
         if (!$teacher) {
             return response()->json([
@@ -123,13 +124,18 @@ class TeacherController extends Controller
                 'message' => 'No data found',
             ], 204);
         }
+        //Lấy số lượng sinh viên đang tham gia khoá học này
+        foreach ($courses as $course) {
+            $totalStudent += $course->total_student;
+        }
 
         return response()->json([
             'status' => 'success',
             'data' => [
                 'dataCourses' => $courses,
                 'dataTeacher' => $teacher,
-                'raring' => $this->ratingTeacher($id)
+                'rating' => $this->ratingTeacher($id),
+                'totalStudent' => $totalStudent
             ]
         ], 200);
     }

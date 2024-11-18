@@ -500,4 +500,37 @@ class PostController extends Controller
             'data' => $listPosts
         ], 200);
     }
+    public function savePost($slug) {
+        try {
+            $post = Post::where('slug', $slug)->where('is_active', '=', 1)->first();
+            $user = auth()->user();
+            if (!$post) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Bài viết không tồn tại'
+                ], 404);
+            }
+            //Kiểm tra nghe nó đã mua hay chưa
+            $userPost = $user->saveposts()->where('post_id', $post->id)->first();
+            if ($userPost) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Bạn đã lưu bài viết này từ trước' ,
+                    'data' => [],
+                ], 400);  
+            }
+            //Nếu có bài viết thực hiện đi lưu bài viết
+            $post->saveposts()->attach($user->id);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Lưu bài viết thành công'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi lưu bài viết',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
