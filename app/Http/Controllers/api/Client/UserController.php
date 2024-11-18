@@ -12,10 +12,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Client\User\UpdateProfileRequest;
 use App\Http\Requests\Client\User\ChangePasswordRequest;
+use App\Models\Lesson;
 use App\Models\User;
 use App\Models\UserCourse;
 use App\Models\Video;
 use Carbon\Carbon;
+use Dompdf\FrameDecorator\Table;
 use Flasher\Prime\EventDispatcher\Event\ResponseEvent;
 
 class UserController extends Controller
@@ -210,6 +212,34 @@ class UserController extends Controller
             'status' => 'success',
             'message' => 'Đăng kí trở thành giảng viên thành công.',
             'data' => []
+        ], 200);
+    }
+    public function checkLearning() {
+        
+        $user = Auth::user();
+        $data = [];
+        //Lấy danh sách 5 bài học gần nhất dựa vào bảng lesson_progress
+        $lessonProgress = DB::table('lesson_progress')->where('id_user', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+            //Tôi muốn duyệt qua để lấy những bài học này
+        foreach ($lessonProgress as $item) {
+            $data[] = Lesson::find($item->id_lesson);
+        }
+        //Check xem dữ liệu data rỗng thì trả về 204
+
+        if (empty($data)) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Bạn chưa có bài học gần nhất',
+                'data' => $data
+            ], 200);
+        }
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Danh sách bài học gần nhất',
+            'data' => $data
         ], 200);
     }
 
