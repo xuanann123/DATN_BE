@@ -286,6 +286,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('', [PostController::class, 'store']);
         Route::put('/{slug}', [PostController::class, 'update']);
         Route::delete('/{slug}', [PostController::class, 'destroy']);
+        //lưu trữ bài viết
+        Route::post('/save/{slug}', [PostController::class, 'savePost']);
     });
 });
 
