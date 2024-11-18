@@ -219,6 +219,7 @@ class TeacherController extends Controller
                 u.name as user_name,
                 u.avatar as user_avatar,
                 COUNT(c.total_student) as total_student,
+                COUNT(c.id) as total_courses,
                 COUNT(r.id) as total_ratings,
                 ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
             ')
@@ -230,6 +231,7 @@ class TeacherController extends Controller
             ->groupBy('u.id', 'u.name', 'u.avatar')
             ->orderByDesc('total_ratings')
             ->orderByDesc('total_student')
+            ->limit(5)
             ->get();
 
         if ($teachers->count() <= 0) {
