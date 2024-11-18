@@ -478,6 +478,7 @@ class PostController extends Controller
             'posts.title',
             'posts.slug',
             'posts.description',
+            'posts.content',
             'posts.thumbnail',
             'posts.views',
             'posts.created_at',
