@@ -525,7 +525,7 @@ class PaymentController extends Controller
 
         $listHistoryByCourse = DB::table('bills as b')
             ->selectRaw('
-                u.name as user_name,
+                u.name as name,
                 c.name as course_name,
                 b.id as bill_id,
                 b.total_coin_after_discount as total_coin,
@@ -567,7 +567,7 @@ class PaymentController extends Controller
 
         $listHistoryTransactionsPurchase = DB::table('transactions as t')
             ->selectRaw('
-                u.name as user_name,
+                u.name as name,
                 t.id as transaction_id,
                 t.coin_unit,
                 t.amount,

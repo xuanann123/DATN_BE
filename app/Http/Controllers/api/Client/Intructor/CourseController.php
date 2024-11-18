@@ -489,9 +489,9 @@ class CourseController extends Controller
 
         $courses = DB::table('courses as c')
             ->selectRaw('
-                u.id as user_id,
-                u.name as user_name,
-                u.avatar as user_avatar,
+                u.id as id,
+                u.name as name,
+                u.avatar as avatar,
                 c.id as course_id,
                 c.name as course_name,
                 c.thumbnail as course_thumbnail,
@@ -539,9 +539,9 @@ class CourseController extends Controller
 
         $course = DB::table('courses as c')
             ->selectRaw('
-                u.id as user_id,
-                u.name as user_name,
-                u.avatar as user_avatar,
+                u.id as id,
+                u.name as name,
+                u.avatar as avatar,
                 c.id as course_id,
                 c.name as course_name,
                 c.thumbnail as course_thumbnail,
