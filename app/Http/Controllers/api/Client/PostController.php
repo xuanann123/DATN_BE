@@ -533,4 +533,48 @@ class PostController extends Controller
             ], 500);
         }
     }
+    //Danh sách bài viết đã được lưu 
+    public function getSavedPosts() {
+        try {
+            $user = auth()->user();
+            $data = [];
+            $listPosts = $user->saveposts()->get();
+            if($listPosts->isEmpty()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Bạn chưa lưu bài viết nào',
+                    'data' => []
+                ], 204);
+            }
+            foreach ($listPosts as $post) {
+                $data[] = [
+                    'id' => $post->id,
+                    'title' => $post->title,
+                    'slug' => $post->slug,
+                    'description' => $post->description,
+                    'thumbnail' => url(Storage::url($post->thumbnail)),
+                    'content' => $post->content,
+                    'views' => $post->views,
+                    'status' => $post->status,
+                    'allow_comments' => $post->allow_comments,
+                    'published_at' => $post->published_at,
+                    'categories' => $post->categories,
+                    'tags' => $post->tags
+                ];
+            }
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Lấy danh sách bài viết đã được lưu thành công',
+                'data' => $data
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi lưu bài viết',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 }
