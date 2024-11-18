@@ -212,49 +212,39 @@ class TeacherController extends Controller
     {
         // Lấy danh sách giảng viên trong 1 tháng gần nhất
         $oneMonthAgo = Carbon::now()->subMonth();
-        // Map qua từng giảng viên và xử lý các thông tin cần thiết
-
-        $page = $request->page ?? 1;
-        // Số bản ghi trên một trang;
-        $perPage = $request->perPage ?? 12;
-
-        $idUserLogin = $request->user()->id;
-
+        // Danh sách teachers có nhiều sinh viên tham gia khoá học trong tháng đó
         $teachers = DB::table('users as u')
             ->selectRaw('
-                u.id,
-                u.name,
-                u.avatar,
-                COUNT(DISTINCT c.id) as total_courses,
-                COUNT(DISTINCT r.id) as total_ratings,
+                u.id as user_id,
+                u.name as user_name,
+                u.avatar as user_avatar,
+                COUNT(c.total_student) as total_student,
+                COUNT(r.id) as total_ratings,
                 ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
             ')
             ->leftJoin('courses as c', 'u.id', '=', 'c.id_user')
             ->leftJoin('ratings as r', 'c.id', '=', 'r.id_course')
             ->where('u.user_type', 'teacher')
             ->where('u.is_active', 1)
-            ->where('u.id', '!=', $idUserLogin)
             ->where('c.created_at', '>=', $oneMonthAgo)
             ->groupBy('u.id', 'u.name', 'u.avatar')
-            ->orderByDesc('average_rating')
-            ->paginate($perPage, ['*'], 'page', $page);
+            ->orderByDesc('total_ratings')
+            ->orderByDesc('total_student')
+            ->get();
 
         if ($teachers->count() <= 0) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Không thấy dữ liệu',
+                'message' => 'No data found',
             ], 204);
         }
 
         return response()->json([
             'status' => 'success',
             'data' => [
-                'teachers' => $teachers->items(),
-                'current_page' => $teachers->currentPage(),
-                'total_pages' => $teachers->lastPage(),
-                'total_count' => $teachers->total(),
+                'teachers' => $teachers,
             ]
-        ], 200);
+        ]);
         
     }
 
