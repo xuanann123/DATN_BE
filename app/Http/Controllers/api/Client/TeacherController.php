@@ -238,14 +238,12 @@ class TeacherController extends Controller
                 'message' => 'No data found',
             ], 204);
         }
-
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'teachers' => $teachers,
-            ]
-        ]);
-        
+            'message' => 'Danh sách giảng viên trong 1 tháng gần nhất',
+            'data' => $teachers,
+        ], 200);
+
     }
 
 }
