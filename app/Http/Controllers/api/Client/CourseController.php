@@ -154,7 +154,9 @@ class CourseController extends Controller
             // Tính tổng số lesson, quiz và duration
             foreach ($courses as $course) {
                 // Tính tổng lessons và quiz
-                $course->total_lessons = $course->lessons_count + $course->quiz_count;
+                $total_lessons = $course->modules->flatMap->lessons->count();
+                $total_quiz = $course->modules->whereNotNull('quiz')->count();
+                $course->total_lessons = $total_lessons + $total_quiz;
 
                 // Tính tổng duration của các lesson vid
                 $course->total_duration_video = $course->modules->flatMap(function ($module) {
