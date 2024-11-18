@@ -183,6 +183,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
         //Đăng kí thành giảng viên
         Route::post('/register-teacher', [UserController::class, 'registerTeacher']);
+        
+
+
+        //Check lịch sử đang học đến bài nàp
+        Route::get('/check-history-learning', [UserController::class, 'checkLearning']);
 
 
 
