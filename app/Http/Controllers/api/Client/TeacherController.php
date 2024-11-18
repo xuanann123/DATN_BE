@@ -43,7 +43,7 @@ class TeacherController extends Controller
         if ($teachers->count() <= 0) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'No data found',
+                'message' => 'Không thấy dữ liệu',
             ], 204);
         }
 
@@ -212,65 +212,50 @@ class TeacherController extends Controller
     {
         // Lấy danh sách giảng viên trong 1 tháng gần nhất
         $oneMonthAgo = Carbon::now()->subMonth();
-        $teachers = User::where('user_type', 'teacher')
-            ->where('created_at', '>=', $oneMonthAgo)->get();
-        $data = [];
         // Map qua từng giảng viên và xử lý các thông tin cần thiết
-        $teachers = $teachers->map(function ($teacher) {
-            $user = Auth::user();
-            $courses = $teacher->userCourses;
 
-            // Kiểm tra xem user hiện tại đã follow giáo viên này chưa
-            $follow = $user->following()->where("following_id", $teacher->id)->exists();
+        $page = $request->page ?? 1;
+        // Số bản ghi trên một trang;
+        $perPage = $request->perPage ?? 12;
 
-            // Tính tổng số comment và rating của tất cả các khóa học của giảng viên
-            $total_comments = $courses->flatMap(function ($course) {
-                return $course->comments;
-            })->count();
+        $idUserLogin = $request->user()->id;
 
-            $total_ratings = $courses->flatMap(function ($course) {
-                return $course->ratings;
-            })->count();
+        $teachers = DB::table('users as u')
+            ->selectRaw('
+                u.id,
+                u.name,
+                u.avatar,
+                COUNT(DISTINCT c.id) as total_courses,
+                COUNT(DISTINCT r.id) as total_ratings,
+                ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
+            ')
+            ->leftJoin('courses as c', 'u.id', '=', 'c.id_user')
+            ->leftJoin('ratings as r', 'c.id', '=', 'r.id_course')
+            ->where('u.user_type', 'teacher')
+            ->where('u.is_active', 1)
+            ->where('u.id', '!=', $idUserLogin)
+            ->where('c.created_at', '>=', $oneMonthAgo)
+            ->groupBy('u.id', 'u.name', 'u.avatar')
+            ->orderByDesc('average_rating')
+            ->paginate($perPage, ['*'], 'page', $page);
 
-            $data = [
-                "id" => $teacher->id,
-                "name" => $teacher->name,
-                "email" => $teacher->email,
-                "avatar" => $teacher->avatar,
-                "is_active" => $teacher->is_active,
-                "email_verified_at" => $teacher->email_verified_at,
-                "verification_token" => $teacher->verification_token,
-                "user_type" => $teacher->user_type,
-                "created_at" => $teacher->created_at,
-                "updated_at" => $teacher->updated_at,
-                "total_courses" => $courses->count(),
-                "total_comments" => $total_comments,
-                "total_ratings" => $total_ratings,
-            ];
-            if ($user->id != $teacher->id) {
-                $data["follow"] = $follow;
-            }
+        if ($teachers->count() <= 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Không thấy dữ liệu',
+            ], 204);
+        }
 
-            // Trả về dữ liệu của giảng viên dưới dạng mảng
-            return $data;
-        });
-
-        // Sắp xếp giảng viên theo tổng số khóa học, bình luận, và rating cao nhất
-        $sortedTeachers = $teachers->sortByDesc(function ($teacher) {
-            return $teacher['total_courses'] + $teacher['total_comments'] + $teacher['total_ratings'];
-        })->values();
-
-        // Chuyển top 5 giảng viên thành đối tượng với key là chỉ số
-        $topTeachers = $sortedTeachers->take(5)->mapWithKeys(function ($teacher, $index) {
-            return [$index => $teacher];
-        });
-
-        // Trả về response dạng JSON với cấu trúc mong muốn
         return response()->json([
-            "status" => "success",
-            "message" => "Danh sách top 5 giảng viên theo tháng",
-            "data" => $topTeachers
+            'status' => 'success',
+            'data' => [
+                'teachers' => $teachers->items(),
+                'current_page' => $teachers->currentPage(),
+                'total_pages' => $teachers->lastPage(),
+                'total_count' => $teachers->total(),
+            ]
         ], 200);
+        
     }
 
 }
