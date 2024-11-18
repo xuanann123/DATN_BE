@@ -147,10 +147,11 @@ class UserController extends Controller
         $myCourseBought = User::with([
             'userCourses.tags',
             'userCourses.category',
+            'userCourses.progress'
         ])->findOrFail($authUser->id);
+        $data = [];
         //Duyệt qua toàn bộ khoá học đó
         $myCourseBought->userCourses->each(function ($course) {
-
             // Tính tổng số lượng bài học trong khóa học
             $total_lessons = $course->modules->flatMap->lessons->count();
             //Kiểm tra quiz có hay không và truy vấn vào quiz lấy ra số lượng
@@ -164,8 +165,11 @@ class UserController extends Controller
             $course->total_lessons = $total_lessons + $total_quizzes;
             //Tổng thời gian của khoá học đó
             $course->total_duration_video = $total_duration_video;
+            //Tiến độ của khoá học đó 
+            // $course->duration = $course->userCourses->progress_percent;
 
         });
+        
         return response()->json(
             [
                 'status' => 'success',
