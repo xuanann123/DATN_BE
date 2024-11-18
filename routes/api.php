@@ -290,6 +290,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/save/{slug}', [PostController::class, 'savePost']);
         //Danh sách bài viết được lưu
         Route::get('/saved', [PostController::class, 'getSavedPosts']);
+        //Check xem bạn bài viết hay chưa
+        Route::get('/check-saved/{slug}', [PostController::class, 'checkSavedPost']);
     });
 });
 
