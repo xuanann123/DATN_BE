@@ -94,4 +94,33 @@ class CourseController extends Controller
             ], 500);
         }
     }
+    public function checkDoneCourse(Request $request, string $slug)
+    {
+        //Lấy người dùng hiện tại 
+        try {
+            $user = auth()->user();
+            $course = Course::where('slug', $slug)->first();
+            $userCourse = UserCourse::where('id_user', $user->id)->where('id_course', $course->id)->first();
+            if(!$userCourse){
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Bạn không có quyền truy cập vào khoá này!',
+                    'data' => []
+                ], 403);
+            }
+            if ($userCourse->progress_percent == 100 && $userCourse->completed_at != null) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => "Chúc mừng bạn đã hoàn thành khoá học.",
+                    'data' => []
+                ], 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi cập nhật tiến độ khóa học.',
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
 }
