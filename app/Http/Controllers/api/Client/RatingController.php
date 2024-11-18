@@ -24,9 +24,9 @@ class RatingController extends Controller
 
         $listRating = DB::table('ratings as r')
             ->select(
-                'u.name as user_name',
-                'u.email as user_email',
-                'u.avatar as user_avatar',
+                'u.name as name',
+                'u.email as email',
+                'u.avatar as avatar',
                 'r.content as content',
                 'r.rate as rate',
                 'r.created_at as created_at'
@@ -144,9 +144,9 @@ class RatingController extends Controller
     {
         $listRating = DB::table('ratings as r')
             ->select(
-                'u.name as user_name',
-                'u.email as user_email',
-                'u.avatar as user_avatar',
+                'u.name as name',
+                'u.email as email',
+                'u.avatar as avatar',
                 'r.content as content',
                 'r.rate as rate',
                 'r.created_at as created_at'

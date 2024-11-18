@@ -480,6 +480,7 @@ class PostController extends Controller
             'posts.description',
             'posts.thumbnail',
             'posts.views',
+            'posts.created_at',
             'users.name',
             'users.avatar',
         )
