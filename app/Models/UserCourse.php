@@ -15,4 +15,14 @@ class UserCourse extends Model
         'progress_percent',
         'completed_at',
     ];
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class, 'id_course');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user');
+    }
 }
