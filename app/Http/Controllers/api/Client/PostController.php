@@ -473,9 +473,11 @@ class PostController extends Controller
 
     public function listPostOutstanding()
     {
-        $listPosts = Post::select(
+        $listPosts = Post::with('categories', 'tags')->select(
+            'posts.id',
             'posts.title',
             'posts.slug',
+            'posts.description',
             'posts.thumbnail',
             'posts.views',
             'users.name',
@@ -487,13 +489,11 @@ class PostController extends Controller
             ->limit(6)
             ->get();
 
-
         if (count($listPosts) <= 0) {
             return response()->json([
-                'code' => 204,
                 'status' => 'error',
                 'message' => 'Danh sách bài viết trống'
-            ]);
+            ], 404);
         }
 
         return response()->json([
