@@ -95,28 +95,25 @@ class TeacherController extends Controller
                 'message' => 'Không tồn tại giảng viên',
             ], 204);
         }
-        $courses = DB::table('courses as c')
-            ->selectRaw('
-                c.id,
-                c.name,
-                c.thumbnail,
-                c.slug,
-                c.level,
-                c.price,
-                c.price_sale,
-                c.total_student,
-                COUNT(DISTINCT l.id) as total_lessons,
-                c.duration as total_duration_video,
-                ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
-            ')
-            ->leftJoin('modules as m', 'm.id_course', '=', 'c.id')
-            ->leftJoin('lessons as l', 'l.id_module', '=', 'm.id')
-            ->leftJoin('ratings as r', 'r.id_course', '=', 'c.id')
-            ->leftJoin('users as u', 'u.id', '=', 'c.id_user')
-            ->where('c.id_user', $id)
-            ->where('c.is_active', 1)
-            ->where('c.status', 'approved')
-            ->groupBy('c.id', 'c.name', 'c.thumbnail')
+        $limit = $request->input('limit', 5);
+        // Lấy các khóa học nổi bật dựa vào số lượt mua và đánh giá trung bình
+        $courses = Course::with(['user:id,name,avatar'])
+            ->where('is_active', 1)
+            ->where('status', 'approved')
+            ->where('id_user', $id)
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rate')
+            ->withCount([
+                'modules as lessons_count' => function ($query) {
+                    $query->whereHas('lessons');
+                },
+                'modules as quiz_count' => function ($query) {
+                    $query->whereHas('quiz');
+                }
+            ])
+            ->orderByDesc('total_student')
+            ->orderByDesc('ratings_avg_rate')
+            ->limit($limit)
             ->get();
 
         if ($courses->count() <= 0) {
@@ -134,6 +131,22 @@ class TeacherController extends Controller
             ->where('following_id', $id)
             ->count();
         $totalFollower = $follow;
+
+        // Tính tổng số lesson, quiz và duration
+        foreach ($courses as $course) {
+            // Tính tổng lessons và quiz
+            $total_lessons = $course->modules->flatMap->lessons->count();
+            $total_quiz = $course->modules->whereNotNull('quiz')->count();
+            $course->total_lessons = $total_lessons + $total_quiz;
+            // Tính tổng duration của các lesson vid
+            $course->total_duration_video = $course->modules->flatMap(function ($module) {
+                return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                    return $lesson->lessonable->duration ?? 0;
+                });
+            })->sum();
+            $course->makeHidden('modules');
+        }
+
 
         return response()->json([
             'status' => 'success',
