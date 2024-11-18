@@ -108,6 +108,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('detail/check/{slug}', [CourseDetailController::class, 'courseDetailForAuthUser']);
         // cập nhật tiến độ khóa học (khi học xong tất cả bài học)
         Route::post('{course}/update-progress', [StudentCourseController::class, 'updateProgress']);
+        //Check khoá học done chưa 
+        Route::get('check-done-course/{slug}', [StudentCourseController::class, 'checkDoneCourse']);
     });
 
     # ===================== ROUTE FOR CERTIFICATE ===========================
