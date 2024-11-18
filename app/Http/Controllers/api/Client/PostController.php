@@ -15,7 +15,9 @@ use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
-    public function getTags() {}
+    public function getTags()
+    {
+    }
     public function getPosts()
     {
         try {
@@ -500,7 +502,8 @@ class PostController extends Controller
             'data' => $listPosts
         ], 200);
     }
-    public function savePost($slug) {
+    public function savePost($slug)
+    {
         try {
             $post = Post::where('slug', $slug)->where('is_active', '=', 1)->first();
             $user = auth()->user();
@@ -515,9 +518,9 @@ class PostController extends Controller
             if ($userPost) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Bạn đã lưu bài viết này từ trước' ,
+                    'message' => 'Bạn đã lưu bài viết này từ trước',
                     'data' => [],
-                ], 400);  
+                ], 400);
             }
             //Nếu có bài viết thực hiện đi lưu bài viết
             $post->saveposts()->attach($user->id);
@@ -534,12 +537,13 @@ class PostController extends Controller
         }
     }
     //Danh sách bài viết đã được lưu 
-    public function getSavedPosts() {
+    public function getSavedPosts()
+    {
         try {
             $user = auth()->user();
             $data = [];
             $listPosts = $user->saveposts()->get();
-            if($listPosts->isEmpty()) {
+            if ($listPosts->isEmpty()) {
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Bạn chưa lưu bài viết nào',
@@ -568,6 +572,42 @@ class PostController extends Controller
                 'data' => $data
             ], 200);
 
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi lưu bài viết',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    //Check xem đã lưu bài viết hay chưa
+    public function checkSavedPost($slug)
+    {
+        try {
+            $user = auth()->user();
+            $post = Post::where('slug', $slug)->where('is_active', '=', 1)->first();
+            if (!$post) {
+                return response()->json([
+                    'message' => 'Bài viết không tồn tại',
+                    'data' => []
+                ]);
+            }
+            $userPost = $user->saveposts()->where('post_id', $post->id)->first();
+
+            if (!$userPost) {
+                return response()->json([
+                    'message' => 'Bạn chưa lưu bài viết này',
+                    'data' => [
+                        'action' => 'save'
+                    ]
+                ]);
+            }
+            return response()->json([
+                'message' => 'Đã lưu bài viết',
+                'data' => [
+                    'action' => 'unsave'
+                ]
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
