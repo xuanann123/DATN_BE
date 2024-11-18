@@ -87,6 +87,7 @@ class TeacherController extends Controller
 
         $teacher = $this->teacherId($id);
         $totalStudent = 0;
+        $totalFollower = 0;
 
         if (!$teacher) {
             return response()->json([
@@ -128,6 +129,11 @@ class TeacherController extends Controller
         foreach ($courses as $course) {
             $totalStudent += $course->total_student;
         }
+        //Lấy số lượng follow của giảng viên
+        $follow = DB::table('follows')
+            ->where('following_id', $id)
+            ->count();
+        $totalFollower = $follow;
 
         return response()->json([
             'status' => 'success',
@@ -135,7 +141,8 @@ class TeacherController extends Controller
                 'dataCourses' => $courses,
                 'dataTeacher' => $teacher,
                 'rating' => $this->ratingTeacher($id),
-                'totalStudent' => $totalStudent
+                'totalStudent' => $totalStudent,
+                'totalFollower' => $totalFollower
             ]
         ], 200);
     }
