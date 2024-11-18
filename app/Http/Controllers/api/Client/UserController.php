@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Client\User\UpdateProfileRequest;
 use App\Http\Requests\Client\User\ChangePasswordRequest;
+use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\User;
 use App\Models\UserCourse;
@@ -146,32 +147,46 @@ class UserController extends Controller
     public function myCourseBought()
     {
         $authUser = Auth::user();
-        $myCourseBought = User::with([
-            'userCourses.tags',
-            'userCourses.category',
-            'userCourses.progress'
-        ])->findOrFail($authUser->id);
+        $myCourseBought = Course::with(['user:id,name,avatar'])
+            ->where('is_active', 1)
+            ->where('status', 'approved')
+            ->withCount(relations: 'ratings')
+            ->withAvg('ratings', 'rate')
+            ->withCount([
+                'modules as lessons_count' => function ($query) {
+                    $query->whereHas('lessons');
+                },
+                'modules as quiz_count' => function ($query) {
+                    $query->whereHas('quiz');
+                }
+            ])
+            ->orderByDesc('total_student')
+            ->orderByDesc('ratings_avg_rate')
+            ->where('id_user', $authUser->id)
+            ->get();
         $data = [];
         //Duyệt qua toàn bộ khoá học đó
-        $myCourseBought->userCourses->each(function ($course) {
-            // Tính tổng số lượng bài học trong khóa học
+        foreach ($myCourseBought as $course) {
+            // Tính tổng lessons và quiz
             $total_lessons = $course->modules->flatMap->lessons->count();
-            //Kiểm tra quiz có hay không và truy vấn vào quiz lấy ra số lượng
-            $total_quizzes = $course->modules->whereNotNull('quiz')->count();
+            $total_quiz = $course->modules->whereNotNull('quiz')->count();
+            $course->total_lessons = $total_lessons + $total_quiz;
 
-            // Set thời gian cho từng bài học (cần có hàm setLessonDurations)
-            $this->setLessonDurations($course);
-            $total_duration_video = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
-                ->sum('duration');
-            // $course->submited_at = $course->created_at;
-            $course->total_lessons = $total_lessons + $total_quizzes;
-            //Tổng thời gian của khoá học đó
-            $course->total_duration_video = $total_duration_video;
-            //Tiến độ của khoá học đó 
-            // $course->duration = $course->userCourses->progress_percent;
+            // Tính tổng duration của các lesson vid
+            $course->total_duration_video = $course->modules->flatMap(function ($module) {
+                return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                    return $lesson->lessonable->duration ?? 0;
+                });
+            })->sum();
+            //Lấy tiến độ của của khoá này 
+            $progress = DB::table('user_courses')
+                ->where('id_course', $course->id)
+                ->where('id_user', $authUser->id)
+                ->first();
+            $course['progress_percent'] = $progress->progress_percent ?? 0;
 
-        });
-        
+            $course->makeHidden('modules');
+        }
         return response()->json(
             [
                 'status' => 'success',
@@ -214,8 +229,8 @@ class UserController extends Controller
             'data' => []
         ], 200);
     }
-    public function checkLearning() {
-        
+    public function checkLearning()
+    {
         $user = Auth::user();
         $data = [];
         //Lấy danh sách 5 bài học gần nhất dựa vào bảng lesson_progress
@@ -223,12 +238,11 @@ class UserController extends Controller
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
-            //Tôi muốn duyệt qua để lấy những bài học này
+        //Tôi muốn duyệt qua để lấy những bài học này
         foreach ($lessonProgress as $item) {
             $data[] = Lesson::find($item->id_lesson);
         }
         //Check xem dữ liệu data rỗng thì trả về 204
-
         if (empty($data)) {
             return response()->json([
                 'status' => 'success',
@@ -242,5 +256,4 @@ class UserController extends Controller
             'data' => $data
         ], 200);
     }
-
 }
