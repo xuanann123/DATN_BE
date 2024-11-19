@@ -49,14 +49,14 @@
                         </div>
 
                         <div class="col-sm">
-                            <form action="{{ route('admin.users.list') }}">
+                            <form action="{{ route('admin.users.list-teachers') }}" method="GET">
+                                @csrf
                                 <div class="d-flex justify-content-sm-end">
                                     <div class="search-box me-2">
                                         <input type="text" name="keyword" class="form-control search"
-                                               placeholder="Search..." value="{{ request()->input('keyword') }}">
+                                               placeholder="Tìm kiếm..." value="{{ request()->input('keyword') }}">
                                         <i class="ri-search-line search-icon"></i>
                                     </div>
-                                    <input type="text" hidden name="status" value="{{ request()->input('status') }}">
                                     <button class="btn btn-primary">Tìm kiếm</button>
                                 </div>
                             </form>

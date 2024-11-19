@@ -157,13 +157,23 @@ class UserController extends Controller
         return back()->with(['error' => 'Xóa người dùng thất bại!']);
     }
 
-    public function listTeachers() {
+    public function listTeachers(Request $request) {
+        if($request->keyword) {
+            $title = "Danh sách giảng viên";
+            $teachers = User::with(['profile', 'courses'])
+                ->withCount('courses')
+                ->withSum('courses', 'total_student')
+                ->where('user_type', self::TEACHER)
+                ->where('name', 'LIKE', '%'. $request->keyword . '%')
+                ->paginate(12);
+            return view('admin.users.list_teacher', compact('title', 'teachers'));
+
+        }
         $title = "Danh sách giảng viên";
         $teachers = User::with(['profile', 'courses'])
             ->withCount('courses')
             ->withSum('courses', 'total_student')
-//            ->where('id', 52)->first();
-//        dd($teachers);
+            ->where('user_type', self::TEACHER)
             ->paginate(12);
 
         return view('admin.users.list_teacher', compact('title', 'teachers'));
