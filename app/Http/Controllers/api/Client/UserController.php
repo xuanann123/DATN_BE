@@ -147,18 +147,17 @@ class UserController extends Controller
     public function myCourseBought()
     {
         $authUser = Auth::user();
-        $myCourseBought = $authUser->usercourses()->with('modules','user')
-        ->withCount('ratings')
-        ->withAvg('ratings', 'rate')
-                ->withCount([
-                    'modules as lessons_count' => function ($query) {
-                        $query->whereHas('lessons');
-                    },
-                    'modules as quiz_count' => function ($query) {
-                        $query->whereHas('quiz');
-                    }
-                ])->get();
- 
+        $myCourseBought = $authUser->usercourses()->with('modules', 'user')
+            ->withAvg('ratings', 'rate')
+            ->withCount([
+                'modules as lessons_count' => function ($query) {
+                    $query->whereHas('lessons');
+                },
+                'modules as quiz_count' => function ($query) {
+                    $query->whereHas('quiz');
+                }
+            ])->get();
+
         //Duyệt qua toàn bộ khoá học đó
         foreach ($myCourseBought as $course) {
             // Tính tổng lessons và quiz
@@ -232,27 +231,41 @@ class UserController extends Controller
         $user = Auth::user();
         $limit = $request->input('limit', 5);
         $data = [];
-        //Lấy danh sách 5 bài học gần nhất dựa vào bảng lesson_progress
+        $history = [];
+
+        // Tính tổng số lượng bài học mà người dùng đã học
+        $totalLessons = DB::table('lesson_progress')->where('id_user', $user->id)->count();
+
+        // Lấy danh sách bài học gần nhất dựa vào bảng lesson_progress có giới hạn
         $lessonProgress = DB::table('lesson_progress')->where('id_user', $user->id)
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get();
-        //Tôi muốn duyệt qua để lấy những bài học này
-        foreach ($lessonProgress as $item) {
-            $data[] = Lesson::find($item->id_lesson);
+
+        // Duyệt qua để lấy những bài học này
+        foreach ($lessonProgress as $key => $item) {
+            $history = Lesson::find($item->id_lesson);
+            $history['slug'] = $history->module->course->slug;
+            $history->makeHidden('module');
+            $data[] = $history;
         }
-        //Check xem dữ liệu data rỗng thì trả về 204
+
+        // Check xem dữ liệu data rỗng thì trả về 204
         if (empty($data)) {
             return response()->json([
                 'status' => 'success',
                 'message' => 'Bạn chưa có bài học gần nhất',
-                'data' => $data
+                'data' => $data,
+                'total_lessons' => $totalLessons
             ], 200);
         }
+
         return response()->json([
             'status' => 'success',
             'message' => 'Danh sách bài học gần nhất',
-            'data' => $data
+            'data' => $data,
+            'total_lessons' => $totalLessons
         ], 200);
     }
+
 }
