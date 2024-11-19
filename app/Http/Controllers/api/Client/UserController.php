@@ -147,23 +147,15 @@ class UserController extends Controller
     public function myCourseBought()
     {
         $authUser = Auth::user();
-        $myCourseBought = Course::with(['user:id,name,avatar'])
-            ->where('is_active', 1)
-            ->where('status', 'approved')
-            ->withCount(relations: 'ratings')
-            ->withAvg('ratings', 'rate')
-            ->withCount([
-                'modules as lessons_count' => function ($query) {
-                    $query->whereHas('lessons');
-                },
-                'modules as quiz_count' => function ($query) {
-                    $query->whereHas('quiz');
-                }
-            ])
-            ->orderByDesc('total_student')
-            ->orderByDesc('ratings_avg_rate')
-            ->where('id_user', $authUser->id)
-            ->get();
+        $myCourseBought = $authUser->usercourses()->with('modules','user')->withAvg('ratings', 'rate')
+                ->withCount([
+                    'modules as lessons_count' => function ($query) {
+                        $query->whereHas('lessons');
+                    },
+                    'modules as quiz_count' => function ($query) {
+                        $query->whereHas('quiz');
+                    }
+                ])->get();
         $data = [];
         //Duyệt qua toàn bộ khoá học đó
         foreach ($myCourseBought as $course) {
@@ -184,7 +176,6 @@ class UserController extends Controller
                 ->where('id_user', $authUser->id)
                 ->first();
             $course['progress_percent'] = $progress->progress_percent ?? 0;
-
             $course->makeHidden('modules');
         }
         return response()->json(
