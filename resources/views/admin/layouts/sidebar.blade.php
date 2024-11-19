@@ -267,11 +267,15 @@
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
                                         <a href="{{ route('admin.users.list') }}" class="nav-link"
-                                            data-key="t-badges">Danh sách</a>
+                                            data-key="t-badges">Tất cả người dùng</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.users.list-teachers') }}" class="nav-link"
+                                           data-key="t-alerts">Danh sách giảng viên</a>
                                     </li>
                                     <li class="nav-item">
                                         <a href="{{ route('admin.users.create') }}" class="nav-link"
-                                            data-key="t-alerts">Thêm mới</a>
+                                            data-key="t-alerts">Thêm mới người dùng</a>
                                     </li>
                                 </ul>
                             </div>

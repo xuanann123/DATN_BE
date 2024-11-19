@@ -153,9 +153,11 @@ class TeacherController extends Controller
             'data' => [
                 'dataCourses' => $courses,
                 'dataTeacher' => $teacher,
+
                 'rating' => $this->ratingTeacher($id),
                 'totalStudent' => $totalStudent,
                 'totalFollower' => $totalFollower
+
             ]
         ], 200);
     }
