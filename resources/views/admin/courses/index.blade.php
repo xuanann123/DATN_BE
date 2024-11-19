@@ -218,13 +218,13 @@
                             <div class="d-flex align-items-center">
                                 <div class="flex-grow-1">
                                     <div class="avatar-group" style="height: 20px!important"">
-                                        <b> <span>{{ $course->total_student }}</span></b>
-                                        <i class="ri-group-fill"></i>
+                                        <span class="fs-14 me-1">{{ $course->total_student }}</span>
+                                        <i class="ri-group-fill fs-14"></i>
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
                                     <div class="avatar-group" style="height: 20px!important"">
-                                        <span>{{ $course->total_lessons }}</span>
+                                        <span class="me-1">{{ $course->total_lessons }}</span>
                                         <i class="bx bxs-skip-next-circle fs-16"></i>
                                     </div>
                                 </div>

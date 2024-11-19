@@ -652,6 +652,7 @@ class CourseController extends Controller
 
                         // Chỉnh lại rating
                         $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+                        $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
                         $course->makeHidden(['modules', 'ratings']);
                     });
             };
