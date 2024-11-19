@@ -1,272 +1,110 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>Certification</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <style type="text/Css">
-        @import url('https://fonts.googleapis.com/css?family=Open+Sans|Pinyon+Script|Rochester');
-
-        .cursive {
-            font-family: 'Pinyon Script', cursive;
-        }
-
-        .sans {
-            font-family: 'Open Sans', sans-serif;
-        }
-
-        .bold {
-            font-weight: bold;
-        }
-
-        .block {
-            display: block;
-        }
-
-        .underline {
-            border-bottom: 1px solid #777;
-            padding: 5px;
-            margin-bottom: 15px;
-        }
-
-        .margin-0 {
-            margin: 0;
-        }
-
-        .padding-0 {
-            padding: 0;
-        }
-
-        .pm-empty-space {
-            height: 40px;
-            width: 100%;
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate</title>
+    <style>
+        @page {
+            margin: 10mm;
         }
 
         body {
-            padding: 20px 0;
-            background: #ccc;
+            margin: 0;
+            padding: 0;
+            /* border: 1mm solid #991B1B; */
+            max-width: 267mm;
+            height: 188mm;
         }
 
-        .pm-certificate-container {
-            position: relative;
-            width: 800px;
-            height: 600px;
-            background-color: #618597;
-            padding: 30px;
-            color: #333;
-            font-family: 'Open Sans', sans-serif;
-            box-shadow: 0 0 5px rgba(0, 0, 0, .5);
-            /*background: -webkit-repeating-linear-gradient(
-    45deg,
-    #618597,
-    #618597 1px,
-    #b2cad6 1px,
-    #b2cad6 2px
-  );
-  background: repeating-linear-gradient(
-    90deg,
-    #618597,
-    #618597 1px,
-    #b2cad6 1px,
-    #b2cad6 2px
-  );*/
+        .border-pattern {
+            position: absolute;
+            left: 25mm;
+            /* top: -1mm; */
+            height: 200mm;
+            width: 267mm;
+            border: 1mm solid #991B1B;
+            /* http://www.heropatterns.com/ */
+            background-color: #d6d6e4;
+            background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h16v2h-6v6h6v8H8v-6H2v6H0V0zm4 4h2v2H4V4zm8 8h2v2h-2v-2zm-8 0h2v2H4v-2zm8-8h2v2h-2V4z' fill='%23991B1B' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
 
-            .outer-border {
-                width: 794px;
-                height: 594px;
-                position: absolute;
-                left: 50%;
-                margin-left: -397px;
-                top: 50%;
-                margin-top: -297px;
-                border: 2px solid #fff;
-            }
+        .content {
+            position: absolute;
+            left: 10mm;
+            top: 10mm;
+            height: 178mm;
+            width: 245mm;
+            border: 1mm solid #991B1B;
+            background: white;
+        }
 
-            .inner-border {
-                width: 730px;
-                height: 530px;
-                position: absolute;
-                left: 50%;
-                margin-left: -365px;
-                top: 50%;
-                margin-top: -265px;
-                border: 2px solid #fff;
-            }
+        .inner-content {
+            border: 1mm solid #991B1B;
+            margin: 4mm;
+            padding: 10mm;
+            height: 148mm;
+            text-align: center;
+        }
 
-            .pm-certificate-border {
-                position: relative;
-                width: 720px;
-                height: 520px;
-                padding: 0;
-                border: 1px solid #E1E5F0;
-                background-color: rgba(255, 255, 255, 1);
-                background-image: none;
-                left: 50%;
-                margin-left: -360px;
-                top: 50%;
-                margin-top: -260px;
+        h1 {
+            text-transform: uppercase;
+            font-size: 48pt;
+            margin-bottom: 0;
+        }
 
-                .pm-certificate-block {
-                    width: 650px;
-                    height: 200px;
-                    position: relative;
-                    left: 50%;
-                    margin-left: -325px;
-                    top: 70px;
-                    margin-top: 0;
-                }
+        h2 {
+            font-size: 24pt;
+            margin-top: 0;
+            padding-bottom: 1mm;
+            display: inline-block;
+            border-bottom: 1mm solid #991B1B;
+        }
 
-                .pm-certificate-header {
-                    margin-bottom: 10px;
-                }
+        h2::after {
+            content: "";
+            display: block;
+            padding-bottom: 4mm;
+            border-bottom: 1mm solid #991B1B;
+        }
 
-                .pm-certificate-title {
-                    position: relative;
-                    top: 40px;
+        h3 {
+            font-size: 20pt;
+            margin-bottom: 0;
+            margin-top: 10mm;
+        }
 
-                    h2 {
-                        font-size: 34px !important;
-                    }
-                }
+        p {
+            font-size: 16pt;
+        }
 
-                .pm-certificate-body {
-                    padding: 20px;
-
-                    .pm-name-text {
-                        font-size: 20px;
-                    }
-                }
-
-                .pm-earned {
-                    margin: 15px 0 20px;
-
-                    .pm-earned-text {
-                        font-size: 20px;
-                    }
-
-                    .pm-credits-text {
-                        font-size: 15px;
-                    }
-                }
-
-                .pm-course-title {
-                    .pm-earned-text {
-                        font-size: 20px;
-                    }
-
-                    .pm-credits-text {
-                        font-size: 15px;
-                    }
-                }
-
-                .pm-certified {
-                    font-size: 12px;
-
-                    .underline {
-                        margin-bottom: 5px;
-                    }
-                }
-
-                .pm-certificate-footer {
-                    width: 650px;
-                    height: 100px;
-                    position: relative;
-                    left: 50%;
-                    margin-left: -325px;
-                    bottom: -105px;
-                }
-            }
+        .badge {
+            width: 40mm;
+            height: 40mm;
+            position: absolute;
+            right: 10mm;
+            bottom: 10mm;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z' /%3E%3C/svg%3E");
         }
     </style>
 </head>
 
 <body>
-    <div class="container pm-certificate-container">
-        <div class="outer-border"></div>
-        <div class="inner-border"></div>
-
-        <div class="pm-certificate-border col-xs-12">
-            <div class="row pm-certificate-header">
-                <div class="pm-certificate-title cursive col-xs-12 text-center">
-                    <h2>Buffalo Public Schools Certificate of Completion</h2>
+    <div class="border-pattern">
+        <div class="content">
+            <div class="inner-content">
+                <h1>Certificate</h1>
+                <h2>of Excellence</h2>
+                <h3>This Certificate Is Proudly Presented To</h3>
+                <p>{{ $user->name }}</p>
+                <h3>Has Completed</h3>
+                <p>{{ $course->name }}</p>
+                <h3>On</h3>
+                <p>{{ \Carbon\Carbon::parse($certificate->completion_date)->translatedFormat('d \t\há\n\g m \nă\m Y') }}</p>
+                <div class="badge">
                 </div>
             </div>
-
-            <div class="row pm-certificate-body">
-
-                <div class="pm-certificate-block">
-                    <div class="col-xs-12">
-                        <div class="row">
-                            <div class="col-xs-2"><!-- LEAVE EMPTY --></div>
-                            <div class="pm-certificate-name underline margin-0 col-xs-8 text-center">
-                                <span class="pm-name-text bold">TrueNorth Administrator</span>
-                            </div>
-                            <div class="col-xs-2"><!-- LEAVE EMPTY --></div>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12">
-                        <div class="row">
-                            <div class="col-xs-2"><!-- LEAVE EMPTY --></div>
-                            <div class="pm-earned col-xs-8 text-center">
-                                <span class="pm-earned-text padding-0 block cursive">has earned</span>
-                                <span class="pm-credits-text block bold sans">PD175: 1.0 Credit Hours</span>
-                            </div>
-                            <div class="col-xs-2"><!-- LEAVE EMPTY --></div>
-                            <div class="col-xs-12"></div>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12">
-                        <div class="row">
-                            <div class="col-xs-2"><!-- LEAVE EMPTY --></div>
-                            <div class="pm-course-title col-xs-8 text-center">
-                                <span class="pm-earned-text block cursive">while completing the training course
-                                    entitled</span>
-                            </div>
-                            <div class="col-xs-2"><!-- LEAVE EMPTY --></div>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12">
-                        <div class="row">
-                            <div class="col-xs-2"><!-- LEAVE EMPTY --></div>
-                            <div class="pm-course-title underline col-xs-8 text-center">
-                                <span class="pm-credits-text block bold sans">BPS PGS Initial PLO for Principals at
-                                    Cluster Meetings</span>
-                            </div>
-                            <div class="col-xs-2"><!-- LEAVE EMPTY --></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-xs-12">
-                    <div class="row">
-                        <div class="pm-certificate-footer">
-                            <div class="col-xs-4 pm-certified col-xs-4 text-center">
-                                <span class="pm-credits-text block sans">Buffalo City School District</span>
-                                <span class="pm-empty-space block underline"></span>
-                                <span class="bold block">Crystal Benton Instructional Specialist II, Staff
-                                    Development</span>
-                            </div>
-                            <div class="col-xs-4">
-                                <!-- LEAVE EMPTY -->
-                            </div>
-                            <div class="col-xs-4 pm-certified col-xs-4 text-center">
-                                <span class="pm-credits-text block sans">Date Completed</span>
-                                <span class="pm-empty-space block underline"></span>
-                                <span class="bold block">DOB: </span>
-                                <span class="bold block">Social Security # (last 4 digits)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
         </div>
     </div>
 </body>

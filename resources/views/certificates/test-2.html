@@ -1,194 +1,112 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>Certification</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate</title>
     <style>
-        /* @charset "UTF-8"; */
+        @page {
+            margin: 10mm;
+        }
 
-        * {
-            box-sizing: border-box;
+        body {
             margin: 0;
             padding: 0;
-            /* font-family: 'Arial', sans-serif; */
+            /* border: 1mm solid #991B1B; */
+            max-width: 267mm;
+            height: 188mm;
         }
 
-        a {
-            color: #6f6f6f;
-            text-decoration: none;
-        }
-
-
-        address {
-            font-weight: 100;
-            font-size: 14pt;
-            font-style: normal;
-            line-height: 135%;
-        }
-
-        h2,
-        h3 {
-            font-weight: 300
-        }
-
-        ul {
-            color: #58595B;
-            text-decoration: none;
-            list-style-type: none;
-            font-size: 9pt;
-            font-weight: 300;
-            text-align: right
-        }
-
-        .cert-container {
-            /* position: relative; */
-            /* padding: 45px; */
-            /* border: 1px solid #6f6f6f; */
-            width: 1056px;
-            height: 816px;
-            /* background-image: url(images/mt_icon_grayscale.jpg); */
-            /* background-repeat: no-repeat;
-            background-size: cover; */
-            margin: auto;
-        }
-
-        /* Certificate Outer Border (Gray) */
-        .border-gray {
-            padding: 5px;
-            border: 3px solid #58595B;
-        }
-
-        /* Certificate Inner Border (red) */
-        .border-red {
-            border: 3px double #CE202F;
+        .border-pattern {
+            position: absolute;
+            left: 20mm;
+            top: -1mm;
+            height: 200mm;
+            width: 267mm;
+            border: 1mm solid #991B1B;
+            /* http://www.heropatterns.com/ */
+            background-color: #d6d6e4;
+            background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h16v2h-6v6h6v8H8v-6H2v6H0V0zm4 4h2v2H4V4zm8 8h2v2h-2v-2zm-8 0h2v2H4v-2zm8-8h2v2h-2V4z' fill='%23991B1B' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E");
         }
 
         .content {
-            padding: 20px;
-            height: 750px;
+            position: absolute;
+            left: 10mm;
+            top: 10mm;
+            height: 178mm;
+            width: 245mm;
+            border: 1mm solid #991B1B;
+            background: white;
+        }
+
+        .inner-content {
+            border: 1mm solid #991B1B;
+            margin: 4mm;
+            padding: 10mm;
+            height: 148mm;
             text-align: center;
         }
 
-        /* Certificate, Host Server, and LMS IDs */
-        .credentials {
+        h1 {
+            text-transform: uppercase;
+            font-size: 48pt;
+            margin-bottom: 0;
+        }
+
+        h2 {
+            font-size: 24pt;
+            margin-top: 0;
+            padding-bottom: 1mm;
+            display: inline-block;
+            border-bottom: 1mm solid #991B1B;
+        }
+
+        h2::after {
+            content: "";
+            display: block;
+            padding-bottom: 4mm;
+            border-bottom: 1mm solid #991B1B;
+        }
+
+        h3 {
+            font-size: 20pt;
+            margin-bottom: 0;
+            margin-top: 10mm;
+        }
+
+        p {
+            font-size: 16pt;
+        }
+
+        .badge {
+            width: 40mm;
+            height: 40mm;
             position: absolute;
-            right: 100px;
-            top: 120px;
-        }
-
-        .copytext-container {
-            position: absolute;
-            left: 190px;
-            top: 275px;
-            text-align: left;
-            line-height: 100%;
-        }
-
-        .congrats-copytext {
-            margin-bottom: 70px;
-        }
-
-        .course-copytext {
-            margin-bottom: 65px;
-        }
-
-        .address-copytext {
-            line-height: 150%;
-        }
-
-        #mt-logo {
-            position: absolute;
-            width: 100px;
-            right: 800px;
-            top: 105px;
-        }
-
-        #mt-stamp {
-            position: absolute;
-            width: 144px;
-            right: 130px;
-            top: 550px;
-        }
-
-        #mt-site {
-            color: #CE202F;
-            font-size: 14pt;
-
-        }
-
-        #user-id-string {
-            line-height: 7px;
-        }
-
-        #course-id-string {
-            line-height: 7px;
-        }
-
-        @media print {
-            @page {
-                size: letter landscape;
-                margin: 0;
-                padding: 0;
-            }
-
-            .cert-container {
-                border: none;
-            }
-
-            /*
-  background-image {
-    image-resolution: 300dpi;
-    }
-*/
+            right: 10mm;
+            bottom: 10mm;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z' /%3E%3C/svg%3E");
         }
     </style>
 </head>
 
 <body>
-    <div class="cert-container">
-        <div class="border-gray">
-            <div class="border-red">
-                <div class="content">
-                    <img id="mt-logo" src="{{ public_path('theme/admin/assets/images/Union_Blue.png') }}"
-                        alt="Logo Goes Here" />
-                    <img id="mt-stamp" src="{{ public_path('theme/admin/assets/images/Union_Yellow.png') }}"
-                        alt="Certified Stamp" />
-
-                    <ul class="credentials">
-                        <li>
-                            <p id="cert-id">anh tú hahâh Id: <span>{{ $certificate->code }}</span></p>
-                        </li>
-                        <li>
-                            <p id="lms-id">Learning Management System Id: <span>{{ $course->code }}</span></p>
-                        </li>
-                    </ul>
-
-                    <div class="copytext-container">
-                        <div class="congrats-copytext">
-                            <h1>Certificate of Completion</h1><br>
-                            <h2>Congratulations <span>{{ $user->name }}</span></h2><br>
-                        </div>
-
-                        <div class="course-copytext">
-                            <h1><span>{{ $course->name }}</span></h1><br>
-                            <h2>Course Completed on: <span>{{ $certificate->completion_date }}</span></h2><br>
-                            <h3 id="course-id-string">Course code: <span>{{ $course->code }}</span></h3>
-
-                        </div>
-                        <div class="address-copytext">
-                            <address>Company Name <br> Company Street Address <br> City, State Zip</address>
-                            <a href="#" id="mt-site"><em>coursea.com</em></a>
-                        </div>
-                    </div>
+    <div class="border-pattern">
+        <div class="content">
+            <div class="inner-content">
+                <h1>Certificate</h1>
+                <h2>of Excellence</h2>
+                <h3>This Certificate Is Proudly Presented To</h3>
+                <p>Jane Doe</p>
+                <h3>Has Completed</h3>
+                <p>PrintCSS Basics Course</p>
+                <h3>On</h3>
+                <p>Feburary 5, 2021</p>
+                <div class="badge">
                 </div>
             </div>
         </div>
     </div>
-
 </body>
 
 </html>

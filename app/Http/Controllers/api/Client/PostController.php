@@ -21,8 +21,16 @@ class PostController extends Controller
     public function getPosts(Request $request)
     {
         try {
-            $page = $request->input('page', 6);
-            $listPosts = Post::with('user', 'tags')->latest('created_at')->paginate($page);
+            $limit = $request->input('limit', 6);
+            // key search
+            $searchQuery = $request->search;
+            $listPosts = Post::with('user', 'tags')
+                ->search($searchQuery) // tim kiem
+                ->latest('created_at')
+                ->paginate($limit)
+                ->appends([
+                    'search' => $searchQuery,
+                ]);
 
             if ($listPosts->isEmpty()) {
                 return response()->json([
@@ -506,7 +514,7 @@ class PostController extends Controller
             ], 500);
         }
     }
-    //Danh sách bài viết đã được lưu 
+    //Danh sách bài viết đã được lưu
     public function getSavedPosts()
     {
         try {

@@ -175,7 +175,7 @@
 
                         <div class="course-copytext">
                             <h1><span>{{ $course->name }}</span></h1><br>
-                            <h2>Course Completed on: <span>{{ $certificate->completion_date }}</span></h2><br>
+                            <h2>Ngày hoàn thành khóa học: <span>{{ \Carbon\Carbon::parse($certificate->completion_date)->translatedFormat('d \t\há\n\g m \nă\m Y') }}</span></h2><br>
                             <h3 id="course-id-string">Course code: <span>{{ $course->code }}</span></h3>
 
                         </div>
