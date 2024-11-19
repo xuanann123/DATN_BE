@@ -19,14 +19,13 @@ class CourseDetailController extends Controller // di ve sinh
     {
         try {
             //Chi tiết bài học lấy theo slug
-            $course = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user', 'description', 'level', 'sort_description','id_category','trailer')
-            ->with(['category:id,name', 'user:id,name,avatar', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons', 'modules.quiz'])
-            ->withCount('ratings')
+            $course = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user', 'description', 'level', 'sort_description', 'id_category', 'trailer')
+                ->with(['category:id,name', 'user:id,name,avatar', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons', 'modules.quiz'])
+                ->withCount('ratings')
                 ->where('slug', $slug)
                 ->where('is_active', 1)
                 ->where('status', 'approved')
                 ->first();
-
             if (!$course) {
                 return response()->json([
                     'status' => 'error',
@@ -297,5 +296,58 @@ class CourseDetailController extends Controller // di ve sinh
                 $lesson->duration = null;
             }
         });
+    }
+    public function listCourseRelated($slug)
+    {
+        //Lấy ra khoá học đó
+        try {
+            //Danh sách khoá học nằm cùng danh mục
+
+
+            $course = Course::where('slug', $slug)->firstOrFail();
+            $category = $course->category;
+            //Lấy danh sách khoá học liên quan ra
+            //Danh sách khoá học nằm trong category này
+
+            $listCoursesRelated = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user', 'id_category')
+            ->with('user:id,name,avatar')
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rate')
+            ->where('id_category', $category->id)
+            ->where('id', '!=', $course->id)
+            ->where('is_active', 1)
+            ->where('status', 'approved')
+            ->get();
+            foreach($listCoursesRelated as $course){
+                $total_lessons = $course->modules->flatMap->lessons->count();
+                // Tổng số lượng quiz trong khóa học
+                $total_quizzes = $course->modules->whereNotNull('quiz')->count();
+                // Tổng bài học + quiz
+                $course->total_lessons = $total_lessons + $total_quizzes;
+                // Tính tổng duration của các lesson vid
+                $course->total_duration_video = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                        return $lesson->lessonable->duration ?? 0;
+                    });
+                })->sum();
+                $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+
+                $course->makeHidden('modules');
+                $course->makeHidden('ratings');
+            }
+            return response()->json([
+                'status' => 'success',
+                'message' => "Lấy danh sách khoá học liên quan.",
+                'data' => $listCoursesRelated,
+            ], 200);
+
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra listring khi lết ra khóa học.',
+                'data' => []
+            ], 500);
+        }
     }
 }

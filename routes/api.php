@@ -357,6 +357,8 @@ Route::prefix('courses')->group(function () {
     // Khóa học nổi bật
     Route::get('popular-course', [CourseHomePageController::class, 'listCoursePopular']);
     Route::get('category-course', [CourseHomePageController::class, 'getAllCourseByCategory']);
+    //Danh sách những khoá học liên quan 
+    Route::get('related-course/{slug}', action: [CourseDetailController::class, 'listCourseRelated']);
 });
 
 
