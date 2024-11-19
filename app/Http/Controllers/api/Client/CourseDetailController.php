@@ -309,16 +309,16 @@ class CourseDetailController extends Controller // di ve sinh
             //Lấy danh sách khoá học liên quan ra
             //Danh sách khoá học nằm trong category này
 
-            $listCoursesRelated = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user', 'id_category')
-            ->with('user:id,name,avatar')
-            ->withCount('ratings')
-            ->withAvg('ratings', 'rate')
-            ->where('id_category', $category->id)
-            ->where('id', '!=', $course->id)
-            ->where('is_active', 1)
-            ->where('status', 'approved')
-            ->get();
-            foreach($listCoursesRelated as $course){
+            $listCoursesRelated = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'id_user', 'id_category')
+                ->with('user:id,name,avatar')
+                ->withCount('ratings')
+                ->withAvg('ratings', 'rate')
+                ->where('id_category', $category->id)
+                ->where('id', '!=', $course->id)
+                ->where('is_active', 1)
+                ->where('status', 'approved')
+                ->get();
+            foreach ($listCoursesRelated as $course) {
                 $total_lessons = $course->modules->flatMap->lessons->count();
                 // Tổng số lượng quiz trong khóa học
                 $total_quizzes = $course->modules->whereNotNull('quiz')->count();
@@ -331,6 +331,8 @@ class CourseDetailController extends Controller // di ve sinh
                     });
                 })->sum();
                 $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+                $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
+
 
                 $course->makeHidden('modules');
                 $course->makeHidden('ratings');

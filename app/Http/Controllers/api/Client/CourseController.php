@@ -15,7 +15,7 @@ class CourseController extends Controller
     public function listNewCourse()
     {
         try {
-            $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user')
+            $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'id_user')
                 ->with(
                     'user:id,name,avatar',
                 )->withCount([
@@ -46,6 +46,8 @@ class CourseController extends Controller
                     });
                 })->sum();
                 $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+                $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
+
                 $course->makeHidden('ratings');
                 $course->makeHidden('modules');
             });
@@ -73,7 +75,7 @@ class CourseController extends Controller
     public function listCourseSale()
     {
         try {
-            $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user')->with(
+            $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'id_user')->with(
                 'user:id,name,avatar',
             )->withCount([
                         'modules as lessons_count' => function ($query) {
@@ -104,6 +106,8 @@ class CourseController extends Controller
                 })->sum();
                 //Sửa lại rating
                 $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+                $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
+
                 $course->makeHidden('ratings');
                 $course->makeHidden('modules');
             });
@@ -133,7 +137,7 @@ class CourseController extends Controller
     {
         try {
             $limit = $request->input('limit', 5);
-            $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user')->with(['user:id,name,avatar'])
+            $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'id_user')->with(['user:id,name,avatar'])
                 ->where('is_active', 1)
                 ->where('status', 'approved')
                 ->withCount('ratings')
@@ -174,6 +178,8 @@ class CourseController extends Controller
                 })->sum();
                 //Chỉnh lại reating
                 $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+                $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
+
                 $course->makeHidden('modules');
                 $course->makeHidden('ratings');
             }
@@ -205,7 +211,7 @@ class CourseController extends Controller
                 })
                 ->with([
                     'courses' => function ($query) {
-                        $query->select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user', 'id_category')
+                        $query->select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'id_user', 'id_category')
                             ->where('is_active', 1)
                             ->where('status', 'approved')
                             ->withCount([
@@ -226,6 +232,8 @@ class CourseController extends Controller
                 foreach ($category->courses as $course) {
                     // Sử dụng `withAvg` đã tính toán trước đó, nhưng định dạng lại thành số có 1 chữ số sau dấu thập phân
                     $course->ratings_avg_rate = number_format(round($course->ratings_avg_rate, 1), 1);
+                    $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
+
                 }
             }
 

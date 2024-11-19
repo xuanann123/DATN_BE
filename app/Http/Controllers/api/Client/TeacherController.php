@@ -124,7 +124,7 @@ class TeacherController extends Controller
         }
         //Lấy số lượng sinh viên đang tham gia khoá học này
         foreach ($courses as $course) {
-            $totalStudent += $course->total_student;
+            $totalStudent += DB::table('user_courses')->where('id_course', $course->id)->count();
         }
         //Lấy số lượng follow của giảng viên
         $follow = DB::table('follows')
@@ -145,6 +145,8 @@ class TeacherController extends Controller
                 });
             })->sum();
             $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+            $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
+
             $course->makeHidden('ratings');
             $course->makeHidden('modules');
         }

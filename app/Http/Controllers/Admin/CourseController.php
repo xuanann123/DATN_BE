@@ -28,7 +28,7 @@ class CourseController extends Controller
     {
         $title = 'Danh sách khóa học của tôi';
 
-        $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user','sort_description','id_category')->with(['user:id,name,avatar', 'tags:id,name','category:id,name'])
+        $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'id_user','sort_description','id_category')->with(['user:id,name,avatar', 'tags:id,name','category:id,name'])
             ->where('is_active', 1)
             ->where('status', 'approved')
             ->withCount('ratings')
@@ -60,7 +60,10 @@ class CourseController extends Controller
                 });
             })->sum();
             //Chỉnh lại reating
+            //Lấy tổng số lượng người tham gia khoá học thông qua user_course
+            $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
             $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+    
             $course->makeHidden('modules');
             $course->makeHidden('ratings');
         }
