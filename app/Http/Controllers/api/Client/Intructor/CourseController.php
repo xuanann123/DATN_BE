@@ -24,6 +24,7 @@ use App\Models\Audience;
 use App\Models\Goal;
 use App\Models\Requirement;
 use App\Models\User;
+use PhpParser\Node\Expr\Cast\String_;
 
 class CourseController extends Controller
 {
@@ -536,7 +537,7 @@ class CourseController extends Controller
     public function courseCheckout(Request $request)
     {
         $slug = $request->slug;
-        $course = Course::select('id','slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student','id_user')->withCount([
+        $course = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user')->withCount([
             'modules as lessons_count' => function ($query) {
                 $query->whereHas('lessons');
             },
@@ -579,6 +580,104 @@ class CourseController extends Controller
             'message' => 'Truy vấn khóa học thành công',
             'data' => $course
         ], 200);
+    }
+
+
+    public function getListCategory()
+    {
+        try {
+            $listCategory = Category::select('id', 'slug', 'name', 'description')->where('is_active', 1)->latest('id')->get();
+            if ($listCategory->count() < 1) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không tồn tại lộ trình nào',
+                    'data' => []
+                ], 204);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Lấy thành công lộ trình khoá học',
+                'data' => $listCategory
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'data' => []
+            ]);
+        }
+    }
+    //Lấy danh mục khoá học theo lộ trình
+    public function getListCourseByLearningPath(string $slug)
+    {
+        try {
+            // Lấy ra category hiện tại
+            $category = Category::where('slug', $slug)->firstOrFail();
+
+            // Hàm để lấy danh sách khoá học theo cấp độ
+            $getCoursesByLevel = function ($level) use ($category) {
+                return Course::select('id', 'slug', 'name', 'thumbnail', 'level', 'price', 'price_sale', 'total_student', 'id_user', 'id_category')
+                    ->with(['user:id,name,avatar'])
+                    ->where('is_active', 1)
+                    ->where('status', 'approved')
+                    ->where('level', $level)
+                    ->where('id_category', $category->id)
+                    ->withCount('ratings')
+                    ->withAvg('ratings', 'rate')
+                    ->withCount([
+                        'modules as lessons_count' => function ($query) {
+                            $query->whereHas('lessons');
+                        },
+                        'modules as quiz_count' => function ($query) {
+                            $query->whereHas('quiz');
+                        }
+                    ])
+                    ->orderByDesc('ratings_avg_rate') // Sắp xếp theo rating giảm dần
+                    ->limit(3)
+                    ->get()
+                    ->each(function ($course) {
+                        // Tính tổng lessons và quiz
+                        $total_lessons = $course->modules->flatMap->lessons->count();
+                        $total_quiz = $course->modules->whereNotNull('quiz')->count();
+                        $course->total_lessons = $total_lessons + $total_quiz;
+
+                        // Tính tổng duration của các lesson video
+                        $course->total_duration_video = $course->modules->flatMap(function ($module) {
+                            return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                                return $lesson->lessonable->duration ?? 0;
+                            });
+                        })->sum();
+
+                        // Chỉnh lại rating
+                        $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+                        $course->makeHidden(['modules', 'ratings']);
+                    });
+            };
+
+            // Lấy danh sách khoá học theo từng cấp độ
+            $listCourseBeginner = $getCoursesByLevel(Course::LEVEL_BEGINNER);
+            $listCourseIntermediate = $getCoursesByLevel(Course::LEVEL_INTERMEDIATE);
+            $listCourseMaster = $getCoursesByLevel(Course::LEVEL_MASTER);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Lấy danh sách khoá học theo lộ trình',
+                'data' => [
+                    'listCourseBeginner' => $listCourseBeginner,
+                    'listCourseIntermediate' => $listCourseIntermediate,
+                    'listCourseMaster' => $listCourseMaster,
+                ]
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'data' => []
+            ]);
+        }
     }
 
 }

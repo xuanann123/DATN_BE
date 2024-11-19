@@ -91,6 +91,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/apply-coupon/{id_user}/{voucher_code}', [VoucherController::class, 'applyCoupon']);
     });
 
+
+
+
     # ===================== ROUTE FOR COURSE ===========================
 
     Route::prefix('courses')->group(function () {
@@ -384,4 +387,12 @@ Route::prefix('comments')->group(function () {
 Route::prefix('ratings')->group(function () {
     Route::get('/rating-course/{course_id}', [RatingController::class, 'getRating']);
     Route::get('/rating-home-page', [RatingController::class, 'getRatingHomePage']);
+});
+
+
+//Lộ trình khoá học
+Route::prefix('learning-path')->group(function () {
+    Route::get('/list-category', [CourseController::class, 'getListCategory']);
+    //Lấy khoá học theo danh mục
+    Route::post('/list-course-by-learning-path/{slug}', [CourseController::class, 'getListCourseByLearningPath']);
 });
