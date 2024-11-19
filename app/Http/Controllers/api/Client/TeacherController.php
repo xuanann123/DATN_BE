@@ -144,20 +144,18 @@ class TeacherController extends Controller
                     return $lesson->lessonable->duration ?? 0;
                 });
             })->sum();
+            $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+            $course->makeHidden('ratings');
             $course->makeHidden('modules');
         }
-
 
         return response()->json([
             'status' => 'success',
             'data' => [
                 'dataCourses' => $courses,
                 'dataTeacher' => $teacher,
-
-                'rating' => $this->ratingTeacher($id),
                 'totalStudent' => $totalStudent,
                 'totalFollower' => $totalFollower
-
             ]
         ], 200);
     }

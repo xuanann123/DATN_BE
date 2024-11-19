@@ -176,7 +176,11 @@ class UserController extends Controller
                 ->where('id_user', $authUser->id)
                 ->first();
             $course['progress_percent'] = $progress->progress_percent ?? 0;
+            $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+
+            $course->makeHidden('ratings');
             $course->makeHidden('modules');
+
         }
         return response()->json(
             [
