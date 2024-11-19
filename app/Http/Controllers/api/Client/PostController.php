@@ -15,45 +15,15 @@ use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
-    public function getTags() {}
-    public function getPosts()
+    public function getTags()
+    {
+    }
+    public function getPosts(Request $request)
     {
         try {
-            $listPosts = Post::where('is_active', '=', 1)->select(
-                'id',
-                'user_id',
-                'title',
-                'slug',
-                'description',
-                'thumbnail',
-                'content',
-                'views',
-                'published_at',
-                'status',
-                'allow_comments',
-                'is_banned'
-            )->get();
-            //Chuẩn hoá dữ liệu
-            $dataPosts = $listPosts->map(function ($post) {
-                return [
-                    'id' => $post->id,
-                    'user_id' => $post->user_id,
-                    'username' => $post->user->name,
-                    'avatar' => $post->user->avatar,
-                    'title' => $post->title,
-                    'slug' => $post->slug,
-                    'description' => $post->description,
-                    'thumbnail' => $post->thumbnail,
-                    'content' => $post->content,
-                    'views' => $post->views,
-                    'status' => $post->status,
-                    'allow_comments' => $post->allow_comments,
-                    'is_banned' => $post->is_banned,
-                    'published_at' => $post->published_at,
-                    'categories' => $post->categories,
-                    'tags' => $post->tags
-                ];
-            });
+            $page = $request->input('page', 6);
+            $listPosts = Post::with('user', 'tags')->latest('created_at')->paginate($page);
+
             if ($listPosts->isEmpty()) {
                 return response()->json([
                     'status' => 'error',
@@ -64,7 +34,7 @@ class PostController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Lấy danh sách bài viết thành công',
-                'data' => $dataPosts
+                'data' => $listPosts
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -471,11 +441,15 @@ class PostController extends Controller
 
     public function listPostOutstanding()
     {
-        $listPosts = Post::select(
+        $listPosts = Post::with('categories', 'tags')->select(
+            'posts.id',
             'posts.title',
             'posts.slug',
+            'posts.description',
+            'posts.content',
             'posts.thumbnail',
             'posts.views',
+            'posts.created_at',
             'users.name',
             'users.avatar',
         )
@@ -485,13 +459,11 @@ class PostController extends Controller
             ->limit(6)
             ->get();
 
-
         if (count($listPosts) <= 0) {
             return response()->json([
-                'code' => 204,
                 'status' => 'error',
                 'message' => 'Danh sách bài viết trống'
-            ]);
+            ], 404);
         }
 
         return response()->json([
@@ -500,4 +472,119 @@ class PostController extends Controller
             'data' => $listPosts
         ], 200);
     }
+    public function savePost($slug)
+    {
+        try {
+            $post = Post::where('slug', $slug)->where('is_active', '=', 1)->first();
+            $user = auth()->user();
+            if (!$post) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Bài viết không tồn tại'
+                ], 404);
+            }
+            //Kiểm tra nghe nó đã mua hay chưa
+            $userPost = $user->saveposts()->where('post_id', $post->id)->first();
+            if ($userPost) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Bạn đã lưu bài viết này từ trước',
+                    'data' => [],
+                ], 400);
+            }
+            //Nếu có bài viết thực hiện đi lưu bài viết
+            $post->saveposts()->attach($user->id);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Lưu bài viết thành công'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi lưu bài viết',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    //Danh sách bài viết đã được lưu 
+    public function getSavedPosts()
+    {
+        try {
+            $user = auth()->user();
+            $data = [];
+            $listPosts = $user->saveposts()->get();
+            if ($listPosts->isEmpty()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Bạn chưa lưu bài viết nào',
+                    'data' => []
+                ], 204);
+            }
+            foreach ($listPosts as $post) {
+                $data[] = [
+                    'id' => $post->id,
+                    'title' => $post->title,
+                    'slug' => $post->slug,
+                    'description' => $post->description,
+                    'thumbnail' => url(Storage::url($post->thumbnail)),
+                    'content' => $post->content,
+                    'views' => $post->views,
+                    'status' => $post->status,
+                    'allow_comments' => $post->allow_comments,
+                    'published_at' => $post->published_at,
+                    'categories' => $post->categories,
+                    'tags' => $post->tags
+                ];
+            }
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Lấy danh sách bài viết đã được lưu thành công',
+                'data' => $data
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi lưu bài viết',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    //Check xem đã lưu bài viết hay chưa
+    public function checkSavedPost($slug)
+    {
+        try {
+            $user = auth()->user();
+            $post = Post::where('slug', $slug)->where('is_active', '=', 1)->first();
+            if (!$post) {
+                return response()->json([
+                    'message' => 'Bài viết không tồn tại',
+                    'data' => []
+                ]);
+            }
+            $userPost = $user->saveposts()->where('post_id', $post->id)->first();
+
+            if (!$userPost) {
+                return response()->json([
+                    'message' => 'Bạn chưa lưu bài viết này',
+                    'data' => [
+                        'action' => 'save'
+                    ]
+                ]);
+            }
+            return response()->json([
+                'message' => 'Đã lưu bài viết',
+                'data' => [
+                    'action' => 'unsave'
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi lưu bài viết',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 }

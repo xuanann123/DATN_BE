@@ -108,6 +108,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('detail/check/{slug}', [CourseDetailController::class, 'courseDetailForAuthUser']);
         // cập nhật tiến độ khóa học (khi học xong tất cả bài học)
         Route::post('{course}/update-progress', [StudentCourseController::class, 'updateProgress']);
+        //Check khoá học done chưa 
+        Route::get('check-done-course/{slug}', [StudentCourseController::class, 'checkDoneCourse']);
     });
 
     # ===================== ROUTE FOR CERTIFICATE ===========================
@@ -181,6 +183,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
         //Đăng kí thành giảng viên
         Route::post('/register-teacher', [UserController::class, 'registerTeacher']);
+        
+        //Check lịch sử đang học đến bài nàp
+        Route::get('/check-history-learning', [UserController::class, 'checkLearning']);
 
 
 
@@ -284,6 +289,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('', [PostController::class, 'store']);
         Route::put('/{slug}', [PostController::class, 'update']);
         Route::delete('/{slug}', [PostController::class, 'destroy']);
+        //lưu trữ bài viết
+        Route::post('/save/{slug}', [PostController::class, 'savePost']);
+        //Danh sách bài viết được lưu
+        Route::get('/saved', [PostController::class, 'getSavedPosts']);
+        //Check xem bạn bài viết hay chưa
+        Route::get('/check-saved/{slug}', [PostController::class, 'checkSavedPost']);
     });
 });
 
@@ -310,7 +321,7 @@ Route::prefix('categories')->group(function () {
 # ===================== ROUTE FOR POSTS ===========================
 
 Route::prefix('posts')->group(function () {
-    Route::get('', [PostController::class, 'getPosts']);
+    Route::get('/', [PostController::class, 'getPosts']);
     Route::get('/{slug}', [PostController::class, 'show']);
 });
 // Danh sách bài viết nổi bật;

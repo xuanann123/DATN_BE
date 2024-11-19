@@ -93,6 +93,12 @@ class Course extends Model
     {
         return $this->belongsToMany(User::class, 'user_courses', 'id_course', 'id_user');
     }
+    //Lấy cái tiến độ của khoá học này ra
+    public function progress()
+    {
+        //Lấy ra cái thằng số lượng progress_percen
+        return $this->hasMany(UserCourse::class, 'id_course');
+    }
 
     public function getCommentsCountAttribute(): int
     {
@@ -119,6 +125,10 @@ class Course extends Model
 
     public function certificates() {
         return $this->hasMany(Certificate::class);
+    }
+
+    public function bills() {
+        return $this->hasMany(Bill::class, 'id_course');
     }
 
 }
