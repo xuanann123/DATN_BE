@@ -255,16 +255,18 @@ class UserController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Bạn chưa có bài học gần nhất',
-                'data' => $data,
-                'total_lessons' => $totalLessons
+                'data' => [
+                ],
             ], 200);
         }
 
         return response()->json([
             'status' => 'success',
             'message' => 'Danh sách bài học gần nhất',
-            'data' => $data,
-            'total_lessons' => $totalLessons
+            'data' => [
+                'course' => $data,
+                'total_lessons' => $totalLessons
+            ],
         ], 200);
     }
 
