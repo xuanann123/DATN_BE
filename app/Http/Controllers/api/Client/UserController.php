@@ -220,14 +220,15 @@ class UserController extends Controller
             'data' => []
         ], 200);
     }
-    public function checkLearning()
+    public function checkLearning(Request $request)
     {
         $user = Auth::user();
+        $limit = $request->input('limit', 5);
         $data = [];
         //Lấy danh sách 5 bài học gần nhất dựa vào bảng lesson_progress
         $lessonProgress = DB::table('lesson_progress')->where('id_user', $user->id)
             ->orderBy('created_at', 'desc')
-            ->limit(5)
+            ->limit($limit)
             ->get();
         //Tôi muốn duyệt qua để lấy những bài học này
         foreach ($lessonProgress as $item) {
