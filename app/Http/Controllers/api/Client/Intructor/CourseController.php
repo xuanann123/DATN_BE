@@ -536,7 +536,7 @@ class CourseController extends Controller
     public function courseCheckout(Request $request)
     {
         $slug = $request->slug;
-        $course = Course::withCount([
+        $course = Course::select('id', 'name', 'thumbnail', 'price', 'price_sale', 'total_student','id_user')->withCount([
             'modules as lessons_count' => function ($query) {
                 $query->whereHas('lessons');
             },
@@ -544,9 +544,8 @@ class CourseController extends Controller
                 $query->whereHas('quiz');
             }
         ])
-            ->with(['user:id,name,avatar'])
+            ->with('user:id,name,avatar')
             ->withCount('ratings')
-            ->withAvg('ratings', 'rate')
             ->where('slug', $slug)
             ->firstOrFail();
 
@@ -561,6 +560,11 @@ class CourseController extends Controller
                 return $lesson->lessonable->duration ?? 0;
             });
         })->sum();
+        $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+
+        $course->makeHidden('modules');
+        $course->makeHidden('ratings');
+
 
         if (!$course) {
             return response()->json([
