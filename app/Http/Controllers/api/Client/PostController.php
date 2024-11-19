@@ -526,14 +526,11 @@ class PostController extends Controller
                     'title' => $post->title,
                     'slug' => $post->slug,
                     'description' => $post->description,
-                    'thumbnail' => url(Storage::url($post->thumbnail)),
+                    'thumbnail' => $post->thumbnail,
                     'content' => $post->content,
                     'views' => $post->views,
-                    'status' => $post->status,
-                    'allow_comments' => $post->allow_comments,
-                    'published_at' => $post->published_at,
-                    'categories' => $post->categories,
-                    'tags' => $post->tags
+                    'categories' => $post->categories->select('id', 'name'),
+                    'tags' => $post->tags->select('id', 'name')
                 ];
             }
             return response()->json([
@@ -582,6 +579,30 @@ class PostController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Đã xảy ra lỗi khi lưu bài viết',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function unsavePost(string $slug) {
+        try {
+            $post = Post::where('slug', $slug)->where('is_active', '=', 1)->first();
+            $user = auth()->user();
+            if (!$post) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Bài viết không tồn tại'
+                ], 404);
+            }
+            $user->saveposts()->detach($post->id);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Bỏ lưu bài viết thành công',
+                'data'=> []
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi hóa bài viết',
                 'error' => $e->getMessage()
             ], 500);
         }

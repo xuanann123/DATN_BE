@@ -291,6 +291,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{slug}', [PostController::class, 'destroy']);
         //lưu trữ bài viết
         Route::post('/save/{slug}', [PostController::class, 'savePost']);
+        //Huỷ lưu trữ bài viết
+        Route::post('/unsave/{slug}', [PostController::class, 'unsavePost']);
         //Danh sách bài viết được lưu
         Route::get('/saved', [PostController::class, 'getSavedPosts']);
         //Check xem bạn bài viết hay chưa
