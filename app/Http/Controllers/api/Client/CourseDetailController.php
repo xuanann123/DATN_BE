@@ -19,7 +19,9 @@ class CourseDetailController extends Controller // di ve sinh
     {
         try {
             //Chi tiết bài học lấy theo slug
-            $course = Course::with(['category', 'user', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons', 'modules.quiz'])
+            $course = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user', 'description', 'level', 'sort_description','id_category','trailer')
+            ->with(['category:id,name', 'user:id,name,avatar', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons', 'modules.quiz'])
+            ->withCount('ratings')
                 ->where('slug', $slug)
                 ->where('is_active', 1)
                 ->where('status', 'approved')
@@ -49,23 +51,13 @@ class CourseDetailController extends Controller // di ve sinh
             //Set giá trị trong khoá học là tổng bài học và tổng số lượng bài học
             $course->total_lessons = $total_lessons + $total_quiz;
             $course->total_duration_video = $total_duration_video;
+            $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
 
-            // Lấy số lượng rating và điểm trung bình;
-            $ratings = DB::table('ratings')
-            ->select(
-                DB::raw('COUNT(*) as total_reviews'),
-                DB::raw('AVG(rate) as average_rating')
-            )
-                ->where('id_course', $course->id)
-                ->first();
             // Trả về dữ liệu bên phía client khi lấy được thành công
             return response()->json([
                 'status' => 'success',
                 'message' => "Thông tin khóa học.",
-                'data' => [
-                    'course' => $course,
-                    'ratings' => $ratings,
-                ]
+                'data' => $course
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -131,7 +123,6 @@ class CourseDetailController extends Controller // di ve sinh
             $userCourse = UserCourse::where('id_user', $user->id)
                 ->where('id_course', $course->id)
                 ->first();
-
             // Tống số lượng bài học trong khoá học
             $total_lessons = $course->modules->flatMap->lessons->count();
             // Tổng số lượng quiz trong khóa học
