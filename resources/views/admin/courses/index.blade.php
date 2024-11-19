@@ -96,13 +96,24 @@
                                                     data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                                     <i data-feather="more-horizontal" class="icon-sm"></i>
                                                 </button>
-
                                                 <div class="dropdown-menu dropdown-menu-end">
                                                     {{-- <a class="dropdown-item" href="{{ route('admin.courses.edit') }}"><i
                                                         class="ri-eye-fill align-bottom me-2 text-muted"></i> Xem</a> --}}
-                                                    <a class="dropdown-item"
-                                                        href="{{ route('admin.courses.edit', ['id' => $course->id]) }}"><i
-                                                            class="ri-pencil-fill align-bottom me-2 text-muted"></i> Sửa</a>
+
+                                                    @if ($course->status == 'approved')
+                                                        <a class="dropdown-item"
+                                                            href="#"><i
+                                                                class="ri-pencil-fill align-bottom me-2 text-muted"></i>
+                                                            Đã đăng khoá học</a>
+                                                    @else
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('admin.courses.edit', ['id' => $course->id]) }}"><i
+                                                                class="ri-pencil-fill align-bottom me-2 text-muted"></i>
+                                                            Sửa</a>
+                                                    @endif
+
+
+
                                                     <div class="dropdown-divider"></div>
                                                     {{-- <a class="dropdown-item"
                                                     href="{{ route('admin.courses.delete', ['id' => $course->id]) }}"
