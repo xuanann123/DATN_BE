@@ -156,7 +156,7 @@ class UserController extends Controller
                         $query->whereHas('quiz');
                     }
                 ])->get();
-        $data = [];
+ 
         //Duyệt qua toàn bộ khoá học đó
         foreach ($myCourseBought as $course) {
             // Tính tổng lessons và quiz
