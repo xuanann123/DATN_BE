@@ -353,25 +353,26 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="fw-medium">Giá khoá học</td>
+                                                    <td class="fw-semibold">Giá khoá học</td>
                                                     <td>
                                                         @if ($course->is_free)
-                                                            <span class="badge bg-success">Free</span>
+                                                            <span class="badge bg-success rounded-pill">Miễn phí</span>
                                                         @else
                                                             @if ($course->price_sale)
                                                                 <span
-                                                                    class="text-decoration-line-through">{{ number_format($course->price, 0) }}</span>
+                                                                    class="text-muted text-decoration-line-through me-2">{{ number_format($course->price, 0) }}</span>
                                                                 <span
-                                                                    class="text-danger">{{ number_format($course->price_sale, 0) }}</span>
-                                                                <i class="ri-bit-coin-line"></i>
+                                                                    class="fw-bold text-danger me-2">{{ number_format($course->price_sale, 0) }}</span>
+                                                                <i class="ri-bit-coin-line text-warning"></i>
                                                             @else
                                                                 <span
-                                                                    class="text-danger">{{ number_format($course->price, 0) }}</span>
-                                                                <i class="ri-bit-coin-line"></i>
+                                                                    class="fw-bold text-danger me-2">{{ number_format($course->price, 0) }}</span>
+                                                                <i class="ri-bit-coin-line text-warning"></i>
                                                             @endif
                                                         @endif
                                                     </td>
                                                 </tr>
+
                                             </tbody>
                                         </table>
                                     </div>
@@ -647,8 +648,16 @@
                                                                                     $rating->user->avatar,
                                                                                 );
                                                                             @endphp
-                                                                            <img src="{{ $user_avt }}" alt=""
-                                                                                class="avatar-xxs rounded-circle image_src object-fit-cover">
+                                                                            @if ($rating->user->avatar != null)
+                                                                                <img src="{{ $user_avt }}"
+                                                                                    alt=""
+                                                                                    class="avatar-xxs rounded-circle image_src object-fit-cover">
+                                                                            @else
+                                                                                <img src="https://png.pngtree.com/png-clipart/20210608/ourlarge/pngtree-dark-gray-simple-avatar-png-image_3418404.jpg"
+                                                                                    alt=""
+                                                                                    class="avatar-xxs rounded-circle image_src object-fit-cover">
+                                                                            @endif
+
                                                                         </div>
                                                                         <div class="flex-grow-1 ms-2 name">
                                                                             {{ $rating->user->name }}</div>
@@ -1082,9 +1091,11 @@
                     }, // Truyền ID người dùng vào request
                     success: function(response) {
                         console.log(response.data.avatar);
-                        $('#user-avatar').attr('src', '/storage/' + response.data.avatar ||
-                            'https://png.pngtree.com/png-clipart/20210608/ourlarge/pngtree-dark-gray-simple-avatar-png-image_3418404.jpg'
-                        );
+                        if (response.data.avatar) {
+                            $('#user-avatar').attr('src', '/storage/' + response.data.avatar);
+                        } else {
+                            $('#user-avatar').attr('src', 'https://png.pngtree.com/png-clipart/20210608/ourlarge/pngtree-dark-gray-simple-avatar-png-image_3418404.jpg');
+                        }
                         $('#user-name').text(response.data.name || 'Tên người dùng');
                         $('#user-email-info').text(response.data.email || 'Email');
 

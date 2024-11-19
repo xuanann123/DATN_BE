@@ -18,44 +18,12 @@ class PostController extends Controller
     public function getTags()
     {
     }
-    public function getPosts()
+    public function getPosts(Request $request)
     {
         try {
-            $listPosts = Post::where('is_active', '=', 1)->select(
-                'id',
-                'user_id',
-                'title',
-                'slug',
-                'description',
-                'thumbnail',
-                'content',
-                'views',
-                'published_at',
-                'status',
-                'allow_comments',
-                'is_banned'
-            )->get();
-            //Chuẩn hoá dữ liệu
-            $dataPosts = $listPosts->map(function ($post) {
-                return [
-                    'id' => $post->id,
-                    'user_id' => $post->user_id,
-                    'username' => $post->user->name,
-                    'avatar' => $post->user->avatar,
-                    'title' => $post->title,
-                    'slug' => $post->slug,
-                    'description' => $post->description,
-                    'thumbnail' => $post->thumbnail,
-                    'content' => $post->content,
-                    'views' => $post->views,
-                    'status' => $post->status,
-                    'allow_comments' => $post->allow_comments,
-                    'is_banned' => $post->is_banned,
-                    'published_at' => $post->published_at,
-                    'categories' => $post->categories,
-                    'tags' => $post->tags
-                ];
-            });
+            $page = $request->input('page', 6);
+            $listPosts = Post::with('user', 'tags')->latest('created_at')->paginate($page);
+
             if ($listPosts->isEmpty()) {
                 return response()->json([
                     'status' => 'error',
@@ -66,7 +34,7 @@ class PostController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Lấy danh sách bài viết thành công',
-                'data' => $dataPosts
+                'data' => $listPosts
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

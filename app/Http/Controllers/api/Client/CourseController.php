@@ -28,12 +28,18 @@ class CourseController extends Controller
                             $query->whereHas('quiz');
                         }
                     ])
+                ->withCount('ratings')
+                ->withAvg('ratings', 'rate')
                 ->where('is_active', 1)
                 ->where('status', 'approved')
+                ->latest('created_at')
                 ->orderByDesc('id')->limit(6)->get();
 
             $courses->each(function ($course) {
-                $course->total_lessons = $course->lessons_count + $course->quiz_count;
+                // Tính tổng lessons và quiz
+                $total_lessons = $course->modules->flatMap->lessons->count();
+                $total_quiz = $course->modules->whereNotNull('quiz')->count();
+                $course->total_lessons = $total_lessons + $total_quiz;
 
                 // Tính tổng duration của các lesson vid
                 $course->total_duration_video = $course->modules->flatMap(function ($module) {
@@ -44,7 +50,7 @@ class CourseController extends Controller
 
                 $course->makeHidden('modules');
             });
-            if (count($courses) == 0) {
+            if (count($courses) < 1) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Không có khóa học mới nào'
@@ -81,13 +87,18 @@ class CourseController extends Controller
                             $query->whereHas('quiz');
                         }
                     ])
+                ->withCount('ratings')
+                ->withAvg('ratings', 'rate')
                 ->where('is_active', 1)
                 ->where('status', 'approved')
                 ->where('price_sale', '!=', null)
                 ->orderByDesc('price_sale')->limit(6)->get();
 
             $courses->each(function ($course) {
-                $course->total_lessons = $course->lessons_count + $course->quiz_count;
+                // Tính tổng lessons và quiz
+                $total_lessons = $course->modules->flatMap->lessons->count();
+                $total_quiz = $course->modules->whereNotNull('quiz')->count();
+                $course->total_lessons = $total_lessons + $total_quiz;
 
                 // Tính tổng duration của các lesson vid
                 $course->total_duration_video = $course->modules->flatMap(function ($module) {
@@ -98,7 +109,7 @@ class CourseController extends Controller
 
                 $course->makeHidden('modules');
             });
-            if (count($courses) == 0) {
+            if (count($courses) < 0) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Không có khóa học'
@@ -124,7 +135,6 @@ class CourseController extends Controller
     {
         try {
             $limit = $request->input('limit', 5);
-            // Lấy các khóa học nổi bật dựa vào số lượt mua và đánh giá trung bình
             $courses = Course::with(['user:id,name,avatar'])
                 ->where('is_active', 1)
                 ->where('status', 'approved')
@@ -187,22 +197,31 @@ class CourseController extends Controller
     {
         //Danh sách category
         try {
-            $categories = Category::with([
-                'courses' => function ($query) {
+            $categories = Category::where('is_active', 1)
+            //Check xem có khoá học thì mí cho hiển thị danh mục đó
+                ->whereHas('courses', function ($query) {
                     $query->where('is_active', 1)
-                        ->where('status', 'approved')
-                        ->withCount([
-                            'modules as lessons_count' => function ($query) {
-                                $query->whereHas('lessons');
-                            },
-                            'modules as quiz_count' => function ($query) {
-                                $query->whereHas('quiz');
-                            }
-                        ])
-                        ->with(['user:id,name,avatar'])
-                        ->limit(4);
-                }
-            ])->where('is_active', 1)->get();
+                        ->where('status', 'approved');
+                })
+                ->with([
+                    'courses' => function ($query) {
+                        $query->where('is_active', 1)
+                            ->where('status', 'approved')
+                            ->withCount([
+                                'modules as lessons_count' => function ($query) {
+                                    $query->whereHas('lessons');
+                                },
+                                'modules as quiz_count' => function ($query) {
+                                    $query->whereHas('quiz');
+                                }
+                            ])
+                            ->with(['user:id,name,avatar'])
+                            ->withCount('ratings')
+                            ->withAvg('ratings', 'rate')
+                            ->limit(4);
+                    }
+                ])->get();
+
             if (count($categories) < 1) {
                 return response()->json([
                     'status' => 'error',
@@ -215,15 +234,15 @@ class CourseController extends Controller
             foreach ($categories as $category) {
                 foreach ($category->courses as $course) {
                     // Tính tổng lessons và quiz
-                    $course->total_lessons = $course->lessons_count + $course->quiz_count;
-
+                    $total_lessons = $course->modules->flatMap->lessons->count();
+                    $total_quiz = $course->modules->whereNotNull('quiz')->count();
+                    $course->total_lessons = $total_lessons + $total_quiz;
                     // Tính tổng duration của các lesson vid
                     $course->total_duration_video = $course->modules->flatMap(function ($module) {
                         return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
                             return $lesson->lessonable->duration ?? 0;
                         });
                     })->sum();
-
                     $course->makeHidden('modules');
                 }
             }
@@ -241,6 +260,7 @@ class CourseController extends Controller
             ], 500);
         }
     }
+
     private function setLessonDurations($course)
     {
         $course->modules->flatMap->lessons->map(function ($lesson) {
