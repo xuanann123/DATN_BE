@@ -97,6 +97,8 @@ Route::middleware('auth:sanctum')->group(function () {
     # ===================== ROUTE FOR COURSE ===========================
 
     Route::prefix('courses')->group(function () {
+        //Danh sách khoá học ngày hôm nay
+        Route::get('today-new', [CourseHomePageController::class, 'listNewCourse']);
         //Danh sách yêu thích khoá học
         Route::get('favorite', [CourseHomePageController::class, 'listFavoriteCourse']);
         //Yêu thích khoá học
