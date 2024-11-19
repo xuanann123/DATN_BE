@@ -129,7 +129,7 @@ class TeacherController extends Controller
             'data' => [
                 'dataCourses' => $courses,
                 'dataTeacher' => $teacher,
-                'raring' => $this->ratingTeacher($id)
+                'rating' => $this->ratingTeacher($id)
             ]
         ], 200);
     }

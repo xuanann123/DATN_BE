@@ -156,4 +156,16 @@ class UserController extends Controller
 
         return back()->with(['error' => 'Xóa người dùng thất bại!']);
     }
+
+    public function listTeachers() {
+        $title = "Danh sách giảng viên";
+        $teachers = User::with(['profile', 'courses'])
+            ->withCount('courses')
+            ->withSum('courses', 'total_student')
+//            ->where('id', 52)->first();
+//        dd($teachers);
+            ->paginate(12);
+
+        return view('admin.users.list_teacher', compact('title', 'teachers'));
+    }
 }

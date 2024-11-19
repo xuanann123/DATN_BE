@@ -123,9 +123,10 @@ Route::prefix("admin")
                 Route::get("/edit/{user}", [UserController::class, 'edit'])->name('edit');
                 Route::put("/update/{user}", [UserController::class, 'update'])->name('update');
                 Route::put("/change-password/{user}", [UserController::class, 'changePassword'])->name('change-password');
-                Route::get("/detail/{user}", [UserController::class, 'detail'])->name('detail');
+//                Route::get("/detail/{user}", [UserController::class, 'detail'])->name('detail');
                 Route::get("/restore/{id}", [UserController::class, 'restore'])->name('restore');
                 Route::get("/forceDelete/{id}", [UserController::class, 'forceDelete'])->name('forceDelete');
+                Route::get("/list-teachers", [UserController::class, 'listTeachers'])->name('list-teachers');
                 Route::prefix('profile')
                     ->as('profile.')
                     ->group(function () {
