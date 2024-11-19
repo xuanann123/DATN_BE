@@ -536,30 +536,31 @@ class CourseController extends Controller
     public function courseCheckout(Request $request)
     {
         $slug = $request->slug;
+        $course = Course::withCount([
+            'modules as lessons_count' => function ($query) {
+                $query->whereHas('lessons');
+            },
+            'modules as quiz_count' => function ($query) {
+                $query->whereHas('quiz');
+            }
+        ])
+            ->with(['user:id,name,avatar'])
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rate')
+            ->where('slug', $slug)
+            ->firstOrFail();
 
-        $course = DB::table('courses as c')
-            ->selectRaw('
-                u.id as id,
-                u.name as name,
-                u.avatar as avatar,
-                c.id as course_id,
-                c.name as course_name,
-                c.thumbnail as course_thumbnail,
-                c.price,
-                c.price_sale,
-                c.total_student,
-                COUNT(DISTINCT l.id) as total_lessons,
-                c.duration as course_duration,
-                ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
-            ')
-            ->join('users as u', 'u.id', '=', 'c.id_user')
-            ->leftJoin('ratings as r', 'c.id', '=', 'r.id_course')
-            ->leftJoin('modules as m', 'm.id_course', '=', 'c.id')
-            ->leftJoin('lessons as l', 'l.id_module', '=', 'm.id')
-            ->where('c.is_active', 1)
-            ->where('c.slug', $slug)
-            ->groupBy('u.id', 'u.name', 'u.avatar', 'c.id', 'c.name', 'c.thumbnail', 'c.total_student', 'c.duration')
-            ->first();
+        $total_lessons = $course->modules->flatMap->lessons->count();
+        // Tổng số lượng quiz trong khóa học
+        $total_quizzes = $course->modules->whereNotNull('quiz')->count();
+        // Tổng bài học + quiz
+        $course->total_lessons = $total_lessons + $total_quizzes;
+        // Tính tổng duration của các lesson vid
+        $course->total_duration_video = $course->modules->flatMap(function ($module) {
+            return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                return $lesson->lessonable->duration ?? 0;
+            });
+        })->sum();
 
         if (!$course) {
             return response()->json([
