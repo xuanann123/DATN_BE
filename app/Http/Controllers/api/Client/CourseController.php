@@ -197,7 +197,7 @@ class CourseController extends Controller
     {
         //Danh sách category
         try {
-            $categories = Category::where('is_active', 1)
+            $categories = Category::select('id', 'name')->where('is_active', 1)
             //Check xem có khoá học thì mí cho hiển thị danh mục đó
                 ->whereHas('courses', function ($query) {
                     $query->where('is_active', 1)
@@ -205,7 +205,8 @@ class CourseController extends Controller
                 })
                 ->with([
                     'courses' => function ($query) {
-                        $query->where('is_active', 1)
+                        $query->select('id', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user','id_category')
+                        ->where('is_active', 1)
                             ->where('status', 'approved')
                             ->withCount([
                                 'modules as lessons_count' => function ($query) {
@@ -221,6 +222,14 @@ class CourseController extends Controller
                             ->limit(4);
                     }
                 ])->get();
+            foreach ($categories as $category) {
+                foreach ($category->courses as $course) {
+                    // Sử dụng `withAvg` đã tính toán trước đó, nhưng định dạng lại thành số có 1 chữ số sau dấu thập phân
+                    $course->ratings_avg_rate = number_format(round($course->ratings_avg_rate, 1), 1);
+                }
+            }
+
+                // $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
 
             if (count($categories) < 1) {
                 return response()->json([
