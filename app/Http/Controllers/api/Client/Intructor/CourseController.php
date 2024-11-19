@@ -586,7 +586,7 @@ class CourseController extends Controller
     public function getListCategory()
     {
         try {
-            $listCategory = Category::select('id', 'slug', 'name', 'description')->where('is_active', 1)->latest('id')->get();
+            $listCategory = Category::select('id', 'slug', 'name', 'description','image')->where('is_active', 1)->latest('id')->get();
             if ($listCategory->count() < 1) {
                 return response()->json([
                     'status' => 'error',
