@@ -42,17 +42,29 @@ class StatisticController extends Controller
             ->sum('total_coin_after_discount');
         ;
 
-        // Doanh thu theo từng tháng
-        $monthlyRevenueData = Bill::where('id_user', $userId)
-            ->selectRaw('MONTH(created_at) as month, SUM(total_coin_after_discount) as revenue')
-            ->groupByRaw('MONTH(created_at)')
-            ->orderByRaw('MONTH(created_at)')
-            ->get()
-            ->keyBy('month');
+        // Doanh thu theo từng tháng (12 tháng gần nhất)
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
 
-        $monthlyRevenue = collect(range(1, 12))->mapWithKeys(function ($month) use ($monthlyRevenueData) {
-            return [$month => $monthlyRevenueData->get($month)->revenue ?? 0];
-        });
+        $monthlyRevenueData = Bill::where('id_user', $userId)
+            ->whereBetween('created_at', [
+                now()->subMonths(11)->startOfMonth(),
+                now()->endOfMonth()
+            ])
+            ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, SUM(total_coin_after_discount) as revenue')
+            ->groupByRaw('YEAR(created_at), MONTH(created_at)')
+            ->orderByRaw('YEAR(created_at) ASC, MONTH(created_at) ASC')
+            ->get()
+            ->keyBy(fn($item) => $item->month);
+
+        $monthlyRevenue = collect(range(0, 11))->mapWithKeys(function ($offset) use ($currentMonth, $currentYear, $monthlyRevenueData) {
+            $date = now()->subMonths($offset);
+            $yearMonthKey = $date->month;
+
+            return [
+                $date->format('m') => $monthlyRevenueData->get($yearMonthKey)?->revenue ?? 0
+            ];
+        })->reverse();
 
         // Thống kê tổng số học viên
         $totalStudents = UserCourse::query()

@@ -140,6 +140,13 @@ class LessonController extends Controller
                 $data
             );
 
+            $course = $userCourse->course;
+
+            $course_progress = $this->checkCourseProgress($user, $course);
+
+            $userCourse->progress_percent = $course_progress;
+            $userCourse->save();
+
             // response cho client
             return response()->json([
                 'status' => 'success',
@@ -390,6 +397,36 @@ class LessonController extends Controller
                 'data' => []
             ]);
         }
+    }
+
+    private function checkCourseProgress($user ,$course)
+    {
+        // Tống số lượng bài học trong khoá học
+        $total_lessons = $course->modules->flatMap->lessons->count();
+        // Tổng số lượng quiz trong khóa học
+        $total_quizzes = $course->modules->whereNotNull('quiz')->count();
+        // Tổng bài học + quiz
+        $total_items = $total_lessons + $total_quizzes;
+
+        // Tổng số lượng bài học đã học
+        $completed_lessons = LessonProgress::where('id_user', $user->id)
+            ->where('is_completed', 1)
+            ->whereIn('id_lesson', $course->modules->flatMap->lessons->pluck('id'))
+            ->count();
+
+        // Số lượng quiz đã hoàn thành
+        $completed_quizzes = QuizProgress::where('user_id', $user->id)
+            ->where('is_completed', 1)
+            ->whereIn('quiz_id', $course->modules->pluck('quiz.id'))
+            ->count();
+
+        // Tổng số lượng bài học và quiz đã hoàn thành
+        $total_completed_items = $completed_lessons + $completed_quizzes;
+
+        // Tính tiến độ khoá học người dùng đã đăng kí khoá học sẽ là (tổng bài đã hoàn thiện)/ (tổng bài học) * 100 = tiến độ (%)
+        $progress_percent = $total_items > 0 ? ($total_completed_items / $total_items) * 100 : 0;
+
+        return $progress_percent;
     }
 
 }
