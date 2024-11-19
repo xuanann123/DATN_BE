@@ -27,7 +27,7 @@ class CourseController extends Controller
     public function index()
     {
         $title = 'Danh sách khóa học';
-        $courses = Course::select('id', 'id_user', 'id_category', 'name', 'sort_description', 'thumbnail', 'created_at', 'updated_at')
+        $courses = Course::select('id', 'id_user', 'id_category', 'name', 'sort_description', 'thumbnail', 'created_at', 'updated_at','status')
             ->with(['user:id,avatar,name', 'userCourses'])
             //Nếu phải là khoá học của thằng user đang đặp nhập sẽ không lấy
             ->where('id_user', auth()->id())
@@ -35,6 +35,7 @@ class CourseController extends Controller
             ->paginate(12);
 
         //Danh Lấy ngẫu nhiên 3 thành viên tham gia khoá học
+        
 
         // dd($courses);
         return view('admin.courses.index', compact('title', 'courses'));
@@ -67,6 +68,7 @@ class CourseController extends Controller
 
     public function store(CreateCourseRequest $request)
     {
+        // dd($request->all());
         $data = $request->except('thumbnail', 'trailer');
         //Kiểm tra khoá học xem có free không?
         $data['is_free'] = $request->price != 0 ? 0 : 1;
