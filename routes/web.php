@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\QuizController;
 use App\Http\Controllers\Admin\QuestionController;
 
 use App\Http\Controllers\Admin\UploadVideoController;
+use App\Http\Controllers\Admin\FollowController;
 
 use App\Http\Controllers\api\Client\PaymentController;
 
@@ -230,5 +231,12 @@ Route::prefix("admin")
                 //auto load tin nhắn
                 Route::get('/api', [ChatController::class, 'fetchMessages'])->name('api');
                 Route::post('/greet/{receiver}', [ChatController::class, 'greetReceived'])->name('greet');
+            });
+
+        Route::prefix('follow')
+            ->as('follow.')
+            ->group(function () {
+                Route::post('/add-follow', [FollowController::class, 'follow'])->name('add-follow');
+                Route::delete('/un-follow', [FollowController::class, 'unFollow'])->name('un-follow');
             });
     });

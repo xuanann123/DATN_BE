@@ -2,6 +2,11 @@
 @section('title')
     {{ $title }}
 @endsection
+@section('style-libs')
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css">
+@endsection
 @section('content')
     <div class="row">
         <div class="col-12">
@@ -82,9 +87,9 @@
                                                     <div class="row">
                                                         <div class="col">
                                                             <div class="flex-shrink-0 me-2">
-                                                                <button type="button" class="btn btn-light btn-icon rounded-circle btn-sm favourite-btn active">
-                                                                    <i class="ri-star-fill fs-14"></i>
-                                                                </button>
+{{--                                                                <button type="button" class="btn btn-light btn-icon rounded-circle btn-sm favourite-btn active">--}}
+{{--                                                                    <i class="ri-star-fill fs-14"></i>--}}
+{{--                                                                </button>--}}
                                                             </div>
                                                         </div>
                                                         <div class="col text-end dropdown">
@@ -132,8 +137,25 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-2 col">
-                                                    <div class="text-end">
-                                                        <a href="{{ route('admin.users.edit', ['user' => $teacher->id]) }}" class="btn btn-light view-btn">Chi tiết</a>
+                                                    <div class="row mt-4">
+                                                        <a href="{{ route('admin.users.edit', ['user' => $teacher->id]) }}" class="btn btn-light col-5">Chi tiết</a>
+                                                        <span class="col-2"></span>
+                                                        @if(\App\Http\Controllers\Admin\FollowController::checkFollow(auth()->id(), $teacher->id))
+                                                            <form  class="col-5" action="{{ route('admin.follow.un-follow') }}" method="POST">
+                                                                <input type="hidden" name="id_student" value="{{ auth()->id() }}">
+                                                                <input type="hidden" name="id_teacher" value="{{ $teacher->id }}">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button class="btn btn-success col-12">Đã theo dõi</button>
+                                                            </form>
+                                                        @else
+                                                            <form  class="col-5" action="{{ route('admin.follow.add-follow') }}" method="POST">
+                                                                <input type="hidden" name="id_student" value="{{ auth()->id() }}">
+                                                                <input type="hidden" name="id_teacher" value="{{ $teacher->id }}">
+                                                                @csrf
+                                                                <button class="btn btn-primary col-12">Theo dõi</button>
+                                                            </form>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>
