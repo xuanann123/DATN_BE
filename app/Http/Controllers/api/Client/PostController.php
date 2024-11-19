@@ -24,7 +24,7 @@ class PostController extends Controller
             $limit = $request->input('limit', 6);
             // key search
             $searchQuery = $request->search;
-            $listPosts = Post::with('user', 'tags')
+            $listPosts = Post::select('id', 'title', 'description', 'content', 'thumbnail', 'slug', 'created_at', 'views','user_id')->with('user:id,name,avatar', 'tags:id,name,slug', 'categories:id,name,slug')
                 ->search($searchQuery) // tim kiem
                 ->latest('created_at')
                 ->paginate($limit)
