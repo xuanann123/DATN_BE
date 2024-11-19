@@ -257,7 +257,38 @@ class CourseController extends Controller
         $user = Auth::user();
         //phân trang 6 bản ghi
         try {
-            $courses = $user->wishlists()->paginate(6);
+            $courses = $user->wishlists()->with('modules', 'user')->withAvg('ratings', 'rate')
+                ->withCount([
+                    'modules as lessons_count' => function ($query) {
+                        $query->whereHas('lessons');
+                    },
+                    'modules as quiz_count' => function ($query) {
+                        $query->whereHas('quiz');
+                    }
+                ])->paginate(6);
+
+            foreach ($courses as $course) {
+                // Tính tổng lessons và quiz
+                $total_lessons = $course->modules->flatMap->lessons->count();
+                $total_quiz = $course->modules->whereNotNull('quiz')->count();
+                $course->total_lessons = $total_lessons + $total_quiz;
+
+                // Tính tổng duration của các lesson vid
+                $course->total_duration_video = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                        return $lesson->lessonable->duration ?? 0;
+                    });
+                })->sum();
+                //Lấy tiến độ của của khoá này 
+                $progress = DB::table('user_courses')
+                    ->where('id_course', $course->id)
+                    ->where('id_user', $user->id)
+                    ->first();
+                $course['progress_percent'] = $progress->progress_percent ?? 0;
+                $course->makeHidden('modules');
+            }
+
+
             return response()->json([
                 "status" => "success",
                 "message" => "Danh sách yêu thích",
@@ -270,12 +301,6 @@ class CourseController extends Controller
                 "error" => $e->getMessage()
             ], 500);
         }
-        // $courses = $user->wishlists;
-        // return response()->json([
-        //     "status" => "success",
-        //     "message" => "Danh sách yêu thích",
-        //     "data" => $courses
-        // ], 200);
 
     }
     public function favoriteCourse($id_course)
