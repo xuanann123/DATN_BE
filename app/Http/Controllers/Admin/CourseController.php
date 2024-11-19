@@ -26,18 +26,46 @@ class CourseController extends Controller
 {
     public function index()
     {
-        $title = 'Danh sách khóa học';
-        $courses = Course::select('id', 'id_user', 'id_category', 'name', 'sort_description', 'thumbnail', 'created_at', 'updated_at','status')
-            ->with(['user:id,avatar,name', 'userCourses'])
-            //Nếu phải là khoá học của thằng user đang đặp nhập sẽ không lấy
+        $title = 'Danh sách khóa học của tôi';
+
+        $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user','sort_description','id_category')->with(['user:id,name,avatar', 'tags:id,name','category:id,name'])
+            ->where('is_active', 1)
+            ->where('status', 'approved')
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rate')
+            ->withCount([
+                'modules as lessons_count' => function ($query) {
+                    $query->whereHas('lessons');
+                },
+                'modules as quiz_count' => function ($query) {
+                    $query->whereHas('quiz');
+                }
+            ])
+            ->orderByDesc('total_student')
             ->where('id_user', auth()->id())
-            ->orderByDesc('id')
+            ->orderByDesc('ratings_avg_rate')
             ->paginate(12);
 
         //Danh Lấy ngẫu nhiên 3 thành viên tham gia khoá học
-        
+        foreach ($courses as $course) {
+            // Tính tổng lessons và quiz
+            $total_lessons = $course->modules->flatMap->lessons->count();
+            $total_quiz = $course->modules->whereNotNull('quiz')->count();
+            $course->total_lessons = $total_lessons + $total_quiz;
 
-        // dd($courses);
+            // Tính tổng duration của các lesson vid
+            $course->total_duration_video = $course->modules->flatMap(function ($module) {
+                return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                    return $lesson->lessonable->duration ?? 0;
+                });
+            })->sum();
+            //Chỉnh lại reating
+            $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+            $course->makeHidden('modules');
+            $course->makeHidden('ratings');
+        }
+        // dd($courses->toArray());
+
         return view('admin.courses.index', compact('title', 'courses'));
     }
 
@@ -417,10 +445,10 @@ class CourseController extends Controller
 
         return redirect()->back()->with('success', 'Cập nhật thành công.');
     }
-  
+
     public function getUserDetails(Request $request, $id)
     {
-       // Lấy ID từ query string
+        // Lấy ID từ query string
 
         // Truy vấn lấy thông tin người dùng từ cơ sở dữ liệu
         $user = User::find($id);  // Giả sử bạn có model User

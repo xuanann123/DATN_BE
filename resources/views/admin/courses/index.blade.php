@@ -72,7 +72,7 @@
         @else
             @foreach ($courses as $course)
                 <div class="col-xxl-3 col-sm-6 project-card">
-                    <div class="card">
+                    <div class="card rounded">
                         <div class="card-body">
                             <div class="d-flex flex-column">
                                 <div class="d-flex">
@@ -80,15 +80,19 @@
                                         @php
                                             \Carbon\Carbon::setLocale('vi');
                                         @endphp
-                                        <p class="text-muted mb-4">Cập nhật:
+                                        <p class="text-muted mt-1">Cập nhật:
                                             {{ \Carbon\Carbon::parse($course->updated_at)->translatedFormat('d M Y') }}
+                                        </p>
                                     </div>
                                     <div class="flex-shrink-0">
                                         <div class="d-flex gap-1 align-items-center">
+                                            {{ $course->ratings_avg_rate }}
                                             <button type="button" class="btn avatar-xs mt-n1 p-0 favourite-btn active">
-                                                <span class="avatar-title bg-transparent fs-15">
-                                                    <i class="ri-star-fill"></i>
-                                                </span>
+                                                <div class="d-flex align-item-center gap-1">
+                                                    <span class="avatar-title bg-transparent fs-15 me-2">
+                                                        <i class="ri-star-fill"></i>
+                                                    </span>
+                                                </div>
                                             </button>
                                             <div class="dropdown">
                                                 <button
@@ -101,8 +105,7 @@
                                                         class="ri-eye-fill align-bottom me-2 text-muted"></i> Xem</a> --}}
 
                                                     @if ($course->status == 'approved')
-                                                        <a class="dropdown-item"
-                                                            href="#"><i
+                                                        <a class="dropdown-item" href="#"><i
                                                                 class="ri-pencil-fill align-bottom me-2 text-muted"></i>
                                                             Đã đăng khoá học</a>
                                                     @else
@@ -111,9 +114,6 @@
                                                                 class="ri-pencil-fill align-bottom me-2 text-muted"></i>
                                                             Sửa</a>
                                                     @endif
-
-
-
                                                     <div class="dropdown-divider"></div>
                                                     {{-- <a class="dropdown-item"
                                                     href="{{ route('admin.courses.delete', ['id' => $course->id]) }}"
@@ -140,15 +140,47 @@
                                     <div class="mb-2">
                                         <a href="{{ route('admin.courses.detail', $course->id) }}">
                                             <img src="{{ Storage::url($course->thumbnail) }}"
-                                                style="height: 150px!important; object-fit: cover; overflow: hidden !important"
+                                                style="height: 150px!important; object-fit: cover; overflow: hidden !important; border-radius: 10px"
                                                 alt="" class="w-100 px-1">
                                         </a>
                                     </div>
                                     <div>
                                         <h5 class="mb-1 fs-15"><a href="{{ route('admin.courses.detail', $course->id) }}"
                                                 class="text-body">{{ $course->name }}</a></h5>
-                                        <p class="text-muted text-truncate-two-lines mb-3">
-                                            {{ strip_tags($course->sort_description) }}</p>
+                                        <span class="text-muted text-truncate-two-lines">
+                                            <span class="badge bg-primary fs-10">{{ $course->category->name }}</span> :
+                                            {{ strip_tags($course->sort_description) }}
+                                        </span>
+                                        <hr>
+                                        @if ($course->tags->count() > 0)
+                                            <span class="text-muted text-truncate-two-lines fs-12 mb-1">
+                                                Tags: 
+                                                @foreach ($course->tags as $tag)
+                                                    <span class="badge  bg-primary fs-8 ms-1 me-1">{{ $tag->name }}
+                                                    </span>
+                                                @endforeach
+                                            </span>
+                                        @else
+                                            <span class="text-muted text-truncate-two-lines fs-12 mb-1">
+                                                Chưa có tags
+                                            </span>
+                                        @endif
+
+
+                                    </div>
+                                    <div class="d-flex">
+                                        {{-- Hiển thị tiền và giá tiền --}}
+                                        @if ($course->price == null)
+                                            <b>Miễn phí</b>
+                                        @else
+                                            @if ($course->price_sale != null)
+                                                <del class="me-2">{{ $course->price }} <i
+                                                        class="ri-coins-fill fs-16"></i></del>
+                                                <b>{{ $course->price_sale }} <i class="ri-coins-fill fs-16"></i> </b>
+                                            @else
+                                                <b>{{ $course->price }} <i class="ri-coins-fill fs-16"></i> </b>
+                                            @endif
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="mt-auto">
@@ -185,33 +217,25 @@
                         <div class="card-footer bg-transparent border-top-dashed py-2">
                             <div class="d-flex align-items-center">
                                 <div class="flex-grow-1">
-                                    <div class="avatar-group" style="height: 25px!important"">
-                                        @php
-                                            $urlUserCourse = '';
-                                        @endphp
-                                        @foreach ($course->userCourses as $user)
-                                            @php
-                                                $urlUserCourse = $user->avatar
-                                                    ? Storage::url($user->avatar)
-                                                    : 'https://png.pngtree.com/png-clipart/20210608/ourlarge/pngtree-dark-gray-simple-avatar-png-image_3418404.jpg';
-                                            @endphp
-                                            <a href="javascript: void(0);" class="avatar-group-item"
-                                                data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top"
-                                                title="Brent Gonzalez">
-                                                <div class="avatar-xxs">
-                                                    <img src="{{ $urlUserCourse }}" alt=""
-                                                        class="rounded-circle img-fluid ms-2"
-                                                        style="width: 24px!important; height: 24px!important">
-                                                </div>
-                                            </a>
-                                        @endforeach
+                                    <div class="avatar-group" style="height: 20px!important"">
+                                        <b> <span>{{ $course->total_student }}</span></b>
+                                        <i class="ri-group-fill"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="avatar-group" style="height: 20px!important"">
+                                        <span>{{ $course->total_lessons }}</span>
+                                        <i class="bx bxs-skip-next-circle fs-16"></i>
                                     </div>
                                 </div>
                                 <div class="flex-shrink-0 ">
-                                    <div class="text-muted ">
-                                        <i class="ri-calendar-event-fill me-1 align-bottom"></i>
-                                        {{ \Carbon\Carbon::parse($course->created_at)->translatedFormat('d M Y') }}
+                                    <div class="avatar-group" style="height: 20px!important"">
+                                        <span>{{ gmdate('H', $course->total_duration_video) }} Giờ,
+                                            {{ gmdate('i', $course->total_duration_video) }} Phút</span>
+
+                                        <i class=" bx bxs-time fs-16"></i>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
