@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\api\Client\Student\CertificateController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use PHPUnit\Framework\Attributes\Group;
@@ -9,29 +8,31 @@ use App\Http\Controllers\api\Client\AuthController;
 use App\Http\Controllers\api\Client\PostController;
 use App\Http\Controllers\api\Client\UserController;
 use App\Http\Controllers\api\Client\BannerController;
-use App\Http\Controllers\api\Client\Intructor\CourseController;
-use App\Http\Controllers\api\Client\Intructor\LessonController as LessonTeacherController;
-use App\Http\Controllers\api\Client\TeacherController;
-use App\Http\Controllers\api\Client\CategoryController;
-use App\Http\Controllers\api\Client\Intructor\CurriculumController;
-use App\Http\Controllers\api\Client\Intructor\TextLessonController;
-use App\Http\Controllers\api\Client\Intructor\ModuleController;
-use App\Http\Controllers\api\Client\Intructor\UploadVideoController;
-use App\Http\Controllers\api\Client\CourseDetailController;
-use App\Http\Controllers\api\Client\PaymentController;
-use App\Http\Controllers\api\Client\CourseController as CourseHomePageController;
-
-use App\Http\Controllers\api\Client\Student\LessonController;
+use App\Http\Controllers\api\Client\FollowController;
 use App\Http\Controllers\api\Client\RatingController;
 use App\Http\Controllers\api\Client\CommentController;
-use App\Http\Controllers\api\Client\Intructor\ModuleQuizController;
-use App\Http\Controllers\api\Client\Intructor\TargetController;
+use App\Http\Controllers\api\Client\PaymentController;
+use App\Http\Controllers\api\Client\TeacherController;
+use App\Http\Controllers\api\Client\VoucherController;
+use App\Http\Controllers\api\Client\CategoryController;
+use App\Http\Controllers\api\Client\SocialAuthController;
+use App\Http\Controllers\api\Client\CourseDetailController;
 use App\Http\Controllers\api\Client\NotificationController;
 use App\Http\Controllers\api\Client\Student\NoteController;
-use App\Http\Controllers\api\Client\VoucherController;
-use App\Http\Controllers\api\Client\FollowController;
-use App\Http\Controllers\api\Client\SocialAuthController;
+use App\Http\Controllers\api\Client\Student\LessonController;
+
+use App\Http\Controllers\api\Client\Intructor\CourseController;
+use App\Http\Controllers\api\Client\Intructor\ModuleController;
+use App\Http\Controllers\api\Client\Intructor\TargetController;
+use App\Http\Controllers\api\Client\Intructor\StatisticController;
+use App\Http\Controllers\api\Client\Student\CertificateController;
+use App\Http\Controllers\api\Client\Intructor\CurriculumController;
+use App\Http\Controllers\api\Client\Intructor\ModuleQuizController;
+use App\Http\Controllers\api\Client\Intructor\TextLessonController;
+use App\Http\Controllers\api\Client\Intructor\UploadVideoController;
+use App\Http\Controllers\api\Client\CourseController as CourseHomePageController;
 use App\Http\Controllers\api\Client\Student\CourseController as StudentCourseController;
+use App\Http\Controllers\api\Client\Intructor\LessonController as LessonTeacherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -108,7 +109,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('detail/check/{slug}', [CourseDetailController::class, 'courseDetailForAuthUser']);
         // cập nhật tiến độ khóa học (khi học xong tất cả bài học)
         Route::post('{course}/update-progress', [StudentCourseController::class, 'updateProgress']);
-        //Check khoá học done chưa 
+        //Check khoá học done chưa
         Route::get('check-done-course/{slug}', [StudentCourseController::class, 'checkDoneCourse']);
     });
 
@@ -183,7 +184,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         //Đăng kí thành giảng viên
         Route::post('/register-teacher', [UserController::class, 'registerTeacher']);
-        
+
         //Check lịch sử đang học đến bài nàp
         Route::get('/check-history-learning', [UserController::class, 'checkLearning']);
 
@@ -269,6 +270,10 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::put('{course}/enable-course', [CourseController::class, 'enableCourse']);
             // submit cho admin de xem xet khoa hoc
             Route::post('{course}/submit', [CourseController::class, 'submit']);
+            // Thống kê chung
+            Route::prefix('/statistic')->group(function () {
+                Route::get('/', [StatisticController::class, 'index']);
+            });
         });
     });
 

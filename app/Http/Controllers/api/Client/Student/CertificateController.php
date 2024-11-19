@@ -34,6 +34,15 @@ class CertificateController extends Controller
                 ]
             );
 
+            // Nếu chứng chỉ đã tồn tại trong DB
+            if (!$certificate->wasRecentlyCreated) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Chứng chỉ đã tồn tại.',
+                    'data' => $certificate,
+                ], 200);
+            }
+
             // Gen ảnh từ HTML
             $imagePath = $this->generateCertificateImage($certificate);
 
@@ -49,8 +58,7 @@ class CertificateController extends Controller
                 'status' => 'success',
                 'message' => 'Tạo chứng chỉ thành công',
                 'data' => $certificate,
-                'test' => Storage::url($imagePath)
-            ]);
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -131,7 +139,7 @@ class CertificateController extends Controller
 
     private function generateCertificateImage($certificate)
     {
-        $htmlContent = view('certificates.certificate', [
+        $htmlContent = view('certificates.certificate-2', [
             'certificate' => $certificate,
             'user' => Auth::user(),
             'course' => $certificate->course,
