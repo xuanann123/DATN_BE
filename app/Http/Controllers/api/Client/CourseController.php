@@ -15,12 +15,9 @@ class CourseController extends Controller
     public function listNewCourse()
     {
         try {
-            $courses = Course::with([
-                'category',
-                'user',
-                'tags'
-                // Đếm số lượng khi lấy dữ liệu
-            ])->withCount([
+            $courses = Course::select('id', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user')->with(
+                'user:id,name,avatar',
+            )->withCount([
                         'modules as lessons_count' => function ($query) {
                             $query->whereHas('lessons');
                         },
@@ -47,7 +44,8 @@ class CourseController extends Controller
                         return $lesson->lessonable->duration ?? 0;
                     });
                 })->sum();
-
+                $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+                $course->makeHidden('ratings');
                 $course->makeHidden('modules');
             });
             if (count($courses) < 1) {
@@ -74,12 +72,9 @@ class CourseController extends Controller
     public function listCourseSale()
     {
         try {
-            $courses = Course::with([
-                'category',
-                'user',
-                'tags'
-                // Đếm số lượng khi lấy dữ liệu
-            ])->withCount([
+            $courses = Course::select('id', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user')->with(
+                'user:id,name,avatar',
+            )->withCount([
                         'modules as lessons_count' => function ($query) {
                             $query->whereHas('lessons');
                         },
@@ -106,7 +101,9 @@ class CourseController extends Controller
                         return $lesson->lessonable->duration ?? 0;
                     });
                 })->sum();
-
+                //Sửa lại rating
+                $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+                $course->makeHidden('ratings');
                 $course->makeHidden('modules');
             });
             if (count($courses) < 0) {
@@ -135,7 +132,7 @@ class CourseController extends Controller
     {
         try {
             $limit = $request->input('limit', 5);
-            $courses = Course::with(['user:id,name,avatar'])
+            $courses = Course::select('id', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user')->with(['user:id,name,avatar'])
                 ->where('is_active', 1)
                 ->where('status', 'approved')
                 ->withCount('ratings')
@@ -174,8 +171,10 @@ class CourseController extends Controller
                         return $lesson->lessonable->duration ?? 0;
                     });
                 })->sum();
-
+                //Chỉnh lại reating
+                $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
                 $course->makeHidden('modules');
+                $course->makeHidden('ratings');
             }
 
             // Trả về danh sách khóa học nổi bật
@@ -198,15 +197,15 @@ class CourseController extends Controller
         //Danh sách category
         try {
             $categories = Category::select('id', 'name')->where('is_active', 1)
-            //Check xem có khoá học thì mí cho hiển thị danh mục đó
+                //Check xem có khoá học thì mí cho hiển thị danh mục đó
                 ->whereHas('courses', function ($query) {
                     $query->where('is_active', 1)
                         ->where('status', 'approved');
                 })
                 ->with([
                     'courses' => function ($query) {
-                        $query->select('id', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user','id_category')
-                        ->where('is_active', 1)
+                        $query->select('id', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user', 'id_category')
+                            ->where('is_active', 1)
                             ->where('status', 'approved')
                             ->withCount([
                                 'modules as lessons_count' => function ($query) {
@@ -229,7 +228,7 @@ class CourseController extends Controller
                 }
             }
 
-                // $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+            // $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
 
             if (count($categories) < 1) {
                 return response()->json([
