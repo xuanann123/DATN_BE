@@ -24,6 +24,7 @@ use App\Models\Audience;
 use App\Models\Goal;
 use App\Models\Requirement;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use PhpParser\Node\Expr\Cast\String_;
 
 class CourseController extends Controller
@@ -649,6 +650,11 @@ class CourseController extends Controller
                                 return $lesson->lessonable->duration ?? 0;
                             });
                         })->sum();
+                        $course->is_course_bought = false;
+                        if(DB::table('user_courses')->where('id_user', auth()->id())->where('id_course', $course->id)) {
+                            $course->is_course_bought = true;
+                        }
+                        
 
                         // Chỉnh lại rating
                         $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
