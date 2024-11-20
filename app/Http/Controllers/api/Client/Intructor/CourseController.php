@@ -587,7 +587,22 @@ class CourseController extends Controller
     public function getListCategory()
     {
         try {
-            $listCategory = Category::select('id', 'slug', 'name', 'description','image')->where('is_active', 1)->latest('id')->get();
+            $user = auth()->user();
+
+            $listCategory = Category::select('id', 'slug', 'name', 'description', 'image')
+                ->whereHas('courses', function ($query) {
+                    $query->where('status', 'approved');
+                })
+                ->with([
+                    'courses:id,name,slug,thumbnail,id_category,id_user',
+                    'courses.progress' => function ($query) {
+                        $query->select('id_course', 'progress_percent', 'id_user')->where('id_user', auth()->id()); // Chỉ lấy những cột cần thiết
+                    }
+                ])
+                ->where('is_active', 1)
+                ->latest('id')
+                ->get();
+
             if ($listCategory->count() < 1) {
                 return response()->json([
                     'status' => 'error',
@@ -615,11 +630,11 @@ class CourseController extends Controller
     {
         try {
             // Lấy ra category hiện tại
-            $category = Category::select('id','name', 'slug', 'image', 'description', 'created_at')->where('slug', $slug)->where('is_active', 1)->firstOrFail();
+            $category = Category::select('id', 'name', 'slug', 'image', 'description', 'created_at')->where('slug', $slug)->where('is_active', 1)->firstOrFail();
 
             // Hàm để lấy danh sách khoá học theo cấp độ
             $getCoursesByLevel = function ($level) use ($category) {
-                return Course::select('id', 'slug', 'name', 'thumbnail','description', 'level', 'price', 'price_sale', 'total_student', 'id_user', 'id_category')
+                return Course::select('id', 'slug', 'name', 'thumbnail', 'description', 'level', 'price', 'price_sale', 'total_student', 'id_user', 'id_category')
                     ->with(['user:id,name,avatar'])
                     ->where('is_active', 1)
                     ->where('status', 'approved')
@@ -651,10 +666,10 @@ class CourseController extends Controller
                             });
                         })->sum();
                         $course->is_course_bought = false;
-                        if(DB::table('user_courses')->where('id_user', auth()->id())->where('id_course', $course->id)) {
+                        if (DB::table('user_courses')->where('id_user', auth()->id())->where('id_course', $course->id)) {
                             $course->is_course_bought = true;
                         }
-                        
+
 
                         // Chỉnh lại rating
                         $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
@@ -672,7 +687,7 @@ class CourseController extends Controller
                 'status' => 'success',
                 'message' => 'Lấy danh sách khoá học theo lộ trình',
                 'data' => [
-                    'courses'=> [
+                    'courses' => [
                         'listCourseBeginner' => $listCourseBeginner,
                         'listCourseIntermediate' => $listCourseIntermediate,
                         'listCourseMaster' => $listCourseMaster,
@@ -690,5 +705,6 @@ class CourseController extends Controller
             ]);
         }
     }
+
 
 }
