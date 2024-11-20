@@ -147,28 +147,6 @@ class PostController extends Controller
                         'content',
                         'views',
                         'published_at',
-                        'status',
-                        'allow_comments',
-                        'is_banned'
-                    ]);
-
-                // Danh sách bài viết nổi bật (sort theo view giảm dần)
-                $popularPosts = Post::where('is_active', 1)
-                    ->orderBy('views', 'DESC')
-                    ->limit(5)
-                    ->get([
-                        'id',
-                        'user_id',
-                        'title',
-                        'slug',
-                        'description',
-                        'thumbnail',
-                        'content',
-                        'views',
-                        'published_at',
-                        'status',
-                        'allow_comments',
-                        'is_banned'
                     ]);
                 // Dữ liệu chi tiết bài viết
                 $post = [
@@ -183,15 +161,12 @@ class PostController extends Controller
                     'content' => $post->content,
                     'views' => $post->views,
                     'status' => $post->status,
-                    'allow_comments' => $post->allow_comments,
-                    'is_banned' => $post->is_banned,
                     'published_at' => $post->published_at,
-                    'categories' => $post->categories,
-                    'tags' => $post->tags,
+                    'categories' => $post->categories->select('id', 'name', 'slug'),
+                    'tags' => $post->tags->select('id', 'name', 'slug'),
                     'related_posts' => $relatedPosts,
-                    'popular_post' => $popularPosts
+                    'likes' => DB::table('like_posts')->where('post_id', $post->id)->count()
                 ];
-
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Lấy bài viết thành công!',
