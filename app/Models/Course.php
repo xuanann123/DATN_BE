@@ -15,6 +15,16 @@ class Course extends Model
     const LEVEL_INTERMEDIATE = 'Trung Cấp';
     //Chuyên gia
     const LEVEL_MASTER = 'Chuyên Gia';
+
+
+    //Trạng thái của khoá học
+    const COURSE_STATUS_DRAFT = "draft";
+    //pending
+    const COURSE_STATUS_PENDING = "pending";
+    //approved
+    const COURSE_STATUS_APPROVED = "approved";
+    //rejected
+    const COURSE_STATUS_REJECTED = "rejected";
     const LEVEL_ARRAY = [
         self::LEVEL_BEGINNER,
         self::LEVEL_INTERMEDIATE,
@@ -123,11 +133,13 @@ class Course extends Model
         return $this->belongsToMany(User::class, 'wish_lists', 'id_course', 'id_user');
     }
 
-    public function certificates() {
+    public function certificates()
+    {
         return $this->hasMany(Certificate::class);
     }
 
-    public function bills() {
+    public function bills()
+    {
         return $this->hasMany(Bill::class, 'id_course');
     }
 

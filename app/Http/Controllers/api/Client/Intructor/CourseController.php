@@ -614,7 +614,7 @@ class CourseController extends Controller
     {
         try {
             // Lấy ra category hiện tại
-            $category = Category::where('slug', $slug)->firstOrFail();
+            $category = Category::select('id','name', 'slug', 'image', 'description', 'created_at')->where('slug', $slug)->where('is_active', 1)->firstOrFail();
 
             // Hàm để lấy danh sách khoá học theo cấp độ
             $getCoursesByLevel = function ($level) use ($category) {
@@ -666,9 +666,13 @@ class CourseController extends Controller
                 'status' => 'success',
                 'message' => 'Lấy danh sách khoá học theo lộ trình',
                 'data' => [
-                    'listCourseBeginner' => $listCourseBeginner,
-                    'listCourseIntermediate' => $listCourseIntermediate,
-                    'listCourseMaster' => $listCourseMaster,
+                    'courses'=> [
+                        'listCourseBeginner' => $listCourseBeginner,
+                        'listCourseIntermediate' => $listCourseIntermediate,
+                        'listCourseMaster' => $listCourseMaster,
+                    ],
+                    'category' => $category
+
                 ]
             ], 200);
 

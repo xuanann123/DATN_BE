@@ -406,5 +406,5 @@ Route::prefix('ratings')->group(function () {
 Route::prefix('learning-path')->group(function () {
     Route::get('/list-category', [CourseController::class, 'getListCategory']);
     //Lấy khoá học theo danh mục
-    Route::post('/list-course-by-learning-path/{slug}', [CourseController::class, 'getListCourseByLearningPath']);
+    Route::get('/list-course-by-learning-path/{slug}', [CourseController::class, 'getListCourseByLearningPath']);
 });
