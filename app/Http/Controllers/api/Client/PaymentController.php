@@ -689,7 +689,6 @@ class PaymentController extends Controller
 
     public function historyWithdraw(Request $request)
     {
-        $page = $request->input('page', 10);
         $userId = $request->id_user;
         $historyWithdraw = WithdrawMoney::select(
             'withdraw_money.id',
@@ -705,7 +704,7 @@ class PaymentController extends Controller
             ->join('users', 'users.id', '=', 'withdraw_money.id_user')
             ->where('withdraw_money.id_user', $userId)
             ->orderbyDesc('withdraw_money.created_at')
-            ->paginate($page);
+            ->paginate(10);
 
         if (!$historyWithdraw) {
             return response()->json([
