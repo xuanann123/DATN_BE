@@ -334,6 +334,8 @@ Route::prefix('categories')->group(function () {
 
 Route::prefix('posts')->group(function () {
     Route::get('/', [PostController::class, 'getPosts']);
+    Route::get('/by-category-posts/{slug}', [PostController::class, 'getPostsByCategory']);
+
     Route::get('/{slug}', [PostController::class, 'show']);
 });
 // Danh sách bài viết nổi bật;
