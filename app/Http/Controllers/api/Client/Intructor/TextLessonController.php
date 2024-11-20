@@ -5,9 +5,11 @@ namespace App\Http\Controllers\api\Client\Intructor;
 use App\Models\Lesson;
 use App\Models\Module;
 use App\Models\Document;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Client\Courses\StoreTextLessonRequest;
 use App\Http\Requests\Client\Courses\UpdateTextLessonRequest;
 
@@ -23,8 +25,11 @@ class TextLessonController extends Controller
 
             $maxPosition = Lesson::where('id_module', $module->id)->max('position');
 
+            $resourse_path = $this->uploadFile($request->file('resourse_path'), 'resourse');
+
             $document = Document::create([
                 'content' => $request->content,
+                'resourse_path' => $resourse_path,
             ]);
 
             $lesson = Lesson::create([
@@ -59,9 +64,16 @@ class TextLessonController extends Controller
     {
         DB::beginTransaction();
         try {
+            $new_file = $request->file('resourse_path') ?? NULL;
+            if ($new_file) {
+                // Nếu có file mới upload thì xử lí upload
+                $lesson->lessonable->resourse_path = $this->uploadFile($request->file('resourse_path'), 'resourse', $lesson->lessonable->resourse_path);
+            }
+
             if ($lesson->lessonable_type == Document::class) {
                 $lesson->lessonable->update([
-                    'content' => $request->content
+                    'content' => $request->content,
+                    'resourse_path' => $lesson->lessonable->resourse_path, // không có file upload thì lấy dữ liệu ở db
                 ]);
             }
 
@@ -93,7 +105,14 @@ class TextLessonController extends Controller
         DB::beginTransaction();
         try {
             if ($lesson->lessonable_type == Document::class) {
-                $lesson->lessonable->delete();
+                $document = $lesson->lessonable;
+
+                // Del file resource
+                if ($document->resourse_path) {
+                    Storage::disk('public')->delete($document->resourse_path);
+                }
+
+                $document->delete();
             }
 
             $lesson->delete();
@@ -115,5 +134,17 @@ class TextLessonController extends Controller
         }
     }
 
-    /// Video Lesson
+    private function uploadFile($file, $type, $currentFile = null)
+    {
+        if ($file && $file->isValid()) {
+            // Xóa ảnh cũ nếu tồn tại
+            if ($currentFile) {
+                Storage::delete($currentFile);
+            }
+            $newNameFile = $type . '_' . Str::uuid() . '.' . $file->getClientOriginalExtension();
+            return Storage::putFileAs('files/' . $type, $file, $newNameFile);
+            // return $newNameImage;
+        }
+        return null;
+    }
 }

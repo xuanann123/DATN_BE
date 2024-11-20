@@ -330,6 +330,14 @@ class LessonController extends Controller
                 ],
                 $data
             );
+
+            $course = $userCourse->course;
+
+            $course_progress = $this->checkCourseProgress($user, $course);
+
+            $userCourse->progress_percent = $course_progress;
+            $userCourse->save();
+
             // response cho client
             return response()->json([
                 'status' => 'success',

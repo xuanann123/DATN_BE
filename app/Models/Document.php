@@ -12,7 +12,8 @@ class Document extends Model
     protected $fillable = [
         'title',
         'description',
-        'content'
+        'content',
+        'resourse_path'
     ];
 
     // public function lessons()
