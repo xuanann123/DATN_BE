@@ -619,7 +619,7 @@ class CourseController extends Controller
 
             // Hàm để lấy danh sách khoá học theo cấp độ
             $getCoursesByLevel = function ($level) use ($category) {
-                return Course::select('id', 'slug', 'name', 'thumbnail', 'level', 'price', 'price_sale', 'total_student', 'id_user', 'id_category')
+                return Course::select('id', 'slug', 'name', 'thumbnail','description', 'level', 'price', 'price_sale', 'total_student', 'id_user', 'id_category')
                     ->with(['user:id,name,avatar'])
                     ->where('is_active', 1)
                     ->where('status', 'approved')
