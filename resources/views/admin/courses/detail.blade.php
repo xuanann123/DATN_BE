@@ -495,18 +495,20 @@
                                                     </div>
 
                                                     <div class="d-flex align-items-center me-3 gap-3">
+                                                        @if ($course->status == 'draft')
+                                                            <a href="#" class="edit-module" class="fs-10"
+                                                                data-id="{{ $module->id }}" data-bs-toggle="modal"
+                                                                data-bs-target="#editModuleModal">
+                                                                <i class="ri-pencil-line"></i> <span class="fs-11">Sửa
+                                                                </span>
+                                                            </a>
 
-                                                        <a href="#" class="edit-module" class="fs-10"
-                                                            data-id="{{ $module->id }}" data-bs-toggle="modal"
-                                                            data-bs-target="#editModuleModal">
-                                                            <i class="ri-pencil-line"></i> <span class="fs-11">Sửa
-                                                            </span>
-                                                        </a>
+                                                            <a href="{{ route('admin.modules.delete', $module->id) }}"
+                                                                onclick="return confirm('Bạn muốn xoá chương {{ $module->title }} không ?')"
+                                                                class="delete-module"><i class="ri-delete-bin-5-line"></i>
+                                                                <span class="fs-11"> Xoá </span></a>
+                                                        @endif
 
-                                                        <a href="{{ route('admin.modules.delete', $module->id) }}"
-                                                            onclick="return confirm('Bạn muốn xoá chương {{ $module->title }} không ?')"
-                                                            class="delete-module"><i class="ri-delete-bin-5-line"></i>
-                                                            <span class="fs-11"> Xoá </span></a>
 
                                                     </div>
                                                 </div>
