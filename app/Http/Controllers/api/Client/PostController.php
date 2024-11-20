@@ -662,4 +662,88 @@ class PostController extends Controller
             ], 500);
         }
     }
+    public function likePost(Request $request, string $slug) {
+        try {
+            $post = Post::where('slug', $slug)->where('is_active', '=', 1)->first();
+            $user = auth()->user();
+            if (DB::table('like_posts')->where('post_id', $post->id)->where('user_id', $user->id)->exists()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Bài viết này đã được yêu thích',
+                    'data' => []
+                ]);
+            } 
+            $post->likeposts()->attach($user->id);
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Thích bài viết thành công',
+                'data' => []
+            ]);
+
+            if (!$post) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Bài viết không tồn tại',
+                    'data' => []
+                ], 404);
+            }
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi like bài viết',
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+    public function unlikePost(Request $request, string $slug) {
+        try {
+            $post = Post::where('slug', $slug)->where('is_active', '=', 1)->first();
+            $user = auth()->user();
+
+            if (DB::table('like_posts')->where('post_id', $post->id)->where('user_id', $user->id)->exists()) {
+                $post->likeposts()->detach($user->id);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Huỷ thích bài viết thành công',
+                    'data' => []
+                ]);
+            } 
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi hóa bài viết',
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+    public function checkLikePost(Request $request, string $slug) {
+        try {
+            $post = Post::where('slug', $slug)->where('is_active', '=', 1)->first();
+            $user = auth()->user();
+            if (DB::table('like_posts')->where('post_id', $post->id)->where('user_id', $user->id)->exists()) {
+                return response()->json([
+                    'message' => 'Bài viết này đã được thích',
+                    'data' => [
+                        'action' => 'unlike'
+                    ]
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Bài viết này không được thích',
+                    'data' => [
+                        'action' => 'like'
+                    ]
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra listring khi cập nhật bài viết',
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+    
 }
