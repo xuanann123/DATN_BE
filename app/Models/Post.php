@@ -104,4 +104,8 @@ class Post extends Model
     {
         return $this->belongsToMany(Post::class, 'save_posts', 'post_id', 'user_id');
     }
+    public function likeposts()
+    {
+        return $this->belongsToMany(Post::class, 'like_posts', 'post_id', 'user_id');
+    }
 }

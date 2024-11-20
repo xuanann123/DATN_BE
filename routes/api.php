@@ -307,6 +307,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/saved', [PostController::class, 'getSavedPosts']);
         //Check xem bạn bài viết hay chưa
         Route::get('/check-saved/{slug}', [PostController::class, 'checkSavedPost']);
+
+        //like bài viết
+        Route::get('/like/{slug}', [PostController::class, 'likePost']);
+        //unlike bài viết
+        Route::get('/unlike/{slug}', [PostController::class, 'unlikePost']);
+        //check đã like hay chưa
+        Route::get('/check-like/{slug}', [PostController::class, 'checkLikePost']);
+
     });
 });
 
