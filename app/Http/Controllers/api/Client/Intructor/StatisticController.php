@@ -35,9 +35,11 @@ class StatisticController extends Controller
 
     private function getStatistic($userId, $timeFilter)
     {
+        // Lấy danh sách các id khóa học của giảng viên đang đăng nhập
+        $instructorCourseIds = Course::where('id_user', $userId)->pluck('id');
         // Thống kê tổng doanh thu
         $totalRevenue = Bill::query()
-            ->where('id_user', $userId)
+            ->whereIn('id_course', $instructorCourseIds)
             ->when($timeFilter, fn($query) => $this->applyTimeFilter($query, $timeFilter))
             ->sum('total_coin_after_discount');
         ;
@@ -46,7 +48,8 @@ class StatisticController extends Controller
         $currentMonth = now()->month;
         $currentYear = now()->year;
 
-        $monthlyRevenueData = Bill::where('id_user', $userId)
+        $monthlyRevenueData = Bill::query()
+            ->whereIn('id_course', $instructorCourseIds)
             ->whereBetween('created_at', [
                 now()->subMonths(11)->startOfMonth(),
                 now()->endOfMonth()
