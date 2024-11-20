@@ -30,7 +30,6 @@ class CourseController extends Controller
 
         $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'id_user', 'sort_description', 'id_category')->with(['user:id,name,avatar', 'tags:id,name', 'category:id,name'])
             ->where('is_active', 1)
-            ->where('status', 'approved')
             ->withCount('ratings')
             ->withAvg('ratings', 'rate')
             ->withCount([

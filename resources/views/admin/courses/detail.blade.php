@@ -184,9 +184,9 @@
                                                     <div><i class="ri-user-2-fill align-bottom me-1"></i>
                                                         <span id="instructor-name">{{ $course->user->name }}</span>
                                                     </div>
-                                                    <div>Mã khóa học : <span class="fw-medium"
+                                                    {{-- <div>Mã khóa học : <span class="fw-medium"
                                                             id="course-code">{{ $course->code }}</span>
-                                                    </div>
+                                                    </div> --}}
                                                     <div>Danh mục : <span class="fw-medium"
                                                             id="course-category">{{ $course->category->name }}</span>
                                                     </div>
@@ -194,7 +194,7 @@
                                                             id="submitted-date">{{ $course->created_at->format('d-m-Y') }}</span>
                                                     </div>
                                                     <div>Trạng thái: <span
-                                                            class="badge rounded-pill
+                                                            class="badge fs-11 rounded-pill
                                                         {{ $course->status == 'draft'
                                                             ? 'bg-primary'
                                                             : ($course->status == 'pending'
@@ -214,13 +214,13 @@
                                                                             ? 'Đã từ chối'
                                                                             : ''))) }}</span>
                                                     </div>
-                                                    <div>Hiển thị:
+                                                    {{-- <div>Hiển thị:
                                                         <span
                                                             class="badge {{ $course->is_active === 1 ? 'bg-success-subtle badge-border text-success' : 'bg-danger-subtle badge-border text-danger' }}"
                                                             id="course-is-active">
                                                             {{ $course->is_active === 1 ? 'Có' : 'Không' }}
                                                         </span>
-                                                    </div>
+                                                    </div> --}}
                                                 </div>
 
                                                 <div class="col-md-auto">
