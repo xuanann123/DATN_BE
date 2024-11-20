@@ -316,7 +316,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/check-like/{slug}', [PostController::class, 'checkLikePost']);
 
     });
-});
+}); 
 
 // route voucher chưa đăng nhập
 Route::prefix('vouchers')->group(function () {

@@ -71,7 +71,7 @@ class TeacherController extends Controller
             ')
             ->leftJoin('courses as c', 'u.id', '=', 'c.id_user')
             ->leftJoin('ratings as r', 'c.id', '=', 'r.id_course')
-            ->where('u.user_type', 'teacher')
+            ->whereIn('u.user_type', [User::TYPE_TEACHER, User::TYPE_ADMIN])
             ->where('u.is_active', 1)
             ->where('u.id', $id)
             ->groupBy('u.id', 'u.name', 'u.avatar')
@@ -81,9 +81,8 @@ class TeacherController extends Controller
     }
 
     // Api chi tiet giang vien va danh sach khoa hoc cua giang vien do
-    public function getCoursesTeacher(Request $request)
+    public function getCoursesTeacher(Request $request, $id)
     {
-        $id = $request->id;
 
         $teacher = $this->teacherId($id);
         $totalStudent = 0;
@@ -97,8 +96,12 @@ class TeacherController extends Controller
         }
         $limit = $request->input('limit', 5);
         // Lấy các khóa học nổi bật dựa vào số lượt mua và đánh giá trung bình
-        $courses = Course::with(['user:id,name,avatar'])
+        $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user')
+            ->with('user')
             ->where('is_active', 1)
+            ->whereHas('user', function ($query) {
+                $query->whereIn('user_type', [User::TYPE_TEACHER, User::TYPE_ADMIN]);
+            })
             ->where('status', 'approved')
             ->where('id_user', $id)
             ->withCount('ratings')
@@ -116,16 +119,20 @@ class TeacherController extends Controller
             ->limit($limit)
             ->get();
 
+
+
         if ($courses->count() <= 0) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'No data found',
+                'message' => 'Không có dữ liệu',
             ], 204);
         }
         //Lấy số lượng sinh viên đang tham gia khoá học này
         foreach ($courses as $course) {
             $totalStudent += DB::table('user_courses')->where('id_course', $course->id)->count();
         }
+
+        
         //Lấy số lượng follow của giảng viên
         $follow = DB::table('follows')
             ->where('following_id', $id)
