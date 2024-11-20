@@ -71,12 +71,22 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     # ===================== ROUTE FOR TRANSACTIONS ===========================
-
     Route::prefix('transactions')->group(function () {
         Route::post('/payment/{user}', [PaymentController::class, 'paymentController']);
         Route::post('/buy-course/{id_user}/{id_course}', [PaymentController::class, 'buyCourse']);
         Route::post('/register-course/{id_user}/{id_course}', [PaymentController::class, 'registerCourse']);
     });
+
+    # ===================== ROUTE FOR LEARNING PATH ===========================
+    Route::prefix('learning-path')->group(function () {
+        Route::get('/list-category', [CourseController::class, 'getListCategory']);
+        //Lấy khoá học theo danh mục
+        Route::get('/list-course-by-learning-path/{slug}', [CourseController::class, 'getListCourseByLearningPath']);
+
+    });
+
+
+    
 
     # ===================== ROUTE FOR CHECKOUT ===========================
 
@@ -402,11 +412,4 @@ Route::prefix('ratings')->group(function () {
 });
 
 
-//Lộ trình khoá học
-Route::prefix('learning-path')->group(function () {
-    Route::get('/list-category', [CourseController::class, 'getListCategory']);
-    //Lấy khoá học theo danh mục
-    Route::get('/list-course-by-learning-path/{slug}', [CourseController::class, 'getListCourseByLearningPath']);
-    
-});
 
