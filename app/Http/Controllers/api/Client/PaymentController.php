@@ -580,7 +580,7 @@ class PaymentController extends Controller
             ->where('u.id', $userId)
             ->where('t.transactionable_type', 'App\Models\PurchaseWallet')
             ->orderByDesc('date_of_transaction')
-            ->get();
+            ->paginate(10);
 
         if ($listHistoryTransactionsPurchase->count() == 0) {
             return response()->json([
