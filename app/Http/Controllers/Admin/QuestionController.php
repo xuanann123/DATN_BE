@@ -26,7 +26,6 @@ class QuestionController extends Controller
                     'id_quiz' => $id,  // Thêm quiz_id nếu cần
                     'question' => $questionData['question'],
                     'type' => $questionData['type'],
-                    'points' => 1,
                     'image_url' => $this->uploadImage($questionData['image'] ?? NULL, 'questions')
                 ]);
                 // dd($questionData['options']);

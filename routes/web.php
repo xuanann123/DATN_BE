@@ -153,7 +153,6 @@ Route::prefix("admin")
                 //Lưu trữ mục tiêu target
                 Route::post('/store-target/{id}', [CourseController::class, 'storeTargetCourse'])->name('target.store');
 
-
                 Route::get("/detail/{id}", [CourseController::class, 'detail'])->name('detail');
                 Route::delete('/delete/{id}', [CourseController::class, 'delete'])->name('delete');
                 Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('edit');
@@ -165,8 +164,15 @@ Route::prefix("admin")
             ->as('modules.')
             ->group(function () {
                 Route::post('/store', [ModuleController::class, 'store'])->name('store');
+                //Hiển thị dữ liệu khi bấm edit
+                Route::get('/edit/{id}', [ModuleController::class, 'edit'])->name('edit');
+                //Cập nhât dữ liệu chương học
+                Route::post('/update/{id}', [ModuleController::class, 'update'])->name('update');
+                //Xoá chương học
+                Route::get('/delete/{id}', [ModuleController::class, 'delete'])->name('delete');
                 //Lưu trữ quiz trong module
                 Route::post('/{id}/add/quiz', [ModuleController::class, 'storeQuiz'])->name('add');
+               
             });
         //Route with quizzes
         Route::prefix('quizzes')

@@ -464,40 +464,93 @@
                                             <button class="accordion-button" type="button" data-bs-toggle="collapse"
                                                 data-bs-target="#module{{ $module->id }}Collapse" aria-expanded="true"
                                                 aria-controls="module{{ $module->id }}Collapse">
-                                                <b class="fw-bold">Chương {{ $loop->index + 1 }}</b>:
-                                                {{ $module->title }}
+
+                                                <div class="d-flex justify-content-between w-100">
+                                                    <div>
+                                                        <b class="fw-bold">Chương {{ $loop->index + 1 }}</b>:
+                                                        <span class="me-3"> {{ $module->title }}</span> |
+
+                                                        <i class="ms-3 ri-file-list-3-line fs-16 ms-3 me-1"></i>
+                                                        {{ $module->lessons->count() }} bài học
+
+                                                        @if ($module->quiz()->count() > 0)
+                                                            <i class="ri-question-line fs-16 ms-3 me-1"></i> Có bài tập
+                                                        @endif
+
+                                                        @php
+                                                            // Tính tổng thời gian của tất cả các bài học video (tính bằng phút)
+                                                            $totalS = $module->lessons
+                                                                ->where('content_type', 'video')
+                                                                ->map(function ($lesson) {
+                                                                    return $lesson->lessonable->duration ?? 0; // Lấy duration của lesson
+                                                                })
+                                                                ->sum();
+                                                            // Tính số giờ (sử dụng floor để lấy số nguyên đầy đủ)
+                                                            $hours = floor($totalS / 3600);
+                                                            // Tính số phút còn lại (sử dụng phần dư của phép chia cho giờ)
+                                                            $minutes = floor(($totalS % 3600) / 60);
+                                                        @endphp
+                                                        <i class="ri-time-line fs-16 ms-3 me-1"></i> Thời gian:
+                                                        {{ $hours }} Giờ {{ $minutes }} Phút
+                                                    </div>
+
+                                                    <div class="d-flex align-items-center me-3 gap-3">
+
+                                                        <a href="#" class="edit-module" class="fs-10"
+                                                            data-id="{{ $module->id }}" data-bs-toggle="modal"
+                                                            data-bs-target="#editModuleModal">
+                                                            <i class="ri-pencil-line"></i> <span class="fs-11">Sửa
+                                                            </span>
+                                                        </a>
+
+                                                        <a href="{{ route('admin.modules.delete', $module->id) }}"
+                                                            onclick="return confirm('Bạn muốn xoá chương {{ $module->title }} không ?')"
+                                                            class="delete-module"><i class="ri-delete-bin-5-line"></i>
+                                                            <span class="fs-11"> Xoá </span></a>
+
+                                                    </div>
+                                                </div>
                                             </button>
                                         </h2>
+
                                         <div id="module{{ $module->id }}Collapse" class="accordion-collapse collapse"
                                             aria-labelledby="module{{ $module->id }}Header"
                                             data-bs-parent="#courseContentAccordion">
                                             <div class="accordion-body">
                                                 <div class="d-flex align-items-center justify-content-between mb-3">
                                                     <h6 class="mb-0"><b>Mô tả: </b>{{ $module->description }}</h6>
-                                                    <div class="dropdown">
-                                                        <button class="btn btn-sm btn-primary dropdown-toggle"
-                                                            type="button" id="addLessonDropdown{{ $module->id }}"
-                                                            data-bs-toggle="dropdown" aria-expanded="false">
-                                                            <i class="ri-add-line align-bottom"></i> Thêm bài học
-                                                        </button>
-                                                        <ul class="dropdown-menu"
-                                                            aria-labelledby="addLessonDropdown{{ $module->id }}">
-                                                            <li><a class="dropdown-item" href="#"
-                                                                    id="btn-add-lesson-video" data-bs-toggle="modal"
-                                                                    data-bs-target="#addVideoLessonModal"
-                                                                    data-module-id="{{ $module->id }}">Bài học video</a>
-                                                            </li>
-                                                            <li><a class="dropdown-item" href="#"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#addTextLessonModal"
-                                                                    data-module-id="{{ $module->id }}">Bài học text</a>
-                                                            </li>
-                                                            <li><a class="dropdown-item"
-                                                                    href="{{ route('admin.quizzes.index', $module->id) }}">Bài
-                                                                    tập quizzes</a>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
+                                                    @if ($course->status == 'draft')
+                                                        <div class="dropdown">
+                                                            <button class="btn btn-sm btn-primary dropdown-toggle"
+                                                                type="button" id="addLessonDropdown{{ $module->id }}"
+                                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <i class="ri-add-line align-bottom"></i> Thêm bài học
+                                                            </button>
+                                                            <ul class="dropdown-menu"
+                                                                aria-labelledby="addLessonDropdown{{ $module->id }}">
+                                                                <li><a class="dropdown-item" href="#"
+                                                                        id="btn-add-lesson-video" data-bs-toggle="modal"
+                                                                        data-bs-target="#addVideoLessonModal"
+                                                                        data-module-id="{{ $module->id }}"> <i
+                                                                            class=" ri-youtube-line fs-16"></i> - Thêm băng
+                                                                        hình </a>
+                                                                </li>
+                                                                <li><a class="dropdown-item" href="#"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#addTextLessonModal"
+                                                                        data-module-id="{{ $module->id }}"> <i
+                                                                            class="ri-file-list-3-line fs-16"></i> - Thêm
+                                                                        tài liệu</a>
+                                                                </li>
+                                                                <li><a class="dropdown-item"
+                                                                        href="{{ route('admin.quizzes.index', $module->id) }}">
+                                                                        <i class="ri-questionnaire-line fs-16"></i> - Thêm
+                                                                        bài tập</a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    @endif
+
                                                 </div>
                                                 <div class="lesson-list">
                                                     @foreach ($module->lessons->sortBy('position') as $lesson)
@@ -523,20 +576,24 @@
                                                                         data-lesson-type="{{ $lesson->type }}">
                                                                         <i class="ri-eye-line"></i> <i>Xem trước</i>
                                                                     </button>
-                                                                    <div class="dropdown d-inline-block">
-                                                                        <button class="btn btn-sm btn-light"
-                                                                            type="button" data-bs-toggle="dropdown">
-                                                                            <i class="ri-more-2-fill"></i>
-                                                                        </button>
-                                                                        <ul class="dropdown-menu">
-                                                                            <li><a class="dropdown-item" href="#"
-                                                                                    data-bs-toggle="modal"
-                                                                                    data-bs-target="#editLessonModal">Sửa</a>
-                                                                            </li>
-                                                                            <li><a class="dropdown-item text-danger"
-                                                                                    href="#">Xoá</a></li>
-                                                                        </ul>
-                                                                    </div>
+                                                                    @if ($course->status == 'draft')
+                                                                        <div class="dropdown d-inline-block">
+                                                                            <button class="btn btn-sm btn-light"
+                                                                                type="button" data-bs-toggle="dropdown">
+                                                                                <i class="ri-more-2-fill"></i>
+                                                                            </button>
+                                                                            <ul class="dropdown-menu">
+                                                                                <li><a class="dropdown-item"
+                                                                                        href="#"
+                                                                                        data-bs-toggle="modal"
+                                                                                        data-bs-target="#editLessonModal">Sửa</a>
+                                                                                </li>
+                                                                                <li><a class="dropdown-item text-danger"
+                                                                                        href="#">Xoá</a></li>
+                                                                            </ul>
+                                                                        </div>
+                                                                    @endif
+
                                                                 </div>
                                                             </div>
                                                             <div class="card-body">
@@ -599,9 +656,12 @@
 
                             <!-- Add Section Button -->
                             <div class="text-center mt-4">
-                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModuleModal">
-                                    <i class="ri-add-line align-bottom"></i> Thêm Chương
-                                </button>
+                                @if ($course->status == 'draft')
+                                    <button class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#addModuleModal">
+                                        <i class="ri-add-line align-bottom"></i> Thêm Chương Học
+                                    </button>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -794,12 +854,12 @@
     <!--end row-->
     </div>
 
-    <!-- Modal Thêm Module -->
+    <!-- Add module -->
     <div class="modal fade mt-5" id="addModuleModal" tabindex="-1">
         <div class="modal-dialog mt-5">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Thêm Chương Mới</h5>
+                    <h5 class="modal-title">Thêm Chương Học Mới</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <div class="modal-body">
@@ -807,13 +867,14 @@
                         @csrf
                         <input type="hidden" name="id_course" value="{{ $course->id }}">
                         <div class="mb-3">
-                            <label for="moduleTitle" class="form-label">Tiêu Đề chương</label>
+                            <label for="moduleTitle" class="form-label">Tiêu đề chương học</label>
                             <input type="text" class="form-control" name="title"
                                 placeholder="Nhập tiêu đề chương {{ $maxModulePosition + 1 }}...">
                         </div>
                         <div class="mb-3">
-                            <label for="moduleDescription" class="form-label">Mô Tả</label>
-                            <textarea class="form-control" name="description" rows="3"></textarea>
+                            <label for="moduleDescription" class="form-label">Mô tả chương</label>
+                            <textarea class="form-control" name="description" rows="3"
+                                placeholder="Nhập mô tả chương {{ $maxModulePosition + 1 }}..."></textarea>
                         </div>
                         <div class="mb-3">
                             {{-- <label for="modulePosition">Vị Trí</label>
@@ -823,19 +884,54 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="submit" form="addModuleForm" class="btn btn-primary">Thêm chương</button>
+                    <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" form="addModuleForm" class="btn btn-primary">Thêm chương học</button>
                 </div>
             </div>
         </div>
     </div>
 
+
+    <!-- Edit module -->
+    <div class="modal fade mt-5" id="editModuleModal" tabindex="-1">
+        <div class="modal-dialog mt-5">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Sửa Chương Học</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editModuleForm" method="POST">
+                        @csrf
+                        <input type="hidden" id="module_edit_id" name="module_id">
+                        <div class="mb-3">
+                            <label for="moduleTitle" class="form-label">Tiêu đề chương học</label>
+                            <input type="text" id="moduleTitleEdit" class="form-control" name="title"
+                                placeholder="Nhập tiêu đề chương...">
+                        </div>
+                        <div class="mb-3">
+                            <label for="moduleDescription" class="form-label">Mô tả chương</label>
+                            <textarea id="moduleDescriptionEdit" class="form-control" name="description" rows="3"
+                                placeholder="Nhập mô tả chương..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" form="editModuleForm" class="btn btn-primary">Cập nhật chương học</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
     <!-- Add Video Lesson Modal -->
     <div class="modal fade" id="addVideoLessonModal" tabindex="-1">
         <div class="modal-dialog">
-            <div class="modal-content">
+            <div class="modal-content" style="width: 700px">
                 <div class="modal-header">
-                    <h5 class="modal-title">Bài học video</h5>
+                    <h5 class="modal-title"><i class="  ri-youtube-line  "></i> Băng hình chương học</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -847,15 +943,13 @@
                             <label for="lesson-title" class="form-label">Tiêu đề bài học</label>
                             <input type="text" class="form-control" id="lesson-title" name="title">
                             <small id="title_err" class="help-block form-text text-danger err">
-                                {{-- @if ($errors->has('title'))
-                                                {{ $errors->first('title') }}
-                                            @endif --}}
+
                             </small>
                         </div>
 
                         <div class="mb-3">
                             <label for="textContent" class="form-label">Mô tả video</label>
-                            <textarea class="form-control" id="ckeditor-classic-video" name="description" rows="4"></textarea>
+                            <textarea class="form-control" name="description" rows="2"></textarea>
                         </div>
 
                         <div class="mb-3">
@@ -873,10 +967,14 @@
                             <label for="lesson-title" class="form-label">Nhập id video</label>
                             <input type="text" class="form-control" id="url-video" name="video_youtube_id">
                             <small class="help-block form-text text-danger err" id="video_youtube_id_err">
-                                {{-- @if ($errors->has('url'))
-                                                {{ $errors->first('url') }}
-                                            @endif --}}
+
                             </small>
+                        </div>
+
+                        <!-- Vùng hiển thị video -->
+                        <div id="video-preview" style="display: none; margin-top: 15px;">
+                            <iframe id="youtube-iframe" width="100%" height="360px" frameborder="0"
+                                allowfullscreen></iframe>
                         </div>
 
                         <div class="mb-3 box-upload-video" id="box-upload">
@@ -885,9 +983,7 @@
                                 <span class="drop-title">Tải video lên</span>
                                 <input type="file" id="video" accept="video/*" name="video">
                                 <small class="help-block form-text text-danger err" id="video_err">
-                                    {{-- @if ($errors->has('video'))
-                                                    {{ $errors->first('video') }}
-                                                @endif --}}
+
                                 </small>
                             </label>
                         </div>
@@ -914,7 +1010,7 @@
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Bài học text</h5>
+                    <h5 class="modal-title"><i class="ri-file-list-3-line"></i> Tài liệu chương học</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -1094,7 +1190,9 @@
                         if (response.data.avatar) {
                             $('#user-avatar').attr('src', '/storage/' + response.data.avatar);
                         } else {
-                            $('#user-avatar').attr('src', 'https://png.pngtree.com/png-clipart/20210608/ourlarge/pngtree-dark-gray-simple-avatar-png-image_3418404.jpg');
+                            $('#user-avatar').attr('src',
+                                'https://png.pngtree.com/png-clipart/20210608/ourlarge/pngtree-dark-gray-simple-avatar-png-image_3418404.jpg'
+                            );
                         }
                         $('#user-name').text(response.data.name || 'Tên người dùng');
                         $('#user-email-info').text(response.data.email || 'Email');
@@ -1142,7 +1240,6 @@
         $(document).ready(function() {
             $('#addModuleForm').on('submit', function(event) {
                 event.preventDefault()
-
                 $.ajax({
                     url: $(this).attr('action'),
                     method: 'POST',
@@ -1155,7 +1252,6 @@
                         if (xhr.status === 422) {
                             let errors = xhr.responseJSON.errors
                             $('.error-message').remove()
-
                             $.each(errors, function(key, value) {
                                 let inputField = $('[name="' + key + '"]')
                                 inputField.after(
@@ -1167,6 +1263,77 @@
                 })
             })
         })
+
+        //edit module
+        $(document).ready(function() {
+            // edit hiển thị dữ liệu chương
+            $('.edit-module').click(function(e) {
+                e.preventDefault();
+                var moduleId = $(this).data('id');
+
+                // Gửi yêu cầu AJAX để lấy thông tin chương học
+                $.ajax({
+                    url: '/admin/modules/edit/' + moduleId,
+                    type: 'GET',
+
+                    success: function(response) {
+                        console.log(response);
+                        // Đổ dữ liệu vào modal
+                        $('#module_edit_id').val(response.id);
+                        $('#moduleTitleEdit').val(response.title);
+                        $('#moduleDescriptionEdit').val(response.description);
+                        // Hiển thị modal
+                        $('#editModuleModal').modal('show');
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 422) {
+                            let errors = xhr.responseJSON.errors
+                            $('.error-message').remove()
+                            $.each(errors, function(key, value) {
+                                let inputField = $('[name="' + key + '"]')
+                                inputField.after(
+                                    '<div class="error-message text-danger">' +
+                                    value[0] + '</div>')
+                            })
+                        }
+                    }
+                });
+            });
+            // update module
+            $('#editModuleForm').submit(function(e) {
+                e.preventDefault();
+
+                var moduleId = $('#module_edit_id').val();
+                var formData = $(this).serialize(); // Lấy toàn bộ dữ liệu từ form
+
+                // Gửi yêu cầu AJAX để cập nhật chương học
+                $.ajax({
+                    url: '/admin/modules/update/' + moduleId,
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+
+                        // Đóng modal
+                        $('#editModuleModal').modal('hide');
+
+                        // Cập nhật lại dữ liệu trên trang (có thể reload hoặc cập nhật thủ công)
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 422) {
+                            let errors = xhr.responseJSON.errors
+                            $('.error-message').remove()
+                            $.each(errors, function(key, value) {
+                                let inputField = $('[name="' + key + '"]')
+                                inputField.after(
+                                    '<div class="error-message text-danger">' +
+                                    value[0] + '</div>')
+                            })
+                        }
+                    }
+                });
+            });
+        });
 
         // get id_module
         $('#addTextLessonModal').on('show.bs.modal', function(event) {
@@ -1424,6 +1591,23 @@
                         $('.btn-submit-lesson-video').prop('disabled', false);
                     }
                 });
+            });
+        });
+
+        $(document).ready(function() {
+            $('#url-video').on('input', function() {
+                var youtubeId = $(this).val().trim(); // Lấy giá trị ID video
+
+                if (youtubeId) {
+                    // Cập nhật iframe và hiển thị
+                    var embedUrl = `https://www.youtube.com/embed/${youtubeId}`;
+                    $('#youtube-iframe').attr('src', embedUrl);
+                    $('#video-preview').show();
+                } else {
+                    // Ẩn video khi không có ID
+                    $('#video-preview').hide();
+                    $('#youtube-iframe').attr('src', '');
+                }
             });
         });
     </script>

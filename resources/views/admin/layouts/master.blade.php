@@ -10,7 +10,7 @@
     <meta content="Themesbrand" name="author" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ asset('theme/admin/assets/images/favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('theme/admin/assets/images/Logo.png') }}" class="rounded-circle">
     @yield('style-libs')
     <!-- Layout config Js -->
     <script src="{{ asset('theme/admin/assets/js/layout.js') }}"></script>

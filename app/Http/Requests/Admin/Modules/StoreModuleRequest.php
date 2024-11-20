@@ -28,4 +28,16 @@ class StoreModuleRequest extends FormRequest
             'position' => 'required|integer',
         ];
     }
+    public function messages(): array
+    {
+        return [
+            'required' => ':attribute vui lòng điền vào.',
+            'title.required' => 'Vui lòng điền tiêu đề chương học.',
+            'description.required' => 'Bui lòng điền mô tả chương học.',
+        ];
+    }
+
+
+
+
 }

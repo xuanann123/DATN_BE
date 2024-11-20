@@ -16,30 +16,26 @@ class TeacherController extends Controller
     public function getTeachers(Request $request)
     {
         // Số thứ tự trang;
-        $page = $request->page ?? 1;
-        // Số bản ghi trên một trang;
-        $perPage = $request->perPage ?? 12;
+        $page = $request->input('page', 12);
+        //Lấy toàn bộ danh sách giảng viên
 
-        $idUserLogin = $request->user()->id;
+        $teachers = User::select('id', 'name', 'avatar')
+            ->whereHas('courses')
+            ->withCount('courses')
+            //Lấy số lượng rating ra
+            ->whereIn('user_type', [User::TYPE_TEACHER, User::TYPE_ADMIN])
+            // ->paginate($page)
+            ->latest('id')
+            ->paginate($page);
 
-        $teachers = DB::table('users as u')
-            ->selectRaw('
-                u.id,
-                u.name,
-                u.avatar,
-                COUNT(DISTINCT c.id) as total_courses,
-                COUNT(DISTINCT r.id) as total_ratings,
-                ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
-            ')
-            ->leftJoin('courses as c', 'u.id', '=', 'c.id_user')
-            ->leftJoin('ratings as r', 'c.id', '=', 'r.id_course')
-            ->where('u.user_type', 'teacher')
-            ->where('u.is_active', 1)
-            ->where('u.id', '!=', $idUserLogin)
-            ->groupBy('u.id', 'u.name', 'u.avatar')
-            ->orderByDesc('average_rating')
-            ->paginate($perPage, ['*'], 'page', $page);
-
+        //Duyệt qua từng giảng viên thêm những thuộc tính total_courses, total_ratings, average_rating
+        foreach ($teachers as $teacher) {
+            $teacher->total_courses = DB::table('courses')->where('id_user', $teacher->id)->count();
+            $teacher->total_ratings = DB::table('ratings')->where('id_user', $teacher->id)->count();
+            //Tổng số lượng sinh viên 
+            $teacher->total_student = DB::table('user_courses')->where('id_user', $teacher->id)->count();
+            $teacher->ratings_avg_rate = number_format(round(DB::table('ratings')->where('id_user', $teacher->id)->avg('rate'), 1), 1);
+        }
         if ($teachers->count() <= 0) {
             return response()->json([
                 'status' => 'error',
@@ -49,12 +45,8 @@ class TeacherController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'teachers' => $teachers->items(),
-                'current_page' => $teachers->currentPage(),
-                'total_pages' => $teachers->lastPage(),
-                'total_count' => $teachers->total(),
-            ]
+            'message' => "Lấy danh sách giảng viên thành công",
+            'data' => $teachers
         ], 200);
     }
 
