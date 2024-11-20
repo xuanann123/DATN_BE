@@ -237,16 +237,24 @@ class TeacherController extends Controller
             ->limit(6)
             ->get();
 
+        
         //Duyệt qua từng giảng viên thêm những thuộc tính total_courses, total_ratings, average_rating
         foreach ($teachers as $teacher) {
+            $total_rating = 0;
+            $ratings_avg_rate = 0;
             $teacher->total_courses = DB::table('courses')->where('id_user', $teacher->id)->count();
-            $teacher->total_ratings = DB::table('ratings')->where('id_user', $teacher->id)->count();
-            //Tổng số lượng sinh viên 
-            $teacher->total_student = DB::table('user_courses')->where('id_user', $teacher->id)->count();
-            $teacher->ratings_avg_rate = number_format(round(DB::table('ratings')->where('id_user', $teacher->id)->avg('rate'), 1), 1);
+          
+            //Lấy total của tất cả khoá học của giảng viên
+            foreach ($teacher->courses as $course) {
+                $total_rating += DB::table('ratings')->where('id_course', $course->id)->count();
+                //Cộng tất cả cả rates / 5 
+                $ratings_avg_rate += DB::table('ratings')->where('id_course', $course->id)->avg('rate');
+            }
 
-
-
+            $teacher->total_ratings = $total_rating;
+            // $teacher->total_student = DB::table('user_courses')->where('id_user', $teacher->id)->count();
+            $teacher->ratings_avg_rate = number_format($ratings_avg_rate, 1);
+            $teacher->makeHidden('courses');
         }
         if ($teachers->count() <= 0) {
             return response()->json([
