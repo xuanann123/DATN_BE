@@ -28,7 +28,7 @@ class CourseController extends Controller
     {
         $title = 'Danh sách khóa học của tôi';
 
-        $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'id_user', 'sort_description', 'id_category')->with(['user:id,name,avatar', 'tags:id,name', 'category:id,name'])
+        $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'id_user', 'sort_description', 'id_category','status')->with(['user:id,name,avatar', 'tags:id,name', 'category:id,name'])
             ->where('is_active', 1)
             ->withCount('ratings')
             ->withAvg('ratings', 'rate')
