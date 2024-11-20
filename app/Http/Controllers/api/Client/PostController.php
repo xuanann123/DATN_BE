@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api\Client;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Client\Posts\StorePostRequest;
 use App\Http\Requests\Client\Posts\UpdatePostRequest;
+use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
@@ -24,7 +25,7 @@ class PostController extends Controller
             $limit = $request->input('limit', 6);
             // key search
             $searchQuery = $request->search;
-            $listPosts = Post::select('id', 'title', 'description', 'content', 'thumbnail', 'slug', 'created_at', 'views','user_id')->with('user:id,name,avatar', 'tags:id,name,slug', 'categories:id,name,slug')
+            $listPosts = Post::select('id', 'title', 'description', 'content', 'thumbnail', 'slug', 'created_at', 'views', 'user_id')->with('user:id,name,avatar', 'tags:id,name,slug', 'categories:id,name,slug')
                 ->search($searchQuery) // tim kiem
                 ->latest('created_at')
                 ->paginate($limit)
@@ -591,7 +592,8 @@ class PostController extends Controller
             ], 500);
         }
     }
-    public function unsavePost(string $slug) {
+    public function unsavePost(string $slug)
+    {
         try {
             $post = Post::where('slug', $slug)->where('is_active', '=', 1)->first();
             $user = auth()->user();
@@ -605,7 +607,7 @@ class PostController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Bỏ lưu bài viết thành công',
-                'data'=> []
+                'data' => []
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -615,5 +617,49 @@ class PostController extends Controller
             ], 500);
         }
     }
-
+    public function getPostsByCategory(Request $request,string $slug)
+    {
+        try {
+            $limit = $request->input('limit', 6);
+            // key search
+            $searchQuery = $request->search;
+            $category = Category::where('slug', $slug)->first();
+            if (!$category) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Danh sách bài viết trống'
+                ], 404);
+            }
+            $listPosts = $category->posts()
+                ->select('posts.id', 'posts.title', 'posts.description', 'posts.content', 'posts.thumbnail', 'posts.slug', 'posts.created_at', 'posts.views', 'posts.user_id')
+                ->with('user:id,name,avatar', 'tags:id,name,slug', 'categories:id,name,slug')
+                ->search($searchQuery)
+                ->latest('created_at')
+                ->paginate($limit)
+                ->appends([
+                    'search' => $searchQuery,
+                ]);
+            foreach ($listPosts as $post) {
+                $post->makeHidden(['user_id', 'allow_comments', 'is_banned', 'updated_at', 'status','is_active','deleted_at']);
+            }
+            if ($listPosts->isEmpty()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không có bài viết nào',
+                    'data' => []
+                ], 404);
+            }
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Lấy danh sách bài viết thành công',
+                'data' => $listPosts
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi lưu bài viết',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

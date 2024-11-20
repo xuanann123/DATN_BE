@@ -40,4 +40,9 @@ class Category extends Model
     {
         return $this->hasMany(Course::class, 'id_category');
     }
+    //Một danh mục chứa nhiều bài viết
+    public function posts()
+    {
+        return $this->belongsToMany(Post::class, 'category_post', 'category_id', 'post_id');
+    }
 }
