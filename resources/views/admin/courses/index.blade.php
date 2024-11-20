@@ -94,43 +94,34 @@
                                                     </span>
                                                 </div>
                                             </button>
-                                            <div class="dropdown">
-                                                <button
-                                                    class="btn btn-link text-muted p-1 mt-n2 py-0 text-decoration-none fs-15"
-                                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                    <i data-feather="more-horizontal" class="icon-sm"></i>
-                                                </button>
-                                                <div class="dropdown-menu dropdown-menu-end">
-                                                    {{-- <a class="dropdown-item" href="{{ route('admin.courses.edit') }}"><i
-                                                        class="ri-eye-fill align-bottom me-2 text-muted"></i> Xem</a> --}}
+                                            @if ($course->status == 'draft')
+                                                <div class="dropdown">
+                                                    <button
+                                                        class="btn btn-link text-muted p-1 mt-n2 py-0 text-decoration-none fs-15"
+                                                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                        <i data-feather="more-horizontal" class="icon-sm"></i>
+                                                    </button>
 
-                                                    @if ($course->status == 'approved')
-                                                        <a class="dropdown-item" href="#"><i
-                                                                class="ri-pencil-fill align-bottom me-2 text-muted"></i>
-                                                            Đã đăng khoá học</a>
-                                                    @else
+                                                    <div class="dropdown-menu dropdown-menu-end">
                                                         <a class="dropdown-item"
                                                             href="{{ route('admin.courses.edit', ['id' => $course->id]) }}"><i
                                                                 class="ri-pencil-fill align-bottom me-2 text-muted"></i>
                                                             Sửa</a>
-                                                    @endif
-                                                    <div class="dropdown-divider"></div>
-                                                    {{-- <a class="dropdown-item"
-                                                    href="{{ route('admin.courses.delete', ['id' => $course->id]) }}"
-                                                    data-bs-toggle="modal" data-bs-target="#removeProjectModal"><i
-                                                        class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
-                                                    Xóa</a> --}}
-                                                    <form
-                                                        action="{{ route('admin.courses.delete', ['id' => $course->id]) }}"
-                                                        method="post">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button onclick="return confirm('Xác nhận xóa ?')"
-                                                            class="dropdown-item"><i
-                                                                class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>Xóa</button>
-                                                    </form>
+                                                        <div class="dropdown-divider"></div>
+
+                                                        <form
+                                                            action="{{ route('admin.courses.delete', ['id' => $course->id]) }}"
+                                                            method="post">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button onclick="return confirm('Xác nhận xóa ?')"
+                                                                class="dropdown-item"><i
+                                                                    class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>Xóa</button>
+                                                        </form>
+                                                    </div>
+
                                                 </div>
-                                            </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -154,7 +145,7 @@
                                         <hr>
                                         @if ($course->tags->count() > 0)
                                             <span class="text-muted text-truncate-two-lines fs-12 mb-1">
-                                                Tags: 
+                                                Tags:
                                                 @foreach ($course->tags as $tag)
                                                     <span class="badge  bg-primary fs-8 ms-1 me-1">{{ $tag->name }}
                                                     </span>
