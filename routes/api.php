@@ -98,7 +98,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('courses')->group(function () {
         //Danh sách khoá học ngày hôm nay
-        Route::get('today-new', [CourseHomePageController::class, 'listNewCourse']);
+        Route::get('today-new', [CourseHomePageController::class, 'listNewCourseToday']);
         //Danh sách yêu thích khoá học
         Route::get('favorite', [CourseHomePageController::class, 'listFavoriteCourse']);
         //Yêu thích khoá học
@@ -309,9 +309,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/check-saved/{slug}', [PostController::class, 'checkSavedPost']);
 
         //like bài viết
-        Route::get('/like/{slug}', [PostController::class, 'likePost']);
+        Route::post('/like/{slug}', [PostController::class, 'likePost']);
         //unlike bài viết
-        Route::get('/unlike/{slug}', [PostController::class, 'unlikePost']);
+        Route::post('/unlike/{slug}', [PostController::class, 'unlikePost']);
         //check đã like hay chưa
         Route::get('/check-like/{slug}', [PostController::class, 'checkLikePost']);
 

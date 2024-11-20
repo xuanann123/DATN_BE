@@ -8,6 +8,7 @@ use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
@@ -404,6 +405,59 @@ class CourseController extends Controller
             "status" => "success",
             "message" => "Bỏ yêu thích khoá học thành công.",
             "data" => []
+        ], 200);
+    }
+    public function listNewCourseToday()
+    {
+        //Lấy những khoá trong được tạo mới trong ngày hôm nay
+        $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'id_user')
+            ->where('is_active', 1)
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rate')
+            ->with('user:id,name,avatar')
+            ->withCount([
+                'modules as lessons_count' => function ($query) {
+                    $query->whereHas('lessons');
+                },
+                'modules as quiz_count' => function ($query) {
+                    $query->whereHas('quiz');
+                }
+            ])
+            ->where('status', 'approved')
+
+            ->whereDate('created_at', Carbon::today())
+            ->get();
+        //Tính một số dữ liệu
+        foreach ($courses as $course) {
+            // Tính tổng lessons và quiz
+            $total_lessons = $course->modules->flatMap->lessons->count();
+            $total_quiz = $course->modules->whereNotNull('quiz')->count();
+            $course->total_lessons = $total_lessons + $total_quiz;
+
+            // Tính tổng duration của các lesson vid
+            $course->total_duration_video = $course->modules->flatMap(function ($module) {
+                return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                    return $lesson->lessonable->duration ?? 0;
+                });
+            })->sum();
+            //Chỉnh lại reating
+            $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+            $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
+
+            $course->makeHidden('modules');
+            $course->makeHidden('ratings');
+        }
+        if($courses->isEmpty()){
+            return response()->json([
+                "status" => "success",
+                "message" => "Không có khoá học nào ngày hôm nay!",
+                "data" => []
+            ], 200);
+        }
+        return response()->json([
+            "status" => "success",
+            "message" => "Danh sách khoá học ngày hôm nay",
+            "data" => $courses
         ], 200);
     }
 
