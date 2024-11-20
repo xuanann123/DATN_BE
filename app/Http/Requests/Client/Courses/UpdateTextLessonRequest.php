@@ -24,6 +24,7 @@ class UpdateTextLessonRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'content' => 'required|string',
+            'resourse_path' => 'nullable|file|max:10240', // max 10mb
             'id_module' => '',
         ];
     }
