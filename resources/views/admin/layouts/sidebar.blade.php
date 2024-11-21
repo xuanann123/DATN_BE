@@ -190,17 +190,17 @@
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarPost" data-bs-toggle="collapse" role="button"
                         aria-expanded="false" aria-controls="sidebarPost">
-                        <i class=" ri-newspaper-line"></i> <span>Bài viết</span>
+                        <i class="ri-notification-2-line"></i> <span>Thông báo</span>
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarPost">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
                                 <a href="{{ route('admin.posts.index') }}" class="nav-link" data-key="t-one-page">
-                                    Danh sách bài viết</a>
+                                    Danh sách thông báo</a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('admin.posts.create') }}" class="nav-link" data-key="t-one-page">
-                                    Thêm mới bài viết</a>
+                                    Thêm mới thông báo</a>
                             </li>
                         </ul>
                     </div>

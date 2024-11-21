@@ -34,7 +34,7 @@
                 <a href="{{ route('admin.posts.create') }}" type="button"
                     class="btn btn-success btn-label waves-effect waves-light">
                     <i class="ri-add-circle-line label-icon"></i>
-                    Tạo bài viết</span>
+                    Tạo thông báo</span>
                 </a>
                 <div>
                     @if (request()->url() === route('admin.posts.trash'))
@@ -66,7 +66,7 @@
                         <select class="form-control" name="status" data-choices data-choices-search-true
                             onchange="document.getElementById('filterForm').submit()">
                             <option value="" selected>Lọc theo trạng thái</option>
-                            <option value="all" {{ $statusFilter == 'all' ? 'selected' : '' }} >Tất cả</option>
+                            <option value="all" {{ $statusFilter == 'all' ? 'selected' : '' }}>Tất cả</option>
                             <option value="draft" {{ $statusFilter == 'draft' ? 'selected' : '' }}>Bản nháp</option>
                             <option value="published" {{ $statusFilter == 'published' ? 'selected' : '' }}>Đã xuất bản
                             </option>
@@ -78,7 +78,7 @@
                         <select name="time_filter" class="form-control" data-choices data-choices-search-true
                             onchange="document.getElementById('filterForm').submit()">
                             <option value="" selected>Lọc theo thời gian</option>
-                            <option value="all" {{ $timeFilter == 'all' ? 'selected' : '' }} >Tất cả</option>
+                            <option value="all" {{ $timeFilter == 'all' ? 'selected' : '' }}>Tất cả</option>
                             <option value="today" {{ $timeFilter == 'today' ? 'selected' : '' }}>Hôm nay</option>
                             <option value="yesterday" {{ $timeFilter == 'yesterday' ? 'selected' : '' }}>Hôm qua</option>
                             <option value="this_week" {{ $timeFilter == 'this_week' ? 'selected' : '' }}>Tuần này</option>
@@ -109,12 +109,9 @@
             @else
                 @foreach ($posts as $post)
                     <div id="post-list">
-                        <!-- Sample post item -->
                         <div class="card mb-3">
                             <div class="card-body">
-
                                 <div class="d-flex align-items-center mb-3">
-
                                     <div class="flex-shrink-0">
                                         <img src="{{ Storage::url($post->thumbnail) }}" alt=""
                                             class="avatar-sm rounded" style="width: 300px!important; height: auto">
@@ -124,16 +121,42 @@
                                             <a href="{{ route('admin.posts.show', $post->id) }}"
                                                 class="text-dark">{{ $post->title }}
                                             </a>
+
                                             @if ($post->is_active === 1)
-                                                <span class="badge badge-gradient-danger ms-2">Công khai</span>
+                                                <span class="badge badge-gradient-danger ms-2 fs-10">Công khai</span>
                                             @else
-                                                <span class="badge badge-gradient-warning ms-2">Riêng tư</span>
+                                                <span class="badge badge-gradient-warning ms-2 fs-10">Riêng tư</span>
                                             @endif
 
                                         </h5>
-                                        Tác giả: <span class="badge rounded-pill border border-danger text-danger">
-                                            <p class="mb-0">{{ $post->user->name }}</p>
-                                        </span>
+                                        
+                                        <div class="d-flex">
+                                            <span>Mô tả thông báo : </span>
+                                            {!! \Illuminate\Support\Str::words($post->description, 15, ' ... <a href="' . route('admin.posts.show', $post->id) . '">đọc thêm</a>') !!}
+                                        </div>
+                                        
+                                        <div>
+                                            <span><i class="ri-file-list-3-line fs-16"></i> Danh mục: </span>
+                                            @foreach ($post->categories as $category)
+                                                <span class="badge bg-primary me-1 fs-10">{{ $category->name }}</span>
+                                            @endforeach
+                                        </div>
+                                        <div class="mt-3 mb-3">
+                                            <span><i class="ri-hashtag fs-16"></i> Tags: </span>
+                                            @if ($post->tags->isEmpty())
+                                                <span class="badge bg-primary  me-1">Chưa có</span>
+                                            @else
+                                                @foreach ($post->tags as $tag)
+                                                    <span
+                                                        class="badge bg-primary me-1">{{ $tag->name }}</span>
+                                                @endforeach
+                                            @endif
+                                        </div>
+                                         <div class="d-flex aligin-items-center">
+                                            <span class="mt-1 me-2"><i class=" ri-user-voice-line fs-20"></i></span>
+                                            <img src="{{ Storage::url($post->user->avatar) }}" class="rounded-circle avatar-xs" alt="">
+                                            <b class="ms-2 mt-2">{{ $post->user->name }}</b>
+                                        </div>
                                     </div>
 
                                     <div class="btn-group">
@@ -299,31 +322,14 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="text-muted text-truncate">{!! $post->description !!}</div>
-                                <div>
-                                    <span>Danh mục: </span>
-                                    @foreach ($post->categories as $category)
-                                        <span class="badge bg-primary me-1">{{ $category->name }}</span>
-                                    @endforeach
-                                </div>
-                                <div class="mt-3">
-                                    <span>Tags: </span>
-                                    @if ($post->tags->isEmpty())
-                                        <span class="badge bg-primary-subtle text-primary me-1">Chưa có</span>
-                                    @else
-                                        @foreach ($post->tags as $tag)
-                                            <span
-                                                class="badge bg-primary-subtle text-primary me-1">{{ $tag->name }}</span>
-                                        @endforeach
-                                    @endif
-                                </div>
+
                             </div>
                             <div class="card-footer">
                                 <div class="d-flex align-items-center">
                                     <div class="flex-grow-1">
-                                        <span class=""><i class="ri-time-line align-bottom me-1"></i> Thời gian xuất
+                                        <span class=""><i class="ri-time-line align-bottom me-1 fs-16"></i>Thời gian xuất
                                             bản:
-                                            {{ $post->published_at ? $post->published_at : 'Chưa có' }}</span>
+                                            {{ $post->published_at ? $post->published_at->format('d \t\h\á\n\g m \n\ă\m Y') : 'Chưa có' }}
                                     </div>
                                     <div class="flex-shrink-0">
                                         @if ($post->status === 'draft')
@@ -335,9 +341,6 @@
                                         @elseif ($post->status === 'private')
                                             <span class="badge bg-danger me-2">Bị từ chối</span>
                                         @endif
-                                        <span class="me-3"><i
-                                                class="ri-eye-line align-bottom me-1"></i>{{ $post->views }}</span>
-
                                     </div>
                                 </div>
                             </div>

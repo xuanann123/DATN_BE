@@ -135,6 +135,7 @@ class PostController extends Controller
                 // Danh sách bài viết cùng tác giả đó
                 $relatedPosts = Post::where('user_id', $post->user_id)
                     ->where('is_active', 1)
+                    ->with('user:id,name,avatar')
                     ->where('id', '!=', $post->id) // không lấy bài viết hiện tại
                     ->limit(5)
                     ->get([
