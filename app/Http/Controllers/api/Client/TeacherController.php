@@ -15,26 +15,43 @@ class TeacherController extends Controller
     // Api danh sach teacher;
     public function getTeachers(Request $request)
     {
-        // Số thứ tự trang;
-        $page = $request->input('page', 12);
+        //Số lượng giới hạn trên 1 trạng
+        $limit = $request->input('limit', 12);
         //Lấy toàn bộ danh sách giảng viên
 
         $teachers = User::select('id', 'name', 'avatar')
-            ->whereHas('courses')
-            ->withCount('courses')
-            //Lấy số lượng rating ra
+            ->whereHas('courses' , function ($query) {
+                $query->where('status', 'approved');
+                $query->where("is_active", 1);
+            })
+            ->withCount([
+                'courses as total_courses' => function ($query) {
+                    $query->where('status', 'approved');
+                    $query->where("is_active", 1);
+                }
+            ])
             ->whereIn('user_type', [User::TYPE_TEACHER, User::TYPE_ADMIN])
-            // ->paginate($page)
             ->latest('id')
-            ->paginate($page);
+            ->orderBy('total_courses', 'desc')
+            ->paginate($limit);
+
 
         //Duyệt qua từng giảng viên thêm những thuộc tính total_courses, total_ratings, average_rating
         foreach ($teachers as $teacher) {
-            $teacher->total_courses = DB::table('courses')->where('id_user', $teacher->id)->count();
-            $teacher->total_ratings = DB::table('ratings')->where('id_user', $teacher->id)->count();
+            $total_rating = 0;
+            $ratings_avg_rate = 0;
+
+            //Lấy total của tất cả khoá học của giảng viên
+            foreach ($teacher->courses as $course) {
+                $total_rating += DB::table('ratings')->where('id_course', $course->id)->count();
+                $ratings_avg_rate += DB::table('ratings')->where('id_course', $course->id)->avg('rate');
+            }
             //Tổng số lượng sinh viên 
+
+            $teacher->total_ratings = $total_rating;
+            $teacher->ratings_avg_rate = number_format(round($ratings_avg_rate, 1), 1);
             $teacher->total_student = DB::table('user_courses')->where('id_user', $teacher->id)->count();
-            $teacher->ratings_avg_rate = number_format(round(DB::table('ratings')->where('id_user', $teacher->id)->avg('rate'), 1), 1);
+            $teacher->ratings_avg_rate = number_format($ratings_avg_rate, 1);
         }
         if ($teachers->count() <= 0) {
             return response()->json([
