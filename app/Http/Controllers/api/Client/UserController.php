@@ -266,6 +266,7 @@ class UserController extends Controller
         foreach ($lessonProgress as $key => $item) {
             $history = Lesson::find($item->id_lesson);
             $history['slug'] = $history->module->course->slug;
+            $history['created_at'] = LessonProgress::find($item->id)->created_at;
             $history->makeHidden('module');
             $data[] = $history;
         }
