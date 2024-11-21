@@ -492,34 +492,13 @@ class PostController extends Controller
         }
     }
     //Danh sách bài viết đã được lưu
-    public function getSavedPosts()
+    public function getSavedPosts(Request $request)
     {
         try {
             $user = auth()->user();
             $data = [];
-            $listPosts = $user->saveposts()->get();
-            if ($listPosts->isEmpty()) {
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Bạn chưa lưu bài viết nào',
-                    'data' => []
-                ], 204);
-            }
-            foreach ($listPosts as $post) {
-                $data[] = [
-                    'id' => $post->id,
-                    'title' => $post->title,
-                    'slug' => $post->slug,
-                    'description' => $post->description,
-                    'content' => $post->content,
-                    'thumbnail' => $post->thumbnail,
-                    'published_at' => $post->published_at,
-                    'views' => $post->views,
-                    'categories' => $post->categories->select('id', 'name','slug'),
-                    'tags' => $post->tags->select('id', 'name','slug'),
-                    'user' => $post->user
-                ];
-            }
+            $limit = $request->input('limit', 5);
+            $data = $user->saveposts()->with('user:id,name,avatar', 'tags:id,name,slug', 'categories:id,name,slug')->paginate($limit);
             return response()->json([
                 'status' => 'success',
                 'message' => 'Lấy danh sách bài viết đã được lưu thành công',
