@@ -166,6 +166,7 @@ class PostController extends Controller
                     'categories' => $post->categories->select('id', 'name', 'slug'),
                     'tags' => $post->tags->select('id', 'name', 'slug'),
                     'related_posts' => $relatedPosts,
+                    'count_comment' => $post->comments()->count(),
                     'likes' => DB::table('like_posts')->where('post_id', $post->id)->count()
                 ];
                 return response()->json([
