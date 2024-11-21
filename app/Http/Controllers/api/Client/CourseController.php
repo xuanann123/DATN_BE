@@ -16,7 +16,7 @@ class CourseController extends Controller
     public function listNewCourse()
     {
         try {
-            $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'id_user')
+            $courses = Course::select('id', 'slug','level', 'name', 'thumbnail', 'price', 'price_sale', 'id_user')
                 ->with(
                     'user:id,name,avatar',
                 )->withCount([
@@ -76,7 +76,7 @@ class CourseController extends Controller
     public function listCourseSale()
     {
         try {
-            $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'id_user')->with(
+            $courses = Course::select('id', 'slug','level', 'name', 'thumbnail', 'price', 'price_sale', 'id_user')->with(
                 'user:id,name,avatar',
             )->withCount([
                         'modules as lessons_count' => function ($query) {
@@ -138,7 +138,7 @@ class CourseController extends Controller
     {
         try {
             $limit = $request->input('limit', 5);
-            $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'id_user')->with(['user:id,name,avatar'])
+            $courses = Course::select('id', 'slug', 'name','level', 'thumbnail', 'price', 'price_sale', 'id_user')->with(['user:id,name,avatar'])
                 ->where('is_active', 1)
                 ->where('status', 'approved')
                 ->withCount('ratings')
@@ -212,7 +212,7 @@ class CourseController extends Controller
                 })
                 ->with([
                     'courses' => function ($query) {
-                        $query->select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'id_user', 'id_category')
+                        $query->select('id', 'slug', 'name','level', 'thumbnail', 'price', 'price_sale', 'id_user', 'id_category')
                             ->where('is_active', 1)
                             ->where('status', 'approved')
                             ->withCount([
@@ -464,7 +464,7 @@ class CourseController extends Controller
     {
         try {
             $limit = $request->input('limit', 5);
-            $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'id_user')->with(['user:id,name,avatar'])
+            $courses = Course::select('id', 'slug', 'name','level', 'thumbnail', 'price', 'price_sale', 'id_user')->with(['user:id,name,avatar'])
                 ->where('is_active', 1)
                 ->where('status', 'approved')
                 ->where(function ($query) {

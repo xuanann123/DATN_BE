@@ -49,7 +49,7 @@ class AuthController extends Controller
             ]);
 
             // send mail OTP
-            Mail::to($data['email'])->send(new VerifyOTP($otpCode));
+            Mail::to($data['email'])->queue(new VerifyOTP($otpCode));
 
             DB::commit(); // OK thì save
 

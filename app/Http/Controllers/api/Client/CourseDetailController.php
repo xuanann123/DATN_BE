@@ -309,7 +309,7 @@ class CourseDetailController extends Controller // di ve sinh
             //Lấy danh sách khoá học liên quan ra
             //Danh sách khoá học nằm trong category này
 
-            $listCoursesRelated = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'id_user', 'id_category')
+            $listCoursesRelated = Course::select('id', 'slug','level', 'name', 'thumbnail', 'price', 'price_sale', 'id_user', 'id_category')
                 ->whereNot('slug', $course->slug)
                 ->with('user:id,name,avatar')
                 ->withCount('ratings')
