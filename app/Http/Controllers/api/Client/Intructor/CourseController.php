@@ -589,19 +589,52 @@ class CourseController extends Controller
         try {
             $user = auth()->user();
 
+            // Lấy các ID khóa học cho từng level
+            $beginnerCourses = Course::select('id')
+                ->where('status', 'approved')
+                ->where('is_active', 1)
+                ->where('level', 'Sơ Cấp')
+                ->limit(2)
+                ->pluck('id');
+
+            $intermediateCourses = Course::select('id')
+                ->where('status', 'approved')
+                ->where('is_active', 1)
+                ->where('level', 'Trung Cấp')
+                ->limit(2)
+                ->pluck('id');
+
+            $masterCourses = Course::select('id')
+                ->where('status', 'approved')
+                ->where('is_active', 1)
+                ->where('level', 'Chuyên Gia')
+                ->limit(2)
+                ->pluck('id');
+
+            // Hợp nhất các ID lại
+            $courseIds = $beginnerCourses->merge($intermediateCourses)->merge($masterCourses);
+
+            // Truy vấn các Category với các khóa học đã lọc
             $listCategory = Category::select('id', 'slug', 'name', 'description', 'image')
                 ->whereHas('courses', function ($query) {
                     $query->where('status', 'approved');
                 })
                 ->with([
-                    'courses:id,name,slug,thumbnail,id_category,id_user',
+                    'courses' => function ($query) use ($courseIds) {
+                        $query->where('status', 'approved')
+                            ->whereIn('id', $courseIds)
+                            ->select('id', 'name', 'slug', 'thumbnail', 'id_category', 'id_user');
+                    },
                     'courses.progress' => function ($query) {
-                        $query->select('id_course', 'progress_percent', 'id_user')->where('id_user', auth()->id()); // Chỉ lấy những cột cần thiết
+                        $query->select('id_course', 'progress_percent', 'id_user')
+                            ->where('id_user', auth()->id());
                     }
                 ])
                 ->where('is_active', 1)
                 ->latest('id')
                 ->get();
+
+
 
             if ($listCategory->count() < 1) {
                 return response()->json([
