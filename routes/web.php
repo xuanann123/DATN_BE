@@ -144,8 +144,6 @@ Route::prefix("admin")
             ->group(function () {
                 Route::get("/", [CourseController::class, 'index'])->name('list');
                 Route::get("/user-rating/{id}", [CourseController::class, 'getUserDetails']);
-
-
                 Route::get("/create", [CourseController::class, 'create'])->name('create');
                 Route::post('/store', [CourseController::class, 'store'])->name('store');
                 //Đẩy sang tabs thứ 2 view target

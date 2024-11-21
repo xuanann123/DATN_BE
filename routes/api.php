@@ -65,10 +65,10 @@ Route::prefix('auth')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
 
     # ===================== ROUTE FOR AUTH ===========================
-
     Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
     });
+
 
     # ===================== ROUTE FOR TRANSACTIONS ===========================
     Route::prefix('transactions')->group(function () {
@@ -77,77 +77,55 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/register-course/{id_user}/{id_course}', [PaymentController::class, 'registerCourse']);
     });
 
+
     # ===================== ROUTE FOR LEARNING PATH ===========================
     Route::prefix('learning-path')->group(function () {
         Route::get('/list-category', [CourseController::class, 'getListCategory']);
-        //Lấy khoá học theo danh mục
         Route::get('/list-course-by-learning-path/{slug}', [CourseController::class, 'getListCourseByLearningPath']);
 
     });
 
 
-    
-
     # ===================== ROUTE FOR CHECKOUT ===========================
-
     Route::prefix('payment')->group(function () {
         Route::get('/course/{slug}', [CourseController::class, 'courseCheckout']);
     });
 
     # ===================== ROUTE FOR CHECKOUT ===========================
-
     Route::prefix('vouchers')->group(function () {
-        // Route::get('/new-voucher', [VoucherController::class, 'newVoucher']);
         Route::get('/apply-coupon/{id_user}/{voucher_code}', [VoucherController::class, 'applyCoupon']);
     });
 
 
-
-
     # ===================== ROUTE FOR COURSE ===========================
-
     Route::prefix('courses')->group(function () {
-        //Danh sách khoá học ngày hôm nay
         Route::get('today-new', [CourseHomePageController::class, 'listNewCourseToday']);
-        //Danh sách yêu thích khoá học
         Route::get('favorite', [CourseHomePageController::class, 'listFavoriteCourse']);
-        //Yêu thích khoá học
         Route::post('favorite/{is_course}', [CourseHomePageController::class, 'favoriteCourse']);
-
-        //Check xem đã yêu thích khoá học này chưa
         Route::get('check-favorite/{is_course}', [CourseHomePageController::class, 'checkFavoriteCourse']);
-        //Bỏ yêu thích
         Route::post('unfavorite/{is_course}', [CourseHomePageController::class, 'unfavoriteCourse']);
-        // Route::get('/{course}', [CourseDetailController::class, 'courseDetail']);
         Route::get('check-buy-course/{id_user}/{id_course}', [PaymentController::class, 'checkBuyCourse']);
-        //Chi tiết bài học khi đăng kí khoá học
         Route::get('detail/check/{slug}', [CourseDetailController::class, 'courseDetailForAuthUser']);
-        // cập nhật tiến độ khóa học (khi học xong tất cả bài học)
         Route::post('{course}/update-progress', [StudentCourseController::class, 'updateProgress']);
-        //Check khoá học done chưa
         Route::get('check-done-course/{slug}', [StudentCourseController::class, 'checkDoneCourse']);
     });
 
-    # ===================== ROUTE FOR CERTIFICATE ===========================
 
+    # ===================== ROUTE FOR CERTIFICATE ===========================
     Route::prefix('certificates')->group(function () {
-        // tạo chứng chỉ
         Route::post("{course}/certificate", [CertificateController::class, "storeCertificate"]);
-        // preview chứng chỉ
         Route::get("{code}/preview-certificate", [CertificateController::class, "previewCertificate"]);
-        // tải xuống chứng chỉ
         Route::get("{code}/download-certificate", [CertificateController::class, "downloadCertificate"]);
     });
+
 
     # ===================== ROUTE FOR LESSON ===========================
     Route::prefix('lessons')->group(function () {
         Route::get('/lesson-detail/{lesson}', [LessonController::class, 'lessonDetail']);
         Route::get('/quiz-detail/{quiz}', [LessonController::class, 'quizDetail']);
         Route::put('/lesson-progress/{lesson}', [LessonController::class, 'updateLessonProgress']);
-        //Kiểm tra đúng sai của quiz
         Route::post('quiz/check-quiz', [LessonController::class, 'checkQuiz']);
         Route::put('quiz/quiz-progress/{quiz}', [LessonController::class, 'updateQuizProgress']);
-        //Kiểm tra kết quả khi bấm lại
         Route::get('quiz/result/{userId}/{quizId}', [LessonController::class, 'getQuizResult']);
     });
 
@@ -161,7 +139,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     # ===================== ROUTE FOR COMMENT ===========================
-
     Route::prefix('comments')->group(function () {
         Route::post('/add-comment-post', [CommentController::class, 'addCommentPost']);
         Route::get('/comment-lesson/{id_lesson}', [CommentController::class, 'getCommentsLesson']);
@@ -176,37 +153,23 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     # ===================== ROUTE FOR USERS ===========================
-
     Route::prefix('user')->group(function () {
         Route::get('/profile', [UserController::class, 'show']);
-
         Route::post('/profile', [UserController::class, 'updateProfile']);
         Route::post('/change-password', [UserController::class, 'changePassword']);
         Route::get('/posts', [PostController::class, 'myListPost']);
         Route::get('/posts/{id}', [PostController::class, 'getListPostByUser']);
-
         Route::get('/balance/{user}', [PaymentController::class, 'balancePurchaseWallet']);
-
-        //Danh sách khoá học của tôi đã mua
         Route::get('/my-course-bought', [UserController::class, 'myCourseBought']);
         Route::get('/history-buy-course/{id_user}', [PaymentController::class, 'historyBuyCourse']);
         Route::get('/history-transactions/{id_user}', [PaymentController::class, 'historyTransactionsPurchase']);
-
-        //Chức năng theo dõi 1 giảng viên
         Route::post('/follow', [FollowController::class, 'follow']);
         Route::post('/unfollow', [FollowController::class, 'unfollow']);
         Route::get('/check-follow/{id_user}/{id_teacher}', [FollowController::class, 'checkFollow']);
-
-        //Đăng kí thành giảng viên
         Route::post('/register-teacher', [UserController::class, 'registerTeacher']);
-
-        //Check lịch sử đang học đến bài nàp
         Route::get('/check-history-learning', [UserController::class, 'checkLearning']);
 
-
-
-
-        // Thông báo
+        # ===================== ROUTE FOR NOTIFICATION ===========================
         Route::prefix('notifications')->group(function () {
             Route::get('/', [NotificationController::class, 'index']);
             Route::get('/all-and-unread', [NotificationController::class, 'getUnreadCount']);
@@ -215,25 +178,19 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
+
+    # ===================== ROUTE FOR TEACHERS ===========================
     Route::prefix('teacher')->middleware('teacher')->group(function () {
-        // Ví rút của giảng viên
         Route::get('/balance/{user}', [PaymentController::class, 'balanceWithdrawalWallets']);
-        // Tạo lệnh rút tiền
         Route::post('/add-request-withdraw/{id_user}', [PaymentController::class, 'createCommandWithdrawMoney']);
-        // Lịch sử rút tiền;
         Route::get('/history-withdraw/{id_user}', [PaymentController::class, 'historyWithdraw']);
-        // Danh sách khóa học
         Route::get('/course', [CourseController::class, 'index']);
-        //Thêm khoá học mới
         Route::post('/course', [CourseController::class, 'storeNewCourse']);
-        // Route::get('/course/{course}', [CourseController::class, 'showCourseTeacher']);
 
 
-
+        # ===================== ROUTE FOR TEACHERS MANAGE ===========================
         Route::prefix('manage')->group(function () {
-            // Check điều kiện để gửi khóa học đi xem xét
             Route::get('/{course}/manage-menu', [TargetController::class, 'checkCourseCompletion']);
-            //Quản lý mục tiêu khóa học
             Route::get('/{course}/target-student', [TargetController::class, 'getCourseGoals']);
             Route::put('/{course}/target-student', [TargetController::class, 'updateTargetStudent']);
 
@@ -293,15 +250,12 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     # ===================== ROUTE FOR TEACHER ===========================
-
     Route::prefix('teachers')->group(function () {
         Route::get('/', [TeacherController::class, 'getTeachers']);
-        //Danh sách giảng viên theo tháng
         Route::get('/list-teacher-month', [TeacherController::class, 'listTeacherMonth']);
     });
 
 
-    // Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 
     # ===================== ROUTE FOR POSTS ===========================
@@ -309,41 +263,35 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('', [PostController::class, 'store']);
         Route::put('/{slug}', [PostController::class, 'update']);
         Route::delete('/{slug}', [PostController::class, 'destroy']);
-        //lưu trữ bài viết
         Route::post('/save/{slug}', [PostController::class, 'savePost']);
-        //Huỷ lưu trữ bài viết
         Route::post('/unsave/{slug}', [PostController::class, 'unsavePost']);
-        //Danh sách bài viết được lưu
         Route::get('/saved', [PostController::class, 'getSavedPosts']);
-        //Check xem bạn bài viết hay chưa
         Route::get('/check-saved/{slug}', [PostController::class, 'checkSavedPost']);
-
-        //like bài viết
         Route::post('/like/{slug}', [PostController::class, 'likePost']);
-        //unlike bài viết
         Route::post('/unlike/{slug}', [PostController::class, 'unlikePost']);
-        //check đã like hay chưa
         Route::get('/check-like/{slug}', [PostController::class, 'checkLikePost']);
 
     });
-}); 
+});
 
-// route voucher chưa đăng nhập
+# ===================== ROUTE FOR NOT LOGIN ===========================
+
+
+# ===================== ROUTE FOR VOUCHERS ===========================
 Route::prefix('vouchers')->group(function () {
     Route::get('/new-voucher', [VoucherController::class, 'newVoucher']);
 });
 
-// Redirect vnpay
+# ===================== ROUTE FOR TRANSACTIONS ===========================
 Route::prefix('transactions')->group(function () {
     Route::get('/deposit', [PaymentController::class, 'depositController']);
 });
 
-//Không cần xác thực => vào trang web có thể xem được luôn
-# ===================== ROUTE FOR BANNERS ===========================
 
+# ===================== ROUTE FOR BANNERS ===========================
 Route::get('/banners', [BannerController::class, 'getBanners']);
 
-# ===================== ROUTE FOR POSTS ===========================
+# ===================== ROUTE FOR CATEGORIES POST ===========================
 Route::prefix('categories')->group(function () {
     Route::get('/has-posts', [CategoryController::class, 'getCatHasPosts']);
     Route::get('/name', [CategoryController::class, 'getNameCategories']);
@@ -351,55 +299,37 @@ Route::prefix('categories')->group(function () {
 });
 
 # ===================== ROUTE FOR POSTS ===========================
-
 Route::prefix('posts')->group(function () {
     Route::get('/', [PostController::class, 'getPosts']);
     Route::get('/by-category-posts/{slug}', [PostController::class, 'getPostsByCategory']);
-//chi tiết bài viết
     Route::get('/{slug}', [PostController::class, 'show']);
 });
-// Danh sách bài viết nổi bật;
 Route::get('/post-outstanding', [PostController::class, 'listPostOutstanding']);
 
 # ===================== ROUTE FOR TEACHER ===========================
-
 Route::prefix('teachers')->group(function () {
-    //    Route::get('/', [TeacherController::class, 'getTeachers']);
-
-    // Danh sách khóa học của một teacher cụ thể
     Route::get('/list-courses/{id}', [TeacherController::class, 'getCoursesTeacher']);
-
-    // Tìm kiếm giảng viên;
     Route::get('/search-teacher', [TeacherController::class, 'searchTeachers']);
-
-    //
 });
 
-# ===================== ROUTE FOR COURSE ===========================
 
+# ===================== ROUTE FOR COURSE ===========================
 Route::prefix('courses')->group(function () {
-    // Tìm kiếm khoá học
     Route::get('/search-course', [CourseController::class, 'searchCourses']);
-    //Chi tiết khoá học đối với người chưa đăng nhập vào hệ thống
     Route::get('detail/{slug}', [CourseDetailController::class, 'courseDetail']);
     Route::get('detail/quiz/{slug}', [CourseDetailController::class, 'courseQuizDetail']);
-
-    // Khóa học mới nhất
     Route::get('new-course', [CourseHomePageController::class, 'listNewCourse']);
-    // Khóa học giảm giá
     Route::get('sale-course', [CourseHomePageController::class, 'listCourseSale']);
-    // Khóa học nổi bật
     Route::get('popular-course', [CourseHomePageController::class, 'listCoursePopular']);
     Route::get('category-course', [CourseHomePageController::class, 'getAllCourseByCategory']);
-    //Danh sách những khoá học liên quan
     Route::get('related-course/{slug}', action: [CourseDetailController::class, 'listCourseRelated']);
 });
 
 
 # ===================== ROUTE FOR LESSON ===========================
-Route::prefix('lessons')->group(function () {
-    // Route::get('/lesson-detail/{id}', [LessonController::class, 'lessonDetail']);
-});
+// Route::prefix('lessons')->group(function () {
+// Route::get('/lesson-detail/{id}', [LessonController::class, 'lessonDetail']);
+// });
 
 # ===================== ROUTE FOR COMMENT ===========================
 Route::prefix('comments')->group(function () {

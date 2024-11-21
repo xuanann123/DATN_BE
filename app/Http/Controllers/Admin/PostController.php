@@ -30,6 +30,7 @@ class PostController extends Controller
         $timeFilter = $request->time_filter;
 
         $posts = Post::query()
+        ->where('user_id', auth()->id())
             ->search($searchQuery) // tim kiem
             ->statusFilter($statusFilter) // loc theo trang thai
             ->timeFilter($timeFilter) // loc theo thoi gian
