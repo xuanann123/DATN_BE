@@ -319,8 +319,12 @@ Route::prefix('courses')->group(function () {
     Route::get('detail/{slug}', [CourseDetailController::class, 'courseDetail']);
     Route::get('detail/quiz/{slug}', [CourseDetailController::class, 'courseQuizDetail']);
     Route::get('new-course', [CourseHomePageController::class, 'listNewCourse']);
+    
     Route::get('sale-course', [CourseHomePageController::class, 'listCourseSale']);
+    //Khoá học nổi bật
     Route::get('popular-course', [CourseHomePageController::class, 'listCoursePopular']);
+    //Khoá học miễn phí
+    Route::get('free-course', [CourseHomePageController::class, 'listCourseFree']);
     Route::get('category-course', [CourseHomePageController::class, 'getAllCourseByCategory']);
     Route::get('related-course/{slug}', action: [CourseDetailController::class, 'listCourseRelated']);
 });
