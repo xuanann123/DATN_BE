@@ -124,7 +124,7 @@ class TeacherController extends Controller
             $totalStudent += DB::table('user_courses')->where('id_course', $course->id)->count();
         }
 
-        
+
         //Lấy số lượng follow của giảng viên
         $follow = DB::table('follows')
             ->where('following_id', $id)
@@ -228,26 +228,35 @@ class TeacherController extends Controller
         $oneMonthAgo = Carbon::now()->subMonth();
         // Danh sách teachers
         $teachers = User::select('id', 'name', 'avatar')
-            ->whereHas('courses')
-            ->withCount('courses')
+            ->whereHas('courses', function ($query) {
+                // Thêm điều kiện để lấy các khoá học có status là 'course'
+                $query->where('status', 'approved');
+                $query->where("is_active", 1);
+
+            })
+            ->withCount([
+                'courses as total_courses' => function ($query) {
+                    $query->where('status', 'approved');
+                    $query->where("is_active", 1);
+                }
+            ])
+
             //Lấy số lượng rating ra
             ->whereIn('user_type', [User::TYPE_TEACHER, User::TYPE_ADMIN])
             ->where('created_at', '>=', $oneMonthAgo)
-            ->orderBy('courses_count', 'desc')
+            ->orderBy('total_courses', 'desc')
             ->limit(6)
             ->get();
 
-        
+
         //Duyệt qua từng giảng viên thêm những thuộc tính total_courses, total_ratings, average_rating
         foreach ($teachers as $teacher) {
             $total_rating = 0;
             $ratings_avg_rate = 0;
-            $teacher->total_courses = DB::table('courses')->where('id_user', $teacher->id)->count();
-          
+
             //Lấy total của tất cả khoá học của giảng viên
             foreach ($teacher->courses as $course) {
                 $total_rating += DB::table('ratings')->where('id_course', $course->id)->count();
-                //Cộng tất cả cả rates / 5 
                 $ratings_avg_rate += DB::table('ratings')->where('id_course', $course->id)->avg('rate');
             }
 

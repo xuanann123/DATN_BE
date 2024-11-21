@@ -310,12 +310,14 @@ class CourseDetailController extends Controller // di ve sinh
             //Danh sách khoá học nằm trong category này
 
             $listCoursesRelated = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'id_user', 'id_category')
+                ->whereNot('slug', $course->slug)
                 ->with('user:id,name,avatar')
                 ->withCount('ratings')
                 ->withAvg('ratings', 'rate')
                 ->where('id_category', $category->id)
-                ->where('id', '!=', $course->id)
+                //Lấy những khoá khác khoá học này
                 ->where('is_active', 1)
+                //Khoá học được kiểm duyệt
                 ->where('status', 'approved')
                 ->get();
             foreach ($listCoursesRelated as $course) {
