@@ -294,7 +294,15 @@
                                                     <span class="text-muted">{{ $course->author_name }}</span>
                                                 </td>
                                                 <td>
-                                                    <p class="mb-0">Số lượng</p>
+                                                    <p class="mb-0">Số lượt đánh giá </p>
+                                                    <span class="text-muted">{{ $course->total_ratings }}</span>
+                                                </td>
+                                                <td>
+                                                    <p class="mb-0">Điểm trung bình</p>
+                                                    <span class="text-muted">{{ round($course->average_rating, 1)}}</span>
+                                                </td>
+                                                <td>
+                                                    <p class="mb-0">Số lượt bán</p>
                                                     <span class="text-muted">{{ $course->total_sales }}</span>
                                                 </td>
                                                 <td>

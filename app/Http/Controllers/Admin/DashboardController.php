@@ -39,17 +39,20 @@ class DashboardController extends Controller
         $topCourses = DB::table('courses')
             ->join('bills', 'courses.id', '=', 'bills.id_course')
             ->join('users', 'courses.id_user', '=', 'users.id')
+            ->leftJoin('ratings', 'courses.id', '=', 'ratings.id_course')
             ->select(
                 'courses.id as course_id',
                 'courses.name as course_name',
                 'courses.thumbnail as course_thumbnail',
                 'users.name as author_name',
-                DB::raw('COUNT(bills.id) as total_sales'),
-                DB::raw('SUM(bills.total_coin_after_discount) as total_revenue')
+                DB::raw('COUNT(bills.id) as total_sales'), // Tổng số lượt bán
+                DB::raw('SUM(bills.total_coin_after_discount) as total_revenue'), // Tổng doanh thu
+                DB::raw('COUNT(ratings.id) as total_ratings'), // Số lượng đánh giá
+                DB::raw('AVG(ratings.rate) as average_rating') // Điểm đánh giá trung bình
             )
             ->groupBy('courses.id', 'courses.name', 'courses.thumbnail', 'users.name')
-            ->orderByDesc('total_sales')
-            ->take(5)
+            ->orderByDesc('total_sales') // Sắp xếp theo tổng số bán
+            ->take(5) // Lấy 5 khóa học bán chạy nhất
             ->get();
 
         // Doanh thu trong biểu đồ;
