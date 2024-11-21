@@ -131,6 +131,7 @@ class PostController extends Controller
         try {
             //Hiển thị dữ liệu chi tiết bài viết
             $post = Post::where('slug', $slug)->where('is_active', '=', 1)->first();
+           
             if ($post) {
                 // Danh sách bài viết cùng tác giả đó
                 $relatedPosts = Post::where('user_id', $post->user_id)
@@ -149,6 +150,7 @@ class PostController extends Controller
                         'views',
                         'published_at',
                     ]);
+                $post->increment('views');
                 // Dữ liệu chi tiết bài viết
                 $post = [
                     'id' => $post->id,
