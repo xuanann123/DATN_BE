@@ -14,6 +14,9 @@ use App\Http\Requests\Client\User\UpdateProfileRequest;
 use App\Http\Requests\Client\User\ChangePasswordRequest;
 use App\Models\Course;
 use App\Models\Lesson;
+use App\Models\LessonProgress;
+use App\Models\Quiz;
+use App\Models\QuizProgress;
 use App\Models\User;
 use App\Models\UserCourse;
 use App\Models\Video;
@@ -236,14 +239,29 @@ class UserController extends Controller
         $history = [];
 
         // Tính tổng số lượng bài học mà người dùng đã học
-        $totalLessons = DB::table('lesson_progress')->where('id_user', $user->id)->count();
+
+        // Tổng số lượng bài học đã học check thông qua thằng id_user và is_completed
+        $completed_lessons = LessonProgress::where('id_user', $user->id)
+            ->where('is_completed', 1)
+            ->count();
+
+        // Số lượng quiz đã hoàn thành check thông qua thằng id_user và is_completed
+        $completed_quizzes = QuizProgress::where('user_id', $user->id)
+            ->where('is_completed', 1)
+            ->count();
+
+        $totalLessons = $completed_lessons + $completed_quizzes;
 
         // Lấy danh sách bài học gần nhất dựa vào bảng lesson_progress có giới hạn
         $lessonProgress = DB::table('lesson_progress')->where('id_user', $user->id)
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get();
-
+        //Lấy danh sách bài học quiz gần nhất dựa vào bảng quiz_progress
+        $quizProgress = DB::table('quiz_progress')->where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get();
         // Duyệt qua để lấy những bài học này
         foreach ($lessonProgress as $key => $item) {
             $history = Lesson::find($item->id_lesson);
@@ -251,6 +269,18 @@ class UserController extends Controller
             $history->makeHidden('module');
             $data[] = $history;
         }
+
+        foreach ($quizProgress as $key => $item) {
+            $history = Quiz::find($item->quiz_id);
+            $history['slug'] = $history->module->course->slug;
+            $history->makeHidden('module');
+            $data[] = $history;
+        }
+        //Duyệt qua data và sắp xếp cái thằng created_at
+        $data = collect($data)
+            ->sortByDesc('created_at')
+            ->values()
+            ->toArray();
 
         // Check xem dữ liệu data rỗng thì trả về 204
         if (empty($data)) {
