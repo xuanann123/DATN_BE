@@ -260,8 +260,8 @@ class UserController extends Controller
         //Lấy danh sách bài học quiz gần nhất dựa vào bảng quiz_progress
         $quizProgress = DB::table('quiz_progress')->where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
-            ->paginate($limit);
-            
+            ->limit($limit)
+            ->get();
         // Duyệt qua để lấy những bài học này
         foreach ($lessonProgress as $key => $item) {
             $history = Lesson::find($item->id_lesson);
@@ -280,6 +280,8 @@ class UserController extends Controller
         $data = collect($data)
             ->sortByDesc('created_at')
             ->values()
+            //Lấy số lượng bản ghi = $limit
+            ->take($limit)
             ->toArray();
 
         // Check xem dữ liệu data rỗng thì trả về 204
