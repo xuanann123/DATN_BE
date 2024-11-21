@@ -593,21 +593,21 @@ class CourseController extends Controller
             $beginnerCourses = Course::select('id')
                 ->where('status', 'approved')
                 ->where('is_active', 1)
-                ->where('level', 'Sơ Cấp')
+                ->where('level', 'Sơ cấp')
                 ->limit(2)
                 ->pluck('id');
 
             $intermediateCourses = Course::select('id')
                 ->where('status', 'approved')
                 ->where('is_active', 1)
-                ->where('level', 'Trung Cấp')
+                ->where('level', 'Trung cấp')
                 ->limit(2)
                 ->pluck('id');
 
             $masterCourses = Course::select('id')
                 ->where('status', 'approved')
                 ->where('is_active', 1)
-                ->where('level', 'Chuyên Gia')
+                ->where('level', 'Chuyên gia')
                 ->limit(2)
                 ->pluck('id');
 
