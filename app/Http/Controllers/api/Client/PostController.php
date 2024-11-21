@@ -511,11 +511,13 @@ class PostController extends Controller
                     'title' => $post->title,
                     'slug' => $post->slug,
                     'description' => $post->description,
-                    'thumbnail' => $post->thumbnail,
                     'content' => $post->content,
+                    'thumbnail' => $post->thumbnail,
+                    'published_at' => $post->published_at,
                     'views' => $post->views,
-                    'categories' => $post->categories->select('id', 'name'),
-                    'tags' => $post->tags->select('id', 'name')
+                    'categories' => $post->categories->select('id', 'name','slug'),
+                    'tags' => $post->tags->select('id', 'name','slug'),
+                    'user' => $post->user
                 ];
             }
             return response()->json([
