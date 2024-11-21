@@ -345,7 +345,9 @@ Route::get('/banners', [BannerController::class, 'getBanners']);
 
 # ===================== ROUTE FOR POSTS ===========================
 Route::prefix('categories')->group(function () {
+    Route::get('/has-posts', [CategoryController::class, 'getCatHasPosts']);
     Route::get('/name', [CategoryController::class, 'getNameCategories']);
+
 });
 
 # ===================== ROUTE FOR POSTS ===========================
