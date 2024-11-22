@@ -264,7 +264,7 @@ class AuthController extends Controller
                     'message' => 'Refresh token không hợp lệ hoặc đã hết hạn.',
                     'data' => [],
                     'status' => 400
-                ], 400)->withCookie(cookie('refresh_token', '', -1));
+                ], 400)->withCookie(cookie('refresh_token', '', -1, null, null, false, true, true, null));
             }
 
             $user = $token->user;
@@ -394,7 +394,7 @@ class AuthController extends Controller
         try {
             // check password reset token
             $prToken = DB::table('password_reset_tokens')->where('token', $request->token)->first();
-            if(!$prToken || Carbon::parse($prToken->created_at)->addMinutes(15)->isPast()) {
+            if (!$prToken || Carbon::parse($prToken->created_at)->addMinutes(15)->isPast()) {
                 return response()->json([
                     'message' => 'Yêu cầu đặt lại mật khẩu không hợp lệ hoặc đã hết hạn',
                     'data' => [],
@@ -446,11 +446,15 @@ class AuthController extends Controller
             // xóa AT
             $user->currentAccessToken()->delete();
 
+            // Xóa cookie
+            $cookie = cookie('refresh_token', '', -1, null, null, false, true, true, null);
+
             return response()->json([
                 'message' => 'Đăng xuất thành công.',
                 'data' => [],
                 'status' => 200,
-            ], 200)->withCookie(cookie('refresh_token', '', -1));
+            ], 200)->withCookie($cookie);
+            ;
         } catch (Throwable $e) {
             Log::error("Error: " . $e->getMessage());
             return response()->json([

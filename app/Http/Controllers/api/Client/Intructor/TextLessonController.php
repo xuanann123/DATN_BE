@@ -115,6 +115,11 @@ class TextLessonController extends Controller
                 $document->delete();
             }
 
+            // Cập nhật lại position của các bài học còn lại sau khi xóa bài học hiện tại
+            $positionToDelete = $lesson->position;
+            Lesson::where('id_module', $lesson->id_module)
+                ->where('position', '>', $positionToDelete)
+                ->decrement('position');
             $lesson->delete();
 
             DB::commit();

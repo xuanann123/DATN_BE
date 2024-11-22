@@ -104,19 +104,26 @@ class UploadVideoController extends Controller
                 }
                 $video->delete();
             }
+
+            // Cập nhật lại position của các bài học còn lại sau khi xóa bài học hiện tại
+            $positionToDelete = $lesson->position;
+            Lesson::where('id_module', $lesson->id_module)
+                ->where('position', '>', $positionToDelete)
+                ->decrement('position');
             $lesson->delete();
+
             DB::commit();
             return response()->json([
-                'status' => 200,
+                'status' => 'success',
                 'message' => 'Xóa bài học thành công!',
                 'data' => []
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'status' => 500,
+                'status' => 'error',
                 'message' => 'Đã xảy ra lỗi khi xóa bài học.',
-                'error' => $e->getMessage(),
+                'error' => $e->getLine(),
             ], 500);
         }
     }
@@ -144,7 +151,7 @@ class UploadVideoController extends Controller
                     if ($video->url && Storage::exists($video->url)) {
                         Storage::delete($video->url);
                     }
-                } else if(!empty($request['video_youtube_id'])) {
+                } else if (!empty($request['video_youtube_id'])) {
                     $data['url'] = '';
                     $data['type'] = 'url';
                     $data['video_youtube_id'] = $request['video_youtube_id'];
