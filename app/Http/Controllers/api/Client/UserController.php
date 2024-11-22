@@ -154,7 +154,7 @@ class UserController extends Controller
             ->withAvg('ratings', 'rate')
             ->where('status', 'approved')
             ->where('is_active', 1)
-            ->where('id_user', $authUser->id)
+            ->where('courses.id_user', $authUser->id)
             ->withCount([
                 'modules as lessons_count' => function ($query) {
                     $query->whereHas('lessons');
