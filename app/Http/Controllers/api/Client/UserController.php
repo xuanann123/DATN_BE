@@ -152,8 +152,6 @@ class UserController extends Controller
         $authUser = Auth::user();
         $myCourseBought = $authUser->usercourses()->with('modules', 'user')
             ->withAvg('ratings', 'rate')
-            ->where('status', 'approved')
-            ->where('is_active', 1)
             ->withCount([
                 'modules as lessons_count' => function ($query) {
                     $query->whereHas('lessons');
