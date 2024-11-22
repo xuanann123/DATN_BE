@@ -106,7 +106,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('favorite/{is_course}', [CourseHomePageController::class, 'favoriteCourse']);
         Route::get('check-favorite/{is_course}', [CourseHomePageController::class, 'checkFavoriteCourse']);
         Route::post('unfavorite/{is_course}', [CourseHomePageController::class, 'unfavoriteCourse']);
-        Route::get('check-buy-course/{id_user}/{id_course}', [PaymentController::class, 'checkBuyCourse']);
+        Route::get('check-buy-course/{id_user}/{slug}', [PaymentController::class, 'checkBuyCourse']);
         Route::get('detail/check/{slug}', [CourseDetailController::class, 'courseDetailForAuthUser']);
         Route::post('{course}/update-progress', [StudentCourseController::class, 'updateProgress']);
         Route::get('check-done-course/{slug}', [StudentCourseController::class, 'checkDoneCourse']);
