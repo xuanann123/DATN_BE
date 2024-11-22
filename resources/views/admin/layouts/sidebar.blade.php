@@ -206,6 +206,15 @@
                     </div>
                 </li>
 
+                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Thống kê</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ route('admin.charts.revenue') }}"
+                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                        <i class="ri-bar-chart-line"></i> <span>Thống kê doanh thu</span>
+                    </a>
+                </li>
+
                 {{-- Giao dịch --}}
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý giao dịch</span>
                 </li>
@@ -290,6 +299,7 @@
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
                                         <a href="ui-alerts.html" class="nav-link" data-key="t-alerts">Thêm mới</a>
+
                                     </li>
                                     <li class="nav-item">
                                         <a href="ui-badges.html" class="nav-link" data-key="t-badges">Danh sách</a>
@@ -301,15 +311,6 @@
                     </div>
                 </li>
 
-
-                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Thống kê</span>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ route('admin.charts.revenue') }}"
-                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class="ri-bar-chart-line"></i> <span>Thống kê doanh thu</span>
-                    </a>
-                </li>
             </ul>
         </div>
         <!-- Sidebar -->
