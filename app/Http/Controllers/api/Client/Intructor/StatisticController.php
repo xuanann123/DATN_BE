@@ -8,6 +8,7 @@ use App\Models\UserCourse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Rating;
 
 class StatisticController extends Controller
 {
@@ -20,14 +21,71 @@ class StatisticController extends Controller
             $statistics = $this->getStatistic($userId, $timeFilter);
 
             return response()->json([
-                'status' => 200,
+                'status' => 'success',
                 'message' => 'Thống kê chung cho giảng viên.',
                 'data' => $statistics,
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 500,
+                'status' => 'error',
                 'message' => 'Đã xảy ra lỗi khi lấy thống kê.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getStudentsForCourse(Course $course)
+    {
+        try {
+            // số bản ghi muốn hiển thị trên 1 trang, nếu không có thì mặc định là 8
+            $limit = request()->get('limit', 8);
+
+            $students = UserCourse::where('id_course', $course->id)
+                ->with('user:id,name,avatar')
+                ->latest('created_at')
+                ->paginate($limit);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Danh sách học viên.',
+                'data' => [
+                    'total_students' => $students->count(),
+                    'students' => $students
+                ],
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi lấy danh sách học viên.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getRatingsForCourse(Course $course)
+    {
+        try {
+            // số bản ghi muốn hiển thị trên 1 trang, nếu không có thì mặc định là 8
+            $limit = request()->get('limit', 8);
+
+            $ratings = Rating::where('id_course', $course->id)
+                ->with('user:id,name,avatar')
+                ->latest('created_at')
+                ->paginate($limit);
+            ;
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Danh sách đánh giá.',
+                'data' => [
+                    'total_ratings' => $ratings->count(),
+                    'ratings' => $ratings
+                ],
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi lấy danh sách học viên.',
                 'error' => $e->getMessage(),
             ], 500);
         }

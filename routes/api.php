@@ -33,6 +33,7 @@ use App\Http\Controllers\api\Client\Intructor\UploadVideoController;
 use App\Http\Controllers\api\Client\CourseController as CourseHomePageController;
 use App\Http\Controllers\api\Client\Student\CourseController as StudentCourseController;
 use App\Http\Controllers\api\Client\Intructor\LessonController as LessonTeacherController;
+use App\Http\Controllers\api\Client\Intructor\PreviewCourseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -185,8 +186,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/balance/{user}', [PaymentController::class, 'balanceWithdrawalWallets']);
         Route::post('/add-request-withdraw/{id_user}', [PaymentController::class, 'createCommandWithdrawMoney']);
         Route::get('/history-withdraw/{id_user}', [PaymentController::class, 'historyWithdraw']);
+        // Danh sách khóa học
         Route::get('/course', [CourseController::class, 'index']);
         Route::post('/course', [CourseController::class, 'storeNewCourse']);
+        Route::get('/course/{course}/preview', [PreviewCourseController::class, 'index']);
 
 
         # ===================== ROUTE FOR TEACHERS MANAGE ===========================
@@ -245,7 +248,11 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('{course}/submit', [CourseController::class, 'submit']);
             // Thống kê chung
             Route::prefix('/statistic')->group(function () {
+                // Thống kê chung
                 Route::get('/', [StatisticController::class, 'index']);
+                // Thống kê trong 1 khóa học
+                Route::get('/course/{course}/get-students', [StatisticController::class,'getStudentsForCourse']);
+                Route::get('/course/{course}/get-ratings', [StatisticController::class,'getRatingsForCourse']);
             });
         });
     });
@@ -320,7 +327,7 @@ Route::prefix('courses')->group(function () {
     Route::get('detail/{slug}', [CourseDetailController::class, 'courseDetail']);
     Route::get('detail/quiz/{slug}', [CourseDetailController::class, 'courseQuizDetail']);
     Route::get('new-course', [CourseHomePageController::class, 'listNewCourse']);
-    
+
     Route::get('sale-course', [CourseHomePageController::class, 'listCourseSale']);
     //Khoá học nổi bật
     Route::get('popular-course', [CourseHomePageController::class, 'listCoursePopular']);
