@@ -113,7 +113,7 @@
                                                 <input type="date" class="form-control mx-2" name="end_date" max="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
                                             </div>
                                             <div class="col-1 d-flex align-items-center">
-                                                <button class="btn btn-primary">Lọc</button>
+                                                <button class="btn btn-primary" id="submit">Lọc</button>
                                             </div>
                                         </div>
                                     </form>
@@ -169,6 +169,36 @@
 @endsection
 @section('script-libs')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    // Lấy các phần tử cần thiết
+                    const startDateInput = document.querySelector('input[name="start_date"]');
+                    const endDateInput = document.querySelector('input[name="end_date"]');
+                    const submitButton = document.querySelector("#submit");
+
+                    // Vô hiệu hóa nút submit ban đầu
+                    submitButton.disabled = true;
+
+                    // Hàm kiểm tra nếu cả hai trường được nhập và ngày kết thúc hợp lệ
+                    function checkInputs() {
+                        const startDate = startDateInput.value;
+                        const endDate = endDateInput.value;
+
+                        // Kiểm tra cả hai trường được nhập và ngày kết thúc hợp lệ
+                        if (startDate && endDate && new Date(endDate) >= new Date(startDate)) {
+                            submitButton.disabled = false;
+                        } else {
+                            submitButton.disabled = true;
+                        }
+                    }
+
+                    // Lắng nghe sự kiện nhập dữ liệu
+                    startDateInput.addEventListener('input', checkInputs);
+                    endDateInput.addEventListener('input', checkInputs);
+                });
+            </script>
+
+
 
             <script>
                 var ctx = document.getElementById('lineChart').getContext('2d');
