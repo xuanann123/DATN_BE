@@ -240,7 +240,7 @@
                         duyệt</span>
                 </li>
 
-            
+
 
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('admin.approval.courses.list') }}"
@@ -299,6 +299,16 @@
                         </div>
 
                     </div>
+                </li>
+
+
+                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Thống kê</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ route('admin.charts.revenue') }}"
+                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                        <i class="ri-bar-chart-line"></i> <span>Thống kê doanh thu</span>
+                    </a>
                 </li>
             </ul>
         </div>
