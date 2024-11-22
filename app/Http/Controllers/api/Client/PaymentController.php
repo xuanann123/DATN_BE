@@ -474,9 +474,9 @@ class PaymentController extends Controller
     public function checkBuyCourse(Request $request)
     {
         $userId = $request->id_user;
-        $slug = $request->slug;
+        $courseId = $request->id_course;
 
-        $course = Course::where('slug', $slug)->firstOrFail();
+        $course = Course::find($courseId);
         if (!$course) {
             return response()->json([
                 'code' => 204,
