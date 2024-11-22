@@ -698,9 +698,10 @@ class CourseController extends Controller
                                 return $lesson->lessonable->duration ?? 0;
                             });
                         })->sum();
-                        $course->is_course_bought = false;
-                        if (DB::table('user_courses')->where('id_user', auth()->id())->where('id_course', $course->id)) {
+                        if (DB::table('user_courses')->where('id_user', auth()->id())->where('id_course', $course->id)->exists()) {
                             $course->is_course_bought = true;
+                        } else {
+                            $course->is_course_bought = false;
                         }
 
 

@@ -80,6 +80,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     # ===================== ROUTE FOR LEARNING PATH ===========================
     Route::prefix('learning-path')->group(function () {
+        
         Route::get('/list-category', [CourseController::class, 'getListCategory']);
         Route::get('/list-course-by-learning-path/{slug}', [CourseController::class, 'getListCourseByLearningPath']);
 
