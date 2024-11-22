@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\QuizController;
 use App\Http\Controllers\Admin\QuestionController;
+use App\Http\Controllers\Admin\ChartController;
 
 use App\Http\Controllers\Admin\UploadVideoController;
 use App\Http\Controllers\Admin\FollowController;
@@ -170,7 +171,7 @@ Route::prefix("admin")
                 Route::get('/delete/{id}', [ModuleController::class, 'delete'])->name('delete');
                 //Lưu trữ quiz trong module
                 Route::post('/{id}/add/quiz', [ModuleController::class, 'storeQuiz'])->name('add');
-               
+
             });
         //Route with quizzes
         Route::prefix('quizzes')
@@ -242,5 +243,11 @@ Route::prefix("admin")
             ->group(function () {
                 Route::post('/add-follow', [FollowController::class, 'follow'])->name('add-follow');
                 Route::delete('/un-follow', [FollowController::class, 'unFollow'])->name('un-follow');
+            });
+
+        Route::prefix('charts')
+            ->as('charts.')
+            ->group(function () {
+                Route::get('/chart-revenue', [ChartController::class, 'chartRevenue'])->name('revenue');
             });
     });
