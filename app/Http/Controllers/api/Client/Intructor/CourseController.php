@@ -272,7 +272,7 @@ class CourseController extends Controller
             if ($course->status !== 'draft') {
                 return response()->json([
                     'status' => 400,
-                    'message' => 'Chỉ có thể xóa khóa học ở trạng thái nháp.',
+                    'message' => 'Chỉ có thể xóa khóa học ở trạng thái nháp hoặc bị từ chối.',
                     'data' => []
                 ], 400);
             }
