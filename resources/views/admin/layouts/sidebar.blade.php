@@ -64,7 +64,13 @@
                 <li class="menu-title"><span data-key="t-menu">Quản lý thống kê</span></li>
                 <li class="nav-item">
                     <a href="{{ route('admin.dashboard') }}" class="nav-link">
-                        <i class="ri-image-2-line"></i> <span>Dashboards</span>
+                        <i class="ri-image-2-line"></i> <span>Quản trị hệ thống</span>
+                    </a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ route('admin.charts.revenue') }}"
+                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                        <i class="ri-bar-chart-line"></i> <span>Thống kê doanh thu</span>
                     </a>
                 </li>
 
@@ -206,14 +212,8 @@
                     </div>
                 </li>
 
-                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Thống kê</span>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ route('admin.charts.revenue') }}"
-                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class="ri-bar-chart-line"></i> <span>Thống kê doanh thu</span>
-                    </a>
-                </li>
+               
+               
 
                 {{-- Giao dịch --}}
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý giao dịch</span>

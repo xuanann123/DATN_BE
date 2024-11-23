@@ -29,7 +29,7 @@ class DashboardController extends Controller
             ->join('bills', 'courses.id', '=', 'bills.id_course')
             ->select('users.id', 'users.name', 'users.avatar', DB::raw('SUM(bills.id) as total_sales'),
                 DB::raw('SUM(bills.total_coin_after_discount) as total_revenue'))
-            ->where('users.user_type', 'teacher')
+            ->whereIn('users.user_type', [User::TYPE_TEACHER, User::TYPE_ADMIN])
             ->groupBy('users.id', 'users.name', 'users.avatar')
             ->orderByDesc('total_sales')
             ->take(5)
