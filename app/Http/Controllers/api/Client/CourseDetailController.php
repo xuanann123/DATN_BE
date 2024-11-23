@@ -9,13 +9,16 @@ use App\Models\UserCourse;
 use Illuminate\Http\Request;
 use App\Models\LessonProgress;
 use App\Http\Controllers\Controller;
+use App\Models\Follow;
 use App\Models\QuizProgress;
+use App\Models\User;
+use App\Models\WishList;
 use Illuminate\Support\Facades\DB;
 
 class CourseDetailController extends Controller // di ve sinh
 {
-    //Phần chi tiết bài học
-    public function courseDetail($slug)
+    //Phần chi tiết bài học chưa đăng nhập
+    public function courseDetailNoLogin($slug)
     {
         try {
             //Chi tiết bài học lấy theo slug
@@ -46,6 +49,93 @@ class CourseDetailController extends Controller // di ve sinh
             // Sẽ lấy tổng số lượng tất cả các bài học là video trong khoá học đó
             $total_duration_video = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
                 ->sum('duration');
+
+            //Set giá trị trong khoá học là tổng bài học và tổng số lượng bài học
+            $course->total_lessons = $total_lessons + $total_quiz;
+            $course->total_duration_video = $total_duration_video;
+            $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+
+            // Trả về dữ liệu bên phía client khi lấy được thành công
+            return response()->json([
+                'status' => 'success',
+                'message' => "Thông tin khóa học.",
+                'data' => $course
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi lấy ra thông tin khóa hoc.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    //Phần chi tiết bài học đã đăng nhập
+    public function courseDetailLogin($slug)
+    {
+        try {
+            $user = auth()->user();
+            //Chi tiết bài học lấy theo slug
+            $course = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user', 'description', 'level', 'sort_description', 'id_category', 'trailer')
+                ->with(['category:id,name', 'user:id,name,avatar', 'tags', 'goals', 'requirements', 'audiences', 'modules.lessons', 'modules.quiz'])
+                ->withCount('ratings')
+                ->where('slug', $slug)
+                ->where('is_active', 1)
+                ->where('status', 'approved')
+                ->first();
+            if (!$course) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Khóa học không tồn tại.',
+                    'data' => []
+                ], 404);
+            }
+            // tên thằng tạo ra khóa học
+            $course->author = $course->user->name;
+
+            // Số lượng bài học trong khóa học, sử dụng flatmap để đến từng số lượng bài học trong từng chương học
+            $total_lessons = $course->modules->flatMap->lessons->count();
+            $total_quiz = $course->modules->whereNotNull('quiz')->count();
+
+            // set duration cho tung bai hoc
+            $this->setLessonDurations($course);
+
+            // Sẽ lấy tổng số lượng tất cả các bài học là video trong khoá học đó
+            $total_duration_video = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
+                ->sum('duration');
+
+            //Kiểm tra tiến độ
+            $course->progress_percent = UserCourse::where('id_user', $user->id)->where('id_course', $course->id)->first()->progress_percent ?? 0;
+
+            //Kiểm tra xem người dùng đã mua khoá học hay chưa
+            $check_buy = UserCourse::where('id_user', $user->id)->where('id_course', $course->id)->exists();
+            if ($check_buy) {
+                $course->is_course_bought = true;
+            } else {
+                $course->is_course_bought = false;
+            }
+            //Tiếp đến check follow giảng viên chưa
+            $check_follow = Follow::where('follower_id', $user->id)->where('following_id', $course->id_user)->exists();
+            if ($check_follow) {
+                $course->is_follow = true;
+
+            } else {
+                $course->is_follow = false;
+            }
+            //Kiểm tra rating chưa
+            $check_rating = Rating::where('id_user', $user->id)->where('id_course', $course->id_user)->exists();
+            if ($check_rating) {
+                $course->is_rating = true;
+
+            } else {
+                $course->is_rating = false;
+            }
+            $check_favorite = WishList::where('id_user', $user->id)->where('id_course', $course->id_user)->exists();
+            if ($check_favorite) {
+                $course->is_favorite = true;
+
+            } else {
+                $course->is_favorite = false;
+            }
 
             //Set giá trị trong khoá học là tổng bài học và tổng số lượng bài học
             $course->total_lessons = $total_lessons + $total_quiz;
@@ -309,7 +399,7 @@ class CourseDetailController extends Controller // di ve sinh
             //Lấy danh sách khoá học liên quan ra
             //Danh sách khoá học nằm trong category này
 
-            $listCoursesRelated = Course::select('id', 'slug','level', 'name', 'thumbnail', 'price', 'price_sale', 'id_user', 'id_category')
+            $listCoursesRelated = Course::select('id', 'slug', 'level', 'name', 'thumbnail', 'price', 'price_sale', 'id_user', 'id_category')
                 ->whereNot('slug', $course->slug)
                 ->with('user:id,name,avatar')
                 ->withCount('ratings')

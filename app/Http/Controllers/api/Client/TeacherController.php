@@ -36,7 +36,7 @@ class TeacherController extends Controller
             ->paginate($limit);
 
 
-        //Duyệt qua từng giảng viên thêm những thuộc tính total_courses, total_ratings, average_rating
+        //Duyệt qua từng giảng viên thêm những thuộc tính total_courses, total_ratings, ratings_avg_rate
         foreach ($teachers as $teacher) {
             $total_rating = 0;
             $ratings_avg_rate = 0;
@@ -76,7 +76,7 @@ class TeacherController extends Controller
                 u.avatar,
                 COUNT(c.id) as total_courses,
                 COUNT(r.id) as total_ratings,
-                ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
+                ROUND(IFNULL(AVG(r.rate), 0), 1) as ratings_avg_rate
             ')
             ->leftJoin('courses as c', 'u.id', '=', 'c.id_user')
             ->leftJoin('ratings as r', 'c.id', '=', 'r.id_course')
@@ -207,7 +207,7 @@ class TeacherController extends Controller
                 u.avatar as avatar,
                 COUNT(c.id) as total_courses,
                 COUNT(r.id) as total_ratings,
-                ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
+                ROUND(IFNULL(AVG(r.rate), 0), 1) as ratings_avg_rate
             ')
             ->leftJoin('courses as c', 'u.id', '=', 'c.id_user')
             ->leftJoin('ratings as r', 'c.id', '=', 'r.id_course')
@@ -218,7 +218,7 @@ class TeacherController extends Controller
                     ->orWhere('c.name', 'LIKE', "%{$searchTerm}%");
             })
             ->groupBy('u.id', 'u.name', 'u.avatar')
-            ->orderByDesc('average_rating')
+            ->orderByDesc('ratings_avg_rate')
             ->paginate($perPage, ['*'], 'page', $page);
 
         if ($teachers->count() <= 0) {
@@ -266,7 +266,7 @@ class TeacherController extends Controller
             ->get();
 
 
-        //Duyệt qua từng giảng viên thêm những thuộc tính total_courses, total_ratings, average_rating
+        //Duyệt qua từng giảng viên thêm những thuộc tính total_courses, total_ratings, ratings_avg_rate
         foreach ($teachers as $teacher) {
             $total_rating = 0;
             $ratings_avg_rate = 0;

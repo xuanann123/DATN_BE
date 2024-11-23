@@ -110,6 +110,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('detail/check/{slug}', [CourseDetailController::class, 'courseDetailForAuthUser']);
         Route::post('{course}/update-progress', [StudentCourseController::class, 'updateProgress']);
         Route::get('check-done-course/{slug}', [StudentCourseController::class, 'checkDoneCourse']);
+        Route::get('detail-login/{slug}', [CourseDetailController::class, 'courseDetailLogin']);
     });
 
 
@@ -310,7 +311,7 @@ Route::prefix('categories')->group(function () {
 Route::prefix('posts')->group(function () {
     Route::get('/', [PostController::class, 'getPosts']);
     Route::get('/by-category-posts/{slug}', [PostController::class, 'getPostsByCategory']);
-    Route::get('/{slug}', [PostController::class, 'show']);
+    Route::get('/detail/{slug}', [PostController::class, 'show']);
 });
 Route::get('/post-outstanding', [PostController::class, 'listPostOutstanding']);
 
@@ -324,7 +325,7 @@ Route::prefix('teachers')->group(function () {
 # ===================== ROUTE FOR COURSE ===========================
 Route::prefix('courses')->group(function () {
     Route::get('/search-course', [CourseController::class, 'searchCourses']);
-    Route::get('detail/{slug}', [CourseDetailController::class, 'courseDetail']);
+    Route::get('detail-no-login/{slug}', [CourseDetailController::class, 'courseDetailNoLogin']);
     Route::get('detail/quiz/{slug}', [CourseDetailController::class, 'courseQuizDetail']);
     Route::get('new-course', [CourseHomePageController::class, 'listNewCourse']);
 
