@@ -16,29 +16,14 @@
                                 <form action="javascript:void(0);">
                                     <div class="row g-3 mb-0 align-items-center">
                                         <div class="col-sm-auto">
-                                            <div class="input-group">
-                                                <input type="text"
-                                                    class="form-control border-0 dash-filter-picker shadow"
-                                                    data-provider="flatpickr" data-range-date="true"
-                                                    data-date-format="d M, Y"
-                                                    data-deafult-date="01 Jan 2022 to 31 Jan 2022">
-                                                <div class="input-group-text bg-primary border-primary text-white">
-                                                    <i class="ri-calendar-2-line"></i>
-                                                </div>
-                                            </div>
+
                                         </div>
                                         <!--end col-->
                                         <div class="col-auto">
-                                            <button type="button" class="btn btn-soft-success"><i
-                                                    class="ri-add-circle-line align-middle me-1"></i> Add Product</button>
+                                            <a href="{{ route('admin.courses.create') }}"  class="btn btn-soft-primary"><i
+                                                    class="ri-add-circle-line align-middle me-1"></i>Thêm khóa học</a>
                                         </div>
-                                        <!--end col-->
-                                        <div class="col-auto">
-                                            <button type="button"
-                                                class="btn btn-soft-info btn-icon waves-effect waves-light layout-rightside-btn"><i
-                                                    class="ri-pulse-line"></i></button>
-                                        </div>
-                                        <!--end col-->
+
                                     </div>
                                     <!--end row-->
                                 </form>
@@ -61,7 +46,7 @@
                                     </div>
                                     <div class="flex-shrink-0">
                                         <h5 class="text-success fs-14 mb-0">
-                                            <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +16.24 %
+{{--                                            <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +16.24 %--}}
                                         </h5>
                                     </div>
                                 </div>
@@ -69,7 +54,7 @@
                                     <div>
                                         <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value"
                                                 data-target="{{ $totalRevenue }}">0</span></h4>
-                                        <a href="" class="text-decoration-underline">Chi tiết</a>
+{{--                                        <a href="" class="text-decoration-underline">Chi tiết</a>--}}
                                     </div>
                                     <div class="avatar-sm flex-shrink-0">
                                         <span class="avatar-title bg-success-subtle rounded fs-3">
@@ -91,7 +76,7 @@
                                     </div>
                                     <div class="flex-shrink-0">
                                         <h5 class="text-danger fs-14 mb-0">
-                                            <i class="ri-arrow-right-down-line fs-13 align-middle"></i> -3.57 %
+{{--                                            <i class="ri-arrow-right-down-line fs-13 align-middle"></i> -3.57 %--}}
                                         </h5>
                                     </div>
                                 </div>
@@ -99,7 +84,7 @@
                                     <div>
                                         <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value"
                                                 data-target="{{ $countTeachers }}">0</span></h4>
-                                        <a href="" class="text-decoration-underline">Danh sách giảng viên</a>
+{{--                                        <a href="" class="text-decoration-underline">Danh sách giảng viên</a>--}}
                                     </div>
                                     <div class="avatar-sm flex-shrink-0">
                                         <span class="avatar-title bg-info-subtle rounded fs-3">
@@ -121,7 +106,7 @@
                                     </div>
                                     <div class="flex-shrink-0">
                                         <h5 class="text-success fs-14 mb-0">
-                                            <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +29.08 %
+{{--                                            <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +29.08 %--}}
                                         </h5>
                                     </div>
                                 </div>
@@ -129,7 +114,7 @@
                                     <div>
                                         <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value"
                                                 data-target="{{ $countCourses }}">0</span> </h4>
-                                        <a href="" class="text-decoration-underline">Danh sách khóa học</a>
+{{--                                        <a href="" class="text-decoration-underline">Danh sách khóa học</a>--}}
                                     </div>
                                     <div class="avatar-sm flex-shrink-0">
                                         <span class="avatar-title bg-primary-subtle rounded fs-3">
@@ -150,16 +135,16 @@
                                         <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Số lượng học viên</p>
                                     </div>
                                     <div class="flex-shrink-0">
-                                        <h5 class="text-muted fs-14 mb-0">
-                                            +0.00 %
-                                        </h5>
+{{--                                        <h5 class="text-muted fs-14 mb-0">--}}
+{{--                                            +0.00 %--}}
+{{--                                        </h5>--}}
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-end justify-content-between mt-4">
                                     <div>
                                         <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value"
                                                 data-target="{{ $countStudents }}">0</span></h4>
-                                        <a href="" class="text-decoration-underline">Danh sách học viên</a>
+{{--                                        <a href="" class="text-decoration-underline">Danh sách học viên</a>--}}
                                     </div>
                                     <div class="avatar-sm flex-shrink-0">
                                         <span class="avatar-title bg-primary-subtle rounded fs-3">

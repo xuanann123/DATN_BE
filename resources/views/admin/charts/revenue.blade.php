@@ -34,7 +34,7 @@
                                     </div>
                                     <div class="flex-shrink-0">
                                         <h5 class="text-success fs-14 mb-0">
-                                            <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +16.24 %
+{{--                                            <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +16.24 %--}}
                                         </h5>
                                     </div>
                                 </div>
@@ -42,7 +42,7 @@
                                     <div>
                                         <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value"
                                                                                               data-target="{{ $totalRevenue }}">0</span></h4>
-                                        <a href="" class="text-decoration-underline">Chi tiết</a>
+{{--                                        <a href="" class="text-decoration-underline">Chi tiết</a>--}}
                                     </div>
                                     <div class="avatar-sm flex-shrink-0">
                                         <span class="avatar-title bg-success-subtle rounded fs-3">
@@ -66,7 +66,7 @@
                                     </div>
                                     <div class="flex-shrink-0">
                                         <h5 class="text-success fs-14 mb-0">
-                                            <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +29.08 %
+{{--                                            <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +29.08 %--}}
                                         </h5>
                                     </div>
                                 </div>
@@ -74,7 +74,7 @@
                                     <div>
                                         <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value"
                                                                                               data-target="{{ $countCourses }}">0</span> </h4>
-                                        <a href="" class="text-decoration-underline">Danh sách khóa học</a>
+{{--                                        <a href="" class="text-decoration-underline">Danh sách khóa học</a>--}}
                                     </div>
                                     <div class="avatar-sm flex-shrink-0">
                                         <span class="avatar-title bg-primary-subtle rounded fs-3">
@@ -95,7 +95,7 @@
                             <div class="card-header border-0 align-items-center d-flex">
                                 @if(isset($countOrders))
                                     <h4 class="card-title mb-0 flex-grow-1">
-                                        Doanh thu từ {{ \Carbon\Carbon::parse($start_date)->format('d-m-Y') }} đến {{ \Carbon\Carbon::parse($end_date)->format('d-m-Y') }}
+                                        Doanh thu từ {{ \Carbon\Carbon::parse($start_date)->format('h:i:s d-m-Y') }} đến {{ \Carbon\Carbon::parse($end_date)->format('h:i:s d-m-Y') }}
                                     </h4>
                                 @else
                                     <h4 class="card-title mb-0 flex-grow-1">Doanh thu năm 2024</h4>
@@ -106,11 +106,11 @@
                                         <div class="row">
                                             <div class="col-5 d-flex align-items-center">
                                                 <label class="text-nowrap" style="margin-top: 10px;">Ngày bắt đầu</label>
-                                                <input type="date" class="form-control mx-2" name="start_date" max="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
+                                                <input type="datetime-local" class="form-control mx-2" value="{{ $start_date ?? '' }}" name="start_date" max="{{ \Carbon\Carbon::now()->format('d-m-Y') }}">
                                             </div>
                                             <div class="col-5 d-flex align-items-center">
                                                 <label class="text-nowrap" style="margin-top: 10px;">Ngày kết thúc</label>
-                                                <input type="date" class="form-control mx-2" name="end_date" max="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
+                                                <input type="datetime-local" class="form-control mx-2" value="{{ $end_date ?? '' }}" name="end_date" max="{{ \Carbon\Carbon::now()->format('d-m-Y') }}">
                                             </div>
                                             <div class="col-1 d-flex align-items-center">
                                                 <button class="btn btn-primary" id="submit">Lọc</button>

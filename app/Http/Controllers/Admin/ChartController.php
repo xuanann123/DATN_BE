@@ -34,8 +34,8 @@ class ChartController extends Controller
                     'courses.name',
                     DB::raw('SUM(bills.total_coin_after_discount * 1000) as total_revenue')
                 )
-                ->whereDate('bills.created_at', '>=', $start_date)
-                ->whereDate('bills.created_at', '<=', $end_date)
+                ->where('bills.created_at', '>=', $start_date)
+                ->where('bills.created_at', '<=', $end_date)
                 ->groupBy(DB::raw('DATE(bills.created_at)'), 'courses.name')
                 ->orderBy('day')
                 ->get();
