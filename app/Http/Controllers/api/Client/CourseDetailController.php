@@ -89,6 +89,7 @@ class CourseDetailController extends Controller // di ve sinh
                     'data' => []
                 ], 404);
             }
+            $courseId = $course->id;
             // tên thằng tạo ra khóa học
             $course->author = $course->user->name;
 
@@ -107,14 +108,14 @@ class CourseDetailController extends Controller // di ve sinh
             $course->progress_percent = UserCourse::where('id_user', $user->id)->where('id_course', $course->id)->first()->progress_percent ?? 0;
 
             //Kiểm tra xem người dùng đã mua khoá học hay chưa
-            $check_buy = UserCourse::where('id_user', $user->id)->where('id_course', $course->id)->exists();
+            $check_buy = UserCourse::where('id_user', $user->id)->where('id_course', $courseId)->exists();
             if ($check_buy) {
                 $course->is_course_bought = true;
             } else {
                 $course->is_course_bought = false;
             }
             //Tiếp đến check follow giảng viên chưa
-            $check_follow = Follow::where('follower_id', $user->id)->where('following_id', $course->id_user)->exists();
+            $check_follow = Follow::where('follower_id', $user->id)->where('following_id', $course->user->id)->exists();
             if ($check_follow) {
                 $course->is_follow = true;
 
@@ -122,17 +123,15 @@ class CourseDetailController extends Controller // di ve sinh
                 $course->is_follow = false;
             }
             //Kiểm tra rating chưa
-            $check_rating = Rating::where('id_user', $user->id)->where('id_course', $course->id_user)->exists();
-            if ($check_rating) {
+            
+            if ($check_rating = DB::table('ratings')->where('id_user', $user->id)->where('id_course', $courseId)->exists()) {
                 $course->is_rating = true;
-
             } else {
                 $course->is_rating = false;
             }
-            $check_favorite = WishList::where('id_user', $user->id)->where('id_course', $course->id_user)->exists();
-            if ($check_favorite) {
+            //Kiểm tra yêu thích khoá học chưa
+            if (DB::table('wish_lists')->where('id_user', $user->id)->where('id_course', $course->id)->exists()) {
                 $course->is_favorite = true;
-
             } else {
                 $course->is_favorite = false;
             }
