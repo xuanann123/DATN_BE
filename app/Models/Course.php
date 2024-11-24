@@ -143,4 +143,51 @@ class Course extends Model
         return $this->hasMany(Bill::class, 'id_course');
     }
 
+
+    // ham search
+    public function scopeSearch($query, $searchQuery)
+    {
+        $query->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->whereFullText('name', $searchQuery)
+                ->orWhereFullText('description', $searchQuery)
+                ->orWhere('name', 'LIKE', "%{$searchQuery}%")
+                ->orWhere('description', 'LIKE', "%{$searchQuery}%")
+                ->orWhereHas('category', function ($subQuery) use ($searchQuery) {
+                    $subQuery->where('name', 'LIKE', "%{$searchQuery}%");
+                })
+                ->orWhereHas('user', function ($subQuery) use ($searchQuery) {
+                    $subQuery->where('name', 'LIKE', "%{$searchQuery}%");
+                });
+        });
+    }
+
+    public function scopeSortBy($query, $sort)
+    {
+        // sort by
+        return $query->when($sort, function ($query) use ($sort) {
+            switch ($sort) {
+                case 'latest':
+                    $query->latest('created_at');
+                    break;
+                case 'oldest':
+                    $query->oldest('created_at');
+                    break;
+                case 'a-z':
+                    $query->orderBy('name', 'asc');
+                    break;
+                case 'z-a':
+                    $query->orderBy('name', 'desc');
+                    break;
+                case 'approved_first':
+                    // khoa hoc da xuat ban xep len truoc
+                    $query->orderByRaw("CASE WHEN status = ? THEN 0 ELSE 1 END", [self::COURSE_STATUS_APPROVED])
+                        ->latest('id');
+                    break;
+                default:
+                    $query->latest('id');
+                    break;
+            }
+        });
+    }
+
 }

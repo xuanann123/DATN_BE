@@ -29,16 +29,24 @@ use PhpParser\Node\Expr\Cast\String_;
 
 class CourseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try {
             // số bản ghi muốn hiển thị trên 1 trang, nếu không có thì mặc định là 8
-            $limit = request()->get('limit', 8);
+            $limit = $request->get('limit', 8);
+            $sort = $request->get('sort', 'latest');
+            // key search
+            $searchQuery = $request->search;
             //Lấy danh sách khoá học của tác giả đó.
             $courses = Course::with('user', 'category', 'tags')
                 ->where('id_user', auth()->id())
+                ->search($searchQuery) // tim kiem
+                ->sortBy($sort) // sắp xếp
                 ->latest('id')
-                ->paginate($limit);
+                ->paginate($limit)
+                ->appends([
+                    'search' => $searchQuery,
+                ]);
             //Khi lấy về đúng
             return response()->json([
                 'status' => 200,
