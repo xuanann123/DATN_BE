@@ -334,6 +334,8 @@ Route::prefix('courses')->group(function () {
     Route::get('free-course', [CourseHomePageController::class, 'listCourseFree']);
     Route::get('category-course', [CourseHomePageController::class, 'getAllCourseByCategory']);
     Route::get('related-course/{slug}', action: [CourseDetailController::class, 'listCourseRelated']);
+    //Lấy danh sách tất cả khoá học có phân trang
+    Route::get('list-course-all', [CourseHomePageController::class, 'listCourseAll']);
 });
 
 

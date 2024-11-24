@@ -16,7 +16,7 @@ class CourseController extends Controller
     public function listNewCourse()
     {
         try {
-            $courses = Course::select('id', 'slug','level', 'name', 'thumbnail', 'price', 'price_sale', 'id_user')
+            $courses = Course::select('id', 'slug', 'level', 'name', 'thumbnail', 'price', 'price_sale', 'id_user')
                 ->with(
                     'user:id,name,avatar',
                 )->withCount([
@@ -76,7 +76,7 @@ class CourseController extends Controller
     public function listCourseSale()
     {
         try {
-            $courses = Course::select('id', 'slug','level', 'name', 'thumbnail', 'price', 'price_sale', 'id_user')->with(
+            $courses = Course::select('id', 'slug', 'level', 'name', 'thumbnail', 'price', 'price_sale', 'id_user')->with(
                 'user:id,name,avatar',
             )->withCount([
                         'modules as lessons_count' => function ($query) {
@@ -138,7 +138,7 @@ class CourseController extends Controller
     {
         try {
             $limit = $request->input('limit', 5);
-            $courses = Course::select('id', 'slug', 'name','level', 'thumbnail', 'price', 'price_sale', 'id_user')->with(['user:id,name,avatar'])
+            $courses = Course::select('id', 'slug', 'name', 'level', 'thumbnail', 'price', 'price_sale', 'id_user')->with(['user:id,name,avatar'])
                 ->where('is_active', 1)
                 ->where('status', 'approved')
                 ->withCount('ratings')
@@ -212,7 +212,7 @@ class CourseController extends Controller
                 })
                 ->with([
                     'courses' => function ($query) {
-                        $query->select('id', 'slug', 'name','level', 'thumbnail', 'price', 'price_sale', 'id_user', 'id_category')
+                        $query->select('id', 'slug', 'name', 'level', 'thumbnail', 'price', 'price_sale', 'id_user', 'id_category')
                             ->where('is_active', 1)
                             ->where('status', 'approved')
                             ->withCount([
@@ -453,7 +453,7 @@ class CourseController extends Controller
             $course->makeHidden('modules');
             $course->makeHidden('ratings');
         }
-        if($courses->isEmpty()){
+        if ($courses->isEmpty()) {
             return response()->json([
                 "status" => "success",
                 "message" => "Không có khoá học nào ngày hôm nay!",
@@ -470,7 +470,7 @@ class CourseController extends Controller
     {
         try {
             $limit = $request->input('limit', 5);
-            $courses = Course::select('id', 'slug', 'name','level', 'thumbnail', 'price', 'price_sale', 'id_user')->with(['user:id,name,avatar'])
+            $courses = Course::select('id', 'slug', 'name', 'level', 'thumbnail', 'price', 'price_sale', 'id_user')->with(['user:id,name,avatar'])
                 ->where('is_active', 1)
                 ->where('status', 'approved')
                 ->where(function ($query) {
@@ -487,9 +487,9 @@ class CourseController extends Controller
                         $query->whereHas('quiz');
                     }
                 ])
-                
+
                 // ->whereIn('price', [0, null])
-                
+
                 // ->whereIn('price', [0, null])
                 ->limit($limit)
                 ->get();
@@ -529,6 +529,65 @@ class CourseController extends Controller
                 'message' => 'Danh sách khóa học nổi bật',
                 'data' => $courses,
             ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi trong quá trình lấy danh mục.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function listCourseAll(Request $request)
+    {
+        try {
+            $limit = $request->input('limit', 6);
+            $courses = Course::select('id', 'slug', 'name', 'level', 'thumbnail', 'price', 'price_sale', 'id_user')->with(['user:id,name,avatar'])
+                ->where('is_active', 1)
+                ->where('status', 'approved')
+                ->withCount('ratings')
+                ->withAvg('ratings', 'rate')
+                ->withCount([
+                    'modules as lessons_count' => function ($query) {
+                        $query->whereHas('lessons');
+                    },
+                    'modules as quiz_count' => function ($query) {
+                        $query->whereHas('quiz');
+                    }
+                ])
+                ->paginate($limit);
+
+            if ($courses->isEmpty()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không có khóa học nổi bật'
+                ], 204);
+            }
+
+            // Tính tổng số lesson, quiz và duration
+            foreach ($courses as $course) {
+                // Tính tổng lessons và quiz
+                $total_lessons = $course->modules->flatMap->lessons->count();
+                $total_quiz = $course->modules->whereNotNull('quiz')->count();
+                $course->total_lessons = $total_lessons + $total_quiz;
+
+                // Tính tổng duration của các lesson vid
+                $course->total_duration_video = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                        return $lesson->lessonable->duration ?? 0;
+                    });
+                })->sum();
+                //Chỉnh lại reating
+                $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+                $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
+
+                $course->makeHidden('modules');
+                $course->makeHidden('ratings');
+            }
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Danh sách khóa học',
+                'data' => $courses,
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
