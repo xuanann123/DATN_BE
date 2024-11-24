@@ -250,8 +250,8 @@ Route::middleware('auth:sanctum')->group(function () {
                 // Thống kê chung
                 Route::get('/', [StatisticController::class, 'index']);
                 // Thống kê trong 1 khóa học
-                Route::get('/course/{course}/get-students', [StatisticController::class,'getStudentsForCourse']);
-                Route::get('/course/{course}/get-ratings', [StatisticController::class,'getRatingsForCourse']);
+                Route::get('/course/{course}/get-students', [StatisticController::class,'getStudents']);
+                Route::get('/course/{course}/get-ratings', [StatisticController::class,'getRatings']);
             });
         });
     });

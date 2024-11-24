@@ -34,14 +34,18 @@ class StatisticController extends Controller
         }
     }
 
-    public function getStudentsForCourse(Course $course)
+    public function getStudents(Request $request)
     {
         try {
+            $userId = auth()->id(); // id giang vien dang login
             // số bản ghi muốn hiển thị trên 1 trang, nếu không có thì mặc định là 8
-            $limit = request()->get('limit', 8);
+            $limit = $request->get('limit', 8);
+            $courseId = $request->get('course');
 
-            $students = UserCourse::where('id_course', $course->id)
-                ->with('user:id,name,avatar')
+            $query = UserCourse::query();
+            $this->filterByCourse($query, $userId, $courseId);
+
+            $students = $query->with('user:id,name,avatar')
                 ->latest('created_at')
                 ->paginate($limit);
 
@@ -62,14 +66,19 @@ class StatisticController extends Controller
         }
     }
 
-    public function getRatingsForCourse(Course $course)
+    public function getRatings(Request $request)
     {
         try {
+            $userId = auth()->id(); // id giang vien dang login
             // số bản ghi muốn hiển thị trên 1 trang, nếu không có thì mặc định là 8
-            $limit = request()->get('limit', 8);
+            $limit = $request->get('limit', 8);
+            $courseId = $request->get('course');
 
-            $ratings = Rating::where('id_course', $course->id)
-                ->with('user:id,name,avatar')
+            $query = Rating::query();
+            $this->filterByCourse($query, $userId, $courseId);
+
+
+            $ratings = $query->with('user:id,name,avatar')
                 ->latest('created_at')
                 ->paginate($limit);
             ;
@@ -172,5 +181,18 @@ class StatisticController extends Controller
                 default => null,
             };
         });
+    }
+
+    private function filterByCourse($query, $userId, $courseId = null)
+    {
+        $query->whereHas('course', function ($query) use ($userId) {
+            $query->where('id_user', $userId);
+        });
+
+        if ($courseId) {
+            $query->where('id_course', $courseId);
+        }
+
+        return $query;
     }
 }
