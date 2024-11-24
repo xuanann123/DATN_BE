@@ -56,10 +56,7 @@ Route::prefix('auth')->group(function () {
     Route::post('/verify-otp-resetpassword', [AuthController::class, 'verifyOtpForResetPassword']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
-    // Route::middleware(['web'])->group(function () {
-    //     Route::get('/{social}/redirect', [SocialAuthController::class, 'redirectToSocial']);
-    //     Route::get('/{social}/callback', [SocialAuthController::class, 'handleSocialCallback']);
-    // });
+
 });
 
 //Xác thực cần đăng nhập để thao tác

@@ -18,6 +18,7 @@ class DashboardController extends Controller
         $countCourses = Course::where('status', 'approved')->count();
         $countStudents = User::where('user_type', 'member')->count();
 
+
         $year = 2024;
 
         $countOrders2024 = Bill::whereYear('created_at', $year)->count(); // Đếm số lượng orders trong năm 2024
@@ -27,8 +28,13 @@ class DashboardController extends Controller
         $topInstructors = DB::table('users')
             ->join('courses', 'users.id', '=', 'courses.id_user')
             ->join('bills', 'courses.id', '=', 'bills.id_course')
-            ->select('users.id', 'users.name', 'users.avatar', DB::raw('SUM(bills.id) as total_sales'),
-                DB::raw('SUM(bills.total_coin_after_discount) as total_revenue'))
+            ->select(
+                'users.id',
+                'users.name',
+                'users.avatar',
+                DB::raw('SUM(bills.id) as total_sales'),
+                DB::raw('SUM(bills.total_coin_after_discount) as total_revenue')
+            )
             ->whereIn('users.user_type', [User::TYPE_TEACHER, User::TYPE_ADMIN])
             ->groupBy('users.id', 'users.name', 'users.avatar')
             ->orderByDesc('total_sales')
@@ -65,6 +71,16 @@ class DashboardController extends Controller
             ->groupBy(DB::raw('MONTH(created_at)'))
             ->orderBy('month') // Sắp xếp theo tháng
             ->get();
+        //Tổng số lượng người đăng kí khoá học theo tháng thông qua bảng user_courses
+        $countOrders = DB::table('user_courses')
+            ->select(
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('COUNT(*) as total_orders')
+            )
+            ->whereYear('created_at', 2024)
+            ->groupBy(DB::raw('MONTH(created_at)'))
+            ->orderBy('month')
+            ->get();
 
         // Định dạng dữ liệu để phù hợp với biểu đồ
         $months = [];
@@ -73,7 +89,12 @@ class DashboardController extends Controller
         foreach ($revenueData as $data) {
             $months[] = $data->month;
             $revenues[] = $data->total_revenue;
+
         }
-        return view('admin.dashboard', compact('totalRevenue', 'countTeachers', 'countCourses', 'countStudents', 'countOrders2024', 'totalRevenue2024', 'topInstructors', 'topCourses', 'months', 'revenues'));
+
+        // Chuyển dữ liệu sang dạng JSON để sử dụng trong JavaScript
+        $monthsJson = json_encode($months);
+        $revenuesJson = json_encode($revenues);
+        return view('admin.dashboard', data: compact('totalRevenue', 'countTeachers', 'countCourses', 'countStudents', 'countOrders2024', 'totalRevenue2024', 'topInstructors', 'topCourses',  'monthsJson', 'revenuesJson'));
     }
 }
