@@ -78,7 +78,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     # ===================== ROUTE FOR LEARNING PATH ===========================
     Route::prefix('learning-path')->group(function () {
-        
+
         Route::get('/list-category', [CourseController::class, 'getListCategory']);
         Route::get('/list-course-by-learning-path/{slug}', [CourseController::class, 'getListCourseByLearningPath']);
 
@@ -127,6 +127,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('quiz/check-quiz', [LessonController::class, 'checkQuiz']);
         Route::put('quiz/quiz-progress/{quiz}', [LessonController::class, 'updateQuizProgress']);
         Route::get('quiz/result/{userId}/{quizId}', [LessonController::class, 'getQuizResult']);
+        Route::get('{lesson}/download-resourse', [LessonController::class, 'downloadResource']);
     });
 
     # ===================== ROUTE FOR NOTE ===========================

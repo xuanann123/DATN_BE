@@ -5,17 +5,18 @@ namespace App\Http\Controllers\api\Client\Student;
 use App\Models\Quiz;
 use App\Models\Video;
 use App\Models\Lesson;
+use App\Models\Option;
 use App\Models\Document;
+use App\Models\Question;
+use App\Models\UserAnswer;
 use App\Models\UserCourse;
+use App\Models\QuizProgress;
 use Illuminate\Http\Request;
 use App\Models\LessonProgress;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Client\Lessons\LessonProgressRequest;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Client\Lessons\QuizProgressRequest;
-use App\Models\Option;
-use App\Models\Question;
-use App\Models\QuizProgress;
-use App\Models\UserAnswer;
+use App\Http\Requests\Client\Lessons\LessonProgressRequest;
 
 class LessonController extends Controller
 {
@@ -53,6 +54,43 @@ class LessonController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Đã xảy ra lỗi khi lấy thông tin bài học.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function downloadResource(Lesson $lesson)
+    {
+        try {
+            // Kiểm tra lessonable có phải là document không
+            if ($lesson->lessonable_type !== 'App\\Models\\Document') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không tìm thấy bài học text hoặc tài nguyên.',
+                    'data' => []
+                ], 404);
+            }
+
+            // Lấy path tài nguyên
+            $document = $lesson->lessonable;
+            $resourcePath = $document->resourse_path;
+
+            // Kiểm tra file tồn tại
+            if (!Storage::exists($resourcePath)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không tìm thấy tài nguyên.',
+                    'data' => []
+                ], 204);
+            }
+
+            // download file
+            return Storage::download($resourcePath, basename($resourcePath));
+        } catch (\Exception $e) {
+            //Lỗi server báo lỗi
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi tải xuống tài nguyên.',
                 'error' => $e->getMessage(),
             ], 500);
         }
@@ -407,7 +445,7 @@ class LessonController extends Controller
         }
     }
 
-    private function checkCourseProgress($user ,$course)
+    private function checkCourseProgress($user, $course)
     {
         // Tống số lượng bài học trong khoá học
         $total_lessons = $course->modules->flatMap->lessons->count();
