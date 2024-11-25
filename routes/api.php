@@ -34,6 +34,7 @@ use App\Http\Controllers\api\Client\CourseController as CourseHomePageController
 use App\Http\Controllers\api\Client\Student\CourseController as StudentCourseController;
 use App\Http\Controllers\api\Client\Intructor\LessonController as LessonTeacherController;
 use App\Http\Controllers\api\Client\Intructor\PreviewCourseController;
+use App\Http\Controllers\api\Client\QnAController;
 
 /*
 |--------------------------------------------------------------------------
@@ -169,7 +170,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/check-follow/{id_user}/{id_teacher}', [FollowController::class, 'checkFollow']);
         Route::post('/register-teacher', [UserController::class, 'registerTeacher']);
         Route::get('/check-history-learning', [UserController::class, 'checkLearning']);
-
+        //CHAT AI
+        Route::get('/qna', [QnAController::class, 'index'])->name('qna');
+        Route::post('/qna/ask', [QnAController::class, 'askQuestion']);
         # ===================== ROUTE FOR NOTIFICATION ===========================
         Route::prefix('notifications')->group(function () {
             Route::get('/', [NotificationController::class, 'index']);
