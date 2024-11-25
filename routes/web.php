@@ -24,7 +24,7 @@ use App\Http\Controllers\Admin\ChartController;
 
 use App\Http\Controllers\Admin\UploadVideoController;
 use App\Http\Controllers\Admin\FollowController;
-
+use App\Http\Controllers\Admin\QnAController;
 use App\Http\Controllers\api\Client\PaymentController;
 
 
@@ -250,4 +250,8 @@ Route::prefix("admin")
             ->group(function () {
                 Route::get('/chart-revenue', [ChartController::class, 'chartRevenue'])->name('revenue');
             });
+
+
+        Route::get('/qna', [QnAController::class, 'index'])->name('qna');
+        Route::post('/qna/ask', [QnAController::class, 'askQuestion']);
     });
