@@ -45,7 +45,6 @@
                 <div class="w-100 overflow-hidden position-relative">
                     <!-- conversation user -->
                     <div class="position-relative">
-
                         <div class="position-relative" id="users-chat">
                             <div class="p-3 user-chat-topbar">
                                 <div class="row align-items-center">
@@ -57,12 +56,6 @@
                                             </div>
                                             <div class="flex-grow-1 overflow-hidden">
                                                 <div class="d-flex align-items-center">
-                                                    <div
-                                                        class="flex-shrink-0 chat-user-img online user-own-img align-self-center me-3 ms-0">
-                                                        <img src="{{ asset('theme/admin/assets/images/users/multi-user.jpg') }}"
-                                                            class="rounded-circle avatar-xs" alt="">
-                                                        <span class="user-status"></span>
-                                                    </div>
                                                     <div class="flex-grow-1 overflow-hidden">
                                                         <h5 class="text-truncate mb-0 fs-16"><a class="text-reset username"
                                                                 data-bs-toggle="offcanvas" href="#userProfileCanvasExample"
@@ -284,7 +277,7 @@
                                     <div class="col-auto">
                                         <div class="chat-input-links ms-2">
                                             <div class="links-list-item">
-                                                <button type="button" id="send"
+                                                <button id="send"
                                                     class="btn btn-success chat-send waves-effect waves-light"
                                                     onclick="sendMessage()">
                                                     <i class="ri-send-plane-2-fill align-bottom"></i>
@@ -294,8 +287,6 @@
                                     </div>
                                 </div>
                             </form>
-
-
                         </div>
 
                         <div class="replyCard">
@@ -338,7 +329,6 @@
                     alert("Hãy nhập câu hỏi trước khi gửi!");
                     return;
                 }
-
                 // Hiển thị tin nhắn đã gửi
                 const userMessageHtml =
                     `<li class="chat-message user-message"><div class="message-content">${question}</div></li>`;
@@ -357,7 +347,6 @@
                             question
                         })
                     });
-
                     const data = await response.json();
 
                     const answer = data.answer;
@@ -374,8 +363,7 @@
                     messagesList.innerHTML += errorHtml;
                 }
             }
-
-            // Bắt sự kiện khi nhấn nút gửi
+            // Bắt sự kiện enter
             sendButton.addEventListener('click', function(event) {
                 event.preventDefault();
                 sendMessage();
