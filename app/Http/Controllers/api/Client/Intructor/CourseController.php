@@ -546,7 +546,7 @@ class CourseController extends Controller
     public function courseCheckout(Request $request)
     {
         $slug = $request->slug;
-        $course = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user')->withCount([
+        $course = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user','id_category','level')->withCount([
             'modules as lessons_count' => function ($query) {
                 $query->whereHas('lessons');
             },
@@ -555,6 +555,7 @@ class CourseController extends Controller
             }
         ])
             ->with('user:id,name,avatar')
+            ->with('category:id,name,slug')
             ->withCount('ratings')
             ->where('slug', $slug)
             ->firstOrFail();
