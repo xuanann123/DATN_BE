@@ -9,16 +9,6 @@ use Illuminate\Http\Request;
 
 class QnAController extends Controller
 {
-    public function index()
-    {
-        $user = auth()->user();
-        $title = "Hỏi đáp trên hệ thống";
-        // Retrieve all questions and answers from the database
-        $qnaHistory = QnA::where('user_id', $user->id)->get();
-        // Return the view with history data
-        return view('admin.qna.index', compact('title', 'qnaHistory'));
-    }
-
     public function askQuestion(Request $request)
     {
         $question = $request->input('question');
