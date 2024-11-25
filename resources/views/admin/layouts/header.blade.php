@@ -607,12 +607,13 @@
                         <a class="dropdown-item" href="{{ route('admin.chat.index') }}"><i
                                 class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span
                                 class="align-middle">Tin nhắn</span></a>
-{{--                        <a class="dropdown-item" href="pages-profile.html"><i--}}
-{{--                                class="mdi mdi-wallet text-muted fs-16 align-middle me-1"></i> <span--}}
-{{--                                class="align-middle">Balance : <b>$5971.67</b></span></a>--}}
+                        <a class="dropdown-item" href="{{ route('admin.qna') }}"><i
+                                class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span
+                                class="align-middle">Hỏi đáp</span></a>
                         <a class="dropdown-item" href="{{ route('admin.logout') }}"><i
                                 class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span
                                 class="align-middle" data-key="t-logout">Logout</span></a>
+
                     </div>
                 </div>
             </div>
