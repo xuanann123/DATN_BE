@@ -608,7 +608,7 @@
                                 class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span
                                 class="align-middle">Tin nhắn</span></a>
                         <a class="dropdown-item" href="{{ route('admin.qna') }}"><i
-                                class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span
+                                class=" ri-questionnaire-line text-muted fs-16 align-middle me-1"></i> <span
                                 class="align-middle">Hỏi đáp</span></a>
                         <a class="dropdown-item" href="{{ route('admin.logout') }}"><i
                                 class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span
@@ -822,11 +822,17 @@
                 fetchUnreadNotificationCount()
                 loadNotifications()
             })
+        // window.Echo.private(`App.Models.UserFollow.${userId}`)
+        //     .notification((notification) => {
+                
+        //     })
 
         window.Echo.channel('request-withdraw-money')
             .listen('RequestWithdrawMoney', (event) => {
                 fetchUnreadNotificationCount()
                 loadNotifications()
             });
+
+
     })
 </script>

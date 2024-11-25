@@ -250,8 +250,12 @@ Route::prefix("admin")
             ->group(function () {
                 Route::get('/chart-revenue', [ChartController::class, 'chartRevenue'])->name('revenue');
             });
+        Route::prefix('qna')
+            ->group(function () {
+                Route::get('', [QnAController::class, 'index'])->name('qna');
+                Route::post('/ask', [QnAController::class, 'askQuestion']);
+                Route::get('/search', [QnAController::class, 'search']);
+                Route::get('/delete-all', [QnAController::class, 'deleteAll'])->name('qna.delete.all');
+            });
 
-
-        Route::get('/qna', [QnAController::class, 'index'])->name('qna');
-        Route::post('/qna/ask', [QnAController::class, 'askQuestion']);
     });
