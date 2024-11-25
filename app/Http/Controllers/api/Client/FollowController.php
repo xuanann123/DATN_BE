@@ -4,7 +4,9 @@ namespace App\Http\Controllers\api\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Follow;
+use App\Models\Notification;
 use App\Models\User;
+use App\Notifications\FollowNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -39,33 +41,50 @@ class FollowController extends Controller
 
     public function follow(Request $request)
     {
-        //id người sẽ được theo dõi
-        $following_id = $request->following_id;
-        //Lấy id người dùng đang online hiện tại
-        $follower = Auth::user();
-        $following = User::find($following_id);
-        if (!$following) {
+        try {
+            $usersAdmin = User::where('user_type', 'admin')->get();
+            //id người sẽ được theo dõi
+            $following_id = $request->following_id;
+            //Lấy id người dùng đang online hiện tại
+            $follower = Auth::user();
+            $following = User::find($following_id);
+            if (!$following) {
+                return response()->json([
+                    "status" => "error",
+                    'message' => "Không tồn tại người mà bạn muốn theo dõi",
+                    "data" => [],
+                ], 404);
+            }
+            //Kiểm tra xem người dùng này đã follow chưa
+            if (!$follower->following()->where("following_id", $following->id)->exists()) {
+                $follower->following()->attach($following->id);
+                //Lấy thằng vừa được thêm dữ liệu vào bảng trung gian
+                $follow = Follow::where([
+                    ['follower_id', '=', $follower->id],
+                    ['following_id', '=', $following->id]
+                ])->firstOrFail();
+                //Lưu thông báo
+                $following = $following->notify(new FollowNotification($follow));
+                return response()->json([
+                    "status" => "success",
+                    "message" => "Theo dõi thành công",
+                    "data" => [],
+                ], 201);
+            }
+            //Đã theo dõi từ trước sẽ báo lỗi 400
             return response()->json([
                 "status" => "error",
-                'message' => "Không tồn tại người mà bạn muốn theo dõi",
+                "message" => "Bạn đã theo dõi user này",
                 "data" => [],
-            ], 404);
-        }
-        //Kiểm tra xem người dùng này đã follow chưa
-        if (!$follower->following()->where("following_id", $following_id)->exists()) {
-            $follower->following()->attach($following_id);
+            ], 400);
+        } catch (\Exception $e) {
             return response()->json([
-                "status" => "success",
-                "message" => "Theo dõi thành công",
+                "status" => "error",
+                "message" => $e->getMessage(),
                 "data" => [],
-            ], 201);
+            ], 500);
         }
-        //Đã theo dõi từ trước sẽ báo lỗi 400
-        return response()->json([
-            "status" => "error",
-            "message" => "Bạn đã theo dõi user này",
-            "data" => [],
-        ], 400);
+
     }
     public function unfollow(Request $request)
     {
