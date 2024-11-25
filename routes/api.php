@@ -243,7 +243,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::put('{course}/disable-course', [CourseController::class, 'disableCourse']);
             // hien thi khoa hoc
             Route::put('{course}/enable-course', [CourseController::class, 'enableCourse']);
-            // submit cho admin de xem xet khoa hoc
+            // submit cho admin de xem xet khoa hoc => realtime
             Route::post('{course}/submit', [CourseController::class, 'submit']);
             // Thống kê chung
             Route::prefix('/statistic')->group(function () {
@@ -277,8 +277,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/like/{slug}', [PostController::class, 'likePost']);
         Route::post('/unlike/{slug}', [PostController::class, 'unlikePost']);
         Route::get('/check-like/{slug}', [PostController::class, 'checkLikePost']);
-
     });
+    
 });
 
 # ===================== ROUTE FOR NOT LOGIN ===========================
