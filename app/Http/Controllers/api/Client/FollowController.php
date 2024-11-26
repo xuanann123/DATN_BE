@@ -65,10 +65,13 @@ class FollowController extends Controller
                 ])->firstOrFail();
                 //Lưu thông báo
                 $following = $following->notify(new FollowNotification($follow));
+
                 return response()->json([
                     "status" => "success",
                     "message" => "Theo dõi thành công",
-                    "data" => [],
+                    "data" => [
+                        "follow" => $follow
+                    ],
                 ], 201);
             }
             //Đã theo dõi từ trước sẽ báo lỗi 400

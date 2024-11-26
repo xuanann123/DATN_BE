@@ -34,48 +34,782 @@
             border-radius: 8px;
             max-width: 70%;
         }
-
-        .highlight {
-            background-color: rgb(253, 253, 229);
-
-        }
-
-        /* Style cho tin nhắn được active */
-        .active {
-            background-color: #dcdbec;
-            /* Màu nền nổi bật */
-            border-radius: 8px;
-            /* Thêm viền màu vàng */
-            padding: 5px;
-            /* Tăng khoảng cách để dễ nhìn */
-            transition: background-color 1s, transform 1s;
-            /* Thêm hiệu ứng chuyển động */
-        }
-
-        /* Nếu bạn muốn hiệu ứng nhấp nháy khi tìm thấy */
-        @keyframes highlightAnimation {
-            0% {
-                background-color: #92b0db;
-            }
-
-            50% {
-                background-color: rgb(224, 224, 212);
-            }
-
-            100% {
-                background-color: #c3c1be;
-            }
-        }
-
-        .active {
-            border-radius: 5px;
-            animation: highlightAnimation 1s ease-in-out infinite;
-        }
     </style>
 @endsection
 
 @section('content')
     <div class="chat-wrapper d-lg-flex gap-1 mx-n4 mt-n4 p-1">
+        <div class="chat-leftsidebar">
+            <div class="px-4">
+                <div class="d-flex align-items-start">
+                    <div class="flex-grow-1">
+                        <h5 class="mb-4">Hỏi đáp</h5>
+                    </div>
+                </div>
+            </div> <!-- .p-4 -->
+            <ul class="nav nav-tabs nav-tabs-custom nav-success nav-justified" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#chats" role="tab" aria-selected="true">
+                        Lịch sử tìm kiếm
+                    </a>
+                </li>
+
+            </ul>
+
+            <div class="tab-content text-muted">
+                <div class="tab-pane active" id="chats" role="tabpanel">
+                    <div class="chat-room-list pt-3" data-simplebar="init">
+                        <div class="simplebar-wrapper" style="margin: -16px 0px 0px;">
+                            <div class="simplebar-height-auto-observer-wrapper">
+                                <div class="simplebar-height-auto-observer"></div>
+                            </div>
+                            <div class="simplebar-mask">
+                                <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                                    <div class="simplebar-content-wrapper" tabindex="0" role="region"
+                                        aria-label="scrollable content" style="height: auto; overflow: hidden;">
+                                        <div class="simplebar-content" style="padding: 16px 0px 0px;">
+
+
+                                            <div class="d-flex align-items-center px-4 mt-1 pt-2 mb-2">
+                                                <div class="flex-grow-1">
+                                                    <h4 class="mb-0 fs-11 text-muted text-uppercase">Lịch sử câu hỏi</h4>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="chat-message-list">
+
+                                                <ul class="list-unstyled chat-list chat-user-list mb-0" id="channelList">
+                                                    <li>
+                                                        <a href="{{ request()->fullUrlWithQuery(['status' => 'today']) }}"
+                                                            class="unread-msg-user">
+                                                            <div class="d-flex align-items-center">
+                                                                <div
+                                                                    class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">
+                                                                    <div class="avatar-xxs">
+                                                                        <div
+                                                                            class="avatar-title bg-light rounded-circle text-body">
+                                                                            #</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex-grow-1 overflow-hidden">
+                                                                    <p class="text-truncate mb-0">Hôm nay</p>
+                                                                </div>
+                                                                <div>
+                                                                    <div class="flex-shrink-0 ms-2"><span
+                                                                            class="badge bg-dark-subtle text-body rounded p-1">{{ $count['today'] }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="{{ request()->fullUrlWithQuery(['status' => 'yesterday']) }}"
+                                                            class="unread-msg-user">
+                                                            <div class="d-flex align-items-center">
+                                                                <div
+                                                                    class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">
+                                                                    <div class="avatar-xxs">
+                                                                        <div
+                                                                            class="avatar-title bg-light rounded-circle text-body">
+                                                                            #</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex-grow-1 overflow-hidden">
+                                                                    <p class="text-truncate mb-0">Hôm qua</p>
+                                                                </div>
+                                                                <div>
+                                                                    <div class="flex-shrink-0 ms-2"><span
+                                                                            class="badge bg-dark-subtle text-body rounded p-1">{{ $count['yesterday'] }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="{{ request()->fullUrlWithQuery(['status' => 'last-week']) }}"
+                                                            class="unread-msg-user">
+                                                            <div class="d-flex align-items-center">
+                                                                <div
+                                                                    class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">
+                                                                    <div class="avatar-xxs">
+                                                                        <div
+                                                                            class="avatar-title bg-light rounded-circle text-body">
+                                                                            #</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex-grow-1 overflow-hidden">
+                                                                    <p class="text-truncate mb-0">7 ngày trước đó</p>
+                                                                </div>
+                                                                <div>
+                                                                    <div class="flex-shrink-0 ms-2"><span
+                                                                            class="badge bg-dark-subtle text-body rounded p-1">{{ $count['last_week'] }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="{{ request()->fullUrlWithQuery(['status' => 'last-month']) }}"
+                                                            class="unread-msg-user">
+                                                            <div class="d-flex align-items-center">
+                                                                <div
+                                                                    class="flex-shrink-0 chat-user-img align-self-center me-2 ms-0">
+                                                                    <div class="avatar-xxs">
+                                                                        <div
+                                                                            class="avatar-title bg-light rounded-circle text-body">
+                                                                            #</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex-grow-1 overflow-hidden">
+                                                                    <p class="text-truncate mb-0">30 ngày trước đó</p>
+                                                                </div>
+                                                                <div>
+                                                                    <div class="flex-shrink-0 ms-2"><span
+                                                                            class="badge bg-dark-subtle text-body rounded p-1">{{ $count['last_month'] }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <!-- End chat-message-list -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="simplebar-placeholder" style="width: 300px; height: 650px;"></div>
+                        </div>
+                        <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
+                            <div class="simplebar-scrollbar" style="width: 0px; display: none;"></div>
+                        </div>
+                        <div class="simplebar-track simplebar-vertical" style="visibility: hidden;">
+                            <div class="simplebar-scrollbar"
+                                style="height: 0px; transform: translate3d(0px, 0px, 0px); display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="contacts" role="tabpanel">
+                    <div class="chat-room-list pt-3" data-simplebar="init">
+                        <div class="simplebar-wrapper" style="margin: -16px 0px 0px;">
+                            <div class="simplebar-height-auto-observer-wrapper">
+                                <div class="simplebar-height-auto-observer"></div>
+                            </div>
+                            <div class="simplebar-mask">
+                                <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                                    <div class="simplebar-content-wrapper" tabindex="0" role="region"
+                                        aria-label="scrollable content" style="height: auto; overflow: hidden;">
+                                        <div class="simplebar-content" style="padding: 16px 0px 0px;">
+                                            <div class="sort-contact">
+                                                <div class="mt-3">
+                                                    <div class="contact-list-title">A </div>
+                                                    <ul id="contact-sort-A" class="list-unstyled contact-list">
+                                                        <li>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="flex-shrink-0 me-2">
+                                                                    <div class="avatar-xxs"> <span
+                                                                            class="avatar-title rounded-circle bg-primary fs-10">AC</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <p class="text-truncate contactlist-name mb-0">Alice
+                                                                        Cruickshank</p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <div class="dropdown"> <a href="#"
+                                                                            class="text-muted" data-bs-toggle="dropdown"
+                                                                            aria-haspopup="true" aria-expanded="false"> <i
+                                                                                class="ri-more-2-fill"></i> </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end"> <a
+                                                                                class="dropdown-item" href="#"><i
+                                                                                    class="ri-pencil-line text-muted me-2 align-bottom"></i>Edit</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-forbid-2-line text-muted me-2 align-bottom"></i>Block</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-delete-bin-6-line text-muted me-2 align-bottom"></i>Remove</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <div class="contact-list-title">B </div>
+                                                    <ul id="contact-sort-B" class="list-unstyled contact-list">
+                                                        <li>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="flex-shrink-0 me-2">
+                                                                    <div class="avatar-xxs"> <img
+                                                                            src="assets/images/users/avatar-4.jpg"
+                                                                            class="img-fluid rounded-circle"
+                                                                            alt=""> </div>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <p class="text-truncate contactlist-name mb-0">Barrett
+                                                                        Brown</p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <div class="dropdown"> <a href="#"
+                                                                            class="text-muted" data-bs-toggle="dropdown"
+                                                                            aria-haspopup="true" aria-expanded="false"> <i
+                                                                                class="ri-more-2-fill"></i> </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end"> <a
+                                                                                class="dropdown-item" href="#"><i
+                                                                                    class="ri-pencil-line text-muted me-2 align-bottom"></i>Edit</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-forbid-2-line text-muted me-2 align-bottom"></i>Block</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-delete-bin-6-line text-muted me-2 align-bottom"></i>Remove</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <div class="contact-list-title">C </div>
+                                                    <ul id="contact-sort-C" class="list-unstyled contact-list">
+                                                        <li>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="flex-shrink-0 me-2">
+                                                                    <div class="avatar-xxs"> <span
+                                                                            class="avatar-title rounded-circle bg-primary fs-10">CK</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <p class="text-truncate contactlist-name mb-0">Chris
+                                                                        Kiernan</p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <div class="dropdown"> <a href="#"
+                                                                            class="text-muted" data-bs-toggle="dropdown"
+                                                                            aria-haspopup="true" aria-expanded="false"> <i
+                                                                                class="ri-more-2-fill"></i> </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end"> <a
+                                                                                class="dropdown-item" href="#"><i
+                                                                                    class="ri-pencil-line text-muted me-2 align-bottom"></i>Edit</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-forbid-2-line text-muted me-2 align-bottom"></i>Block</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-delete-bin-6-line text-muted me-2 align-bottom"></i>Remove</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="flex-shrink-0 me-2">
+                                                                    <div class="avatar-xxs"> <span
+                                                                            class="avatar-title rounded-circle bg-primary fs-10">CT</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <p class="text-truncate contactlist-name mb-0">Clifford
+                                                                        Taylor</p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <div class="dropdown"> <a href="#"
+                                                                            class="text-muted" data-bs-toggle="dropdown"
+                                                                            aria-haspopup="true" aria-expanded="false"> <i
+                                                                                class="ri-more-2-fill"></i> </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end"> <a
+                                                                                class="dropdown-item" href="#"><i
+                                                                                    class="ri-pencil-line text-muted me-2 align-bottom"></i>Edit</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-forbid-2-line text-muted me-2 align-bottom"></i>Block</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-delete-bin-6-line text-muted me-2 align-bottom"></i>Remove</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <div class="contact-list-title">E </div>
+                                                    <ul id="contact-sort-E" class="list-unstyled contact-list">
+                                                        <li>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="flex-shrink-0 me-2">
+                                                                    <div class="avatar-xxs"> <span
+                                                                            class="avatar-title rounded-circle bg-primary fs-10">EE</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <p class="text-truncate contactlist-name mb-0">Edith
+                                                                        Evans</p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <div class="dropdown"> <a href="#"
+                                                                            class="text-muted" data-bs-toggle="dropdown"
+                                                                            aria-haspopup="true" aria-expanded="false"> <i
+                                                                                class="ri-more-2-fill"></i> </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end"> <a
+                                                                                class="dropdown-item" href="#"><i
+                                                                                    class="ri-pencil-line text-muted me-2 align-bottom"></i>Edit</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-forbid-2-line text-muted me-2 align-bottom"></i>Block</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-delete-bin-6-line text-muted me-2 align-bottom"></i>Remove</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <div class="contact-list-title">F </div>
+                                                    <ul id="contact-sort-F" class="list-unstyled contact-list">
+                                                        <li>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="flex-shrink-0 me-2">
+                                                                    <div class="avatar-xxs"> <img
+                                                                            src="assets/images/users/avatar-3.jpg"
+                                                                            class="img-fluid rounded-circle"
+                                                                            alt=""> </div>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <p class="text-truncate contactlist-name mb-0">Frank
+                                                                        Thomas</p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <div class="dropdown"> <a href="#"
+                                                                            class="text-muted" data-bs-toggle="dropdown"
+                                                                            aria-haspopup="true" aria-expanded="false"> <i
+                                                                                class="ri-more-2-fill"></i> </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end"> <a
+                                                                                class="dropdown-item" href="#"><i
+                                                                                    class="ri-pencil-line text-muted me-2 align-bottom"></i>Edit</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-forbid-2-line text-muted me-2 align-bottom"></i>Block</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-delete-bin-6-line text-muted me-2 align-bottom"></i>Remove</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <div class="contact-list-title">G </div>
+                                                    <ul id="contact-sort-G" class="list-unstyled contact-list">
+                                                        <li>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="flex-shrink-0 me-2">
+                                                                    <div class="avatar-xxs"> <span
+                                                                            class="avatar-title rounded-circle bg-primary fs-10">GB</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <p class="text-truncate contactlist-name mb-0">Gilbert
+                                                                        Beer</p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <div class="dropdown"> <a href="#"
+                                                                            class="text-muted" data-bs-toggle="dropdown"
+                                                                            aria-haspopup="true" aria-expanded="false"> <i
+                                                                                class="ri-more-2-fill"></i> </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end"> <a
+                                                                                class="dropdown-item" href="#"><i
+                                                                                    class="ri-pencil-line text-muted me-2 align-bottom"></i>Edit</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-forbid-2-line text-muted me-2 align-bottom"></i>Block</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-delete-bin-6-line text-muted me-2 align-bottom"></i>Remove</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <div class="contact-list-title">J </div>
+                                                    <ul id="contact-sort-J" class="list-unstyled contact-list">
+                                                        <li>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="flex-shrink-0 me-2">
+                                                                    <div class="avatar-xxs"> <img
+                                                                            src="assets/images/users/avatar-4.jpg"
+                                                                            class="img-fluid rounded-circle"
+                                                                            alt=""> </div>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <p class="text-truncate contactlist-name mb-0">Janette
+                                                                        Caster</p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <div class="dropdown"> <a href="#"
+                                                                            class="text-muted" data-bs-toggle="dropdown"
+                                                                            aria-haspopup="true" aria-expanded="false"> <i
+                                                                                class="ri-more-2-fill"></i> </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end"> <a
+                                                                                class="dropdown-item" href="#"><i
+                                                                                    class="ri-pencil-line text-muted me-2 align-bottom"></i>Edit</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-forbid-2-line text-muted me-2 align-bottom"></i>Block</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-delete-bin-6-line text-muted me-2 align-bottom"></i>Remove</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="flex-shrink-0 me-2">
+                                                                    <div class="avatar-xxs"> <img
+                                                                            src="assets/images/users/avatar-7.jpg"
+                                                                            class="img-fluid rounded-circle"
+                                                                            alt=""> </div>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <p class="text-truncate contactlist-name mb-0">Joseph
+                                                                        Siegel</p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <div class="dropdown"> <a href="#"
+                                                                            class="text-muted" data-bs-toggle="dropdown"
+                                                                            aria-haspopup="true" aria-expanded="false"> <i
+                                                                                class="ri-more-2-fill"></i> </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end"> <a
+                                                                                class="dropdown-item" href="#"><i
+                                                                                    class="ri-pencil-line text-muted me-2 align-bottom"></i>Edit</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-forbid-2-line text-muted me-2 align-bottom"></i>Block</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-delete-bin-6-line text-muted me-2 align-bottom"></i>Remove</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="flex-shrink-0 me-2">
+                                                                    <div class="avatar-xxs"> <img
+                                                                            src="assets/images/users/avatar-1.jpg"
+                                                                            class="img-fluid rounded-circle"
+                                                                            alt=""> </div>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <p class="text-truncate contactlist-name mb-0">Justyn
+                                                                        Wisoky</p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <div class="dropdown"> <a href="#"
+                                                                            class="text-muted" data-bs-toggle="dropdown"
+                                                                            aria-haspopup="true" aria-expanded="false"> <i
+                                                                                class="ri-more-2-fill"></i> </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end"> <a
+                                                                                class="dropdown-item" href="#"><i
+                                                                                    class="ri-pencil-line text-muted me-2 align-bottom"></i>Edit</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-forbid-2-line text-muted me-2 align-bottom"></i>Block</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-delete-bin-6-line text-muted me-2 align-bottom"></i>Remove</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <div class="contact-list-title">K </div>
+                                                    <ul id="contact-sort-K" class="list-unstyled contact-list">
+                                                        <li>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="flex-shrink-0 me-2">
+                                                                    <div class="avatar-xxs"> <img
+                                                                            src="assets/images/users/avatar-5.jpg"
+                                                                            class="img-fluid rounded-circle"
+                                                                            alt=""> </div>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <p class="text-truncate contactlist-name mb-0">Keaton
+                                                                        King</p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <div class="dropdown"> <a href="#"
+                                                                            class="text-muted" data-bs-toggle="dropdown"
+                                                                            aria-haspopup="true" aria-expanded="false"> <i
+                                                                                class="ri-more-2-fill"></i> </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end"> <a
+                                                                                class="dropdown-item" href="#"><i
+                                                                                    class="ri-pencil-line text-muted me-2 align-bottom"></i>Edit</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-forbid-2-line text-muted me-2 align-bottom"></i>Block</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-delete-bin-6-line text-muted me-2 align-bottom"></i>Remove</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <div class="contact-list-title">L </div>
+                                                    <ul id="contact-sort-L" class="list-unstyled contact-list">
+                                                        <li>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="flex-shrink-0 me-2">
+                                                                    <div class="avatar-xxs"> <img
+                                                                            src="assets/images/users/avatar-2.jpg"
+                                                                            class="img-fluid rounded-circle"
+                                                                            alt=""> </div>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <p class="text-truncate contactlist-name mb-0">Lisa
+                                                                        Parker</p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <div class="dropdown"> <a href="#"
+                                                                            class="text-muted" data-bs-toggle="dropdown"
+                                                                            aria-haspopup="true" aria-expanded="false"> <i
+                                                                                class="ri-more-2-fill"></i> </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end"> <a
+                                                                                class="dropdown-item" href="#"><i
+                                                                                    class="ri-pencil-line text-muted me-2 align-bottom"></i>Edit</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-forbid-2-line text-muted me-2 align-bottom"></i>Block</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-delete-bin-6-line text-muted me-2 align-bottom"></i>Remove</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <div class="contact-list-title">M </div>
+                                                    <ul id="contact-sort-M" class="list-unstyled contact-list">
+                                                        <li>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="flex-shrink-0 me-2">
+                                                                    <div class="avatar-xxs"> <span
+                                                                            class="avatar-title rounded-circle bg-primary fs-10">MM</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <p class="text-truncate contactlist-name mb-0">Marian
+                                                                        Moen</p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <div class="dropdown"> <a href="#"
+                                                                            class="text-muted" data-bs-toggle="dropdown"
+                                                                            aria-haspopup="true" aria-expanded="false"> <i
+                                                                                class="ri-more-2-fill"></i> </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end"> <a
+                                                                                class="dropdown-item" href="#"><i
+                                                                                    class="ri-pencil-line text-muted me-2 align-bottom"></i>Edit</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-forbid-2-line text-muted me-2 align-bottom"></i>Block</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-delete-bin-6-line text-muted me-2 align-bottom"></i>Remove</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <div class="contact-list-title">N </div>
+                                                    <ul id="contact-sort-N" class="list-unstyled contact-list">
+                                                        <li>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="flex-shrink-0 me-2">
+                                                                    <div class="avatar-xxs"> <img
+                                                                            src="assets/images/users/avatar-6.jpg"
+                                                                            class="img-fluid rounded-circle"
+                                                                            alt=""> </div>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <p class="text-truncate contactlist-name mb-0">Nellie
+                                                                        Cornett</p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <div class="dropdown"> <a href="#"
+                                                                            class="text-muted" data-bs-toggle="dropdown"
+                                                                            aria-haspopup="true" aria-expanded="false"> <i
+                                                                                class="ri-more-2-fill"></i> </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end"> <a
+                                                                                class="dropdown-item" href="#"><i
+                                                                                    class="ri-pencil-line text-muted me-2 align-bottom"></i>Edit</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-forbid-2-line text-muted me-2 align-bottom"></i>Block</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-delete-bin-6-line text-muted me-2 align-bottom"></i>Remove</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <div class="contact-list-title">R </div>
+                                                    <ul id="contact-sort-R" class="list-unstyled contact-list">
+                                                        <li>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="flex-shrink-0 me-2">
+                                                                    <div class="avatar-xxs"> <span
+                                                                            class="avatar-title rounded-circle bg-primary fs-10">RD</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <p class="text-truncate contactlist-name mb-0">Ronald
+                                                                        Downey</p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <div class="dropdown"> <a href="#"
+                                                                            class="text-muted" data-bs-toggle="dropdown"
+                                                                            aria-haspopup="true" aria-expanded="false"> <i
+                                                                                class="ri-more-2-fill"></i> </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end"> <a
+                                                                                class="dropdown-item" href="#"><i
+                                                                                    class="ri-pencil-line text-muted me-2 align-bottom"></i>Edit</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-forbid-2-line text-muted me-2 align-bottom"></i>Block</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-delete-bin-6-line text-muted me-2 align-bottom"></i>Remove</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <div class="contact-list-title">S </div>
+                                                    <ul id="contact-sort-S" class="list-unstyled contact-list">
+                                                        <li>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="flex-shrink-0 me-2">
+                                                                    <div class="avatar-xxs"> <img
+                                                                            src="assets/images/users/avatar-5.jpg"
+                                                                            class="img-fluid rounded-circle"
+                                                                            alt=""> </div>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <p class="text-truncate contactlist-name mb-0">Sarah
+                                                                        Beattie</p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <div class="dropdown"> <a href="#"
+                                                                            class="text-muted" data-bs-toggle="dropdown"
+                                                                            aria-haspopup="true" aria-expanded="false"> <i
+                                                                                class="ri-more-2-fill"></i> </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end"> <a
+                                                                                class="dropdown-item" href="#"><i
+                                                                                    class="ri-pencil-line text-muted me-2 align-bottom"></i>Edit</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-forbid-2-line text-muted me-2 align-bottom"></i>Block</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-delete-bin-6-line text-muted me-2 align-bottom"></i>Remove</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <div class="contact-list-title">V </div>
+                                                    <ul id="contact-sort-V" class="list-unstyled contact-list">
+                                                        <li>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="flex-shrink-0 me-2">
+                                                                    <div class="avatar-xxs"> <img
+                                                                            src="assets/images/users/avatar-10.jpg"
+                                                                            class="img-fluid rounded-circle"
+                                                                            alt=""> </div>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <p class="text-truncate contactlist-name mb-0">Victor
+                                                                        Beahan</p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <div class="dropdown"> <a href="#"
+                                                                            class="text-muted" data-bs-toggle="dropdown"
+                                                                            aria-haspopup="true" aria-expanded="false"> <i
+                                                                                class="ri-more-2-fill"></i> </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end"> <a
+                                                                                class="dropdown-item" href="#"><i
+                                                                                    class="ri-pencil-line text-muted me-2 align-bottom"></i>Edit</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-forbid-2-line text-muted me-2 align-bottom"></i>Block</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-delete-bin-6-line text-muted me-2 align-bottom"></i>Remove</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <div class="contact-list-title">W </div>
+                                                    <ul id="contact-sort-W" class="list-unstyled contact-list">
+                                                        <li>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="flex-shrink-0 me-2">
+                                                                    <div class="avatar-xxs"> <img
+                                                                            src="assets/images/users/avatar-2.jpg"
+                                                                            class="img-fluid rounded-circle"
+                                                                            alt=""> </div>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <p class="text-truncate contactlist-name mb-0">Wayne
+                                                                        Runte</p>
+                                                                </div>
+                                                                <div class="flex-shrink-0">
+                                                                    <div class="dropdown"> <a href="#"
+                                                                            class="text-muted" data-bs-toggle="dropdown"
+                                                                            aria-haspopup="true" aria-expanded="false"> <i
+                                                                                class="ri-more-2-fill"></i> </a>
+                                                                        <div class="dropdown-menu dropdown-menu-end"> <a
+                                                                                class="dropdown-item" href="#"><i
+                                                                                    class="ri-pencil-line text-muted me-2 align-bottom"></i>Edit</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-forbid-2-line text-muted me-2 align-bottom"></i>Block</a>
+                                                                            <a class="dropdown-item" href="#"><i
+                                                                                    class="ri-delete-bin-6-line text-muted me-2 align-bottom"></i>Remove</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="simplebar-placeholder" style="width: 0px; height: 0px;"></div>
+                        </div>
+                        <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
+                            <div class="simplebar-scrollbar" style="width: 0px; display: none;"></div>
+                        </div>
+                        <div class="simplebar-track simplebar-vertical" style="visibility: hidden;">
+                            <div class="simplebar-scrollbar" style="height: 0px; display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end tab contact -->
+        </div>
 
         <div class="user-chat w-100 overflow-hidden">
             <div class="chat-content d-lg-flex">
@@ -95,8 +829,9 @@
                                             <div class="flex-grow-1 overflow-hidden">
                                                 <div class="d-flex align-items-center">
                                                     <div class="flex-grow-1 overflow-hidden">
-                                                        <h5 class="text-truncate mb-0 fs-16"><a class="text-reset username"
-                                                                data-bs-toggle="offcanvas" href="#userProfileCanvasExample"
+                                                        <h5 class="text-truncate mb-0 fs-16"><a
+                                                                class="text-reset username" data-bs-toggle="offcanvas"
+                                                                href="#userProfileCanvasExample"
                                                                 aria-controls="userProfileCanvasExample"><img
                                                                     src="https://dl.memuplay.com/new_market/img/com.smartwidgetlabs.chatgpt.icon.2023-06-18-09-30-08.png"
                                                                     class="rounded-circle avatar-xs" alt=""> Chat
@@ -142,7 +877,8 @@
                                                         <i data-feather="more-vertical" class="icon-sm"></i>
                                                     </button>
                                                     <div class="dropdown-menu dropdown-menu-end">
-                                                        <a class="dropdown-item" href="{{ route('admin.qna.delete.all') }}"
+                                                        <a class="dropdown-item"
+                                                            href="{{ route('admin.qna.delete.all') }}"
                                                             onclick="return confirm('Bạn muốn xoá toàn bộ câu hỏi?')"><i
                                                                 class="ri-delete-bin-5-line align-bottom text-muted me-2"></i>
                                                             Xoá toàn bộ câu hỏi</a>
@@ -172,18 +908,12 @@
                                                                     data-bs-toggle="dropdown" aria-haspopup="true"
                                                                     aria-expanded="false"> <i class="ri-more-2-fill"></i>
                                                                 </a>
-                                                                <div class="dropdown-menu"> <a
-                                                                        class="dropdown-item reply-message"
+                                                                <div class="dropdown-menu">
+                                                                    <a class="dropdown-item copy-message"
                                                                         href="#"><i
-                                                                            class="ri-reply-line me-2 text-muted align-bottom"></i>Reply</a>
-                                                                    <a class="dropdown-item" href="#"><i
-                                                                            class="ri-share-line me-2 text-muted align-bottom"></i>Forward</a>
-                                                                    <a class="dropdown-item copy-message" href="#"><i
-                                                                            class="ri-file-copy-line me-2 text-muted align-bottom"></i>Copy</a>
-                                                                    <a class="dropdown-item" href="#"><i
-                                                                            class="ri-bookmark-line me-2 text-muted align-bottom"></i>Bookmark</a>
-                                                                    <a class="dropdown-item delete-item" href="#"><i
-                                                                            class="ri-delete-bin-5-line me-2 text-muted align-bottom"></i>Delete</a>
+                                                                            class=" ri-pencil-fill me-2 text-muted align-bottom"></i>Chỉnh
+                                                                        sửa</a>
+
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -206,31 +936,16 @@
                                                             <div class="ctext-wrap-content" id="1">
                                                                 <p class="mb-0 ctext-content">{{ $message->answer }}</p>
                                                             </div>
-                                                            <div class="dropdown align-self-start message-box-drop"> <a
-                                                                    class="dropdown-toggle" href="#" role="button"
-                                                                    data-bs-toggle="dropdown" aria-haspopup="true"
-                                                                    aria-expanded="false"> <i class="ri-more-2-fill"></i>
-                                                                </a>
-                                                                <div class="dropdown-menu"> <a
-                                                                        class="dropdown-item reply-message"
-                                                                        href="#"><i
-                                                                            class="ri-reply-line me-2 text-muted align-bottom"></i>Reply</a>
-                                                                    <a class="dropdown-item" href="#"><i
-                                                                            class="ri-share-line me-2 text-muted align-bottom"></i>Forward</a>
-                                                                    <a class="dropdown-item copy-message"
-                                                                        href="#"><i
-                                                                            class="ri-file-copy-line me-2 text-muted align-bottom"></i>Copy</a>
-                                                                    <a class="dropdown-item" href="#"><i
-                                                                            class="ri-bookmark-line me-2 text-muted align-bottom"></i>Bookmark</a>
-                                                                    <a class="dropdown-item delete-item" href="#"><i
-                                                                            class="ri-delete-bin-5-line me-2 text-muted align-bottom"></i>Delete</a>
-                                                                </div>
-                                                            </div>
+                                                            
                                                         </div>
                                                         <div class="conversation-name"><span class="d-none name">Lisa
-                                                                Parker</span><small class="text-muted time">{{ $message->created_at }}
+                                                                Parker</span>
+                                                            <small
+                                                                class="text-muted time">{{ \Carbon\Carbon::parse($message->created_at)->format('d/m/Y H:i') }}
+
                                                                 am</small> <span class="text-success check-message-icon"><i
-                                                                    class="bx bx-check-double"></i></span></div>
+                                                                    class="bx bx-check-double"></i></span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </li>
@@ -309,15 +1024,17 @@
 @section('script-libs')
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            //Nút gửi
             const sendButton = document.getElementById('send');
+            //Câu hỏi đi của người dùng
             const messageInput = document.getElementById('message');
+            //Đổ lại lịch sử câu hỏi người dùng
             const messagesList = document.getElementById('messages');
             const nameUser = document.getElementById('nameUserLogin').value;
             const imageUser = document.getElementById('imageUserLogin').value;
 
-            console.log(nameUser);
-            console.log(imageUser);
-
+            // Khởi tạo bộ đếm cho id duy nhất
+            let messageId = 1;
 
             // Gửi câu hỏi đến server và nhận kết quả
             async function sendMessage() {
@@ -327,51 +1044,43 @@
                     alert("Hãy nhập câu hỏi trước khi gửi!");
                     return;
                 }
+
                 // Hiển thị tin nhắn đã gửi
                 const userMessageHtml =
-                    `
-<li class="chat-list right">
-                                                <div class="conversation-list">
-                                                    <div class="user-chat-content">
-                                                        <div class="ctext-wrap">
-                                                            <div class="ctext-wrap-content" id="5">
-                                                                <p class="mb-0 ctext-content">${question}</p>
-                                                            </div>
-                                                            <div class="dropdown align-self-start message-box-drop"> <a
-                                                                    class="dropdown-toggle" href="#" role="button"
-                                                                    data-bs-toggle="dropdown" aria-haspopup="true"
-                                                                    aria-expanded="false"> <i class="ri-more-2-fill"></i>
-                                                                </a>
-                                                                <div class="dropdown-menu"> <a
-                                                                        class="dropdown-item reply-message"
-                                                                        href="#"><i
-                                                                            class="ri-reply-line me-2 text-muted align-bottom"></i>Reply</a>
-                                                                    <a class="dropdown-item" href="#"><i
-                                                                            class="ri-share-line me-2 text-muted align-bottom"></i>Forward</a>
-                                                                    <a class="dropdown-item copy-message" href="#"><i
-                                                                            class="ri-file-copy-line me-2 text-muted align-bottom"></i>Copy</a>
-                                                                    <a class="dropdown-item" href="#"><i
-                                                                            class="ri-bookmark-line me-2 text-muted align-bottom"></i>Bookmark</a>
-                                                                    <a class="dropdown-item delete-item" href="#"><i
-                                                                            class="ri-delete-bin-5-line me-2 text-muted align-bottom"></i>Delete</a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="conversation-name"><span class="d-none name">Frank
-                                                                Thomas</span><small
-                                                                class="text-muted time">{{ \Carbon\Carbon::parse($message->created_at)->format('d/m/Y H:i') }}
-
-                                                                am</small> <span class="text-success check-message-icon"><i
-                                                                    class="bx bx-check-double"></i></span></div>
-                                                    </div>
-                                                </div>
-                                            </li>
-
-`
-                // `<li class="chat-message user-message"><div class="message-content">${question}</div></li>`;
+                    `<li class="chat-list right">
+                        <div class="conversation-list">
+                            <div class="user-chat-content">
+                                <div class="ctext-wrap">
+                            <div class="ctext-wrap-content">
+                                <p class="mb-0 ctext-content">${question}</p>
+                            </div>
+                            <div class="dropdown align-self-start message-box-drop">
+                                <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ri-more-2-fill"></i>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item reply-message" href="#"><i class="ri-reply-line me-2 text-muted align-bottom"></i>Reply</a>
+                                    <a class="dropdown-item" href="#"><i class="ri-share-line me-2 text-muted align-bottom"></i>Forward</a>
+                                    <a class="dropdown-item copy-message" href="#"><i class=" ri-pencil-fill me-2 text-muted align-bottom"></i>Copy</a>
+                                    <a class="dropdown-item" href="#"><i class="ri-bookmark-line me-2 text-muted align-bottom"></i>Bookmark</a>
+                                    <a class="dropdown-item delete-item" href="#"><i class="ri-delete-bin-5-line me-2 text-muted align-bottom"></i>Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="conversation-name">
+                            <span class="d-none name">Frank Thomas</span>
+                            <small class="text-muted time">{{ \Carbon\Carbon::parse($message->created_at)->format('d/m/Y H:i') }} am</small>
+                            <span class="text-success check-message-icon"><i class="bx bx-check-double"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </li>`;
+                //Thêm câu hỏi ngay khi người dùng hỏi
                 messagesList.innerHTML += userMessageHtml;
+                //Reset value khi thêm câu hỏi hiển thị ra màn hình 
                 messageInput.value = "";
 
+                //Xử lý fetch gửi dữ liệu đi
                 try {
                     const response = await fetch('/admin/qna/ask', {
                         method: 'POST',
@@ -384,52 +1093,41 @@
                             question
                         })
                     });
+                    //Nhận về dữ liệu data => answer
                     const data = await response.json();
-
                     const answer = data.answer;
 
-                    // Hiển thị câu trả lời từ AI
+                    // Tạo HTML cho câu trả lời với id duy nhất
+                    const uniqueId = `ai-answer-${messageId++}`;
+                    //Đổ câu trả lời vừa rồi ra 
                     const answerHtml =
-                        `
-                         <li class="chat-list left" id="1">
-                                                <div class="conversation-list">
-                                                    <div class="chat-avatar"><img
-                                                            src="https://dl.memuplay.com/new_market/img/com.smartwidgetlabs.chatgpt.icon.2023-06-18-09-30-08.png"
-                                                            alt=""></div>
-                                                    <div class="user-chat-content">
-                                                        <div class="ctext-wrap">
-                                                            <div class="ctext-wrap-content" id="1">
-                                                                <p class="mb-0 ctext-content">${answer}</p>
-                                                            </div>
-                                                            <div class="dropdown align-self-start message-box-drop"> <a
-                                                                    class="dropdown-toggle" href="#" role="button"
-                                                                    data-bs-toggle="dropdown" aria-haspopup="true"
-                                                                    aria-expanded="false"> <i class="ri-more-2-fill"></i>
-                                                                </a>
-                                                                <div class="dropdown-menu"> <a
-                                                                        class="dropdown-item reply-message"
-                                                                        href="#"><i
-                                                                            class="ri-reply-line me-2 text-muted align-bottom"></i>Reply</a>
-                                                                    <a class="dropdown-item" href="#"><i
-                                                                            class="ri-share-line me-2 text-muted align-bottom"></i>Forward</a>
-                                                                    <a class="dropdown-item copy-message"
-                                                                        href="#"><i
-                                                                            class="ri-file-copy-line me-2 text-muted align-bottom"></i>Copy</a>
-                                                                    <a class="dropdown-item" href="#"><i
-                                                                            class="ri-bookmark-line me-2 text-muted align-bottom"></i>Bookmark</a>
-                                                                    <a class="dropdown-item delete-item" href="#"><i
-                                                                            class="ri-delete-bin-5-line me-2 text-muted align-bottom"></i>Delete</a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="conversation-name"><span class="d-none name">Lisa
-                                                                Parker</span><small class="text-muted time">{{ $message->created_at }}
-                                                                am</small> <span class="text-success check-message-icon"><i
-                                                                    class="bx bx-check-double"></i></span></div>
-                                                    </div>
-                                                </div>
-                                            </li>`;
+                        `<li class="chat-list left">
+                    <div class="conversation-list">
+                        <div class="chat-avatar">
+                            <img src="https://dl.memuplay.com/new_market/img/com.smartwidgetlabs.chatgpt.icon.2023-06-18-09-30-08.png" alt="">
+                        </div>
+                        <div class="user-chat-content">
+                            <div class="ctext-wrap">
+                                <div class="ctext-wrap-content">
+                                    <p class="mb-0 ctext-content" id="${uniqueId}"></p>
+                                </div>
+                               
+                            </div>
+                            <div class="conversation-name">
+                                <span class="d-none name">Lisa Parker</span>
+                                <small class="text-muted time">{{ $message->created_at }} am</small>
+                                <span class="text-success check-message-icon"><i class="bx bx-check-double"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </li>`;
+                    //Hiển thị ra
                     messagesList.innerHTML += answerHtml;
+
+                    //Lấy được id thằng đổ ra
+                    const answerElement = document.getElementById(uniqueId);
+                    // Hiển thị câu trả lời từ từ
+                    displayTextGradually(answerElement, answer);
 
                 } catch (error) {
                     console.error('Error:', error);
@@ -438,7 +1136,19 @@
                     messagesList.innerHTML += errorHtml;
                 }
             }
-            // Bắt sự kiện enter
+
+            // Hiển thị văn bản từ từ trong phần tử HTML
+            function displayTextGradually(element, text, speed = 50) {
+                let index = 0;
+                const interval = setInterval(() => {
+                    element.textContent += text[index];
+                    index++;
+                    if (index >= text.length) {
+                        clearInterval(interval);
+                    }
+                }, speed);
+            }
+            // Bắt sự kiện khi nhấn nút gửi
             sendButton.addEventListener('click', function(event) {
                 event.preventDefault();
                 sendMessage();
