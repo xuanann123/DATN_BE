@@ -94,6 +94,10 @@ class QnAController extends Controller
             'answer' => $answer,
         ]);
 
-        return response()->json(['answer' => $answer]);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Câu hỏi trên hệ thống',
+            'data' => ['answer' => $answer]
+        ]);
     }
 }
