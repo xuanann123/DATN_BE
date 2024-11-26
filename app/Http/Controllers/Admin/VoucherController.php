@@ -73,6 +73,9 @@ class VoucherController extends Controller
         try {
             //Thêm dữ liệu
             $newVoucher = Voucher::query()->create($data);
+            //realtime voucher
+            event(new VoucherCreated($newVoucher));
+
             return redirect()->route('admin.vouchers.index')->with(['success' => 'Thêm voucher thành công']);
         } catch (\Exception $e) {
             DB::rollBack();
