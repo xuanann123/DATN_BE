@@ -8,17 +8,34 @@ use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 class QnAController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        //Lấy dữ liệu history của ngày hôm nay
+        $status = $request->input('status');
         $user = auth()->user();
         $title = "Hỏi đáp trên hệ thống";
-        // Retrieve all questions and answers from the database
-        $qnaHistory = QnA::where('user_id', $user->id)->where('created_at', '>=', now()->startOfDay())->get();
-        // Return the view with history data
-        return view('admin.qna.index', compact('title', 'qnaHistory'));
+        $qnaHistory = QnA::when($status, function ($query, $status) use ($user) {
+            match ($status) {
+                // 'all' => $query->where('user_id', $user->id),
+                'today' => $query->where('user_id', $user->id)->whereDate('created_at', today()),
+                'yesterday' => $query->where('user_id', $user->id)->whereDate('created_at', today()->subDay()),
+                'last_week' => $query->where('user_id', $user->id)->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]),
+                'last_month' => $query->where('user_id', $user->id)->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()]),
+                default => $query->where('user_id', $user->id )->whereDate('created_at', today())
+            };
+        })->get();
+
+        //Lấy số lượng của nó 
+
+        $count = [
+            'today' => QnA::where("user_id", $user->id)->whereDate('created_at', today())->count(),
+            'yesterday' => QnA::where("user_id", $user->id)->whereDate('created_at', today()->subDay())->count(),
+            'last_week' => QnA::where("user_id", $user->id)->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
+            'last_month' => QnA::where("user_id", $user->id)->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->count(),
+        ];
+
+        return view('admin.qna.index', compact('title', 'qnaHistory', 'count'));
     }
-    
+
     public function askQuestion(Request $request)
     {
         $question = $request->input('question');
@@ -77,7 +94,8 @@ class QnAController extends Controller
 
         return response()->json([]);
     }
-    function deleteAll(Request $request) {
+    function deleteAll(Request $request)
+    {
         $user = auth()->user();
         QnA::where('user_id', $user->id)->delete();
         return redirect()->route('admin.qna')->with('success', 'Xoá toàn bộ câu hỏi');

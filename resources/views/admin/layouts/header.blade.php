@@ -437,7 +437,7 @@
                                     <li class="nav-item waves-effect waves-light" role="presentation">
                                         <a class="nav-link" data-bs-toggle="tab" href="#messages-tab" role="tab"
                                             aria-selected="false" tabindex="-1">
-                                            Tin nhắn
+                                            Theo dõi
                                         </a>
                                     </li>
                                     <li class="nav-item waves-effect waves-light" role="presentation">
@@ -734,7 +734,11 @@
                                 bgColorClass = 'bg-info-subtle'
                                 title = notification.data.message
                                 break;
-
+                            case 'user_followed':
+                                iconClass = ' ri-user-follow-line'
+                                bgColorClass = 'bg-info-subtle'
+                                title = notification.data.message
+                                break
                             default:
                                 iconClass = 'bx bx-bell'
                                 bgColorClass = 'bg-light'
@@ -753,8 +757,12 @@
                                             </div>
                                             <div class="flex-grow-1">
                                                 <a href="${notification.data.url}" class="stretched-link">
-                                                    <span class="text-secondary">${title}</span>
-                                                    ${!notification.data.amount ? `<h5 class="mt-0 mb-2 lh-base badge bg-info">${notification.data.course_name}</h5>` : ''}
+                                                    <span class="text-secondary fs-13 d-block">${title}</span>
+
+                                                   <h5 class="mt-0 mb-2 lh-base badge bg-info">
+    ${notification.data.follower_name ? notification.data.follower_name : (notification.data.name ? notification.data.name : notification.data.course_name)}
+</h5>
+
                                                 </a>
                                                 <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
                                                     <span><i class="mdi mdi-clock-outline"></i> ${dayjs(notification.created_at).fromNow()}</span>
@@ -822,10 +830,13 @@
                 fetchUnreadNotificationCount()
                 loadNotifications()
             })
-        // window.Echo.private(`App.Models.UserFollow.${userId}`)
-        //     .notification((notification) => {
-                
-        //     })
+        window.Echo.private(`App.Models.UserFollow.${userId}`)
+            .notification((notification) => {
+                console.log(notification);
+                fetchUnreadNotificationCount()
+                // loadNotifications()
+            })
+
 
         window.Echo.channel('request-withdraw-money')
             .listen('RequestWithdrawMoney', (event) => {

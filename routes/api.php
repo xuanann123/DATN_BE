@@ -171,6 +171,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/register-teacher', [UserController::class, 'registerTeacher']);
         Route::get('/check-history-learning', [UserController::class, 'checkLearning']);
         //CHAT AI
+        
         // Route::get('/qna', [QnAController::class, 'index'])->name('qna');
         Route::post('/qna/ask', [QnAController::class, 'askQuestion']);
         # ===================== ROUTE FOR NOTIFICATION ===========================

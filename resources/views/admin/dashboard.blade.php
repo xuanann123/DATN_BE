@@ -467,7 +467,7 @@
             }],
             chart: {
                 height: 290,
-                type: "area", // Đổi thành "line" nếu bạn muốn kiểu biểu đồ khác
+                type: "bar", // Đổi thành "line" nếu bạn muốn kiểu biểu đồ khác
                 toolbar: false
             },
             dataLabels: {
