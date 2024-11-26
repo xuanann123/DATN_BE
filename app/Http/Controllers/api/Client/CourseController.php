@@ -541,12 +541,14 @@ class CourseController extends Controller
     {
         try {
             $limit = $request->input('limit', 6);
-            $courses = Course::select('id', 'slug', 'name', 'level', 'thumbnail', 'price', 'price_sale', 'id_user')->with(['user:id,name,avatar'])
+
+            // Khởi tạo query cơ bản với các điều kiện chung
+            $courses = Course::select('id', 'slug', 'name', 'level', 'thumbnail', 'price', 'price_sale', 'id_user', 'id_category')
+                ->with(['user:id,name,avatar'])
                 ->where('is_active', 1)
                 ->where('status', 'approved')
-                ->withCount('ratings')
-                ->withAvg('ratings', 'rate')
                 ->withCount([
+                    'ratings',
                     'modules as lessons_count' => function ($query) {
                         $query->whereHas('lessons');
                     },
@@ -554,7 +556,29 @@ class CourseController extends Controller
                         $query->whereHas('quiz');
                     }
                 ])
-                ->paginate($limit);
+                ->withAvg('ratings', 'rate');
+
+            // Lọc theo level (nếu có)
+            if ($request->filled('level')) {
+                $courses->where('level', $request->input('level'));
+            }
+
+            // Lọc theo category (nếu có)
+            if ($request->filled('category')) {
+                $courses->where('id_category', $request->input('category'));
+            }
+
+            // Sắp xếp theo A-Z hoặc Z-A
+            if ($request->filled('arrange')) {
+                if ($request->input('arrange') === 'A-Z') {
+                    $courses->orderBy('name', 'asc');
+                } elseif ($request->input('arrange') === 'Z-A') {
+                    $courses->orderBy('name', 'desc');
+                }
+            }
+
+            // Phân trang kết quả
+            $courses = $courses->paginate($limit);
 
             if ($courses->isEmpty()) {
                 return response()->json([
@@ -563,26 +587,33 @@ class CourseController extends Controller
                 ], 204);
             }
 
-            // Tính tổng số lesson, quiz và duration
-            foreach ($courses as $course) {
-                // Tính tổng lessons và quiz
-                $total_lessons = $course->modules->flatMap->lessons->count();
-                $total_quiz = $course->modules->whereNotNull('quiz')->count();
+            // Load thêm dữ liệu cần thiết sau khi lấy danh sách khóa học
+            $courses->load(['modules.lessons', 'modules.quiz']);
+
+            // Tính tổng số bài học, quiz và thời lượng cho mỗi khóa học
+            $courses->transform(function ($course) {
+                // Tổng số bài học và quiz
+                $total_lessons = $course->lessons_count;
+                $total_quiz = $course->quiz_count;
                 $course->total_lessons = $total_lessons + $total_quiz;
 
-                // Tính tổng duration của các lesson vid
+                // Tính tổng duration của các bài học video
                 $course->total_duration_video = $course->modules->flatMap(function ($module) {
-                    return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
-                        return $lesson->lessonable->duration ?? 0;
-                    });
+                    return $module->lessons->where('content_type', 'video')->pluck('lessonable.duration');
                 })->sum();
-                //Chỉnh lại reating
-                $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+
+                // Làm tròn rating trung bình
+                $course->ratings_avg_rate = number_format(round($course->ratings_avg_rate, 1), 1);
+
+                // Tổng số học sinh
                 $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
 
-                $course->makeHidden('modules');
-                $course->makeHidden('ratings');
-            }
+                // Ẩn các thuộc tính không cần thiết
+                $course->makeHidden(['modules', 'ratings']);
+
+                return $course;
+            });
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Danh sách khóa học',
@@ -596,5 +627,8 @@ class CourseController extends Controller
             ], 500);
         }
     }
+
+
+
 
 }

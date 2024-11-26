@@ -173,7 +173,10 @@ Route::middleware('auth:sanctum')->group(function () {
         //CHAT AI
         
         // Route::get('/qna', [QnAController::class, 'index'])->name('qna');
-        Route::post('/qna/ask', [QnAController::class, 'askQuestion']);
+        Route::prefix('qna')->group(function () {
+            Route::get('/', [QnAController::class, 'index'])->name('qna');
+            Route::post('/ask', [QnAController::class, 'askQuestion']);
+        });
         # ===================== ROUTE FOR NOTIFICATION ===========================
         Route::prefix('notifications')->group(function () {
             Route::get('/', [NotificationController::class, 'index']);
