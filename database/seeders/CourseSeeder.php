@@ -52,7 +52,7 @@ class CourseSeeder extends Seeder
         //Tính durantion video you
 
         //Của tôi thì lấy thằng admin thôi
-        $users = User::where('user_type', User::TYPE_ADMIN)->first();
+        $users = User::whereIn('user_type', [User::TYPE_TEACHER, User::TYPE_ADMIN])->get();
 
 
 
@@ -103,15 +103,13 @@ class CourseSeeder extends Seeder
             "course_thumbnail_e0b65d9f-02f1-43f1-a4d7-4719b5621a6a.png",
             "course_thumbnail_e439cce0-bcc7-43ec-8f6b-22c92c0fdbc2.png"
         ];
-        foreach (range(1, 20) as $index) {
+        foreach (range(1, 50) as $index) {
             //seed khoá học
             $course = Course::create([
-                'id_user' => $users->id,
-                'id_category' => 1,
-                //Nếu chưa có dữ liệu của hai thằng này
-                // 'id_user' => $users->random()->id,
+                'id_category' => rand(1, 2),
+                'id_user' => $users->random()->id,
                 // 'id_category' => $categories->random()->id,
-                'name' => fake()->name(),
+                'name' => "Khoá học " . fake()->text(10),
                 'thumbnail' => 'courses/thumbnails/' . $thumbnailCourses[$index - 1],
                 'trailer' => 'trailers/trailer_' . $index . '.mp4',
                 'description' => fake()->text('100'),
