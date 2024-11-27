@@ -34,7 +34,7 @@ class CourseDetailController extends Controller // di ve sinh
                     'status' => 'error',
                     'message' => 'Khóa học không tồn tại.',
                     'data' => []
-                ], 404);
+                ], 204);
             }
             // tên thằng tạo ra khóa học
             $course->author = $course->user->name;
@@ -89,7 +89,7 @@ class CourseDetailController extends Controller // di ve sinh
                     'status' => 'error',
                     'message' => 'Khóa học không tồn tại.',
                     'data' => []
-                ], 404);
+                ], 204);
             }
             $courseId = $course->id;
             // tên thằng tạo ra khóa học

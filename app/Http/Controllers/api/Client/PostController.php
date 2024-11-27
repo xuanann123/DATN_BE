@@ -38,7 +38,7 @@ class PostController extends Controller
                     'status' => 'error',
                     'message' => 'Không có bài viết nào',
                     'data' => []
-                ], 404);
+                ], 204);
             }
             return response()->json([
                 'status' => 'success',
@@ -181,7 +181,7 @@ class PostController extends Controller
                     'status' => 'error',
                     'message' => 'Không tìm thấy bài viết',
                     'data' => []
-                ], 404);
+                ], 204);
             }
         } catch (\Exception $e) {
             return response()->json([
@@ -351,7 +351,7 @@ class PostController extends Controller
                     'status' => 'error',
                     'message' => 'Không có bài viết nào',
                     'data' => []
-                ], 404);
+                ], 204);
             }
             return response()->json([
                 'status' => 'success',
@@ -451,7 +451,7 @@ class PostController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Danh sách bài viết trống'
-            ], 404);
+            ], 204);
         }
 
         return response()->json([
@@ -469,7 +469,7 @@ class PostController extends Controller
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Bài viết không tồn tại'
-                ], 404);
+                ], 204);
             }
             //Kiểm tra nghe nó đã mua hay chưa
             $userPost = $user->saveposts()->where('post_id', $post->id)->first();
@@ -561,7 +561,7 @@ class PostController extends Controller
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Bài viết không tồn tại'
-                ], 404);
+                ], 204);
             }
             $user->saveposts()->detach($post->id);
             return response()->json([
@@ -588,7 +588,7 @@ class PostController extends Controller
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Danh sách bài viết trống'
-                ], 404);
+                ], 204);
             }
             $listPosts = $category->posts()
                 ->select('posts.id', 'posts.title', 'posts.description', 'posts.content', 'posts.thumbnail', 'posts.slug', 'posts.created_at', 'posts.views', 'posts.user_id')
@@ -607,7 +607,7 @@ class PostController extends Controller
                     'status' => 'error',
                     'message' => 'Không có bài viết nào',
                     'data' => []
-                ], 404);
+                ], 204);
             }
             return response()->json([
                 'status' => 'success',
@@ -646,7 +646,7 @@ class PostController extends Controller
                     'status' => 'error',
                     'message' => 'Bài viết không tồn tại',
                     'data' => []
-                ], 404);
+                ], 204);
             }
 
         } catch (\Exception $e) {
