@@ -94,6 +94,7 @@ Route::middleware('auth:sanctum')->group(function () {
     # ===================== ROUTE FOR CHECKOUT ===========================
     Route::prefix('vouchers')->group(function () {
         Route::get('/apply-coupon/{id_user}/{voucher_code}', [VoucherController::class, 'applyCoupon']);
+        
     });
 
 
@@ -170,6 +171,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/check-follow/{id_user}/{id_teacher}', [FollowController::class, 'checkFollow']);
         Route::post('/register-teacher', [UserController::class, 'registerTeacher']);
         Route::get('/check-history-learning', [UserController::class, 'checkLearning']);
+        Route::get('vouchers', [VoucherController::class, 'getMyVouchers']);
         //CHAT AI
         
         // Route::get('/qna', [QnAController::class, 'index'])->name('qna');

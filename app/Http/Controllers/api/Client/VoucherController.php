@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\DB;
 
 class VoucherController extends Controller
 {
-    public function newVoucher() {
+    public function newVoucher()
+    {
         $voucher = Voucher::where('start_time', '<', now())
             ->where('end_time', '>', now())
             ->whereColumn('count', '>', 'used_count')
@@ -20,8 +21,7 @@ class VoucherController extends Controller
             ->limit(1)
             ->get();
 
-
-        if(count($voucher) <= 0) {
+        if (count($voucher) <= 0) {
             return response()->json([
                 'data' => [
                     'code' => 204,
@@ -38,6 +38,50 @@ class VoucherController extends Controller
                 'voucher' => $voucher
             ]
         ], 200);
+    }
+    public function getMyVouchers()
+    {
+        try {
+            $vouchers = Voucher::select(
+                'id',
+                'code',
+                'discount',
+                'type',
+                'description',
+                'count',
+                'used_count',
+                'start_time',
+                'end_time'
+            )->where('start_time', '<', now())
+                ->where('end_time', '>', now())
+                ->whereColumn('count', '>', 'used_count')
+                ->where('is_active', 1)
+                ->orderByDesc('created_at')
+                ->get();
+
+
+
+            if (count($vouchers) <= 0) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Danh sách mã giảm giá trống',
+                    'data' => []
+                ], 204);
+            }
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Danh sách mã giảm giá',
+                'data' => $vouchers
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi lay danh sách mã giảm giá trống' . $e->getMessage(),
+                'data' => []
+            ]);
+        }
+
     }
     public function applyCoupon(Request $request)
     {
