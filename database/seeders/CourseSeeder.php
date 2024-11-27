@@ -62,7 +62,7 @@ class CourseSeeder extends Seeder
                 'slug' => Str::slug("Category {$index}"),
                 'image' => null,
                 'description' => fake()->text('25'),
-                'parent_id' => 0,
+                'parent_id' => null,
                 'is_active' => 1,
             ]);
         }
