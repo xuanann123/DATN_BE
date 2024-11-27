@@ -895,6 +895,7 @@
 
                                 <ul class="list-unstyled chat-conversation-list" id="messages">
                                     @if ($qnaHistory->count() > 0)
+                                    if()
                                         @foreach ($qnaHistory as $message)
                                             <li class="chat-list right">
                                                 <div class="conversation-list">
@@ -918,10 +919,9 @@
                                                             </div>
                                                         </div>
                                                         <div class="conversation-name"><span class="d-none name">Frank
-                                                                Thomas</span><small
-                                                                class="text-muted time">{{ \Carbon\Carbon::parse($message->created_at)->format('d/m/Y H:i') }}
-
-                                                                am</small> <span class="text-success check-message-icon"><i
+                                                                Thomas</span>
+                                                                {{-- <small  class="text-muted time">{{ \Carbon\Carbon::parse($message->created_at)->format('d/m/Y H:i') }} am</small> --}}
+                                                                 <span class="text-success check-message-icon"><i
                                                                     class="bx bx-check-double"></i></span></div>
                                                     </div>
                                                 </div>
@@ -940,10 +940,8 @@
                                                         </div>
                                                         <div class="conversation-name"><span class="d-none name">Lisa
                                                                 Parker</span>
-                                                            <small
-                                                                class="text-muted time">{{ \Carbon\Carbon::parse($message->created_at)->format('d/m/Y H:i') }}
-
-                                                                am</small> <span class="text-success check-message-icon"><i
+                                                            {{-- <small class="text-muted time">{{ \Carbon\Carbon::parse($message->created_at)->format('d/m/Y H:i') }}am</small> --}}
+                                                             <span class="text-success check-message-icon"><i
                                                                     class="bx bx-check-double"></i></span>
                                                         </div>
                                                     </div>
@@ -1069,7 +1067,7 @@
                         </div>
                         <div class="conversation-name">
                             <span class="d-none name">Frank Thomas</span>
-                            <small class="text-muted time">{{ \Carbon\Carbon::parse($message->created_at)->format('d/m/Y H:i') }} am</small>
+                          
                             <span class="text-success check-message-icon"><i class="bx bx-check-double"></i></span>
                         </div>
                     </div>
@@ -1115,7 +1113,7 @@
                             </div>
                             <div class="conversation-name">
                                 <span class="d-none name">Lisa Parker</span>
-                                <small class="text-muted time">{{ $message->created_at }} am</small>
+                               
                                 <span class="text-success check-message-icon"><i class="bx bx-check-double"></i></span>
                             </div>
                         </div>
@@ -1138,7 +1136,7 @@
             }
 
             // Hiển thị văn bản từ từ trong phần tử HTML
-            function displayTextGradually(element, text, speed = 50) {
+            function displayTextGradually(element, text, speed = 5) {
                 let index = 0;
                 const interval = setInterval(() => {
                     element.textContent += text[index];
