@@ -18,6 +18,7 @@ use App\Models\Video;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 class CourseSeeder extends Seeder
@@ -35,6 +36,10 @@ class CourseSeeder extends Seeder
         DB::table('modules')->truncate();
         DB::table('courses')->truncate();
         DB::table('quizzes')->truncate();
+        DB::table(table: 'lesson_progress')->truncate();
+        DB::table('quiz_progress')->truncate();
+        DB::table('user_answers')->truncate();
+        DB::table("user_courses")->truncate();
         DB::table('questions')->truncate();
         DB::table('requirements')->truncate();
         DB::table('goals')->truncate();
@@ -44,16 +49,36 @@ class CourseSeeder extends Seeder
         //Tạo 10 giảng viên ai chưa có giảng viên thì bật cái này lên seed
         // $users = User::factory(10)->create(['user_type' => User::TYPE_TEACHER]); // Giảng viên
         // $categories = Cateogry::factory(10); // Giảng viên
+        //Tính durantion video you
 
         //Của tôi thì lấy thằng admin thôi
         $users = User::where('user_type', User::TYPE_ADMIN)->first();
+
+
+
+
         //Tạo thời đế ít
         $youtubeIds = [
-            'q7WVR2AsqZs',
-            'dQw4w9WgXcQ',
-            'kJQP7kiw5Fk',
-            '3JZ_D3ELwOQ',
-            'L_jWHffIx5E'
+            '0SJE9dYdpps',
+            '-jV06pqjUUc',
+            'efI98nT8Ffo',
+            'W0vEUmyvthQ',
+            'CLbx37dqYEI',
+            'xRpXBEq6TOY',
+            'rSV33HGotgE',
+            'SZb-N7TfPlw',
+            'm_h7-dgKnMU',
+            'aM-DUx6Qnc8',
+            'ncRmjazgsE8',
+            'QCLVU6cZU_E',
+            'rWM2lXtS-d8',
+            '9cZEG1SSSQc',
+            '9MpHrdWBdxg',
+            'O_-SQ-aVR3E',
+            'P-fMQ3elxSE',
+            'meCXeMeyFdE',
+            'j1PbSq5kJKY',
+            '6F_dajRCC9Q'
         ];
         //Mảng dữ liệu lấy từ public/storage/courses/thumbnails => đi vào đó và coppy 20 value của ảnh là ok
         $thumbnailCourses = [
@@ -87,7 +112,7 @@ class CourseSeeder extends Seeder
                 // 'id_user' => $users->random()->id,
                 // 'id_category' => $categories->random()->id,
                 'name' => fake()->name(),
-                'thumbnail' => 'courses/thumbnails/' . $thumbnailCourses[$index-1],
+                'thumbnail' => 'courses/thumbnails/' . $thumbnailCourses[$index - 1],
                 'trailer' => 'trailers/trailer_' . $index . '.mp4',
                 'description' => fake()->text('100'),
                 'learned' => 'Những điều học được từ khóa học ' . $index,
@@ -122,35 +147,46 @@ class CourseSeeder extends Seeder
                     'position' => $infoIndex
                 ]);
             }
+
+
+
             //Tạo module cho khoá học mỗi khoá học có 5 chương
             foreach (range(1, 5) as $modIndex) {
                 $module = Module::create([
                     'id_course' => $course->id,
-                    'title' => 'Module ' . $modIndex . ' của khóa ' . $course->name,
-                    'description' => 'Mô tả cho module ' . $modIndex,
+                    'title' => 'Chương học ' . $modIndex,
+                    'description' => 'Mô tả chương ' . $modIndex,
                     'position' => $modIndex,
                 ]);
-                //Trong module thì đi tạo 
+
+                // Tạo bài học (Lesson) trước
                 foreach (range(1, 3) as $lessonIndex) {
-                    // Random để tạo loại bài học: Video hoặc Document
                     if (rand(0, 1)) {
+
+                        // Lấy ngẫu nhiên một video YouTube ID từ mảng
+                        $youtubeId = $youtubeIds[array_rand($youtubeIds)];
+
+                        // Lấy thời gian video từ YouTube API
+                        $videoDuration = $this->getVideoDuration($youtubeId);
+
+                        // Tạo Video và lưu thông tin vào database
                         $lessonable = Video::create([
-                            'title' => 'Video ' . $lessonIndex,
-                            'type' => 'mp4',
-                            'url' => '',
-                            'video_youtube_id' => $youtubeIds[array_rand($youtubeIds)], // Random từ mảng YouTube ID
-                            'duration' => Null
+                            'title' => 'Video ' . $lessonIndex . ' của module ' . $modIndex,
+                            'type' => 'url',
+                            'url' => null,
+                            'video_youtube_id' => $youtubeId, // ID video YouTube
+                            'duration' => $videoDuration, // Thời gian video từ API
                         ]);
+
                     } else {
                         $lessonable = Document::create([
-                            'title' => 'Tài liệu ' . $lessonIndex,
-                            'description' => 'Mô tả tài liệu ' . $lessonIndex,
-                            'content' => 'Nội dung của tài liệu ' . $lessonIndex,
+                            'title' => fake()->text('20'),
+                            'description' => fake()->text('10'),
+                            'content' => fake()->text('200'),
                             'resourse_path' => 'documents/doc_' . $lessonIndex . '.pdf',
                         ]);
                     }
 
-                    // Tạo bài học (lesson) liên kết đa hình
                     Lesson::create([
                         'id_module' => $module->id,
                         'title' => 'Bài học ' . $lessonIndex . ' của module ' . $modIndex,
@@ -159,34 +195,60 @@ class CourseSeeder extends Seeder
                         'content_type' => $lessonable instanceof Video ? 'video' : 'document',
                         'lessonable_id' => $lessonable->id,
                         'lessonable_type' => get_class($lessonable),
-                        'position' => $lessonIndex,
+                        'position' => $lessonIndex, // Đảm bảo unique trong module
                     ]);
                 }
-                //Mỗi chương học đều có 1 quiz
+
+                // Sau khi tạo xong tất cả các bài học thì tạo quiz
                 $quiz = Quiz::create([
                     'id_module' => $module->id,
-                    'title' => 'Quiz chương ' . $modIndex . ' của module ' . $module->title,
+                    'title' => 'Bài tập chương ' . $modIndex,
                     'description' => 'Mô tả quiz ' . $modIndex,
                 ]);
-                // Tạo câu hỏi cho mỗi quiz
-                foreach (range(1, 5) as $questionIndex) {
+
+                // Tạo câu hỏi cho quiz
+                foreach (range(1, 3) as $questionIndex) {
                     $question = Question::create([
                         'id_quiz' => $quiz->id,
-                        'question' => fake()->text('30'),
+                        'question' => fake()->text(30),
                         'type' => 'multiple_choice',
                     ]);
 
-                    // Tạo đáp án cho câu hỏi
                     foreach (range(1, 4) as $optionIndex) {
                         Option::create([
                             'id_question' => $question->id,
-                            'option' => fake()->text('20'),
-                            'is_correct' => 1, // Đáp án đúng là đáp án 1
+                            'option' => fake()->text(20),
+                            'is_correct' => $optionIndex === 1, // Đáp án đúng cố định là option 1
                         ]);
                     }
                 }
             }
+
         }
 
     }
+    private function convertDurationToSeconds($duration)
+    {
+        $interval = new \DateInterval($duration);
+        return ($interval->h * 3600) + ($interval->i * 60) + $interval->s;
+    }
+    public function getVideoDuration($videoId)
+    {
+        $apiKey = env('YOUTUBE_API_KEY');
+
+        $apiUrl = "https://www.googleapis.com/youtube/v3/videos?id={$videoId}&part=contentDetails&key={$apiKey}";
+
+        $response = Http::get($apiUrl);
+
+        $data = $response->json();
+
+        if (!empty($data['items'])) {
+            $duration = $data['items'][0]['contentDetails']['duration'];
+
+            $seconds = $this->convertDurationToSeconds($duration);
+
+            return $seconds;
+        }
+    }
+
 }
