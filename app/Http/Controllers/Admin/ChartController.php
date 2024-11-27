@@ -14,7 +14,8 @@ class ChartController extends Controller
     public function chartRevenue(Request $request)
     {
         $title = "Thống kê doanh thu";
-        $totalRevenue = Bill::sum('total_coin_after_discount') * 1000;
+        $totalRevenue = Bill::sum('total_coin') * 1000;
+        $profit = Bill::sum('total_coin') * 1000 * 0.3;
         $countCourses = Course::where('status', 'approved')->count();
 
         // Nếu có request từ form chọn ngày thống kê
@@ -32,7 +33,8 @@ class ChartController extends Controller
                 ->select(
                     DB::raw('DATE(bills.created_at) as day'),
                     'courses.name',
-                    DB::raw('SUM(bills.total_coin_after_discount * 1000) as total_revenue')
+                    DB::raw('SUM(bills.total_coin * 1000) as total_revenue'),
+                    DB::raw('(SUM(total_coin * 1000) * 0.3) as profit')
                 )
                 ->where('bills.created_at', '>=', $start_date)
                 ->where('bills.created_at', '<=', $end_date)
@@ -49,73 +51,56 @@ class ChartController extends Controller
                 $currentDate->addDay();
             }
 
-            // Khởi tạo mảng doanh thu theo khóa học
-            $coursesRevenues = [];
+            $revenues = [];
+            $profits = [];
+
             foreach ($revenueData as $data) {
-                $coursesRevenues[$data->name][$data->day] = $data->total_revenue;
+                $revenues[] = $data->total_revenue;
+                $profits[] = $data->profit;
             }
 
-            $datasets = [];
-            foreach ($coursesRevenues as $courseName => $monthlyData) {
-                $revenue = [];
-                foreach ($times as $date) {
-                    $revenue[] = $monthlyData[$date] ?? 0; // Gán giá trị 0 nếu ngày không có doanh thu
-                }
-                $datasets[] = [
-                    'label' => $courseName,
-                    'data' => $revenue,
-                    'borderColor' => sprintf('rgba(%d, %d, %d, 1)', rand(50, 255), rand(50, 255), rand(50, 255)),
-                    'backgroundColor' => 'rgba(0, 0, 0, 0)',
-                    'borderWidth' => 1
-                ];
-            }
+            // Chuyển dữ liệu sang dạng JSON để sử dụng trong JavaScript
+            $timesJson = json_encode($times);
+            $revenuesJson = json_encode($revenues);
+            $profitsJson = json_encode($profits);
 
-            return view('admin.charts.revenue', compact('title', 'totalRevenue', 'countCourses', 'countOrders', 'totalRevenues', 'revenueData', 'times', 'datasets', 'start_date', 'end_date'));
-
+            return view('admin.charts.revenue', compact('title', 'totalRevenue', 'profit', 'countCourses', 'countOrders', 'totalRevenues', 'revenueData', 'timesJson', 'revenuesJson', 'profitsJson', 'start_date', 'end_date'));
         }
 
         $year = 2024;
         $countOrders2024 = Bill::whereYear('created_at', $year)->count(); // Đếm số lượng orders trong năm 2024
-        $totalRevenue2024 = Bill::whereYear('created_at', $year)->sum('total_coin_after_discount') * 1000; // Tính tổng tiền trong năm 2024
+        $totalRevenue2024 = Bill::whereYear('created_at', $year)->sum('total_coin') * 1000; // Tính tổng tiền trong năm 2024
 
 
         // Doanh thu trong biểu đồ;
         $revenueData = DB::table('bills')
-            ->join('courses', 'bills.id_course', '=', 'courses.id')
             ->select(
-                DB::raw('MONTH(bills.created_at) as month'),
-                'courses.name',
-                DB::raw('SUM(bills.total_coin_after_discount * 1000) as total_revenue') // Tính doanh thu
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('SUM(total_coin * 1000) as total_revenue'),
+                DB::raw('(SUM(total_coin * 1000) * 0.3) as profit')
             )
-            ->whereYear('bills.created_at', 2024)
-            ->groupBy(DB::raw('MONTH(bills.created_at)'), 'courses.name')
-            ->orderBy('month') // Sắp xếp theo tháng
+            ->whereYear('created_at', 2024)
+            ->groupBy(DB::raw('MONTH(created_at)'))
+            ->orderBy('month')
             ->get();
 
 
-        $times = range(1, 12); // Tạo danh sách tháng từ 1 đến 12
-        $coursesRevenues = []; // Khởi tạo mảng doanh thu theo khóa học
+        // Định dạng dữ liệu để phù hợp với biểu đồ
+        $times = [];
+        $revenues = [];
+        $profits = [];
 
         foreach ($revenueData as $data) {
-            $coursesRevenues[$data->name][$data->month] = $data->total_revenue;
+            $times[] = $data->month;
+            $revenues[] = $data->total_revenue;
+            $profits[] = $data->profit;
         }
 
-        // Chuẩn bị dữ liệu cho từng khóa học
-        $datasets = [];
-        foreach ($coursesRevenues as $courseName => $monthlyData) {
-            $revenue = [];
-            foreach ($times as $month) {
-                $revenue[] = $monthlyData[$month] ?? 0; // Gán giá trị 0 nếu tháng không có doanh thu
-            }
-            $datasets[] = [
-                'label' => $courseName,
-                'data' => $revenue,
-                'borderColor' => sprintf('rgba(%d, %d, %d, 1)', rand(50, 255), rand(50, 255), rand(50, 255)),
-                'backgroundColor' => 'rgba(0, 0, 0, 0)',
-                'borderWidth' => 1
-            ];
-        }
+        // Chuyển dữ liệu sang dạng JSON để sử dụng trong JavaScript
+        $timesJson = json_encode($times);
+        $revenuesJson = json_encode($revenues);
+        $profitsJson = json_encode($profits);
 
-        return view('admin.charts.revenue', compact('title', 'totalRevenue', 'countCourses', 'countOrders2024', 'totalRevenue2024', 'revenueData', 'times', 'datasets'));
+        return view('admin.charts.revenue', compact('title', 'totalRevenue', 'profit', 'countCourses', 'countOrders2024', 'totalRevenue2024', 'revenueData', 'timesJson', 'revenuesJson', 'profitsJson'));
     }
 }

@@ -62,7 +62,7 @@
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="flex-grow-1 overflow-hidden">
-                                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Số lượng khóa học
+                                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Lợi nhuận
                                         </p>
                                     </div>
                                     <div class="flex-shrink-0">
@@ -74,7 +74,7 @@
                                 <div class="d-flex align-items-end justify-content-between mt-4">
                                     <div>
                                         <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value"
-                                                data-target="{{ $countCourses }}">0</span> </h4>
+                                                data-target="{{ $profit }}">0</span> </h4>
                                         {{--                                        <a href="" class="text-decoration-underline">Danh sách khóa học</a> --}}
                                     </div>
                                     <div class="avatar-sm flex-shrink-0">
@@ -165,6 +165,7 @@
                                 <div style="width: 100%; margin: auto; height: auto">
                                     <canvas id="lineChart"></canvas>
                                 </div>
+                                <div id="revenue-chart" data-colors='["#3bc2b0", "#FEB019"]'></div>
                             </div><!-- end card body -->
                         </div><!-- end card -->
                     </div><!-- end col -->
@@ -188,6 +189,17 @@
     @endsection
     @section('script-libs')
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script src="{{ asset('theme/admin/assets/libs/apexcharts/apexcharts.min.js') }}"></script>
+
+            <!-- Vector map-->
+            <script src="{{ asset('theme/admin/assets/libs/jsvectormap/js/jsvectormap.min.js') }}"></script>
+            <script src="{{ asset('theme/admin/assets/libs/jsvectormap/maps/world-merc.js') }}"></script>
+
+            <!--Swiper slider js-->
+            <script src="{{ asset('theme/admin/assets/libs/swiper/swiper-bundle.min.js') }}"></script>
+
+            <!-- Dashboard init -->
+            <script src="{{ asset('theme/admin/assets/js/pages/dashboard-ecommerce.init.js') }}"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 // Lấy các phần tử cần thiết
@@ -217,82 +229,261 @@
             });
         </script>
 
+{{--            <script>--}}
+{{--                // Lấy dữ liệu từ backend--}}
+{{--                var times = {!! $timesJson !!}; // Tháng--}}
+{{--                var revenues = {!! $revenuesJson !!}; // Doanh thu--}}
+{{--                var profits = {!! $profitsJson !!}; // Lợi nhuận--}}
 
+{{--                // Hàm lấy màu cho biểu đồ từ `data-colors`--}}
+{{--                function getChartColorsArray(elementId) {--}}
+{{--                    if (document.getElementById(elementId) !== null) {--}}
+{{--                        var colorData = document.getElementById(elementId).getAttribute("data-colors");--}}
 
-        <script>
-            var ctx = document.getElementById('lineChart').getContext('2d');
-            var courseRevenueChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: @json($times), // Các tháng từ 1 đến 12
-                    datasets: @json($datasets) // Dữ liệu doanh thu từng sản phẩm
-                },
-                options: {
-                    responsive: true,
-                    tension: 0.4, // Làm mượt các đường
-                    elements: {
-                        point: {
-                            radius: 4, // Kích thước điểm
-                            backgroundColor: 'white', // Màu nền điểm
-                            borderWidth: 2 // Viền xung quanh điểm
-                        },
-                        line: {
-                            borderWidth: 2 // Độ dày của đường
-                        }
-                    },
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                font: {
-                                    size: 14
+{{--                        if (colorData) {--}}
+{{--                            colorData = JSON.parse(colorData);--}}
+{{--                            return colorData.map(function(color) {--}}
+{{--                                var trimmedColor = color.replace(" ", "");--}}
+
+{{--                                if (trimmedColor.indexOf(",") === -1) {--}}
+{{--                                    return getComputedStyle(document.documentElement).getPropertyValue(trimmedColor) ||--}}
+{{--                                        trimmedColor;--}}
+{{--                                } else {--}}
+{{--                                    var colorParts = color.split(",");--}}
+{{--                                    if (colorParts.length === 2) {--}}
+{{--                                        return "rgba(" + getComputedStyle(document.documentElement).getPropertyValue(--}}
+{{--                                            colorParts[0]) + "," + colorParts[1] + ")";--}}
+{{--                                    } else {--}}
+{{--                                        return trimmedColor;--}}
+{{--                                    }--}}
+{{--                                }--}}
+{{--                            });--}}
+{{--                        }--}}
+{{--                        console.warn("data-colors Attribute not found on:", elementId);--}}
+{{--                    }--}}
+{{--                }--}}
+
+{{--                // Lấy màu cho biểu đồ--}}
+{{--                var revenueChartColors = getChartColorsArray("revenue-chart");--}}
+
+{{--                if (revenueChartColors) {--}}
+{{--                    var options = {--}}
+{{--                        series: [--}}
+{{--                            {--}}
+{{--                                name: "Doanh thu", // Chú thích cho cột doanh thu--}}
+{{--                                data: revenues--}}
+{{--                            },--}}
+{{--                            {--}}
+{{--                                name: "Lợi nhuận", // Chú thích cho cột lợi nhuận--}}
+{{--                                data: profits--}}
+{{--                            }--}}
+{{--                        ],--}}
+{{--                        chart: {--}}
+{{--                            height: 290,--}}
+{{--                            type: "bar", // Loại biểu đồ--}}
+{{--                            toolbar: false--}}
+{{--                        },--}}
+{{--                        dataLabels: {--}}
+{{--                            enabled: false--}}
+{{--                        },--}}
+{{--                        stroke: {--}}
+{{--                            show: true,--}}
+{{--                            width: 2--}}
+{{--                        },--}}
+{{--                        xaxis: {--}}
+{{--                            categories: times.map(time => {--}}
+{{--                                // Chuyển đổi tháng từ số sang tên--}}
+{{--                                const monthNames = ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",--}}
+{{--                                    "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"--}}
+{{--                                ];--}}
+{{--                                return monthNames[time - 1];--}}
+{{--                            })--}}
+{{--                        },--}}
+{{--                        yaxis: {--}}
+{{--                            labels: {--}}
+{{--                                formatter: function(value) {--}}
+{{--                                    return value.toLocaleString() + " VNĐ";--}}
+{{--                                }--}}
+{{--                            },--}}
+{{--                            tickAmount: 5,--}}
+{{--                            min: 0,--}}
+{{--                            max: Math.max(...revenues) + 50000--}}
+{{--                        },--}}
+{{--                        colors: ["#3bc2b0", "#FEB019"], // Đổi màu cột: Doanh thu (xanh), Lợi nhuận (vàng)--}}
+{{--                        plotOptions: {--}}
+{{--                            bar: {--}}
+{{--                                horizontal: false,--}}
+{{--                                columnWidth: "50%",--}}
+{{--                                endingShape: "rounded"--}}
+{{--                            }--}}
+{{--                        },--}}
+{{--                        fill: {--}}
+{{--                            opacity: 0.8, // Độ trong suốt của màu cột--}}
+{{--                            type: "solid"--}}
+{{--                        },--}}
+{{--                        legend: {--}}
+{{--                            show: true,--}}
+{{--                            position: "bottom",--}}
+{{--                            horizontalAlign: "center",--}}
+{{--                            fontWeight: 500,--}}
+{{--                            markers: {--}}
+{{--                                width: 10,--}}
+{{--                                height: 10,--}}
+{{--                                radius: 6, // Hình dạng marker--}}
+{{--                            },--}}
+{{--                            itemMargin: {--}}
+{{--                                horizontal: 8,--}}
+{{--                                vertical: 0--}}
+{{--                            }--}}
+{{--                        },--}}
+{{--                        tooltip: {--}}
+{{--                            shared: true,--}}
+{{--                            intersect: false,--}}
+{{--                            y: {--}}
+{{--                                formatter: function(value) {--}}
+{{--                                    return value.toLocaleString() + " VNĐ";--}}
+{{--                                }--}}
+{{--                            }--}}
+{{--                        }--}}
+{{--                    };--}}
+
+{{--                    // Khởi tạo biểu đồ--}}
+{{--                    var chart = new ApexCharts(document.querySelector("#revenue-chart"), options);--}}
+{{--                    chart.render();--}}
+{{--                }--}}
+{{--            </script>--}}
+
+            <script>
+                // Lấy dữ liệu từ backend
+                var times = {!! $timesJson !!}; // Thời gian (tháng hoặc ngày)
+                var revenues = {!! $revenuesJson !!}; // Danh sách doanh thu
+                var profits = {!! $profitsJson !!}; // Danh sách lợi nhuận
+
+                // Kiểm tra dữ liệu xem là theo tháng hay theo ngày
+                var isMonthly = times.every(time => Number.isInteger(time) && time >= 1 && time <= 12);
+
+                // Hàm lấy màu cho biểu đồ từ `data-colors`
+                function getChartColorsArray(elementId) {
+                    if (document.getElementById(elementId) !== null) {
+                        var colorData = document.getElementById(elementId).getAttribute("data-colors");
+
+                        if (colorData) {
+                            colorData = JSON.parse(colorData);
+                            return colorData.map(function(color) {
+                                var trimmedColor = color.replace(" ", "");
+
+                                if (trimmedColor.indexOf(",") === -1) {
+                                    return getComputedStyle(document.documentElement).getPropertyValue(trimmedColor) ||
+                                        trimmedColor;
+                                } else {
+                                    var colorParts = color.split(",");
+                                    if (colorParts.length === 2) {
+                                        return "rgba(" + getComputedStyle(document.documentElement).getPropertyValue(
+                                            colorParts[0]) + "," + colorParts[1] + ")";
+                                    } else {
+                                        return trimmedColor;
+                                    }
                                 }
+                            });
+                        }
+                        console.warn("data-colors Attribute not found on:", elementId);
+                    }
+                }
+
+                // Lấy màu cho biểu đồ
+                var revenueChartColors = getChartColorsArray("revenue-chart");
+
+                if (revenueChartColors) {
+                    var options = {
+                        series: [
+                            {
+                                name: "Doanh thu", // Chú thích cho cột doanh thu
+                                data: revenues
+                            },
+                            {
+                                name: "Lợi nhuận", // Chú thích cho cột lợi nhuận
+                                data: profits
+                            }
+                        ],
+                        chart: {
+                            height: 350,
+                            type: "bar", // Loại biểu đồ
+                            toolbar: false
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        stroke: {
+                            show: true,
+                            width: 2
+                        },
+                        xaxis: {
+                            categories: isMonthly
+                                ? times.map(time => {
+                                    // Chuyển đổi tháng từ số sang tên
+                                    const monthNames = [
+                                        "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
+                                        "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
+                                    ];
+                                    return monthNames[time - 1];
+                                })
+                                : times, // Hiển thị thời gian dạng ngày nếu không phải theo tháng
+                            title: {
+                                text: isMonthly ? "Tháng" : "Ngày"
                             }
                         },
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Doanh thu (VNĐ)',
-                                font: {
-                                    size: 14
-                                }
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top', // Hiển thị chú thích ở trên
+                        yaxis: {
                             labels: {
-                                usePointStyle: true, // Hiển thị dạng biểu tượng tròn
-                                font: {
-                                    size: 12
+                                formatter: function(value) {
+                                    return value.toLocaleString() + " VNĐ";
                                 }
+                            },
+                            tickAmount: 5,
+                            min: 0,
+                            max: Math.max(...revenues) + 50000 // Thêm khoảng cách trên trục Y
+                        },
+                        colors: ["#3bc2b0", "#FEB019"], // Đổi màu cột: Doanh thu (xanh), Lợi nhuận (vàng)
+                        plotOptions: {
+                            bar: {
+                                horizontal: false,
+                                columnWidth: "50%",
+                                endingShape: "rounded"
+                            }
+                        },
+                        fill: {
+                            opacity: 0.8, // Độ trong suốt của màu cột
+                            type: "solid"
+                        },
+                        legend: {
+                            show: true,
+                            position: "bottom",
+                            horizontalAlign: "center",
+                            fontWeight: 500,
+                            markers: {
+                                width: 10,
+                                height: 10,
+                                radius: 6, // Hình dạng marker
+                            },
+                            itemMargin: {
+                                horizontal: 8,
+                                vertical: 0
                             }
                         },
                         tooltip: {
-                            enabled: true,
-                            callbacks: {
-                                label: function(context) {
-                                    let value = context.raw.toLocaleString(); // Định dạng số có dấu phẩy
-                                    return `${context.dataset.label}: ${value} VNĐ`;
+                            shared: true,
+                            intersect: false,
+                            y: {
+                                formatter: function(value) {
+                                    return value.toLocaleString() + " VNĐ";
                                 }
                             }
                         }
-                    }
+                    };
+
+                    // Khởi tạo biểu đồ
+                    var chart = new ApexCharts(document.querySelector("#revenue-chart"), options);
+                    chart.render();
                 }
-            });
-        </script>
-        <script src="{{ asset('theme/admin/assets/libs/apexcharts/apexcharts.min.js') }}"></script>
+            </script>
 
-        <!-- Vector map-->
-        <script src="{{ asset('theme/admin/assets/libs/jsvectormap/js/jsvectormap.min.js') }}"></script>
-        <script src="{{ asset('theme/admin/assets/libs/jsvectormap/maps/world-merc.js') }}"></script>
-
-        <!--Swiper slider js-->
-        <script src="{{ asset('theme/admin/assets/libs/swiper/swiper-bundle.min.js') }}"></script>
-
-        <!-- Dashboard init -->
-        <script src="{{ asset('theme/admin/assets/js/pages/dashboard-ecommerce.init.js') }}"></script>
-    @endsection
+@endsection
