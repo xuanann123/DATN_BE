@@ -31,6 +31,7 @@ use App\Http\Controllers\api\Client\Intructor\ModuleQuizController;
 use App\Http\Controllers\api\Client\Intructor\TextLessonController;
 use App\Http\Controllers\api\Client\Intructor\UploadVideoController;
 use App\Http\Controllers\api\Client\CourseController as CourseHomePageController;
+use App\Http\Controllers\api\Client\GeneralSearchController;
 use App\Http\Controllers\api\Client\Student\CourseController as StudentCourseController;
 use App\Http\Controllers\api\Client\Intructor\LessonController as LessonTeacherController;
 use App\Http\Controllers\api\Client\Intructor\PreviewCourseController;
@@ -173,7 +174,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/check-history-learning', [UserController::class, 'checkLearning']);
         Route::get('vouchers', [VoucherController::class, 'getMyVouchers']);
         //CHAT AI
-        
+
         // Route::get('/qna', [QnAController::class, 'index'])->name('qna');
         Route::prefix('qna')->group(function () {
             Route::get('/', [QnAController::class, 'index'])->name('qna');
@@ -287,11 +288,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/unlike/{slug}', [PostController::class, 'unlikePost']);
         Route::get('/check-like/{slug}', [PostController::class, 'checkLikePost']);
     });
-    
+
 });
 
 # ===================== ROUTE FOR NOT LOGIN ===========================
 
+
+# ===================== ROUTE FOR GENERAL SEARCH ===========================
+Route::prefix('search')->group(function () {
+    Route::get('/', [GeneralSearchController::class, 'index']);
+    Route::get('/courses', [GeneralSearchController::class, 'searchCourses']);
+    Route::get('/teachers', [GeneralSearchController::class, 'searchTeachers']);
+    Route::get('/posts', [GeneralSearchController::class, 'searchPosts']);
+});
 
 # ===================== ROUTE FOR VOUCHERS ===========================
 Route::prefix('vouchers')->group(function () {

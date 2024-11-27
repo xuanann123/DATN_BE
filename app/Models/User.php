@@ -65,7 +65,8 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Course::class, 'id_user');
     }
-    public function posts() {
+    public function posts()
+    {
         return $this->hasMany(Post::class, 'user_id');
     }
     //Những khoá học đã đăng kí
@@ -89,15 +90,27 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Course::class, 'wish_lists', 'id_user', 'id_course');
     }
 
-    public function certificates() {
+    public function certificates()
+    {
         return $this->hasMany(Certificate::class);
     }
     public function ratings()
     {
         return $this->hasManyThrough(Rating::class, Course::class, 'id_user', 'id_course');
     }
-    //Lưu trữ những bài viết 
-    public function saveposts() {
+    //Lưu trữ những bài viết
+    public function saveposts()
+    {
         return $this->belongsToMany(Post::class, 'save_posts', 'user_id', 'post_id');
+    }
+
+    // hàm search
+    public function scopeSearch($query, $searchQuery)
+    {
+        return $query->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where('name', $searchQuery)
+                ->orWhere('name', 'LIKE', "%{$searchQuery}%")
+                ->orWhere('email', 'LIKE', "%{$searchQuery}%");
+        });
     }
 }
