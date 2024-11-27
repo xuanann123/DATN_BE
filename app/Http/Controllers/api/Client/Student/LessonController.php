@@ -183,6 +183,9 @@ class LessonController extends Controller
             $course_progress = $this->checkCourseProgress($user, $course);
 
             $userCourse->progress_percent = $course_progress;
+            if ($course_progress == 100) {
+                $userCourse->completed_at = now();
+            }
             $userCourse->save();
 
             // response cho client
