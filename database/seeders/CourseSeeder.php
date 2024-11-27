@@ -56,7 +56,16 @@ class CourseSeeder extends Seeder
         //Của tôi thì lấy thằng admin thôi
         $user = User::whereIn('user_type', [User::TYPE_ADMIN, User::TYPE_TEACHER])->inRandomOrder()->first();
 
-        // $categories = Category::factory(2)->create();
+        foreach (range(1, 2) as $index) {
+            Category::create([
+                'name' => "Category {$index}",
+                'slug' => Str::slug("Category {$index}"),
+                'image' => null,
+                'description' => fake()->text('25'),
+                'parent_id' => 0,
+                'is_active' => 1,
+            ]);
+        }
 
         //Tạo thời đế ít
         $youtubeIds = [
@@ -105,9 +114,9 @@ class CourseSeeder extends Seeder
             "course_thumbnail_e439cce0-bcc7-43ec-8f6b-22c92c0fdbc2.png"
         ];
 
-        
+
         foreach (range(1, 20) as $index) {
-            
+
             //seed khoá học
             $course = Course::create([
                 'id_category' => rand(1, 2),
