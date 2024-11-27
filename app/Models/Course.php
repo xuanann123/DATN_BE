@@ -10,11 +10,11 @@ class Course extends Model
 {
     use HasFactory, Notifiable;
     //Định nghĩa level cho khoá học
-    const LEVEL_BEGINNER = 'Sơ Cấp';
+    const LEVEL_BEGINNER = 'Sơ cấp';
     //Trung cấp
-    const LEVEL_INTERMEDIATE = 'Trung Cấp';
+    const LEVEL_INTERMEDIATE = 'Trung cấp';
     //Chuyên gia
-    const LEVEL_MASTER = 'Chuyên Gia';
+    const LEVEL_MASTER = 'Chuyên gia';
 
 
     //Trạng thái của khoá học
