@@ -45,7 +45,7 @@ class StatisticController extends Controller
             $query = UserCourse::query();
             $this->filterByCourse($query, $userId, $courseId);
 
-            $students = $query->with('user:id,name,avatar')
+            $students = $query->with(['user:id,name,avatar', 'course:id,name,thumbnail'])
                 ->latest('created_at')
                 ->paginate($limit);
 
@@ -78,7 +78,7 @@ class StatisticController extends Controller
             $this->filterByCourse($query, $userId, $courseId);
 
 
-            $ratings = $query->with('user:id,name,avatar')
+            $ratings = $query->with(['user:id,name,avatar', 'course:id,name,thumbnail'])
                 ->latest('created_at')
                 ->paginate($limit);
             ;
