@@ -221,7 +221,7 @@ class CourseSeeder extends Seeder
                     $question = Question::create([
                         'id_quiz' => $quiz->id,
                         'question' => fake()->text(30),
-                        'type' => 'multiple_choice',
+                        'type' => 'one_choice',
                     ]);
 
                     foreach (range(1, 4) as $optionIndex) {
