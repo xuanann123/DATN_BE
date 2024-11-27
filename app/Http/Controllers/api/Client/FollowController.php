@@ -53,7 +53,7 @@ class FollowController extends Controller
                     "status" => "error",
                     'message' => "Không tồn tại người mà bạn muốn theo dõi",
                     "data" => [],
-                ], 404);
+                ], 204);
             }
             //Kiểm tra xem người dùng này đã follow chưa
             if (!$follower->following()->where("following_id", $following->id)->exists()) {
@@ -100,7 +100,7 @@ class FollowController extends Controller
                 "status" => "error",
                 'message' => "Không tồn tại người mà có theo dõi",
                 "data" => [],
-            ], 404);
+            ], 204);
         }
         //Kiểm tra xem nó có follow không
         if ($follower->following()->where("following_id", $following_id)->exists()) {
