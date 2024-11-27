@@ -106,10 +106,12 @@ class CourseSeeder extends Seeder
         foreach (range(1, 50) as $index) {
             //seed khoá học
             $course = Course::create([
-                'id_category' => rand(1,2),
+
+                'id_category' => rand(1, 2),
                 'id_user' => $users->random()->id,
                 // 'id_category' => $categories->random()->id,
-                'name' => "Khoá học ". fake()->text(10),
+                'name' => "Khoá học " . fake()->text(10),
+
                 'thumbnail' => 'courses/thumbnails/' . $thumbnailCourses[$index - 1],
                 'trailer' => 'trailers/trailer_' . $index . '.mp4',
                 'description' => fake()->text('100'),
