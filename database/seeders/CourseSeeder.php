@@ -32,6 +32,8 @@ class CourseSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=0;'); // Tắt kiểm tra khóa ngoại để truncate
         DB::table('lessons')->truncate();
         DB::table('videos')->truncate();
+        // DB::table('categories')->truncate();
+
         DB::table('documents')->truncate();
         DB::table('modules')->truncate();
         DB::table('courses')->truncate();
@@ -52,10 +54,9 @@ class CourseSeeder extends Seeder
         //Tính durantion video you
 
         //Của tôi thì lấy thằng admin thôi
-        $users = User::whereIn('user_type', [User::TYPE_TEACHER, User::TYPE_ADMIN])->get();
+        $user = User::whereIn('user_type', [User::TYPE_ADMIN, User::TYPE_TEACHER])->inRandomOrder()->first();
 
-
-
+        // $categories = Category::factory(2)->create();
 
         //Tạo thời đế ít
         $youtubeIds = [
@@ -103,15 +104,15 @@ class CourseSeeder extends Seeder
             "course_thumbnail_e0b65d9f-02f1-43f1-a4d7-4719b5621a6a.png",
             "course_thumbnail_e439cce0-bcc7-43ec-8f6b-22c92c0fdbc2.png"
         ];
-        foreach (range(1, 50) as $index) {
+
+        
+        foreach (range(1, 20) as $index) {
+            
             //seed khoá học
             $course = Course::create([
-
                 'id_category' => rand(1, 2),
-                'id_user' => $users->random()->id,
-                // 'id_category' => $categories->random()->id,
+                'id_user' => $user->id,
                 'name' => "Khoá học " . fake()->text(10),
-
                 'thumbnail' => 'courses/thumbnails/' . $thumbnailCourses[$index - 1],
                 'trailer' => 'trailers/trailer_' . $index . '.mp4',
                 'description' => fake()->text('100'),
