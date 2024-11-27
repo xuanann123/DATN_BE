@@ -84,8 +84,13 @@ class LessonController extends Controller
                 ], 204);
             }
 
+            // Xác định MIME Type từ file
+            $mimeType = Storage::mimeType($resourcePath);
+
             // download file
-            return Storage::download($resourcePath, basename($resourcePath));
+            return Storage::download($resourcePath, basename($resourcePath), [
+                'Content-Type' => $mimeType,
+            ]);
         } catch (\Exception $e) {
             //Lỗi server báo lỗi
             return response()->json([
