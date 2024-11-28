@@ -104,6 +104,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Post::class, 'save_posts', 'user_id', 'post_id');
     }
 
+    public function admin_review()
+    {
+        return $this->hasOne(AdminReview::class, 'user_id');
+    }
+
     // hàm search
     public function scopeSearch($query, $searchQuery)
     {
