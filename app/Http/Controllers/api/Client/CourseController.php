@@ -41,11 +41,22 @@ class CourseController extends Controller
                 $total_quiz = $course->modules->whereNotNull('quiz')->count();
                 $course->total_lessons = $total_lessons + $total_quiz;
 
-                // Tính tổng duration của các lesson vid
-                $this->setLessonDurations($course);
-                $total_duration_video = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
-                    ->sum('duration');
-                $course->total_duration_video = $total_duration_video;
+                //Tính thời gian có sẵn lưu vào datatable
+                $totalDurationVideo = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                        return $lesson->lessonable->duration ?? 0;
+                    });
+                })->sum();
+                //Tính thời gian độc docs
+                $totalDurationDocs = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'document')->map(function ($lesson) {
+                        $wordCount = $lesson->lessonable->word_count ?? str_word_count(strip_tags($lesson->lessonable->content));
+                        return ceil(($wordCount / 200) * 60);
+                    });
+                })->sum();
+                //Tính tổng thời gian của video và docs
+                $course->total_duration_video = $totalDurationVideo + $totalDurationDocs;
+
                 $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
                 $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
 
@@ -100,10 +111,21 @@ class CourseController extends Controller
                 $course->total_lessons = $total_lessons + $total_quiz;
 
                 // Tính tổng duration của các lesson vid
-                $this->setLessonDurations($course);
-                $total_duration_video = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
-                    ->sum('duration');
-                $course->total_duration_video = $total_duration_video;
+                //Tính thời gian có sẵn lưu vào datatable
+                $totalDurationVideo = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                        return $lesson->lessonable->duration ?? 0;
+                    });
+                })->sum();
+                //Tính thời gian độc docs
+                $totalDurationDocs = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'document')->map(function ($lesson) {
+                        $wordCount = $lesson->lessonable->word_count ?? str_word_count(strip_tags($lesson->lessonable->content));
+                        return ceil(($wordCount / 200) * 60);
+                    });
+                })->sum();
+                //Tính tổng thời gian của video và docs
+                $course->total_duration_video = $totalDurationVideo + $totalDurationDocs;
                 //Sửa lại rating
                 $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
                 $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
@@ -137,7 +159,8 @@ class CourseController extends Controller
     {
         try {
             $limit = $request->input('limit', 5);
-            $courses = Course::select('id', 'slug', 'name', 'level', 'thumbnail', 'price', 'price_sale', 'id_user')->with(['user:id,name,avatar'])
+            $courses = Course::select('id', 'slug', 'name', 'level', 'thumbnail', 'price', 'price_sale', 'id_user')
+                ->with(['user:id,name,avatar'])
                 ->where('is_active', 1)
                 ->where('status', 'approved')
                 ->withCount('ratings')
@@ -147,7 +170,9 @@ class CourseController extends Controller
                         $query->whereHas('lessons');
                     },
                     'modules as quiz_count' => function ($query) {
-                        $query->whereHas('quiz');
+                        $query->whereHas('lessons', function ($query) {
+                            $query->where('content_type', 'quiz');
+                        });
                     }
                 ])
                 ->orderByDesc('total_student')
@@ -155,7 +180,6 @@ class CourseController extends Controller
                 ->limit($limit)
                 ->get();
 
-            // Kiểm tra nếu không có khóa học nào
             if ($courses->isEmpty()) {
                 return response()->json([
                     'status' => 'error',
@@ -163,28 +187,33 @@ class CourseController extends Controller
                 ], 204);
             }
 
-            // Tính tổng số lesson, quiz và duration
             foreach ($courses as $course) {
-                // Tính tổng lessons và quiz
                 $total_lessons = $course->modules->flatMap->lessons->count();
-                $total_quiz = $course->modules->whereNotNull('quiz')->count();
+                $total_quiz = $course->modules->flatMap->lessons->where('content_type', 'quiz')->count();
                 $course->total_lessons = $total_lessons + $total_quiz;
+                
+                //Tính thời gian có sẵn lưu vào datatable
+                $totalDurationVideo = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                        return $lesson->lessonable->duration ?? 0;
+                    });
+                })->sum();
+                //Tính thời gian độc docs
+                $totalDurationDocs = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'document')->map(function ($lesson) {
+                        $wordCount = $lesson->lessonable->word_count ?? str_word_count(strip_tags($lesson->lessonable->content));
+                        return ceil(($wordCount / 200) * 60);
+                    });
+                })->sum();
+                //Tính tổng thời gian của video và docs
+                $course->total_duration_video = $totalDurationVideo + $totalDurationDocs;
 
-                // Tính tổng duration của các lesson vid
-                $this->setLessonDurations($course);
-                $total_duration_video = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
-                    ->sum('duration');
-                $course->total_duration_video = $total_duration_video;
-                //
-                //Chỉnh lại reating
-                $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+                $course->ratings_avg_rate = number_format(round($course->ratings_avg_rate ?? 0, 1), 1);
                 $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
 
-                $course->makeHidden('modules');
-                $course->makeHidden('ratings');
+                $course->makeHidden(['modules', 'ratings']);
             }
 
-            // Trả về danh sách khóa học nổi bật
             return response()->json([
                 'status' => 'success',
                 'message' => 'Danh sách khóa học nổi bật',
@@ -198,6 +227,7 @@ class CourseController extends Controller
             ], 500);
         }
     }
+
     //Lấy khoá học theo học theo tất cả danh mục
     public function getAllCourseByCategory()
     {
@@ -302,10 +332,21 @@ class CourseController extends Controller
                 $course->total_lessons = $total_lessons + $total_quiz;
 
                 // Tính tổng duration của các lesson vid
-                $this->setLessonDurations($course);
-                $total_duration_video = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
-                    ->sum('duration');
-                $course->total_duration_video = $total_duration_video;
+                //Tính thời gian có sẵn lưu vào datatable
+                $totalDurationVideo = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                        return $lesson->lessonable->duration ?? 0;
+                    });
+                })->sum();
+                //Tính thời gian độc docs
+                $totalDurationDocs = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'document')->map(function ($lesson) {
+                        $wordCount = $lesson->lessonable->word_count ?? str_word_count(strip_tags($lesson->lessonable->content));
+                        return ceil(($wordCount / 200) * 60);
+                    });
+                })->sum();
+                //Tính tổng thời gian của video và docs
+                $course->total_duration_video = $totalDurationVideo + $totalDurationDocs;
                 if (DB::table('user_courses')->where('id_user', auth()->id())->where('id_course', $course->id)->exists()) {
                     $course->is_course_bought = true;
                 } else {
@@ -497,10 +538,21 @@ class CourseController extends Controller
                 $course->total_lessons = $total_lessons + $total_quiz;
 
                 // Tính tổng duration của các lesson vid
-                $this->setLessonDurations($course);
-                $total_duration_video = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
-                    ->sum('duration');
-                $course->total_duration_video = $total_duration_video;
+                //Tính thời gian có sẵn lưu vào datatable
+                $totalDurationVideo = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                        return $lesson->lessonable->duration ?? 0;
+                    });
+                })->sum();
+                //Tính thời gian độc docs
+                $totalDurationDocs = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'document')->map(function ($lesson) {
+                        $wordCount = $lesson->lessonable->word_count ?? str_word_count(strip_tags($lesson->lessonable->content));
+                        return ceil(($wordCount / 200) * 60);
+                    });
+                })->sum();
+                //Tính tổng thời gian của video và docs
+                $course->total_duration_video = $totalDurationVideo + $totalDurationDocs;
                 //Chỉnh lại reating
                 $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
                 $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
@@ -587,11 +639,21 @@ class CourseController extends Controller
                 $total_quiz = $course->modules->whereNotNull('quiz')->count();
                 $course->total_lessons = $total_lessons + $total_quiz;
 
-                // Tính tổng duration của các lesson vid
-                $this->setLessonDurations($course);
-                $total_duration_video = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
-                    ->sum('duration');
-                $course->total_duration_video = $total_duration_video;
+                //Tính thời gian có sẵn lưu vào datatable
+                $totalDurationVideo = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                        return $lesson->lessonable->duration ?? 0;
+                    });
+                })->sum();
+                //Tính thời gian độc docs
+                $totalDurationDocs = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'document')->map(function ($lesson) {
+                        $wordCount = $lesson->lessonable->word_count ?? str_word_count(strip_tags($lesson->lessonable->content));
+                        return ceil(($wordCount / 200) * 60);
+                    });
+                })->sum();
+                //Tính tổng thời gian của video và docs
+                $course->total_duration_video = $totalDurationVideo + $totalDurationDocs;
                 //Chỉnh lại reating
                 $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
                 $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();

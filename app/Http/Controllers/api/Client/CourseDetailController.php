@@ -43,16 +43,24 @@ class CourseDetailController extends Controller // di ve sinh
             $total_lessons = $course->modules->flatMap->lessons->count();
             $total_quiz = $course->modules->whereNotNull('quiz')->count();
 
-            // set duration cho tung bai hoc
-            $this->setLessonDurations($course);
-
-            // Sẽ lấy tổng số lượng tất cả các bài học là video trong khoá học đó
-            $total_duration_video = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
-                ->sum('duration');
+            $totalDurationVideo = $course->modules->flatMap(function ($module) {
+                return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                    return $lesson->lessonable->duration ?? 0;
+                });
+            })->sum();
+            //Tính thời gian độc docs
+            $totalDurationDocs = $course->modules->flatMap(function ($module) {
+                return $module->lessons->where('content_type', 'document')->map(function ($lesson) {
+                    $wordCount = $lesson->lessonable->word_count ?? str_word_count(strip_tags($lesson->lessonable->content));
+                    return ceil(($wordCount / 200) * 60);
+                });
+            })->sum();
+            //Tính tổng thời gian của video và docs
+            $course->total_duration_video = $totalDurationVideo + $totalDurationDocs;
 
             //Set giá trị trong khoá học là tổng bài học và tổng số lượng bài học
             $course->total_lessons = $total_lessons + $total_quiz;
-            $course->total_duration_video = $total_duration_video;
+
             $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
             $course->total_student = DB::table('user_courses')->where('id_course', operator: $course->id)->count();
 
@@ -99,12 +107,19 @@ class CourseDetailController extends Controller // di ve sinh
             $total_lessons = $course->modules->flatMap->lessons->count();
             $total_quiz = $course->modules->whereNotNull('quiz')->count();
 
-            // set duration cho tung bai hoc
-            $this->setLessonDurations($course);
-
-            // Sẽ lấy tổng số lượng tất cả các bài học là video trong khoá học đó
-            $total_duration_video = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
-                ->sum('duration');
+            $totalDurationVideo = $course->modules->flatMap(function ($module) {
+                return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                    return $lesson->lessonable->duration ?? 0;
+                });
+            })->sum();
+            //Tính thời gian độc docs
+            $totalDurationDocs = $course->modules->flatMap(function ($module) {
+                return $module->lessons->where('content_type', 'document')->map(function ($lesson) {
+                    $wordCount = $lesson->lessonable->word_count ?? str_word_count(strip_tags($lesson->lessonable->content));
+                    return ceil(($wordCount / 200) * 60);
+                });
+            })->sum();
+            
 
             //Kiểm tra tiến độ
             $course->progress_percent = UserCourse::where('id_user', $user->id)->where('id_course', $course->id)->first()->progress_percent ?? 0;
@@ -128,7 +143,7 @@ class CourseDetailController extends Controller // di ve sinh
                 $course->is_follow = false;
             }
             //Kiểm tra rating chưa
-            
+
             if ($check_rating = DB::table('ratings')->where('id_user', $user->id)->where('id_course', $courseId)->exists()) {
                 $course->is_rating = true;
             } else {
@@ -143,7 +158,9 @@ class CourseDetailController extends Controller // di ve sinh
 
             //Set giá trị trong khoá học là tổng bài học và tổng số lượng bài học
             $course->total_lessons = $total_lessons + $total_quiz;
-            $course->total_duration_video = $total_duration_video;
+            //Tính tổng thời gian của video và docs
+            $course->total_duration_video = $totalDurationVideo + $totalDurationDocs;
+      
             $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
 
             // Trả về dữ liệu bên phía client khi lấy được thành công
@@ -228,14 +245,25 @@ class CourseDetailController extends Controller // di ve sinh
 
             // Nếu người dùng chưa mua khoá học đó thì
             if (!$userCourse) {
-                //Tổng số lượng tất cả các bài học
-                $total_duration = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
-                    ->sum('duration');
+                //Tính thời gian có sẵn lưu vào datatable
+                $totalDurationVideo = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                        return $lesson->lessonable->duration ?? 0;
+                    });
+                })->sum();
+                //Tính thời gian độc docs
+                $totalDurationDocs = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'document')->map(function ($lesson) {
+                        $wordCount = $lesson->lessonable->word_count ?? str_word_count(strip_tags($lesson->lessonable->content));
+                        return ceil(($wordCount / 200) * 60);
+                    });
+                })->sum();
+                //Tính tổng thời gian của video và docs
+                $course->total_duration_video = $totalDurationVideo + $totalDurationDocs;
                 //Cập nhật tổng số lượng bài học
                 $course->total_lessons = $total_lessons;
                 //Tổng thời gian của khoá học đó
-                $course->total_duration = $total_duration;
-                //Trả dữ liệu về phía client
+
                 return response()->json([
                     'status' => 'success',
                     'message' => "Thông tin khóa học.",
