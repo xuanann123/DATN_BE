@@ -24,6 +24,7 @@ use App\Models\Audience;
 use App\Models\Goal;
 use App\Models\Requirement;
 use App\Models\User;
+use App\Models\Video;
 use Illuminate\Support\Facades\Auth;
 use PhpParser\Node\Expr\Cast\String_;
 
@@ -488,65 +489,75 @@ class CourseController extends Controller
 
     public function searchCourses(Request $request)
     {
+        try {
+            $search = $request->input('search');
+            $limit = $request->input('limit');
+            $courses = Course::select('id', 'slug', 'name', 'level', 'thumbnail', 'price', 'price_sale', 'id_user', 'id_category')
+                ->with(['user:id,name,avatar'])
+                ->where('is_active', 1)
+                ->where('status', 'approved')
+                ->withCount([
+                    'ratings',
+                    'modules as lessons_count' => function ($query) {
+                        $query->whereHas('lessons');
+                    },
+                    'modules as quiz_count' => function ($query) {
+                        $query->whereHas('quiz');
+                    }
+                ])
+                ->withAvg('ratings', 'rate')
+                ->search($search)->paginate($limit);
+            // Load thêm dữ liệu cần thiết sau khi lấy danh sách khóa học
+            $courses->load(['modules.lessons', 'modules.quiz']);
 
-        // Số thứ tự trang;
-        $page = $request->page ?? 1;
-        // Số bản ghi trên một trang;
-        $perPage = $request->perPage ?? 12;
+            foreach ($courses as $course) {
+                // Tính tổng lessons và quiz
+                $total_lessons = $course->modules->flatMap->lessons->count();
+                $total_quiz = $course->modules->whereNotNull('quiz')->count();
+                $course->total_lessons = $total_lessons + $total_quiz;
 
-        // Lấy keyword ở url;
-        $searchTerm = $request->key;
+                // Tính tổng duration của các lesson vid
+                // Tính tổng duration của các lesson vid
+                $this->setLessonDurations($course);
+                $total_duration_video = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
+                    ->sum('duration');
+                $course->total_duration_video = $total_duration_video;
+                //Chỉnh lại reating
+                $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+                $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
 
-        $courses = DB::table('courses as c')
-            ->selectRaw('
-                u.id as id,
-                u.name as name,
-                u.avatar as avatar,
-                c.id as course_id,
-                c.name as course_name,
-                c.thumbnail as course_thumbnail,
-                c.total_student,
-                COUNT(DISTINCT l.id) as total_lessons,
-                c.duration as course_duration,
-                ROUND(IFNULL(AVG(r.rate), 0), 1) as average_rating
-            ')
-            ->join('users as u', 'u.id', '=', 'c.id_user')
-            ->leftJoin('ratings as r', 'c.id', '=', 'r.id_course')
-            ->leftJoin('modules as m', 'm.id_course', '=', 'c.id')
-            ->leftJoin('lessons as l', 'l.id_module', '=', 'm.id')
-            ->where('c.is_active', 1)
-            ->where('u.is_active', 1)
-            ->where('u.user_type', 'teacher')
-            ->where(function ($query) use ($searchTerm) {
-                $query->where('c.name', 'LIKE', "%{$searchTerm}%")
-                    ->orWhere('u.name', 'LIKE', "%{$searchTerm}%");
-            })
-            ->groupBy('u.id', 'u.name', 'u.avatar', 'c.id', 'c.name', 'c.thumbnail', 'c.total_student', 'c.duration')
-            ->orderByDesc('average_rating')
-            ->paginate($perPage, ['*'], 'page', $page);
+                $course->makeHidden('modules');
+                $course->makeHidden('ratings');
+            }
 
-        if ($courses->count() <= 0) {
+            if ($courses->count() < 0) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không có dữ liệu',
+                    'data' => []
+                ]);
+            }
+            return response()->json([
+                'status' => 'success',
+                "message" => "Danh sách khóa học",
+                "data" => $courses
+            ]);
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'No data found',
-            ], 204);
+                'message' => 'Kết quả tìm kiếm khóa học' . $e->getMessage(),
+                'data' => []
+            ]);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => [
-                'courses' => $courses->items(),
-                'current_page' => $courses->currentPage(),
-                'total_pages' => $courses->lastPage(),
-                'total_count' => $courses->total(),
-            ]
-        ], 200);
+
+
     }
 
     public function courseCheckout(Request $request)
     {
         $slug = $request->slug;
-        $course = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user','id_category','level')->withCount([
+        $course = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user', 'id_category', 'level')->withCount([
             'modules as lessons_count' => function ($query) {
                 $query->whereHas('lessons');
             },
@@ -748,6 +759,16 @@ class CourseController extends Controller
             ]);
         }
     }
-
+    private function setLessonDurations($course)
+    {
+        $course->modules->flatMap->lessons->map(function ($lesson) {
+            if ($lesson->lessonable_type === Video::class) {
+                $video = Video::find($lesson->lessonable_id);
+                $lesson->duration = $video ? $video->duration : null;
+            } else {
+                $lesson->duration = null;
+            }
+        });
+    }
 
 }
