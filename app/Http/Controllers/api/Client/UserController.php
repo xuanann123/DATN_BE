@@ -184,7 +184,7 @@ class UserController extends Controller
             }
         }
         // Phân trang kết quả
-        $courses = $myCourseBought->paginate($limit);
+        $myCourseBought = $myCourseBought->paginate($limit);
 
 
 
@@ -194,12 +194,20 @@ class UserController extends Controller
             $total_lessons = $course->modules->flatMap->lessons->count();
             $total_quiz = $course->modules->whereNotNull('quiz')->count();
             $course->total_lessons = $total_lessons + $total_quiz;
-
-            // Tính tổng duration của các lesson vid
-            $this->setLessonDurations($course);
-            $total_duration_video = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
-                ->sum('duration');
-            $course->total_duration_video = $total_duration_video;
+            $totalDurationVideo = $course->modules->flatMap(function ($module) {
+                return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                    return $lesson->lessonable->duration ?? 0;
+                });
+            })->sum();
+            //Tính thời gian độc docs
+            $totalDurationDocs = $course->modules->flatMap(function ($module) {
+                return $module->lessons->where('content_type', 'document')->map(function ($lesson) {
+                    $wordCount = $lesson->lessonable->word_count ?? str_word_count(strip_tags($lesson->lessonable->content));
+                    return ceil(($wordCount / 200) * 60);
+                });
+            })->sum();
+            //Tính tổng thời gian của video và docs
+            $course->total_duration_video = $totalDurationVideo + $totalDurationDocs;
             //Lấy tiến độ của của khoá này 
             $progress = DB::table('user_courses')
                 ->where('id_course', $course->id)
