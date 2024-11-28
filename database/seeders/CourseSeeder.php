@@ -31,9 +31,9 @@ class CourseSeeder extends Seeder
         // Truncate các bảng để làm mới dữ liệu
         DB::statement('SET FOREIGN_KEY_CHECKS=0;'); // Tắt kiểm tra khóa ngoại để truncate
         DB::table('lessons')->truncate();
+        DB::table('users')->truncate();
         DB::table('videos')->truncate();
-        // DB::table('categories')->truncate();
-
+        DB::table('categories')->truncate();
         DB::table('documents')->truncate();
         DB::table('modules')->truncate();
         DB::table('courses')->truncate();
@@ -49,16 +49,17 @@ class CourseSeeder extends Seeder
         DB::table('options')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;'); // Bật lại kiểm tra khóa ngoại
         //Tạo 10 giảng viên ai chưa có giảng viên thì bật cái này lên seed
-        // $users = User::factory(10)->create(['user_type' => User::TYPE_TEACHER]); // Giảng viên
+        $users = User::factory(10)->create(['user_type' => User::TYPE_TEACHER]); // Giảng viên
         // $categories = Cateogry::factory(10); // Giảng viên
         //Tính durantion video you
+        $categoryNames = ["Chuyên Ngành BE", "Chuyên Ngành FE"];
 
         //Của tôi thì lấy thằng admin thôi
         $user = User::whereIn('user_type', [User::TYPE_ADMIN, User::TYPE_TEACHER])->inRandomOrder()->first();
 
         foreach (range(1, 2) as $index) {
             Category::create([
-                'name' => "Category {$index}",
+                'name' => $categoryNames[$index-1],
                 'slug' => Str::slug("Category {$index}"),
                 'image' => null,
                 'description' => fake()->text('25'),
@@ -66,7 +67,6 @@ class CourseSeeder extends Seeder
                 'is_active' => 1,
             ]);
         }
-
         //Tạo thời đế ít
         $youtubeIds = [
             '0SJE9dYdpps',
@@ -120,7 +120,7 @@ class CourseSeeder extends Seeder
             //seed khoá học
             $course = Course::create([
                 'id_category' => rand(1, 2),
-                'id_user' => $user->id,
+                'id_user' => rand(1, 10),
                 'name' => "Khoá học " . fake()->text(10),
                 'thumbnail' => 'courses/thumbnails/' . $thumbnailCourses[$index - 1],
                 'trailer' => 'trailers/trailer_' . $index . '.mp4',
@@ -190,8 +190,6 @@ class CourseSeeder extends Seeder
 
                     } else {
                         $lessonable = Document::create([
-                            'title' => fake()->text('20'),
-                            'description' => fake()->text('10'),
                             'content' => fake()->text('200'),
                             'resourse_path' => 'documents/doc_' . $lessonIndex . '.pdf',
                         ]);
