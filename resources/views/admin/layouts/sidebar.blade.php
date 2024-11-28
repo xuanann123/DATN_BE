@@ -212,45 +212,44 @@
                     </div>
                 </li>
 
-               
-               
+
+
 
                 {{-- Giao dịch --}}
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý giao dịch</span>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ route('admin.transactions.history-buy-course') }}"
-                        data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class=" ri-chat-history-line"></i> <span>Khóa học đã bán</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ route('admin.transactions.history-deposit') }}"
-                        data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class="ri-arrow-right-circle-line"></i> <span>Giao dịch nạp tiền</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ route('admin.transactions.history-withdraw') }}"
-                        data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class="ri-arrow-left-circle-line"></i> <span>Giao dịch rút tiền</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ route('admin.transactions.withdraw-money') }}"
-                        data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class="ri-money-euro-circle-line"></i> <span>Yêu cầu rút tiền</span>
-                    </a>
-                </li>
 
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#sidebarMoney" data-bs-toggle="collapse"
+                       role="button" aria-expanded="false" aria-controls="sidebarCertificate">
+                        <i class="ri-money-euro-circle-line"></i> <span>Giao dịch</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarMoney">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="{{ route('admin.transactions.history-buy-course') }}" class="nav-link" data-key="t-one-page">
+                                    Khóa học đã bán</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.transactions.history-deposit') }}" class="nav-link" data-key="t-one-page">
+                                    Giao dịch nạp tiền</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.transactions.history-withdraw') }}" class="nav-link" data-key="t-one-page">
+                                    Giao dịch rút tiền</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.transactions.withdraw-money') }}" class="nav-link" data-key="t-one-page">
+                                    Yêu cầu rút tiền</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
 
                 {{-- Kiểm duyệt --}}
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý kiểm
                         duyệt</span>
                 </li>
-
-
-
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('admin.approval.courses.list') }}"
                         data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">

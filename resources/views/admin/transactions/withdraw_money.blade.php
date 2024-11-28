@@ -72,6 +72,7 @@
                                 <th>Trạng thái</th>
                                 <th>Ngày tạo</th>
                                 <th>Ghi chú</th>
+                                <th>Người duyệt</th>
                                 <th>Thao tác</th>
                             </tr>
                         </thead>
@@ -79,7 +80,7 @@
                             @foreach ($withdrawMoneys as $withdraw)
                                 <tr>
                                     <td>{{ $withdraw->id }}</td>
-                                    <td>{{ $withdraw->name }}</td>
+                                    <td>{{ $withdraw->user_name }}</td>
                                     <td>
                                         {{ number_format($withdraw->coin) }}
                                     </td>
@@ -104,6 +105,9 @@
                                     </td>
                                     <td>
                                         {{ $withdraw->note }}
+                                    </td>
+                                    <td>
+                                        {{ $withdraw->approver_name }}
                                     </td>
                                     <td>
                                         <a class="dropdown-item edit-item-btn cursor-pointer" data-bs-toggle="modal"
@@ -137,6 +141,7 @@
                         @csrf
                         @method('PUT')
                         <input type="hidden" name="id_withdraw_money" id="id_withdraw_money">
+                        <input type="hidden" name="id_depositor" value="{{ auth()->id() }}">
                         <div class="mb-3">
                             <label for="status_withdraw" class="form-label">Trạng thái</label>
                             <select name="status" id="status_withdraw" class="form-control">
