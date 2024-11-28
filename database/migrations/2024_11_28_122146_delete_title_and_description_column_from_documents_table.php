@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('qna', function (Blueprint $table) {
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+        Schema::table('documents', function (Blueprint $table) {
+            $table->dropColumn(['title', 'description']);
         });
     }
 
@@ -22,9 +21,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('qna', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
-            $table->dropColumn('user_id');
+        Schema::table('documents', function (Blueprint $table) {
+            $table->string('title')->nullable();
+            $table->text('description')->nullable();
         });
     }
 };

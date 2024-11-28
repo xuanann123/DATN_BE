@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('withdraw_money', function (Blueprint $table) {
-            $table->string('status')->default('Chờ xác nhận');
+            $table->string('status')->default('Chờ xác nhận')->change();
         });
     }
 };
