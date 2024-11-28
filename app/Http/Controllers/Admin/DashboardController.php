@@ -78,7 +78,7 @@ class DashboardController extends Controller
                 break;
 
             default: // Mặc định sắp xếp theo doanh thu giảm dần
-                $query->orderBy('total_revenue', 'desc');
+                $query->orderBy('month', 'asc');
                 break;
         }
         $revenueData = $query->get();
