@@ -147,8 +147,9 @@ class UserController extends Controller
         }
     }
     //Danh sách khoá học của tôi đã mua
-    public function myCourseBought()
+    public function myCourseBought(Request $request)
     {
+        $limit = $request->input('limit', 6);
         $authUser = Auth::user();
         $myCourseBought = $authUser->usercourses()->with('modules', 'user')
             ->withAvg('ratings', 'rate')
@@ -159,7 +160,33 @@ class UserController extends Controller
                 'modules as quiz_count' => function ($query) {
                     $query->whereHas('quiz');
                 }
-            ])->get();
+            ]);
+        // Lọc theo level (nếu có)
+        if ($request->filled('search')) {
+            $myCourseBought->search($request->input('search'));
+        }
+        // Lọc theo level (nếu có)
+        if ($request->filled('level')) {
+            $myCourseBought->where('level', $request->input('level'));
+        }
+
+        // Lọc theo category (nếu có)
+        if ($request->filled('category')) {
+            $myCourseBought->where('id_category', $request->input('category'));
+        }
+
+        // Sắp xếp theo A-Z hoặc Z-A
+        if ($request->filled('arrange')) {
+            if ($request->input('arrange') === 'A-Z') {
+                $myCourseBought->orderBy('name', 'asc');
+            } elseif ($request->input('arrange') === 'Z-A') {
+                $myCourseBought->orderBy('name', 'desc');
+            }
+        }
+        // Phân trang kết quả
+        $courses = $myCourseBought->paginate($limit);
+
+
 
         //Duyệt qua toàn bộ khoá học đó
         foreach ($myCourseBought as $course) {
@@ -169,11 +196,10 @@ class UserController extends Controller
             $course->total_lessons = $total_lessons + $total_quiz;
 
             // Tính tổng duration của các lesson vid
-            $course->total_duration_video = $course->modules->flatMap(function ($module) {
-                return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
-                    return $lesson->lessonable->duration ?? 0;
-                });
-            })->sum();
+            $this->setLessonDurations($course);
+            $total_duration_video = Video::whereIn('id', $course->modules->flatMap->lessons->pluck('lessonable_id'))
+                ->sum('duration');
+            $course->total_duration_video = $total_duration_video;
             //Lấy tiến độ của của khoá này 
             $progress = DB::table('user_courses')
                 ->where('id_course', $course->id)

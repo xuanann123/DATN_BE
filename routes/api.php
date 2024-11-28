@@ -340,7 +340,7 @@ Route::prefix('teachers')->group(function () {
 
 # ===================== ROUTE FOR COURSE ===========================
 Route::prefix('courses')->group(function () {
-    Route::get('/search-course', [CourseController::class, 'searchCourses']);
+    // Route::get('/search-course', [CourseController::class, 'searchCourses']);
     Route::get('detail-no-login/{slug}', [CourseDetailController::class, 'courseDetailNoLogin']);
     Route::get('detail/quiz/{slug}', [CourseDetailController::class, 'courseQuizDetail']);
     Route::get('new-course', [CourseHomePageController::class, 'listNewCourse']);

@@ -16,7 +16,7 @@ class GeneralSearchController extends Controller
             $querySearch = $request->query("q");
 
             $courses = Course::search($querySearch)->limit(3)->get();
-            $teachers = User::where('user_type', 'teacher')
+            $teachers = User::whereIn('user_type', [User::TYPE_TEACHER, User::TYPE_ADMIN])
                 ->search($querySearch)
                 ->limit(3)
                 ->get();
