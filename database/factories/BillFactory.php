@@ -18,7 +18,7 @@ class BillFactory extends Factory
     public function definition(): array
     {
         return [
-            'id_user' => rand(1, 20),
+            'id_user' => rand(1, 10),
             'id_course' => rand(1, 20),
             'total_coin' => rand(100, 1000),
             'total_coin_after_discount' => rand(70, 1000),
