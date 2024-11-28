@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use App\Models\WithdrawalWallet;
 use App\Models\WithdrawMoney;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
@@ -190,7 +191,6 @@ class TransactionController extends Controller
     public function withdrawMoneys(Request $request)
     {
         $title = "Yêu cầu rút tiền";
-
         if ($request->keyword) {
             $key = $request->keyword;
             $withdrawMoneys = WithdrawMoney::select(
@@ -202,9 +202,11 @@ class TransactionController extends Controller
                 'withdraw_money.account_holder',
                 'withdraw_money.status',
                 'withdraw_money.note',
-                'users.name'
+                'users1.name as user_name',
+                'users2.name as approver_name'
             )
-                ->join('users', 'users.id', '=', 'withdraw_money.id_user')
+                ->join('users as users1', 'users1.id', '=', 'withdraw_money.id_user')
+                ->leftJoin('users as users2', 'users2.id', '=', 'withdraw_money.id_depositor')
                 ->where(function ($query) use ($key) {
                     $query->where('users.name', 'LIKE', "%$key%")
                         ->orWhere('withdraw_money.id', 'LIKE', "%$key%")
@@ -230,9 +232,11 @@ class TransactionController extends Controller
             'withdraw_money.status',
             'withdraw_money.note',
             'withdraw_money.created_at',
-            'users.name'
+            'users1.name as user_name',
+            'users2.name as approver_name'
         )
-            ->join('users', 'users.id', '=', 'withdraw_money.id_user')
+            ->join('users as users1', 'users1.id', '=', 'withdraw_money.id_user')
+            ->leftJoin('users as users2', 'users2.id', '=', 'withdraw_money.id_depositor')
             ->orderbyDesc('withdraw_money.created_at')
             ->paginate(10);
 
@@ -262,7 +266,8 @@ class TransactionController extends Controller
         $requestId = $request->id_withdraw_money;
         $data = [
             'status' => $request->status,
-            'note' => $request->status == 'Đã hủy' ? 'Hủy bởi quản trị viên: ' . $request->note : $request->note
+            'note' => $request->status == 'Đã hủy' ? 'Hủy bởi quản trị viên: ' . $request->note : $request->note,
+            'id_depositor' => $request->id_depositor
         ];
         $requestMoney = WithdrawMoney::find($requestId);
         if (!$requestMoney) {
@@ -293,7 +298,7 @@ class TransactionController extends Controller
                 'coin_unit' => 1000,
                 'amount' => $requestMoney->amount,
                 'coin' => $requestMoney->coin,
-                'status' => 'Thất bại'
+                'status' => 'Thất bại',
             ]);
         } else if ($data['status'] == 'Hoàn thành') {
             $withdrawWallet = WithdrawalWallet::where('id_user', $requestMoney->id_user)->first();
@@ -303,7 +308,7 @@ class TransactionController extends Controller
                 'coin_unit' => 1000,
                 'amount' => $requestMoney->amount,
                 'coin' => $requestMoney->coin,
-                'status' => 'Thành công'
+                'status' => 'Thành công',
             ]);
         }
 

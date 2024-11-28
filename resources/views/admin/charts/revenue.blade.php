@@ -229,130 +229,6 @@
             });
         </script>
 
-{{--            <script>--}}
-{{--                // Lấy dữ liệu từ backend--}}
-{{--                var times = {!! $timesJson !!}; // Tháng--}}
-{{--                var revenues = {!! $revenuesJson !!}; // Doanh thu--}}
-{{--                var profits = {!! $profitsJson !!}; // Lợi nhuận--}}
-
-{{--                // Hàm lấy màu cho biểu đồ từ `data-colors`--}}
-{{--                function getChartColorsArray(elementId) {--}}
-{{--                    if (document.getElementById(elementId) !== null) {--}}
-{{--                        var colorData = document.getElementById(elementId).getAttribute("data-colors");--}}
-
-{{--                        if (colorData) {--}}
-{{--                            colorData = JSON.parse(colorData);--}}
-{{--                            return colorData.map(function(color) {--}}
-{{--                                var trimmedColor = color.replace(" ", "");--}}
-
-{{--                                if (trimmedColor.indexOf(",") === -1) {--}}
-{{--                                    return getComputedStyle(document.documentElement).getPropertyValue(trimmedColor) ||--}}
-{{--                                        trimmedColor;--}}
-{{--                                } else {--}}
-{{--                                    var colorParts = color.split(",");--}}
-{{--                                    if (colorParts.length === 2) {--}}
-{{--                                        return "rgba(" + getComputedStyle(document.documentElement).getPropertyValue(--}}
-{{--                                            colorParts[0]) + "," + colorParts[1] + ")";--}}
-{{--                                    } else {--}}
-{{--                                        return trimmedColor;--}}
-{{--                                    }--}}
-{{--                                }--}}
-{{--                            });--}}
-{{--                        }--}}
-{{--                        console.warn("data-colors Attribute not found on:", elementId);--}}
-{{--                    }--}}
-{{--                }--}}
-
-{{--                // Lấy màu cho biểu đồ--}}
-{{--                var revenueChartColors = getChartColorsArray("revenue-chart");--}}
-
-{{--                if (revenueChartColors) {--}}
-{{--                    var options = {--}}
-{{--                        series: [--}}
-{{--                            {--}}
-{{--                                name: "Doanh thu", // Chú thích cho cột doanh thu--}}
-{{--                                data: revenues--}}
-{{--                            },--}}
-{{--                            {--}}
-{{--                                name: "Lợi nhuận", // Chú thích cho cột lợi nhuận--}}
-{{--                                data: profits--}}
-{{--                            }--}}
-{{--                        ],--}}
-{{--                        chart: {--}}
-{{--                            height: 290,--}}
-{{--                            type: "bar", // Loại biểu đồ--}}
-{{--                            toolbar: false--}}
-{{--                        },--}}
-{{--                        dataLabels: {--}}
-{{--                            enabled: false--}}
-{{--                        },--}}
-{{--                        stroke: {--}}
-{{--                            show: true,--}}
-{{--                            width: 2--}}
-{{--                        },--}}
-{{--                        xaxis: {--}}
-{{--                            categories: times.map(time => {--}}
-{{--                                // Chuyển đổi tháng từ số sang tên--}}
-{{--                                const monthNames = ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",--}}
-{{--                                    "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"--}}
-{{--                                ];--}}
-{{--                                return monthNames[time - 1];--}}
-{{--                            })--}}
-{{--                        },--}}
-{{--                        yaxis: {--}}
-{{--                            labels: {--}}
-{{--                                formatter: function(value) {--}}
-{{--                                    return value.toLocaleString() + " VNĐ";--}}
-{{--                                }--}}
-{{--                            },--}}
-{{--                            tickAmount: 5,--}}
-{{--                            min: 0,--}}
-{{--                            max: Math.max(...revenues) + 50000--}}
-{{--                        },--}}
-{{--                        colors: ["#3bc2b0", "#FEB019"], // Đổi màu cột: Doanh thu (xanh), Lợi nhuận (vàng)--}}
-{{--                        plotOptions: {--}}
-{{--                            bar: {--}}
-{{--                                horizontal: false,--}}
-{{--                                columnWidth: "50%",--}}
-{{--                                endingShape: "rounded"--}}
-{{--                            }--}}
-{{--                        },--}}
-{{--                        fill: {--}}
-{{--                            opacity: 0.8, // Độ trong suốt của màu cột--}}
-{{--                            type: "solid"--}}
-{{--                        },--}}
-{{--                        legend: {--}}
-{{--                            show: true,--}}
-{{--                            position: "bottom",--}}
-{{--                            horizontalAlign: "center",--}}
-{{--                            fontWeight: 500,--}}
-{{--                            markers: {--}}
-{{--                                width: 10,--}}
-{{--                                height: 10,--}}
-{{--                                radius: 6, // Hình dạng marker--}}
-{{--                            },--}}
-{{--                            itemMargin: {--}}
-{{--                                horizontal: 8,--}}
-{{--                                vertical: 0--}}
-{{--                            }--}}
-{{--                        },--}}
-{{--                        tooltip: {--}}
-{{--                            shared: true,--}}
-{{--                            intersect: false,--}}
-{{--                            y: {--}}
-{{--                                formatter: function(value) {--}}
-{{--                                    return value.toLocaleString() + " VNĐ";--}}
-{{--                                }--}}
-{{--                            }--}}
-{{--                        }--}}
-{{--                    };--}}
-
-{{--                    // Khởi tạo biểu đồ--}}
-{{--                    var chart = new ApexCharts(document.querySelector("#revenue-chart"), options);--}}
-{{--                    chart.render();--}}
-{{--                }--}}
-{{--            </script>--}}
-
             <script>
                 // Lấy dữ liệu từ backend
                 var times = {!! $timesJson !!}; // Thời gian (tháng hoặc ngày)
@@ -429,7 +305,6 @@
                                 })
                                 : times, // Hiển thị thời gian dạng ngày nếu không phải theo tháng
                             title: {
-                                text: isMonthly ? "Tháng" : "Ngày"
                             }
                         },
                         yaxis: {

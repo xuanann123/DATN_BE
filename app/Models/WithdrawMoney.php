@@ -18,5 +18,6 @@ class WithdrawMoney extends Model
         'account_holder',
         'status',
         'note',
+        'id_depositor'
     ];
 }

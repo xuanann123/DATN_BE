@@ -35,237 +35,80 @@
                 <!--end row-->
 
                 <div class="row">
-                    <div class="col-xl-3 col-md-6">
-                        <!-- card -->
-                        <div class="card card-animate">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1 overflow-hidden">
-                                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0"> Tổng doanh thu
-                                        </p>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <h5 class="text-success fs-14 mb-0">
-                                            {{--                                            <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +16.24 % --}}
-                                        </h5>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-end justify-content-between mt-4">
-                                    <div>
-                                        <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value"
-                                                data-target="{{ $totalRevenue }}">0</span></h4>
-                                        {{--                                        <a href="" class="text-decoration-underline">Chi tiết</a> --}}
-                                    </div>
-                                    <div class="avatar-sm flex-shrink-0">
-                                        <span class="avatar-title bg-success-subtle rounded fs-3">
-                                            <i class="bx bx-dollar-circle text-success"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
-                    </div><!-- end col -->
-
-                    <div class="col-xl-3 col-md-6">
-                        <!-- card -->
-                        <div class="card card-animate">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1 overflow-hidden">
-                                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0"> Lợi nhuận
-                                        </p>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <h5 class="text-success fs-14 mb-0">
-                                            {{--                                            <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +16.24 % --}}
-                                        </h5>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-end justify-content-between mt-4">
-                                    <div>
-                                        <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value"
-                                                                                              data-target="{{ $totalProfits }}">0</span></h4>
-                                        {{--                                        <a href="" class="text-decoration-underline">Chi tiết</a> --}}
-                                    </div>
-                                    <div class="avatar-sm flex-shrink-0">
-                                        <span class="avatar-title bg-success-subtle rounded fs-3">
-                                            <i class="bx bx-dollar-circle text-success"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
-                    </div><!-- end col -->
-
-                    <div class="col-xl-3 col-md-6">
-                        <!-- card -->
-                        <div class="card card-animate">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1 overflow-hidden">
-                                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Số lượng giảng
-                                            viên</p>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <h5 class="text-danger fs-14 mb-0">
-                                            {{--                                            <i class="ri-arrow-right-down-line fs-13 align-middle"></i> -3.57 % --}}
-                                        </h5>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-end justify-content-between mt-4">
-                                    <div>
-                                        <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value"
-                                                data-target="{{ $countTeachers }}">0</span></h4>
-                                        {{--                                        <a href="" class="text-decoration-underline">Danh sách giảng viên</a> --}}
-                                    </div>
-                                    <div class="avatar-sm flex-shrink-0">
-                                        <span class="avatar-title bg-info-subtle rounded fs-3">
-                                            <i class="bx bx-user-circle text-warning"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
-                    </div><!-- end col -->
-
-                    <div class="col-xl-3 col-md-6">
-                        <!-- card -->
-                        <div class="card card-animate">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1 overflow-hidden">
-                                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Số lượng khóa học
-                                        </p>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <h5 class="text-success fs-14 mb-0">
-                                            {{--                                            <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +29.08 % --}}
-                                        </h5>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-end justify-content-between mt-4">
-                                    <div>
-                                        <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value"
-                                                data-target="{{ $countCourses }}">0</span> </h4>
-                                        {{--                                        <a href="" class="text-decoration-underline">Danh sách khóa học</a> --}}
-                                    </div>
-                                    <div class="avatar-sm flex-shrink-0">
-                                        <span class="avatar-title bg-primary-subtle rounded fs-3">
-                                            <i class="bx bx-book-open text-primary"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
-                    </div><!-- end col -->
-
-                    <div class="col-xl-3 col-md-6">
-                        <!-- card -->
-                        <div class="card card-animate">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1 overflow-hidden">
-                                        <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Số lượng học viên
-                                        </p>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        {{--                                        <h5 class="text-muted fs-14 mb-0"> --}}
-                                        {{--                                            +0.00 % --}}
-                                        {{--                                        </h5> --}}
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-end justify-content-between mt-4">
-                                    <div>
-                                        <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value"
-                                                data-target="{{ $countStudents }}">0</span></h4>
-                                        {{--                                        <a href="" class="text-decoration-underline">Danh sách học viên</a> --}}
-                                    </div>
-                                    <div class="avatar-sm flex-shrink-0">
-                                        <span class="avatar-title bg-primary-subtle rounded fs-3">
-                                            <i class="bx bx-user-circle text-warning"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div><!-- end card body -->
-                        </div><!-- end card -->
-                    </div><!-- end col -->
-                </div> <!-- end row-->
-
-{{--                <div class="row">--}}
-{{--                        <div class="col-xl-12">--}}
-{{--                            <div class="card crm-widget">--}}
-{{--                                <div class="card-body p-0">--}}
-{{--                                    <div class="row row-cols-xxl-5 row-cols-md-3 row-cols-1 g-0">--}}
-{{--                                        <div class="col">--}}
-{{--                                            <div class="py-4 px-3">--}}
-{{--                                                <h5 class="text-muted text-uppercase fs-13">Campaign Sent <i class="ri-arrow-up-circle-line text-success fs-18 float-end align-middle"></i></h5>--}}
-{{--                                                <div class="d-flex align-items-center">--}}
-{{--                                                    <div class="flex-shrink-0">--}}
-{{--                                                        <i class="ri-space-ship-line display-6 text-muted"></i>--}}
-{{--                                                    </div>--}}
-{{--                                                    <div class="flex-grow-1 ms-3">--}}
-{{--                                                        <h2 class="mb-0"><span class="counter-value" data-target="197">0</span></h2>--}}
-{{--                                                    </div>--}}
-{{--                                                </div>--}}
-{{--                                            </div>--}}
-{{--                                        </div><!-- end col -->--}}
-{{--                                        <div class="col">--}}
-{{--                                            <div class="mt-3 mt-md-0 py-4 px-3">--}}
-{{--                                                <h5 class="text-muted text-uppercase fs-13">Annual Profit <i class="ri-arrow-up-circle-line text-success fs-18 float-end align-middle"></i></h5>--}}
-{{--                                                <div class="d-flex align-items-center">--}}
-{{--                                                    <div class="flex-shrink-0">--}}
-{{--                                                        <i class="ri-exchange-dollar-line display-6 text-muted"></i>--}}
-{{--                                                    </div>--}}
-{{--                                                    <div class="flex-grow-1 ms-3">--}}
-{{--                                                        <h2 class="mb-0">$<span class="counter-value" data-target="489.4">0</span>k</h2>--}}
-{{--                                                    </div>--}}
-{{--                                                </div>--}}
-{{--                                            </div>--}}
-{{--                                        </div><!-- end col -->--}}
-{{--                                        <div class="col">--}}
-{{--                                            <div class="mt-3 mt-md-0 py-4 px-3">--}}
-{{--                                                <h5 class="text-muted text-uppercase fs-13">Lead Conversation <i class="ri-arrow-down-circle-line text-danger fs-18 float-end align-middle"></i></h5>--}}
-{{--                                                <div class="d-flex align-items-center">--}}
-{{--                                                    <div class="flex-shrink-0">--}}
-{{--                                                        <i class="ri-pulse-line display-6 text-muted"></i>--}}
-{{--                                                    </div>--}}
-{{--                                                    <div class="flex-grow-1 ms-3">--}}
-{{--                                                        <h2 class="mb-0"><span class="counter-value" data-target="32.89">0</span>%</h2>--}}
-{{--                                                    </div>--}}
-{{--                                                </div>--}}
-{{--                                            </div>--}}
-{{--                                        </div><!-- end col -->--}}
-{{--                                        <div class="col">--}}
-{{--                                            <div class="mt-3 mt-lg-0 py-4 px-3">--}}
-{{--                                                <h5 class="text-muted text-uppercase fs-13">Daily Average Income <i class="ri-arrow-up-circle-line text-success fs-18 float-end align-middle"></i></h5>--}}
-{{--                                                <div class="d-flex align-items-center">--}}
-{{--                                                    <div class="flex-shrink-0">--}}
-{{--                                                        <i class="ri-trophy-line display-6 text-muted"></i>--}}
-{{--                                                    </div>--}}
-{{--                                                    <div class="flex-grow-1 ms-3">--}}
-{{--                                                        <h2 class="mb-0">$<span class="counter-value" data-target="1596.5">0</span></h2>--}}
-{{--                                                    </div>--}}
-{{--                                                </div>--}}
-{{--                                            </div>--}}
-{{--                                        </div><!-- end col -->--}}
-{{--                                        <div class="col">--}}
-{{--                                            <div class="mt-3 mt-lg-0 py-4 px-3">--}}
-{{--                                                <h5 class="text-muted text-uppercase fs-13">Annual Deals <i class="ri-arrow-down-circle-line text-danger fs-18 float-end align-middle"></i></h5>--}}
-{{--                                                <div class="d-flex align-items-center">--}}
-{{--                                                    <div class="flex-shrink-0">--}}
-{{--                                                        <i class="ri-service-line display-6 text-muted"></i>--}}
-{{--                                                    </div>--}}
-{{--                                                    <div class="flex-grow-1 ms-3">--}}
-{{--                                                        <h2 class="mb-0"><span class="counter-value" data-target="2659">0</span></h2>--}}
-{{--                                                    </div>--}}
-{{--                                                </div>--}}
-{{--                                            </div>--}}
-{{--                                        </div><!-- end col -->--}}
-{{--                                    </div><!-- end row -->--}}
-{{--                                </div><!-- end card body -->--}}
-{{--                            </div><!-- end card -->--}}
-{{--                        </div><!-- end col -->--}}
-{{--                    </div>--}}
+                        <div class="col-xl-12">
+                            <div class="card crm-widget">
+                                <div class="card-body p-0">
+                                    <div class="row row-cols-xxl-5 row-cols-md-3 row-cols-1 g-0">
+                                        <div class="col">
+                                            <div class="py-4 px-3">
+                                                <h5 class="text-muted text-uppercase fs-13">Tổng doanh thu <i class="ri-arrow-up-circle-line text-success fs-18 float-end align-middle"></i></h5>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0">
+                                                        <i class="bx bx-dollar-circle text-success display-6"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-3">
+                                                        <h2 class="mb-0"><span class="counter-value" data-target="{{ $totalRevenue }}">0</span></h2>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div><!-- end col -->
+                                        <div class="col">
+                                            <div class="mt-3 mt-md-0 py-4 px-3">
+                                                <h5 class="text-muted text-uppercase fs-13">Lợi nhuận<i class="ri-arrow-up-circle-line text-success fs-18 float-end align-middle"></i></h5>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0">
+                                                        <i class="bx bx-dollar-circle text-success display-6"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-3">
+                                                        <h2 class="mb-0"><span class="counter-value" data-target="{{ $totalProfits }}">0</span></h2>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div><!-- end col -->
+                                        <div class="col">
+                                            <div class="mt-3 mt-md-0 py-4 px-3">
+                                                <h5 class="text-muted text-uppercase fs-13">Số lượng giảng viên <i class="ri-arrow-down-circle-line text-danger fs-18 float-end align-middle"></i></h5>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0">
+                                                        <i class="bx bx-user-circle text-warning display-6"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-3">
+                                                        <h2 class="mb-0"><span class="counter-value" data-target="{{ $countTeachers }}">0</span></h2>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div><!-- end col -->
+                                        <div class="col">
+                                            <div class="mt-3 mt-lg-0 py-4 px-3">
+                                                <h5 class="text-muted text-uppercase fs-13">Số lượng khóa học<i class="ri-arrow-up-circle-line text-success fs-18 float-end align-middle"></i></h5>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0">
+                                                        <i class="bx bx-book-open text-primary display-6"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-3">
+                                                        <h2 class="mb-0"><span class="counter-value" data-target="{{ $countCourses }}">0</span></h2>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div><!-- end col -->
+                                        <div class="col">
+                                            <div class="mt-3 mt-lg-0 py-4 px-3">
+                                                <h5 class="text-muted text-uppercase fs-13">Số lượng học viên <i class="ri-arrow-down-circle-line text-danger fs-18 float-end align-middle"></i></h5>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0">
+                                                        <i class="bx bx-user-circle text-warning display-6"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-3">
+                                                        <h2 class="mb-0"><span class="counter-value" data-target="{{ $countStudents }}">0</span></h2>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div><!-- end col -->
+                                    </div><!-- end row -->
+                                </div><!-- end card body -->
+                            </div><!-- end card -->
+                        </div><!-- end col -->
+                    </div>
 
                 {{-- Biểu đồ thống kê --}}
                 <div class="row">
