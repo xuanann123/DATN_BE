@@ -308,9 +308,10 @@ class CourseController extends Controller
     }
 
 
-    public function listFavoriteCourse()
+    public function listFavoriteCourse(Request $request)
     {
         $user = Auth::user();
+        $limit = $request->input('limit', 6);
         //phân trang 6 bản ghi
         try {
             $courses = $user->wishlists()->with('modules', 'user')
@@ -323,7 +324,22 @@ class CourseController extends Controller
                     'modules as quiz_count' => function ($query) {
                         $query->whereHas('quiz');
                     }
-                ])->paginate(6);
+                ]);
+
+                //Làm phần lọc thêm tìm kiếm
+                if ($request->filled('search')) {
+                    $courses->search($request->input('search'));
+                }
+                //Làm phần lọc thêm cấp bậc
+                if ($request->filled('level')) {
+                    $courses->where('level', $request->input('level'));
+                }
+                //Làm phần lọc thêm  danh mục
+                if ($request->filled('category')) {
+                    $courses->where('id_category', $request->input('category'));
+                }
+               
+                $courses = $courses->paginate($limit);
 
             foreach ($courses as $course) {
                 // Tính tổng lessons và quiz
