@@ -17,7 +17,7 @@ class BannerController extends Controller
             $banners = Banner::select('id', 'title', 'redirect_url', 'image', 'content', 'position', 'start_time', 'end_time')
                 ->where('is_active', '=', 1)
                 //nằm trong khoảng thời gian start_time - end_time
-                ->orderByDesc('position')
+                ->orderBy('position')
                 ->get();
             //Kiểm tra nếu dữ liệu rỗng
             if ($banners->isEmpty()) {

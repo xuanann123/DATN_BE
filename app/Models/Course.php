@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Google\Service\MyBusinessAccountManagement\Admin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -141,6 +142,11 @@ class Course extends Model
     public function bills()
     {
         return $this->hasMany(Bill::class, 'id_course');
+    }
+
+    public function admin_review()
+    {
+        return $this->morphOne(AdminReview::class,'reviewable');
     }
 
 

@@ -53,7 +53,7 @@
 
 <body>
     <div class="container">
-        <h1>Từ chối khóa học{{ $course->title }}</h1>
+        <h1>Từ chối khóa học: {{ $course->name }}</h1>
 
         <p>Xin chào {{ $course->user->name }},</p>
 
@@ -74,9 +74,9 @@
             <br>
         @endif
 
-        @if ($course->admin_comments)
+        @if ($admin_comments)
             <strong>Lí do:</strong>
-            <div>{!! $course->admin_comments !!}</div>
+            <div>{!! $admin_comments !!}</div>
         @endif
 
         <p>Chúng tôi khuyến khích bạn xem xét và cải thiện các điều kiện này trước khi gửi lại khóa học.</p>

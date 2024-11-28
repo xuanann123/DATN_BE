@@ -15,20 +15,23 @@ class CourseRejectionEmail extends Mailable implements ShouldQueue
 
     public $course;
     public $conditions;
+    public $admin_comments;
 
-    public function __construct($course, $conditions)
+    public function __construct($course, $conditions, $admin_comments = null)
     {
         $this->course = $course;
         $this->conditions = $conditions;
+        $this->admin_comments = $admin_comments;
     }
 
     public function build()
     {
-        return $this->subject('Khóa học bị từ chối: ' . $this->course->title)
+        return $this->subject('Khóa học bị từ chối: ' . $this->course->name)
             ->view('emails.approvals.reject')
             ->with([
                 'course' => $this->course,
                 'conditions' => $this->conditions,
+                'admin_comments' => $this->admin_comments
             ]);
     }
 }

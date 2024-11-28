@@ -42,8 +42,8 @@
             <div class="card">
                 <form action="{{ route('admin.approval.courses.action') }}">
                     @csrf
-                    <div class="card-header d-flex justify-content-between gap-3">
-                        <div class="col-sm-auto d-flex">
+                    <div class="card-header d-flex justify-content-center">
+                        {{-- <div class="col-sm-auto d-flex">
                             <select name="act" id="" class="form-select">
                                 <option value="" class="form-control">Thao tác nhiều bản ghi</option>
                                 @foreach ($listAct as $key => $act)
@@ -52,8 +52,8 @@
                                 @endforeach
                             </select>
                             <button type="submit" class="ms-2 btn btn-primary">Chọn</button>
-                        </div>
-                        <div class="col-sm-auto d-flex ms-2">
+                        </div> --}}
+                        <div class="col-sm-auto d-flex">
                             <ul class="d-flex gap-4 mt-1 list-unstyled">
                                 <li><a href="{{ request()->fullUrlWithQuery(['status' => 'all']) }}">Tất
                                         cả({{ $count['all'] }})</a></li>
@@ -71,11 +71,11 @@
                             style="width:100%">
                             <thead>
                                 <tr>
-                                    <th scope="col" style="width: 50px;">
+                                    {{-- <th scope="col" style="width: 50px;">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" id="selectAll" value="option">
                                         </div>
-                                    </th>
+                                    </th> --}}
                                     <th data-ordering="false">Tên khóa học</th>
                                     <th data-ordering="false">Danh mục</th>
                                     <th data-ordering="false">Giảng viên</th>
@@ -83,18 +83,20 @@
                                     <th>Giá</th>
                                     <th>Ngày gửi</th>
                                     <th>Trạng thái</th>
+                                    <th>Người kiểm duyệt</th>
+                                    <th>Ngày kiểm duyệt</th>
                                     <th>Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody class="list form-check-all">
                                 @foreach ($courses as $course)
                                     <tr>
-                                        <th scope="row">
+                                        {{-- <th scope="row">
                                             <div class="form-check">
                                                 <input class="form-check-input checkbox" type="checkbox" name="listCheck[]"
                                                     value="{{ $course->id }}">
                                             </div>
-                                        </th>
+                                        </th> --}}
                                         <td>{{ $course->name }}</td>
                                         <td>{{ $course->category->name }}</td>
                                         <td>{{ $course->user->name }}</td>
@@ -136,6 +138,24 @@
                                                         : ($course->status == 'rejected'
                                                             ? 'Đã từ chối'
                                                             : '')) }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge rounded-pill bg-primary">
+                                                @if ($course->admin_review)
+                                                    {{ $course->admin_review->user->name }}
+                                                @else
+                                                    Chưa có
+                                                @endif
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if ($course->admin_review)
+                                                {{ $course->admin_review->updated_at }}
+                                            @else
+                                                <span class="badge rounded-pill bg-primary-subtle text-primary">
+                                                    Chưa có
+                                                </span>
+                                            @endif
                                         </td>
                                         <td>
                                             <a href="{{ route('admin.approval.courses.detail', $course->id) }}"

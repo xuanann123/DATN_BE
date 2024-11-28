@@ -5,13 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\Module;
-use App\Notifications\Client\Instructor\CourseApprovalStatusNotification;
+use App\Models\AdminReview;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Approvals\CourseApproveEmail;
 use App\Mail\Approvals\CourseRejectionEmail;
+use App\Notifications\Client\Instructor\CourseApprovalStatusNotification;
 
 class ApprovalCourseController extends Controller
 {
@@ -32,6 +34,7 @@ class ApprovalCourseController extends Controller
         };
 
         $courses = Course::query()
+            ->with('admin_review')
             ->whereNotNull('submited_at')
             ->where('status', '!=', 'draft')
             ->when($status != 'all', function ($query) use ($status) {
@@ -88,18 +91,19 @@ class ApprovalCourseController extends Controller
         });
 
         $conditions = $this->getCourseConditions($course);
-        //Điểm nổi bật 
+        //Điểm nổi bật
         $goals = $course->goals;
         $requirements = $course->requirements;
         $audiences = $course->audiences;
         //Lấy ra phần danh sách đánh giá của khoá học này
         $ratings = $course->ratings;
 
-        return view('admin.course_censors.detail', compact('title', 'course', 'totalDurationVideo', 'lecturesCount', 'quizzesCount', 'maxModulePosition', 'conditions','goals','requirements','audiences','ratings'));
+        return view('admin.course_censors.detail', compact('title', 'course', 'totalDurationVideo', 'lecturesCount', 'quizzesCount', 'maxModulePosition', 'conditions', 'goals', 'requirements', 'audiences', 'ratings'));
     }
 
     public function approve(Request $request)
     {
+        DB::beginTransaction();
         try {
             $course = Course::findOrFail($request->id);
 
@@ -119,6 +123,17 @@ class ApprovalCourseController extends Controller
             if ($request->has('approval')) {
                 $course->status = 'approved';
                 $message = 'Đã chấp thuận khóa học.';
+                AdminReview::updateOrCreate(
+                    [
+                        'reviewable_id' => $course->id,
+                        'reviewable_type' => Course::class,
+                    ],
+                    [
+                        'user_id' => auth()->id(), // admin hiện tại đăng nhập
+                        'action' => 'approved',
+                        'admin_comments' => $request->admin_comments ?? $message,
+                    ]
+                );
                 // Gửi email cho giảng viên khi chấp thuận
                 Mail::to($user->email)->queue(new CourseApproveEmail($course));
                 // Gửi thông báo cho giảng viên khi chấp thuận
@@ -128,21 +143,34 @@ class ApprovalCourseController extends Controller
             // Xử lý từ chối
             if ($request->has('reject')) {
                 $course->status = 'rejected';
-                $course->admin_comments = $request->admin_comments;
-                $message = 'Đã từ chối khóa học';
+                $message = 'Đã từ chối khóa học.';
+                AdminReview::updateOrCreate(
+                    [
+                        'reviewable_id' => $course->id,
+                        'reviewable_type' => Course::class,
+                    ],
+                    [
+                        'user_id' => auth()->id(), // admin hiện tại đăng nhập
+                        'action' => 'rejected',
+                        'admin_comments' => $request->admin_comments ?? 'Khóa học chưa đạt yêu cầu.',
+                    ]
+                );
                 // lấy những điều kiện không đạt
                 $failedConditions = collect($conditions)->filter(fn($condition) => !$condition['status'])->values()->all();
 
                 // Gửi email cho giảng viên khi từ chối
-                Mail::to($user->email)->queue(new CourseRejectionEmail($course, $conditions));
+                Mail::to($user->email)->queue(new CourseRejectionEmail($course, $conditions, $course->admin_review->admin_comments));
                 // Gửi thông báo cho giảng viên khi từ chối
-                $user->notify(new CourseApprovalStatusNotification($course, $course->status, $failedConditions, $course->admin_comments));
+                $user->notify(new CourseApprovalStatusNotification($course, $course->status, $failedConditions, $course->admin_review->admin_comments));
             }
 
             $course->save();
 
+            DB::commit();
+
             return redirect()->route('admin.approval.courses.list')->with('success', $message);
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Lỗi phê duyệt khóa học: ' . $e->getMessage());
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -252,7 +280,7 @@ class ApprovalCourseController extends Controller
             // Kiểm tra tất cả các quiz đều có ít nhất 1 câu hỏi
             [
                 'label' => 'Tất cả bài tập đều có ít nhất 1 câu hỏi.',
-                'value' => $course->modules->filter(function($module){
+                'value' => $course->modules->filter(function ($module) {
                     return $module->quiz && $module->quiz->questions->count() > 0;
                 })->count(),
                 'required' => $course->modules->filter(fn($module) => $module->quiz)->count(),
