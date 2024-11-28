@@ -23,8 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('voucher_uses', function (Blueprint $table) {
-            $table->timestamp('applied_at');
-            $table->timestamp('expires_at');
+            $table->timestamp('applied_at')->change();
+            $table->timestamp('expires_at')->change();
         });
     }
 };

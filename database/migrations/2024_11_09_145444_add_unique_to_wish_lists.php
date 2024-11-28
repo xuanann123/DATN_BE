@@ -22,6 +22,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('wish_lists', function (Blueprint $table) {
+            $table->dropForeign(['id_user']);
+            $table->dropForeign(['id_course']);
             $table->dropUnique(['id_user', 'id_course']);
         });
     }
