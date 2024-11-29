@@ -360,10 +360,10 @@ class UserController extends Controller
             ],
         ], 200);
     }
-    public function getUserByEmail(String $email)
+    public function getUserByEmail(string $email)
     {
         try {
-    
+
             //Lấy thằng user đó ra
             $user = User::with('profile')->where('email', $email)->first();
 
@@ -376,8 +376,17 @@ class UserController extends Controller
                 ], 204);
             }
             //Lấy những khoá học của user đó đăng lên
-            $coursesByUser = $user->courses()->select('id', 'name', 'slug', 'description', 'thumbnail', 'sort_description')->get();
-            $coursesUserBought = UserCourse::where('id_user', $user->id)->get();
+            $coursesByUser = $user->courses()->select('id', 'name', 'slug', 'description', 'thumbnail', 'sort_description')
+                ->where('is_active', 1)
+                ->where('status', Course::COURSE_STATUS_APPROVED)
+                ->get();
+
+            $coursesUserBought = [];
+            $listCoursesUserBought = UserCourse::where('id_user', $user->id)->get();
+            foreach ($listCoursesUserBought as $item) {
+                $coursesUserBought[] = Course::select('id', 'name', 'slug', 'description', 'thumbnail', 'sort_description')->find($item->id_course);
+            }
+
             // $postsByUser = $user->posts()->select()->get();
             return response()->json([
                 'status' => 'success',
