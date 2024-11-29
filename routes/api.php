@@ -32,6 +32,7 @@ use App\Http\Controllers\api\Client\Intructor\TextLessonController;
 use App\Http\Controllers\api\Client\Intructor\UploadVideoController;
 use App\Http\Controllers\api\Client\CourseController as CourseHomePageController;
 use App\Http\Controllers\api\Client\GeneralSearchController;
+use App\Http\Controllers\api\Client\Intructor\CodingLesson;
 use App\Http\Controllers\api\Client\Student\CourseController as StudentCourseController;
 use App\Http\Controllers\api\Client\Intructor\LessonController as LessonTeacherController;
 use App\Http\Controllers\api\Client\Intructor\PreviewCourseController;
@@ -228,12 +229,20 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::prefix('/lesson')->group(function () {
                 Route::get('{lesson}/detail', [LessonTeacherController::class, 'lessonDetailTeacher']);
                 Route::put('{module}/update-lesson-position', [LessonTeacherController::class, 'updateLessonPosition']);
+                // bài học doc
                 Route::post('{module}/add-text-lesson', [TextLessonController::class, 'storeTextLesson']);
                 Route::put('{lesson}/update-text-lesson', [TextLessonController::class, 'updateTextLesson']);
                 Route::delete('{lesson}/delete-text-lesson', [TextLessonController::class, 'destroyTextLesson']);
+                // Bài học vid
                 Route::post('/upload-video/{module}', [UploadVideoController::class, 'uploadVideo']);
                 Route::delete('/delete-lesson-video/{lesson}', [UploadVideoController::class, 'deleteLessonVideo']);
                 Route::put('/update-lesson-video/{lesson}', [UploadVideoController::class, 'updateLessonVideo']);
+                // Bài học coding
+                Route::post('/{module}/add-coding-lesson', [CodingLesson::class, 'store']);
+                Route::put('/{lesson}/update-coding-lesson', [CodingLesson::class, 'update']);
+                Route::delete('/{lesson}/delete-coding-lesson', [CodingLesson::class, 'destroy']);
+                Route::put('/{lesson}/update-coding-content', [CodingLesson::class, 'updateContent']);
+                // Đổi loại bài học (doc - vid)
                 Route::post('/{lesson}/change-type', [LessonTeacherController::class, 'changeLessonType']);
                 # ========================== Route for quiz ===========================
                 //ADD QUIZ => Lấy thằng id của module để thêm
