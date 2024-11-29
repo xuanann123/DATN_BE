@@ -2,6 +2,14 @@
 @section('title')
     Dashboard
 @endsection
+@section('style-libs')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css"/>
+    <style>
+        .dataTables_info, .first, .last, .dataTables_length, .dataTables_filter{
+            display: none;
+        }
+    </style>
+@endsection
 @section('content')
     <div class="row">
         <div class="col">
@@ -39,7 +47,7 @@
                             <div class="card crm-widget">
                                 <div class="card-body p-0">
                                     <div class="row row-cols-xxl-5 row-cols-md-3 row-cols-1 g-0">
-                                        <div class="col">
+                                        <a class="col" href="{{ route('admin.charts.revenue') }}">
                                             <div class="py-4 px-3">
                                                 <h5 class="text-muted text-uppercase fs-13">Tổng doanh thu <i class="ri-arrow-up-circle-line text-success fs-18 float-end align-middle"></i></h5>
                                                 <div class="d-flex align-items-center">
@@ -51,8 +59,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div><!-- end col -->
-                                        <div class="col">
+                                        </a><!-- end col -->
+                                        <a class="col" href="{{ route('admin.charts.revenue') }}">
                                             <div class="mt-3 mt-md-0 py-4 px-3">
                                                 <h5 class="text-muted text-uppercase fs-13">Lợi nhuận<i class="ri-arrow-up-circle-line text-success fs-18 float-end align-middle"></i></h5>
                                                 <div class="d-flex align-items-center">
@@ -64,8 +72,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div><!-- end col -->
-                                        <div class="col">
+                                        </a><!-- end col -->
+                                        <a class="col" href="{{ route('admin.users.list') }}">
                                             <div class="mt-3 mt-md-0 py-4 px-3">
                                                 <h5 class="text-muted text-uppercase fs-13">Số lượng giảng viên <i class="ri-arrow-down-circle-line text-danger fs-18 float-end align-middle"></i></h5>
                                                 <div class="d-flex align-items-center">
@@ -77,8 +85,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div><!-- end col -->
-                                        <div class="col">
+                                        </a><!-- end col -->
+                                        <a class="col" href="{{ route('admin.courses.list') }}">
                                             <div class="mt-3 mt-lg-0 py-4 px-3">
                                                 <h5 class="text-muted text-uppercase fs-13">Số lượng khóa học<i class="ri-arrow-up-circle-line text-success fs-18 float-end align-middle"></i></h5>
                                                 <div class="d-flex align-items-center">
@@ -90,8 +98,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div><!-- end col -->
-                                        <div class="col">
+                                        </a><!-- end col -->
+                                        <a class="col" href="{{ route('admin.users.list') }}">
                                             <div class="mt-3 mt-lg-0 py-4 px-3">
                                                 <h5 class="text-muted text-uppercase fs-13">Số lượng học viên <i class="ri-arrow-down-circle-line text-danger fs-18 float-end align-middle"></i></h5>
                                                 <div class="d-flex align-items-center">
@@ -103,7 +111,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div><!-- end col -->
+                                        </a><!-- end col -->
                                     </div><!-- end row -->
                                 </div><!-- end card body -->
                             </div><!-- end card -->
@@ -162,119 +170,83 @@
 
                 <div class="row">
                     <div class="col-xl-4">
+
                         <div class="card">
-                            <div class="card-header align-items-center d-flex">
-                                <h4 class="card-title mb-0 flex-grow-1">Giảng viên nổi bật hệ thống</h4>
-                                <div class="flex-shrink-0">
-
-                                </div>
-                            </div><!-- end card header -->
-
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Giảng viên nổi bật hệ thống</h5>
+                            </div>
                             <div class="card-body">
-                                <div class="table-responsive table-card">
-                                    <table class="table table-hover table-centered align-middle table-nowrap mb-0">
-                                        <tbody>
-                                            @foreach ($topInstructors as $item)
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="avatar-sm rounded">
-                                                                <img src="{{ Storage::url($item->avatar) }}"
-                                                                    alt=""
-                                                                    class="img-fluid d-block mt-2 avatar-xs rounded-circle" />
-                                                            </div>
-                                                            <span class="fs-14 my-1"><a
-                                                                    class="text-reset">{{ $item->name }}</a></span>
-                                                        </div>
-                                                    </td>
-
-                                                    <td>
-                                                        <h5 class="fs-14 my-1 fw-normal">Đã bán</h5>
-                                                        <span class="text-muted">{{ $item->total_sales }}</span>
-                                                    </td>
-
-                                                    <td>
-                                                        <h5 class="fs-14 my-1 fw-normal">Số tiền</h5>
-                                                        <span
-                                                            class="text-muted">{{ number_format($item->total_revenue * 1000) }}</span>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-
+                                <table id="pagination-teacher"
+                                       class="table nowrap dt-responsive align-middle table-hover table-bordered"
+                                       style="width:100%">
+                                    <thead>
+                                    <tr>
+                                        <th>Giảng viên</th>
+                                        <th>Đã bán</th>
+                                        <th>Doanh thu</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($topInstructors as $item)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center fw-medium">
+                                                    <img src="{{ Storage::url($item->avatar) }}" alt=""
+                                                         class="avatar-xxs me-2">
+                                                    <a href="#" class="currency_name">{{ $item->name }}</a>
+                                                </div>
+                                            </td>
+                                            <td>{{ $item->total_sales }}</td>
+                                            <td>{{ number_format($item->total_revenue * 1000) }}</td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-8">
-                        <div class="card card-height-100">
-                            <div class="card-header align-items-center d-flex">
-                                <h4 class="card-title mb-0 flex-grow-1">Khóa học bán chạy hệ thống</h4>
-                                <div class="flex-shrink-0">
-
-                                </div>
-                            </div><!-- end card header -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Khóa học bán chạy hệ thống</h5>
+                            </div>
                             <div class="card-body">
-                                <div class="table-responsive table-card">
-                                    <table class="table table-centered table-hover align-middle table-nowrap mb-0">
-                                        <tbody>
-                                            @foreach ($topCourses as $course)
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="flex-shrink-0 me-2">
-                                                                <img src="{{ Storage::url($course->course_thumbnail) }}"
-                                                                    alt="" class="img-fluid avatar-sm rounded"
-                                                                    style="object-fit: cover" />
-                                                            </div>
-                                                            <div class="d-flex flex-column">
-                                                                <b> <span
-                                                                        class="text-muted">{{ $course->course_name }}</span></b>
-                                                                <span class="text-muted">{{ $course->author_name }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-
-                                                    <td>
-                                                        <p class="mb-0">Số đánh giá </p>
-                                                        <span class="text-muted">{{ $course->total_ratings }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <p class="mb-0">Điểm trung bình</p>
-                                                        <span
-                                                            class="text-muted">{{ round($course->average_rating, 1) }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <p class="mb-0">Số lượt bán</p>
-                                                        <span class="text-muted">{{ $course->total_sales }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <p class="mb-0">Tổng lợi</p>
-                                                        <span
-                                                            class="text-muted">{{ number_format($course->total_revenue * 1000) }}</span>
-                                                    </td>
-                                                    {{-- Hoa hồng 70% --}}
-                                                    <td>
-                                                        <p class="mb-0">Hoa hồng</p>
-                                                        <span
-                                                            class="text-muted">{{ number_format($course->total_revenue * 1000 * 0.3) }}</span>
-                                                    </td>
-                                                </tr><!-- end -->
-                                            @endforeach
-                                        </tbody>
-                                    </table><!-- end table -->
-                                </div>
-
-                            </div> <!-- .card-body-->
-                        </div> <!-- .card-->
+                                <table id="pagination-course"
+                                       class="table nowrap dt-responsive align-middle table-hover table-bordered"
+                                       style="width:100%">
+                                    <thead>
+                                    <tr>
+                                        <th>Khóa học</th>
+                                        <th>Số đánh giá</th>
+                                        <th>Điểm trung bình</th>
+                                        <th>Số lượt bán</th>
+                                        <th>Doanh thu</th>
+                                        <th>Lợi nhuận</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($topCourses as $course)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center fw-medium">
+                                                    <img src="{{ Storage::url($course->course_thumbnail) }}" alt=""
+                                                         class="avatar-xxs me-2">
+                                                    <a href="#" class="currency_name">{{ $course->course_name }}</a>
+                                                </div>
+                                            </td>
+                                            <td>{{ $course->total_ratings }}</td>
+                                            <td>{{ round($course->average_rating, 1) }}</td>
+                                            <td>{{ $course->total_sales }}</td>
+                                            <td>{{ number_format($course->total_revenue * 1000) }}</td>
+                                            <td>{{ number_format($course->total_revenue * 1000 * 0.3) }}</td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div> <!-- .col-->
                 </div> <!-- end row-->
-
-
-
-
-
             </div> <!-- end .h-100-->
 
         </div> <!-- end col -->
@@ -291,9 +263,41 @@
     <link href="{{ asset('theme/admin/assets/libs/swiper/swiper-bundle.min.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 @section('script-libs')
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+
+    <script src="{{ asset('theme/admin/assets/js/pages/datatables.init.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            // $('#alternative-pagination').DataTable().destroy();
+            $('#pagination-course').DataTable({
+                pageLength: 5,
+                pagingType: "full_numbers",
+                language: {
+                    paginate: {
+                        previous: "Trước", // Văn bản cho nút Previous
+                        next: "Sau",       // Văn bản cho nút Next
+                    },
+                },
+            });
+
+            $('#pagination-teacher').DataTable({
+                pageLength: 5,
+                pagingType: "full_numbers",
+                language: {
+                    paginate: {
+                        previous: "Trước", // Văn bản cho nút Previous
+                        next: "Sau",       // Văn bản cho nút Next
+                    },
+                },
+            });
+
+        });
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
     <!-- apexcharts -->
     <script src="{{ asset('theme/admin/assets/libs/apexcharts/apexcharts.min.js') }}"></script>
 
