@@ -29,4 +29,9 @@ class Rating extends Model
     public function user() {
         return $this->belongsTo(User::class, 'id_user');
     }
+
+    // phản hồi của đánh giá
+    public function rating_replies() {
+        return $this->hasMany(RatingReply::class, 'rating_id');
+    }
 }

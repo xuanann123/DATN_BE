@@ -63,6 +63,30 @@ class CourseController extends Controller
             ], 500);
         }
     }
+
+    // Lấy những khóa học đã được phê duyệt
+    public function getApprovedCourses(Request $request)
+    {
+        try {
+            $courses = Course::query()
+                ->where('id_user', auth()->id())
+                ->latest('id')
+                ->select('id', 'name')
+                ->get();
+            //Khi lấy về đúng
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Danh sách khóa học đã phê duyệt.',
+                'data' => $courses,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi lấy tổng quan khóa học.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
     //Lấy tổng quan khoá học
     public function getCourseOverview(Course $course)
     {

@@ -35,6 +35,7 @@ use App\Http\Controllers\api\Client\GeneralSearchController;
 use App\Http\Controllers\api\Client\Student\CourseController as StudentCourseController;
 use App\Http\Controllers\api\Client\Intructor\LessonController as LessonTeacherController;
 use App\Http\Controllers\api\Client\Intructor\PreviewCourseController;
+use App\Http\Controllers\api\Client\Intructor\RatingController as IntructorRatingController;
 use App\Http\Controllers\api\Client\QnAController;
 
 /*
@@ -95,7 +96,7 @@ Route::middleware('auth:sanctum')->group(function () {
     # ===================== ROUTE FOR CHECKOUT ===========================
     Route::prefix('vouchers')->group(function () {
         Route::get('/apply-coupon/{id_user}/{voucher_code}', [VoucherController::class, 'applyCoupon']);
-        
+
     });
 
 
@@ -197,6 +198,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/history-withdraw/{id_user}', [PaymentController::class, 'historyWithdraw']);
         // Danh sách khóa học
         Route::get('/course', [CourseController::class, 'index']);
+        Route::get('/course/approved', [CourseController::class, 'getApprovedCourses']);
         Route::post('/course', [CourseController::class, 'storeNewCourse']);
         Route::get('/course/{course}/preview', [PreviewCourseController::class, 'index']);
 
@@ -263,6 +265,8 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::get('/get-students', [StatisticController::class,'getStudents']);
                 Route::get('/get-ratings', [StatisticController::class,'getRatings']);
             });
+            // tra loi danh gia
+            Route::post('/rating/{rating}/reply', [IntructorRatingController::class, 'replyToRating']);
         });
     });
 
@@ -293,6 +297,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 # ===================== ROUTE FOR NOT LOGIN ===========================
 
+
+# ===================== ROUTE FOR User ===========================
+Route::prefix('user')->group(function () {
+    Route::get('/{user}/show', [UserController::class, 'showUser']);
+});
 
 # ===================== ROUTE FOR GENERAL SEARCH ===========================
 Route::prefix('search')->group(function () {
@@ -343,7 +352,7 @@ Route::prefix('courses')->group(function () {
     // Route::get('/search-course', [CourseController::class, 'searchCourses']);
     Route::get('detail-no-login/{slug}', [CourseDetailController::class, 'courseDetailNoLogin']);
     Route::get('detail/quiz/{slug}', [CourseDetailController::class, 'courseQuizDetail']);
-    
+
     Route::get('new-course', [CourseHomePageController::class, 'listNewCourse']);
 
     Route::get('sale-course', [CourseHomePageController::class, 'listCourseSale']);

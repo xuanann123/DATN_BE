@@ -43,6 +43,27 @@ class UserController extends Controller
         ], 200);
     }
 
+    public function showUser(User $user)
+    {
+        try {
+            // get pro5
+            $profile = $user->profile;
+
+            return response()->json([
+                'message' => 'Thông tin người dùng.',
+                'data' => $user->load('profile'),
+                'status' => 'success',
+            ], 200);
+        } catch (Throwable $e) {
+            return response()->json([
+                'message' => 'Đã xảy ra lỗi trong quá trình lấy thông tin người dùng.',
+                'error' => $e->getMessage() . $e->getLine(),
+                'data' => [],
+                'status' => 'error',
+            ], 500);
+        }
+    }
+
     public function updateProfile(UpdateProfileRequest $request)
     {
         DB::beginTransaction();
@@ -208,7 +229,7 @@ class UserController extends Controller
             })->sum();
             //Tính tổng thời gian của video và docs
             $course->total_duration_video = $totalDurationVideo + $totalDurationDocs;
-            //Lấy tiến độ của của khoá này 
+            //Lấy tiến độ của của khoá này
             $progress = DB::table('user_courses')
                 ->where('id_course', $course->id)
                 ->where('id_user', $authUser->id)

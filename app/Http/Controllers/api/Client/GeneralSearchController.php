@@ -15,12 +15,22 @@ class GeneralSearchController extends Controller
         try {
             $querySearch = $request->query("q");
 
-            $courses = Course::search($querySearch)->limit(3)->get();
+            $courses = Course::search($querySearch)
+                ->where('status', 'approved')
+                ->where('is_active', 1)
+                ->limit(3)
+                ->get();
             $teachers = User::whereIn('user_type', [User::TYPE_TEACHER, User::TYPE_ADMIN])
+                ->where('is_active', 1)
                 ->search($querySearch)
                 ->limit(3)
                 ->get();
-            $posts = Post::search($querySearch)->limit(3)->get();
+            $posts = Post::search($querySearch)
+                ->where('is_active', 1)
+                ->where('is_banned', 0)
+                ->where('status', 'published')
+                ->limit(3)
+                ->get();
 
             return response()->json([
                 'status' => 'success',
