@@ -70,6 +70,7 @@ class CourseController extends Controller
         try {
             $courses = Course::query()
                 ->where('id_user', auth()->id())
+                ->where('status', 'approved')
                 ->latest('id')
                 ->select('id', 'name')
                 ->get();
