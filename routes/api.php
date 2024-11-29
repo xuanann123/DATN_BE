@@ -174,6 +174,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/register-teacher', [UserController::class, 'registerTeacher']);
         Route::get('/check-history-learning', [UserController::class, 'checkLearning']);
         Route::get('vouchers', [VoucherController::class, 'getMyVouchers']);
+        //Lấy thông tin user qua email
+        Route::get('/by-email/{email}', [UserController::class, 'getUserByEmail']);
         //CHAT AI
 
         // Route::get('/qna', [QnAController::class, 'index'])->name('qna');
