@@ -5,10 +5,11 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
+                'resources/js/public.js',
                 'resources/css/app.css',
                 'resources/js/app.js',
-                'resources/js/public.js',
-                'resources/js/chat/presence.js',
+                
+                // 'resources/js/chat/presence.js',
             ],
             refresh: true,
         }),
