@@ -98,7 +98,7 @@
                                             <input class="form-check-input" type="checkbox" id="selectAll" value="option">
                                         </div>
                                     </th>
-                                    <th data-ordering="false">SR No.</th>
+                                    <th data-ordering="false">STT</th>
 
                                     <th>Họ tên</th>
                                     <th>Email</th>
@@ -186,6 +186,9 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        <div class="paginate-data d-flex justify-content-end">
+                            {{ $data->links() }}
+                        </div>
                         <script>
                             document.getElementById('selectAll').addEventListener('change', function() {
                                 var checkboxes = document.querySelectorAll('.checkbox');
@@ -196,6 +199,7 @@
                         </script>
                     </div>
                 </form>
+
             </div>
         </div><!--end col-->
     </div><!--end row-->
@@ -225,5 +229,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 
-    <script src="{{ asset('theme/admin/assets/js/pages/datatables.init.js') }}"></script>
+{{--    <script src="{{ asset('theme/admin/assets/js/pages/datatables.init.js') }}"></script>--}}
 @endsection
