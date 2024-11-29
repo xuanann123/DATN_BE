@@ -104,6 +104,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Post::class, 'save_posts', 'user_id', 'post_id');
     }
 
+    // phản hồi của đánh giá
+    public function rating_replies() {
+        return $this->hasMany(RatingReply::class, 'user_id');
+    }
+
     public function admin_review()
     {
         return $this->hasOne(AdminReview::class, 'user_id');
