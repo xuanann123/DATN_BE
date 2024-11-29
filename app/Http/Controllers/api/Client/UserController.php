@@ -360,5 +360,43 @@ class UserController extends Controller
             ],
         ], 200);
     }
+    public function getUserByEmail(String $email)
+    {
+        try {
+    
+            //Lấy thằng user đó ra
+            $user = User::with('profile')->where('email', $email)->first();
+
+
+            if (!$user) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Không tồn tại user này trên hệ thống",
+                    'data' => []
+                ], 204);
+            }
+            //Lấy những khoá học của user đó đăng lên
+            $coursesByUser = $user->courses()->select('id', 'name', 'slug', 'description', 'thumbnail', 'sort_description')->get();
+            $coursesUserBought = UserCourse::where('id_user', $user->id)->get();
+            // $postsByUser = $user->posts()->select()->get();
+            return response()->json([
+                'status' => 'success',
+                'message' => "Thống tin người dùng",
+                'data' => [
+                    'user' => $user,
+                    'courses_by_user' => $coursesByUser,
+                    // 'posts_by_user' => $postsByUser,
+                    'courses_user_bought' => $coursesUserBought,
+                ],
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => "error",
+                'message' => "Đã xảy ra lỗi trong quá trình lấy thống tin người dùng" . $e->getMessage(),
+                'data' => []
+            ]);
+        }
+
+    }
 
 }
