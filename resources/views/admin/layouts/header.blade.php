@@ -634,7 +634,7 @@
 
 {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> --}}
 
-<script type="module">
+{{-- <script type="module">
     document.addEventListener('DOMContentLoaded', function() {
         // Lắng nghe kênh 'vouchers' và sự kiện 'VoucherCreated'
         window.Echo.channel('vouchers')
@@ -652,7 +652,7 @@
                 // `);
             });
     });
-</script>
+</script> --}}
 
 <script>
     dayjs.extend(dayjs_plugin_relativeTime)
