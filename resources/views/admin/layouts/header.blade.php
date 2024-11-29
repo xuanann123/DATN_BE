@@ -1,3 +1,4 @@
+@vite('resources/js/public.js')
 <header id="page-topbar">
     <div class="layout-width">
         <div class="navbar-header">
@@ -631,17 +632,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.6/plugin/relativeTime.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.6/locale/vi.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> --}}
 
 <script type="module">
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         // Lắng nghe kênh 'vouchers' và sự kiện 'VoucherCreated'
         window.Echo.channel('vouchers')
             .listen('VoucherCreated', (e) => {
-               
+
                 alert("OK roi");
                 console.log(e);
-                
+
 
                 // // Nếu bạn muốn chèn thông báo vào DOM thay vì alert
                 // $('#voucher-alerts').append(`
@@ -843,13 +844,19 @@
         const userId = '{{ Auth::id() }}'; // Lấy userId từ Blade
         // console.log('User ID:', userId);
 
+        // Kiểm tra kết nối Pusher
+        Echo.connector.pusher.connection.bind('connected', function() {
+            console.log('Pusher đã kết nối thành công');
+        });
+
         window.Echo.private(`App.Models.User.${userId}`)
             .notification((notification) => {
-                // console.log(notification)
+                console.log(notification)
                 // Cập nhật số lượng thông báo chưa đọc
                 fetchUnreadNotificationCount()
                 loadNotifications()
             })
+
         window.Echo.private(`App.Models.UserFollow.${userId}`)
             .notification((notification) => {
                 console.log(notification);
@@ -863,8 +870,5 @@
                 fetchUnreadNotificationCount()
                 loadNotifications()
             });
-
-       
-
     })
 </script>
