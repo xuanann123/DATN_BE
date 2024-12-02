@@ -701,9 +701,11 @@ class PaymentController extends Controller
             'withdraw_money.account_holder',
             'withdraw_money.status',
             'withdraw_money.note',
-            'users.name'
+            'users1.name as teacher_name',
+            'users2.name as approver_name'
         )
-            ->join('users', 'users.id', '=', 'withdraw_money.id_user')
+            ->join('users as users1', 'users1.id', '=', 'withdraw_money.id_user')
+            ->leftJoin('users as users2', 'users2.id', '=', 'withdraw_money.id_depositor')
             ->where('withdraw_money.id_user', $userId)
             ->orderbyDesc('withdraw_money.created_at')
             ->paginate(10);

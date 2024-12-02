@@ -103,4 +103,50 @@ class ChartController extends Controller
 
         return view('admin.charts.revenue', compact('title', 'totalRevenue', 'profit', 'countCourses', 'countOrders2024', 'totalRevenue2024', 'revenueData', 'timesJson', 'revenuesJson', 'profitsJson'));
     }
+
+    // Top khóa học có doanh thu cao;
+    public function  chartCourses(Request $request)
+    {
+        $title = "Top khóa học có doanh thu cao";
+        $totalRevenue = Bill::sum('total_coin') * 1000;
+        $profit = Bill::sum('total_coin') * 1000 * 0.3;
+        // Lấy của 2024 trước;
+
+        $year = 2024;
+        $countOrders2024 = Bill::whereYear('created_at', $year)->count(); // Đếm số lượng orders trong năm 2024
+        $totalRevenue2024 = Bill::whereYear('created_at', $year)->sum('total_coin') * 1000; // Tính tổng tiền trong năm 2024
+
+
+        // Lấy dữ liệu thống kê doanh thu và lợi nhuận theo khóa học
+        $revenueData = DB::table('bills')
+            ->join('courses', 'bills.id_course', '=', 'courses.id')
+            ->select(
+                'courses.id as course_id',
+                'courses.name as course_name',
+                DB::raw('SUM(bills.total_coin * 1000) as total_revenue'),
+                DB::raw('(SUM(bills.total_coin * 1000) * 0.3) as profit')
+            )
+            ->whereYear('bills.created_at', 2024)
+            ->groupBy('courses.id', 'courses.name')
+            ->orderByDesc('total_revenue')
+            ->limit(10)
+            ->get();
+
+        // Chuẩn bị dữ liệu cho biểu đồ
+        $courseNames = [];
+        $revenues = [];
+        $profits = [];
+
+        foreach ($revenueData as $data) {
+            $courseNames[] = $data->course_name; // Tên khóa học
+            $revenues[] = $data->total_revenue; // Doanh thu
+            $profits[] = $data->profit;         // Lợi nhuận
+        }
+
+        // Chuyển dữ liệu sang dạng JSON để dùng trong biểu đồ
+        $courseNamesJson = json_encode($courseNames);
+        $revenuesJson = json_encode($revenues);
+        $profitsJson = json_encode($profits);
+        return view('admin.charts.top_courses', compact('title', 'totalRevenue', 'profit', 'countOrders2024', 'totalRevenue2024', 'courseNamesJson', 'revenuesJson', 'profitsJson'));
+    }
 }
