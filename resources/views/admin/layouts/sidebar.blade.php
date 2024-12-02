@@ -74,6 +74,13 @@
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ route('admin.charts.top-courses') }}"
+                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                        <i class="ri-bar-chart-line"></i> <span>Top khóa học</span>
+                    </a>
+                </li>
+
 
 
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý nội dung</span>

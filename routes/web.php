@@ -258,6 +258,7 @@ Route::prefix("admin")
             ->as('charts.')
             ->group(function () {
                 Route::get('/chart-revenue', [ChartController::class, 'chartRevenue'])->name('revenue');
+                Route::get('/chart-top-courses', [ChartController::class, 'chartCourses'])->name('top-courses');
             });
         Route::prefix('qna')
             ->group(function () {
@@ -266,5 +267,4 @@ Route::prefix("admin")
                 Route::get('/search', [QnAController::class, 'search']);
                 Route::get('/delete-all', [QnAController::class, 'deleteAll'])->name('qna.delete.all');
             });
-
     });
