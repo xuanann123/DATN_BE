@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\api\Client\Student;
 
+use App\Jobs\GenerateCertificatePdfJob;
 use Mpdf\Mpdf;
 use Dompdf\Dompdf;
 use App\Models\Course;
+use App\Models\Setting;
 use App\Models\Certificate;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
+use App\Jobs\GenerateCertificateImageJob;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\Snappy\Facades\SnappyPdf;
 use Illuminate\Support\Facades\Storage;
@@ -23,31 +26,33 @@ class CertificateController extends Controller
             $user = Auth::user();
 
             // Tao moi chung chi
-            $certificate = Certificate::firstOrCreate(
+            $certificate = Certificate::updateOrCreate(
                 [
                     'user_id' => $user->id,
                     'course_id' => $course->id,
                 ],
                 [
-                    'completion_date' => now(),
+                    'completion_date' => $certificate->completion_date ?? now(),
                     'code' => 'EC-' . Str::uuid(),
                 ]
             );
 
             // Nếu chứng chỉ đã tồn tại trong DB
-            if (!$certificate->wasRecentlyCreated) {
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Chứng chỉ đã tồn tại.',
-                    'data' => $certificate,
-                ], 200);
-            }
+            // if (!$certificate->wasRecentlyCreated) {
+            //     return response()->json([
+            //         'status' => 'success',
+            //         'message' => 'Chứng chỉ đã tồn tại.',
+            //         'data' => $certificate,
+            //     ], 200);
+            // }
 
             // Gen ảnh từ HTML
             $imagePath = $this->generateCertificateImage($certificate);
+            // dispatch(new GenerateCertificateImageJob($certificate));
 
             // Gen PDF từ ảnh
             $pdfPath = $this->generateCertificatePdf($certificate, $imagePath);
+            // dispatch(new GenerateCertificatePdfJob($certificate, $certificate->image_url));
 
             // luu duong dan pdf/image vao db
             $certificate->image_url = $imagePath;
@@ -139,7 +144,11 @@ class CertificateController extends Controller
 
     private function generateCertificateImage($certificate)
     {
-        $htmlContent = view('certificates.certificate-2', [
+        // Mẫu chứng chỉ đã chọn
+        $selectedTemplate = Setting::where('key', 'certificate.selected_template')->first();
+        $selectedTemplate = $selectedTemplate ? $selectedTemplate->value : config('certificate.selected_template');
+
+        $htmlContent = view(config('certificate.templates')[$selectedTemplate], [
             'certificate' => $certificate,
             'user' => Auth::user(),
             'course' => $certificate->course,

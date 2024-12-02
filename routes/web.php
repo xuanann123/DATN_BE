@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ApprovalCourseController;
+use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\ChatController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\PostController;
@@ -64,6 +65,14 @@ Route::prefix("admin")
             Route::get("/", [NotificationController::class, 'index'])->name('index');
             Route::get("/unread-count", [NotificationController::class, 'getUnreadCount'])->name('getUnreadCount');
             Route::post("/{id}/mark-as-read", [NotificationController::class, 'markAsRead'])->name('markAsRead');
+        });
+        #============================== CERTIFICATE DONE =============================
+        Route::prefix("certificates")
+            ->as('certificates.')
+            ->group(function () {
+            Route::get("/", [CertificateController::class, 'index'])->name('index');
+            Route::get("/preview/{template}", [CertificateController::class, 'show'])->name('show');
+            Route::post('/select', [CertificateController::class, 'select'])->name('select');
         });
         #============================== BANNERS DONE =============================
         Route::prefix("banners")

@@ -97,11 +97,11 @@
                 <h1>Certificate</h1>
                 <h2>of Excellence</h2>
                 <h3>This Certificate Is Proudly Presented To</h3>
-                <p>{{ $user->name }}</p>
+                <p>{{ $user->name ?? 'Tên học viên' }}</p>
                 <h3>Has Completed</h3>
-                <p>{{ $course->name }}</p>
+                <p>{{ $course->name ?? 'Tên khóa học' }}</p>
                 <h3>On</h3>
-                <p>{{ \Carbon\Carbon::parse($certificate->completion_date)->translatedFormat('d \t\há\n\g m \nă\m Y') }}</p>
+                <p>{{ \Carbon\Carbon::parse($certificate->completion_date ?? now())->translatedFormat('d \t\há\n\g m \nă\m Y') }}</p>
                 <div class="badge">
                 </div>
             </div>

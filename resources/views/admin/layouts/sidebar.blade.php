@@ -185,7 +185,7 @@
                     <div class="collapse menu-dropdown" id="sidebarCertificate">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="{{ route('admin.courses.list') }}" class="nav-link" data-key="t-one-page">
+                                <a href="{{ route('admin.certificates.index') }}" class="nav-link" data-key="t-one-page">
                                     Danh sách chứng chỉ</a>
                             </li>
                         </ul>

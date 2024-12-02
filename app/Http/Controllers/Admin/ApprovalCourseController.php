@@ -234,14 +234,14 @@ class ApprovalCourseController extends Controller
                 'required' => 1
             ],
             [
-                'label' => 'Có ít nhất 5 chương học trong chương trình giảng dạy.',
+                'label' => 'Có ít nhất 2 chương học trong chương trình giảng dạy.',
                 'value' => $course->modules->count(),
-                'required' => 5
+                'required' => 2
             ],
             [
-                'label' => 'Có ít nhất 5 bài học trong chương trình giảng dạy.',
+                'label' => 'Có ít nhất 2 bài học trong chương trình giảng dạy.',
                 'value' => $course->modules->sum(fn($module) => $module->lessons->count()),
-                'required' => 5
+                'required' => 2
             ],
             [
                 'label' => 'Tất cả các chương đều có bài tập.',

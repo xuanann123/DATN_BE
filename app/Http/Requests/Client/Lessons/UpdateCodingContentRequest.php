@@ -25,6 +25,7 @@ class UpdateCodingContentRequest extends FormRequest
             'statement' => 'required|string',
             'hints' => 'nullable|string',
             'sample_code' => 'required|string',
+            'result_code' => 'required|string',
             'output' => 'required|string',
         ];
     }
@@ -34,6 +35,7 @@ class UpdateCodingContentRequest extends FormRequest
         return [
             'statement.required' => 'Đề bài không được để trống.',
             'sample_code.required' => 'Code mẫu không được để trống.',
+            'result_code.required' => 'Code giải pháp không được để trống.',
             'output.required' => 'Output không được để trống.',
         ];
     }
