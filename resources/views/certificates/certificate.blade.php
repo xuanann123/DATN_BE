@@ -160,23 +160,23 @@
 
                     <ul class="credentials">
                         <li>
-                            <p id="cert-id">Certificate Id: <span>{{ $certificate->code }}</span></p>
+                            <p id="cert-id">Certificate Id: <span>{{ $certificate->code ?? 'Mã chứng chỉ' }}</span></p>
                         </li>
                         <li>
-                            <p id="lms-id">Learning Management System Id: <span>{{ $course->code }}</span></p>
+                            <p id="lms-id">Learning Management System Id: <span>{{ $course->code ?? 'Mã khóa học' }}</span></p>
                         </li>
                     </ul>
 
                     <div class="copytext-container">
                         <div class="congrats-copytext">
                             <h1>Certificate of Completion</h1><br>
-                            <h2>Congratulations <span>{{ $user->name }}</span></h2><br>
+                            <h2>Congratulations <span>{{ $user->name ?? 'Tên học viên' }}</span></h2><br>
                         </div>
 
                         <div class="course-copytext">
-                            <h1><span>{{ $course->name }}</span></h1><br>
-                            <h2>Ngày hoàn thành khóa học: <span>{{ \Carbon\Carbon::parse($certificate->completion_date)->translatedFormat('d \t\há\n\g m \nă\m Y') }}</span></h2><br>
-                            <h3 id="course-id-string">Course code: <span>{{ $course->code }}</span></h3>
+                            <h1><span>{{ $course->name ?? 'Tên khóa học' }}</span></h1><br>
+                            <h2>Ngày hoàn thành khóa học: <span>{{ \Carbon\Carbon::parse($certificate->completion_date ?? now())->translatedFormat('d \t\há\n\g m \nă\m Y') }}</span></h2><br>
+                            <h3 id="course-id-string">Course code: <span>{{ $course->code ?? 'Mã khóa học' }}</span></h3>
 
                         </div>
                         <div class="address-copytext">

@@ -157,10 +157,10 @@ class TargetController extends Controller
             && count($course->audiences ?? []) >= 1;
     }
 
-    // hàm check chương trong khóa học (đủ 5 chương trở lên)
+    // hàm check chương trong khóa học (đủ 2 chương trở lên)
     private function checkCourseCurriculum(Course $course)
     {
-        return $course->modules()->count() >= 5;
+        return $course->modules()->count() >= 2;
     }
 
     // hàm check tổng quan khóa học (đủ các trường cần thiết)

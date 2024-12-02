@@ -118,6 +118,7 @@ class CodingLesson extends Controller
                 'statement' => $request->input('statement'),
                 'hints' => $request->input('hints'),
                 'sample_code' => $request->input('sample_code'),
+                'result_code' => $request->input('result_code'),
                 'output' => $request->input('output'),
             ]);
 
