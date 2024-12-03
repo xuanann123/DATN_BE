@@ -73,6 +73,7 @@ class CodingLesson extends Controller
                     'statement' => null,
                     'hints' => null,
                     'sample_code' => null,
+                    'result_code' => null,
                     'output' => null,
                 ]);
 
