@@ -254,7 +254,9 @@ Route::middleware('auth:sanctum')->group(function () {
                 # ========================== Route for question and option ===========================
                 //Hiển thị danh sách toàn bộ câu hỏi id của module
                 Route::get('{id}/show-quiz', [ModuleQuizController::class, 'showQuiz']);
-                //Thêm câu hỏi cho quiz
+                //import câu hỏi và câu trả lời cho quiz
+                Route::post('quiz/{quiz}/import-questions-and-options', [ModuleQuizController::class, 'importQuestionsAndOptions']);
+                //Thêm câu hỏi và câu trả lời cho quiz
                 Route::post('quiz/{quiz}/add-question-and-option', [ModuleQuizController::class, 'addQuestionAndOption']);
                 Route::get('quiz/{question}/show-question-and-option', [ModuleQuizController::class, 'showQuestionAndOption']);
                 Route::put('quiz/{question}/update-question-and-option', [ModuleQuizController::class, 'updateQuestionAndOption']);
