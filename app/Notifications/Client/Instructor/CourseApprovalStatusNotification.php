@@ -5,6 +5,7 @@ namespace App\Notifications\Client\Instructor;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -61,9 +62,9 @@ class CourseApprovalStatusNotification extends Notification implements ShouldBro
      *
      * @return array<string, mixed>
      */
-    public function toBroadcast(object $notifiable): array
+    public function toBroadcast(object $notifiable)
     {
-        return [
+        return new BroadcastMessage([
             'type' => $this->status === 'approved' ? 'course_approved' : 'course_rejected',
             'course_id' => $this->course->id,
             'course_name' => $this->course->name,
@@ -72,6 +73,6 @@ class CourseApprovalStatusNotification extends Notification implements ShouldBro
             'admin_comments' => $this->admin_comments,
             'message' => $this->status === 'approved' ? 'Khóa học của bạn đã được chấp thuận' : 'Khóa học của bạn đã bị từ chối',
             'url' => env('FE_URL') . 'instructor/courses/' . $this->course->id . '/manage/goals'
-        ];
+        ]);
     }
 }
