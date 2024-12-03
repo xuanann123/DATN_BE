@@ -14,6 +14,7 @@ class Coding extends Model
         'statement',
         'hints',
         'sample_code',
+        'result_code',
         'output',
     ];
 
