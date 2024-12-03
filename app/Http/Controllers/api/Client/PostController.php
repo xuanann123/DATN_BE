@@ -23,15 +23,13 @@ class PostController extends Controller
     {
         try {
             $limit = $request->input('limit', 6);
-            // key search
-            $searchQuery = $request->search;
+            $search = $request->input('search');
+
             $listPosts = Post::select('id', 'title', 'description', 'content', 'thumbnail', 'slug', 'created_at', 'views', 'user_id')->with('user:id,name,avatar', 'tags:id,name,slug', 'categories:id,name,slug')
-                ->search($searchQuery) // tim kiem
+                ->search($search) // tim kiem
                 ->latest('created_at')
-                ->paginate($limit)
-                ->appends([
-                    'search' => $searchQuery,
-                ]);
+                ->paginate($limit);
+
 
             if ($listPosts->isEmpty()) {
                 return response()->json([
@@ -131,7 +129,7 @@ class PostController extends Controller
         try {
             //Hiển thị dữ liệu chi tiết bài viết
             $post = Post::where('slug', $slug)->where('is_active', '=', 1)->first();
-           
+
             if ($post) {
                 // Danh sách bài viết cùng tác giả đó
                 $relatedPosts = Post::where('user_id', $post->user_id)
@@ -632,9 +630,9 @@ class PostController extends Controller
                     'message' => 'Bài viết này đã được yêu thích',
                     'data' => []
                 ]);
-            } 
+            }
             $post->likeposts()->attach($user->id);
-            
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Thích bài viết thành công',
@@ -669,7 +667,7 @@ class PostController extends Controller
                     'message' => 'Huỷ thích bài viết thành công',
                     'data' => []
                 ]);
-            } 
+            }
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -705,5 +703,10 @@ class PostController extends Controller
             ]);
         }
     }
-    
+    // public function search(Request $request) {
+    //     $search = $request->search;
+
+
+    // }
+
 }
