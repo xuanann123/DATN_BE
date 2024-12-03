@@ -7,14 +7,12 @@
         <div class="col-12">
             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
                 <h4 class="mb-sm-0">{{ $title }}</h4>
-
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="javascript: void(0);">Thống kê</a></li>
                         <li class="breadcrumb-item active">{{ $title }}</li>
                     </ol>
                 </div>
-
             </div>
         </div>
     </div>
@@ -31,14 +29,12 @@
                                 <form action="javascript:void(0);">
                                     <div class="row g-3 mb-0 align-items-center">
                                         <div class="col-sm-auto">
-
                                         </div>
                                         <!--end col-->
                                         <div class="col-auto">
                                             <a href="{{ route('admin.vouchers.create') }}" class="btn btn-soft-primary"><i
                                                     class="ri-add-circle-line align-middle me-1"></i>Thêm mã giảm giá</a>
                                         </div>
-
                                     </div>
                                     <!--end row-->
                                 </form>
@@ -80,8 +76,6 @@
                         </div><!-- end card -->
                     </div><!-- end col -->
 
-
-
                     <div class="col-md-6">
                         <!-- card -->
                         <div class="card card-animate">
@@ -111,16 +105,14 @@
                             </div><!-- end card body -->
                         </div><!-- end card -->
                     </div><!-- end col -->
-
-
                 </div> <!-- end row-->
 
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="card">
-                            <div class="card-header border-0 align-items-center d-flex">
-                                <div class="row">
-                                    <div class="col-md-6">
+                            <div class="card-header border-0 col-12">
+                                <div class="row align-items-center">
+                                    <div class="col-5">
                                         @if (isset($countOrders))
                                             <h4 class="card-title mb-0 flex-grow-1">
                                                 Doanh thu từ {{ \Carbon\Carbon::parse($start_date)->format('h:i:s d-m-Y') }}
@@ -132,34 +124,35 @@
                                             <i class="text-muted">Được thống kê bởi coursea</i>
                                         @endif
                                     </div>
-                                    <div class="ms-auto col-md-5 d-flex">
-                                        <form action="{{ route('admin.charts.revenue') }}" method="GET">
+                                    <div class="col-7">
+                                        <form action="{{ route('admin.charts.top-courses') }}" method="GET">
                                             @csrf
-                                            <div class="d-flex justify-content-end ">
-                                                <div class="d-flex align-items-center">
-                                                    <label class="text-nowrap" style="margin-top: 10px;">Ngày bắt
-                                                        đầu</label>
-                                                    <input type="datetime-local" class="form-control mx-2"
+                                            <div class="row">
+                                                <div class="col-4">
+                                                    <label class="text-nowrap" style="margin-top: 10px;">Ngày bắt đầu</label>
+                                                    <input type="datetime-local" class="form-control"
                                                            value="{{ $start_date ?? '' }}" name="start_date"
                                                            max="{{ \Carbon\Carbon::now()->format('Y-m-d\TH:i') }}">
                                                 </div>
-                                                <div class="d-flex align-items-center">
+                                                <div class="col-4">
                                                     <label class="text-nowrap" style="margin-top: 10px;">Ngày kết
                                                         thúc</label>
-                                                    <input type="datetime-local" class="form-control mx-2"
+                                                    <input type="datetime-local" class="form-control"
                                                            value="{{ $end_date ?? '' }}" name="end_date"
                                                            max="{{ \Carbon\Carbon::now()->format('Y-m-d\TH:i') }}">
                                                 </div>
-                                                <div class="d-flex align-items-center">
+                                                <div class="col-3">
+                                                    <label class="text-nowrap" style="margin-top: 10px;">Số lượng</label>
+                                                    <input type="number" value="{{ $countCourses ?? '' }}" min="1" max="50" class="form-control" name="count_courses" id="count_courses" placeholder="Số lượng">
+                                                </div>
+                                                <div class="col-1">
+                                                    <label class="text-nowrap" style="margin-top: 10px;color: transparent;background-color: transparent;">Lọc</label> <br>
                                                     <button class="btn btn-primary pointer-events" id="submit">Lọc</button>
                                                 </div>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
-
-
-
                             </div><!-- end card header -->
 
                             <div class="card-header p-0 border-0 bg-light-subtle">
@@ -226,32 +219,35 @@
             <!-- Dashboard init -->
             <script src="{{ asset('theme/admin/assets/js/pages/dashboard-ecommerce.init.js') }}"></script>
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    // Lấy các phần tử cần thiết
+                document.addEventListener('DOMContentLoaded', function () {
                     const startDateInput = document.querySelector('input[name="start_date"]');
                     const endDateInput = document.querySelector('input[name="end_date"]');
+                    const countCoursesInput = document.querySelector('input[name="count_courses"]');
                     const submitButton = document.querySelector("#submit");
 
-                    // Vô hiệu hóa nút submit ban đầu
                     submitButton.disabled = true;
 
-                    // Hàm kiểm tra nếu cả hai trường được nhập và ngày kết thúc hợp lệ
                     function checkInputs() {
                         const startDate = startDateInput.value;
                         const endDate = endDateInput.value;
-
-                        // Kiểm tra cả hai trường được nhập và ngày kết thúc hợp lệ
-                        if (startDate && endDate && new Date(endDate) >= new Date(startDate)) {
+                        const countCourses = countCoursesInput.value;
+                        if (
+                            startDate &&
+                            endDate &&
+                            new Date(endDate) >= new Date(startDate) &&
+                            countCourses > 0
+                        ) {
                             submitButton.disabled = false;
                         } else {
                             submitButton.disabled = true;
                         }
                     }
 
-                    // Lắng nghe sự kiện nhập dữ liệu
                     startDateInput.addEventListener('input', checkInputs);
                     endDateInput.addEventListener('input', checkInputs);
+                    countCoursesInput.addEventListener('input', checkInputs);
                 });
+
             </script>
 
             <script>

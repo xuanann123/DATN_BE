@@ -110,8 +110,52 @@ class ChartController extends Controller
         $title = "Top khóa học có doanh thu cao";
         $totalRevenue = Bill::sum('total_coin') * 1000;
         $profit = Bill::sum('total_coin') * 1000 * 0.3;
-        // Lấy của 2024 trước;
 
+        if($request->start_date && $request->end_date && $request->end_date >= $request->start_date && $request->count_courses) {
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $countCourses = $request->count_courses;
+            $countOrders = Bill::whereDate('bills.created_at', '>=', $start_date)
+                ->whereDate('bills.created_at', '<=', $end_date)->count(); // Đếm số lượng orders trong khoảng thời gian
+            $totalRevenues = Bill::whereDate('bills.created_at', '>=', $start_date)
+                    ->whereDate('bills.created_at', '<=', $end_date)->sum('total_coin_after_discount') * 1000; // Tính tổng tiền trong khoảng thời gian
+
+            $revenueData = DB::table('bills')
+                ->join('courses', 'bills.id_course', '=', 'courses.id')
+                ->select(
+                    'courses.id as course_id',
+                    'courses.name as course_name',
+                    DB::raw('SUM(bills.total_coin * 1000) as total_revenue'),
+                    DB::raw('(SUM(bills.total_coin * 1000) * 0.3) as profit')
+                )
+                ->where('bills.created_at', '>=', $start_date)
+                ->where('bills.created_at', '<=', $end_date)
+                ->groupBy('courses.id', 'courses.name')
+                ->orderByDesc('total_revenue')
+                ->limit($countCourses)
+                ->get();
+
+            // Chuẩn bị dữ liệu cho biểu đồ
+            $courseNames = [];
+            $revenues = [];
+            $profits = [];
+
+            foreach ($revenueData as $data) {
+                $courseNames[] = $data->course_name; // Tên khóa học
+                $revenues[] = $data->total_revenue; // Doanh thu
+                $profits[] = $data->profit;         // Lợi nhuận
+            }
+
+            // Chuyển dữ liệu sang dạng JSON để dùng trong biểu đồ
+            $courseNamesJson = json_encode($courseNames);
+            $revenuesJson = json_encode($revenues);
+            $profitsJson = json_encode($profits);
+
+            return view('admin.charts.top_courses', compact('title', 'totalRevenue', 'profit', 'countOrders', 'totalRevenues', 'courseNamesJson', 'revenuesJson', 'profitsJson', 'start_date', 'end_date', 'countCourses'));
+        }
+
+
+        // Lấy của 2024;
         $year = 2024;
         $countOrders2024 = Bill::whereYear('created_at', $year)->count(); // Đếm số lượng orders trong năm 2024
         $totalRevenue2024 = Bill::whereYear('created_at', $year)->sum('total_coin') * 1000; // Tính tổng tiền trong năm 2024
