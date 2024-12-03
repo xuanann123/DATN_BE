@@ -463,6 +463,11 @@ class UserController extends Controller
                 ->where('id_user', $user->id)
                 ->first();
             $course['progress_percent'] = $progress->progress_percent ?? 0;
+            if (DB::table('user_courses')->where('id_user', auth()->id())->where('id_course', $course->id)->exists()) {
+                $course->is_course_bought = true;
+            } else {
+                $course->is_course_bought = false;
+            }
             //Ẩn đi module
             $course->makeHidden('ratings');
             $course->makeHidden('modules');
