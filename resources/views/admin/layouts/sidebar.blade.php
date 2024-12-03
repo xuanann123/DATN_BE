@@ -64,7 +64,7 @@
                 <li class="menu-title"><span data-key="t-menu">Quản lý thống kê</span></li>
                 <li class="nav-item">
                     <a href="{{ route('admin.dashboard') }}" class="nav-link">
-                        <i class="ri-image-2-line"></i> <span>Quản trị hệ thống</span>
+                        <i class="ri-dashboard-line"></i> <span>Quản trị hệ thống</span>
                     </a>
                 </li>
                  <li class="nav-item">
