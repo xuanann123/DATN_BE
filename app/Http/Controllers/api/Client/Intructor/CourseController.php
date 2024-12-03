@@ -72,7 +72,7 @@ class CourseController extends Controller
                 ->where('id_user', auth()->id())
                 ->where('status', 'approved')
                 ->latest('id')
-                ->select('id', 'name')
+                ->select('id', 'name', 'thumbnail')
                 ->get();
             //Khi lấy về đúng
             return response()->json([
