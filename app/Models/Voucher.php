@@ -23,7 +23,8 @@ class Voucher extends Model
         'is_active',
     ];
     //mối quan hệ nhiều nhiều với khóa học thông qua bảng trung gian
-    public function courses() {
-return $this->belongsToMany(Course::class,'id_user','','id_course', 'course_vouchers');
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class, 'course_vouchers', 'id_voucher', 'id_course');
     }
 }

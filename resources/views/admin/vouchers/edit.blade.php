@@ -328,7 +328,7 @@
 
                         <div class="mt-4">
                             <div class="row">
-                                <div class="col-xl-6">
+                                <div class="col-xl-2">
                                     <div class="mb-3">
                                         <label for="is_active" class="form-label">Trạng thái</label> <br>
                                         <label class="switch">
@@ -364,6 +364,57 @@
                                         </label>
                                     </div>
                                 </div>
+                                <div class="col-xl-4">
+                                    <div class="mb-3">
+                                        <label for="is_publish" class="form-label">Áp dụng riêng</label> <br>
+                                        <label class="switch">
+                                            <input {{ $voucher->is_publish_all == 1 ? 'checked' : '' }}
+                                                name="is_publish_all" id="is_publish" value="1" type="checkbox">
+                                            <div class="slider">
+                                                <div class="circle">
+                                                    <svg class="cross" xml:space="preserve"
+                                                        style="enable-background:new 0 0 512 512"
+                                                        viewBox="0 0 365.696 365.696" y="0" x="0" height="6"
+                                                        width="6" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                        version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                                        <g>
+                                                            <path data-original="#000000" fill="currentColor"
+                                                                d="M243.188 182.86 356.32 69.726c12.5-12.5 12.5-32.766 0-45.247L341.238 9.398c-12.504-12.503-32.77-12.503-45.25 0L182.86 122.528 69.727 9.374c-12.5-12.5-32.766-12.5-45.247 0L9.375 24.457c-12.5 12.504-12.5 32.77 0 45.25l113.152 113.152L9.398 295.99c-12.503 12.503-12.503 32.769 0 45.25L24.48 356.32c12.5 12.5 32.766 12.5 45.247 0l113.132-113.132L295.99 356.32c12.503 12.5 32.769 12.5 45.25 0l15.081-15.082c12.5-12.504 12.5-32.77 0-45.25zm0 0">
+                                                            </path>
+                                                        </g>
+                                                    </svg>
+                                                    <svg class="checkmark" xml:space="preserve"
+                                                        style="enable-background:new 0 0 512 512" viewBox="0 0 24 24"
+                                                        y="0" x="0" height="10" width="10"
+                                                        xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <g>
+                                                            <path class="" data-original="#000000"
+                                                                fill="currentColor"
+                                                                d="M9.707 19.121a.997.997 0 0 1-1.414 0l-5.646-5.647a1.5 1.5 0 0 1 0-2.121l.707-.707a1.5 1.5 0 0 1 2.121 0L9 14.171l9.525-9.525a1.5 1.5 0 0 1 2.121 0l.707.707a1.5 1.5 0 0 1 0 2.121z">
+                                                            </path>
+                                                        </g>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6" id="course_selector" style="display: none;">
+
+                                    <!-- Select dropdown for courses -->
+                                    <label for="course_id" class="form-label">Chọn khóa học</label>
+                                    <select class="form-control" name="course_id" id="course_id">
+                                        <option value="">Chọn khóa học</option>
+                                        @foreach ($courses as $course)
+                                            @php
+                                                $url = Storage::url($course->thumbnail);
+                                            @endphp
+                           
+                                            <option {{ in_array($course->id, $listVoucherCourse) ? 'selected' : '' }} value="{{ $course->id }}">{{ $course->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
@@ -389,4 +440,34 @@
 @section('script-libs')
     <script src="theme/admin/assets/libs/cleave.js/cleave.min.js"></script>
     <script src="theme/admin/assets/js/pages/form-masks.init.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const isPublishCheckbox = document.getElementById('is_publish');
+            const courseSelector = document.getElementById('course_selector');
+            const courseSelect = document.getElementById('course_id');
+
+            // Kiểm tra trạng thái của checkbox khi trang được tải
+            if (isPublishCheckbox.checked) {
+                courseSelector.style.display = 'block';
+
+            }
+
+            // Toggle the visibility of the select field based on the checkbox status
+            isPublishCheckbox.addEventListener('change', function() {
+                if (isPublishCheckbox.checked) {
+                    // Show the select dropdown
+                    courseSelector.style.display = 'block';
+
+                } else {
+                    // Hide the select dropdown
+                    courseSelector.style.display = 'none';
+                }
+            });
+
+            // Function to load courses into the select dropdown
+
+        });
+    </script>
 @endsection
