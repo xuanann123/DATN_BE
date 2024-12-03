@@ -376,7 +376,7 @@ class UserController extends Controller
                 ], 204);
             }
             //Lấy những khoá học của user đó đăng lên
-            $coursesByUser = $user->courses()->select('id', 'name', 'slug', 'description', 'thumbnail', 'sort_description')
+            $coursesByUser = $user->courses()->select('id', 'name', 'slug', 'description', 'thumbnail', 'sort_description','price', 'price_sale','level')
             ->withCount('ratings')
                 ->withAvg('ratings', 'rate')
                 ->withCount([
@@ -424,7 +424,7 @@ class UserController extends Controller
             $coursesUserBought = [];
             $listCoursesUserBought = UserCourse::where('id_user', $user->id)->get();
             foreach ($listCoursesUserBought as $item) {
-                $coursesUserBought[] = $course = Course::select('id', 'name', 'slug', 'description', 'thumbnail', 'sort_description')->withCount('ratings')
+                $coursesUserBought[] = $course = Course::select('id', 'name', 'slug', 'description', 'thumbnail', 'sort_description','price', 'price_sale','level')->withCount('ratings')
                 ->withAvg('ratings', 'rate')
                 ->withCount([
                     'modules as lessons_count' => function ($query) {
@@ -458,8 +458,14 @@ class UserController extends Controller
 
                 $course->ratings_avg_rate = number_format(round($course->ratings_avg_rate ?? 0, 1), 1);
                 $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
-
-                $course->makeHidden(['modules', 'ratings']);
+                $progress = DB::table('user_courses')
+                ->where('id_course', $course->id)
+                ->where('id_user', $user->id)
+                ->first();
+            $course['progress_percent'] = $progress->progress_percent ?? 0;
+            //Ẩn đi module
+            $course->makeHidden('ratings');
+            $course->makeHidden('modules');
             }
 
 
