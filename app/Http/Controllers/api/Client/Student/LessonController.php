@@ -17,6 +17,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Client\Lessons\QuizProgressRequest;
 use App\Http\Requests\Client\Lessons\LessonProgressRequest;
+use App\Models\Coding;
+use Illuminate\Support\Facades\DB;
 
 class LessonController extends Controller
 {
@@ -206,6 +208,47 @@ class LessonController extends Controller
                 'status' => 'error',
                 'message' => 'Đã xảy ra lỗi khi cập nhật tiến độ bài học.',
                 'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    // Hàm check coding
+    public function checkCoding(Request $request, Coding $coding)
+    {
+        try {
+            $userOutput = $request->input('output');
+
+            if (empty($userOutput)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không có kết quả của bài làm.',
+                ], 400);
+            }
+
+            $correctOutput = $coding->output;
+
+            if (trim($userOutput) === trim($correctOutput)) {
+                // Nếu kết quả giống nhau, trả về success
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Chúc mừng bạn đã hoàn thành bài làm.',
+                    'data' => []
+                ], 200);
+            } else {
+                // Nếu kết quả không đúng, trả về lỗi
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Kết quả bài làm sai.',
+                    'data' => []
+                ], 400);
+            }
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi kiểm tra kết quả bài làm.',
+                'error' => $e->getMessage(),
+                'data' => [],
             ], 500);
         }
     }
