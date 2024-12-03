@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Client\Quiz\StoreQuizRequest;
 use App\Http\Requests\Client\Quiz\UpdateQuizRequest;
+use Illuminate\Support\Facades\Http;
 
 class ModuleQuizController extends Controller
 {
@@ -171,6 +172,14 @@ class ModuleQuizController extends Controller
             foreach ($request->input('options') as $optionIndex => $optionData) {
                 $optionText = is_array($optionData) ? $optionData['text'] : $optionData;
                 $optionImage = $request->file("options.{$optionIndex}.image") ?? null;
+                // nếu câu trả lời không có text hoặc image thì chặn
+                if (empty($optionText) && !$optionImage) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Phải có nội dung cho câu trả lời thứ ' . ($optionIndex + 1),
+                        'data' => []
+                    ], 400);
+                }
                 $option = Option::create([
                     'id_question' => $quizQuestion->id,
                     'option' => $optionText,
@@ -292,23 +301,38 @@ class ModuleQuizController extends Controller
             // update or create options
             foreach ($request->options as $optionIndex => $optionData) {
                 $optionId = $optionData['id'] ?? NULL; // check xem co id cua option khong ?
-                $optionText = is_array($optionData) ? $optionData['text'] : $optionData;
+                $optionText = is_array($optionData) ? ($optionData['text'] ?? null) : $optionData;
                 $optionImage = $request->file("options.{$optionIndex}.image") ?? null;
 
                 if ($optionId) {
                     // update option nếu có optionId
                     $option = Option::find($optionId);
                     if ($option) {
+                        $imageWasRemoved = false;
                         // Xử lý việc xóa ảnh của option nếu có yêu cầu 'remove_image' gửi từ FE
                         if (isset($optionData['remove_image']) && $optionData['remove_image'] == true) {
-                            if ($option->image_url) {
-                                Storage::delete($option->image_url); // del ảnh trong storage
-                            }
+                            // đánh dấu sẽ xóa ảnh
+                            $imageWasRemoved = true;
+                            $oldImageUrl = $option->image_url; // duong anh can xoa
                             $option->image_url = null; // Xóa đường dẫn img trong db
                         } elseif ($optionImage) {
                             // Kiểm tra nếu có ảnh mới upload
                             $option->image_url = $this->uploadImage($optionImage, 'options', $option->image_url);
                         }
+
+                        // nếu câu trả lời không có text hoặc image thì chặn
+                        if (empty($optionText) && (!$option->image_url) && !$optionImage) {
+                            return response()->json([
+                                'status' => 'error',
+                                'message' => 'Phải có nội dung cho câu trả lời thứ ' . ($optionIndex + 1),
+                                'data' => []
+                            ], 400);
+                        }
+
+                        if ($imageWasRemoved && $option->image_url === null) {
+                            Storage::delete($oldImageUrl); // del ảnh trong storage
+                        }
+
                         $option->update([
                             'option' => $optionText,
                             'image_url' => $option->image_url,
@@ -316,6 +340,14 @@ class ModuleQuizController extends Controller
                         ]);
                     }
                 } else {
+                    // nếu câu trả lời không có text hoặc image thì chặn
+                    if (empty($optionText) && !$optionImage) {
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'Phải có nội dung cho câu trả lời thứ ' . ($optionIndex + 1),
+                            'data' => []
+                        ], 400);
+                    }
                     // create option nếu không có optionId
                     Option::create([
                         'id_question' => $question->id,
@@ -341,6 +373,78 @@ class ModuleQuizController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             // Lỗi server
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage() . $e->getLine(),
+                'data' => []
+            ], 500);
+        }
+    }
+
+    public function importQuestionsAndOptions(Request $request, Quiz $quiz)
+    {
+        DB::beginTransaction();
+        $importedImages = [];
+
+        try {
+            if (!$quiz) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Bài tập không tồn tại',
+                    'data' => []
+                ], 404);
+            }
+
+            $questionsData = $request->input('questions');
+
+            foreach ($questionsData as $questionData) {
+                // Kiểm tra nếu không có 'correct_answer' trong câu hỏi, trả về lỗi
+                if (!isset($questionData['correct_answer'])) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Phải chọn đáp án đúng cho câu hỏi.',
+                        'data' => []
+                    ], 400);
+                }
+                // Tải ảnh câu hỏi từ url
+                $questionImage = $this->downloadImageFromUrl($questionData['image_url'] ?? null, 'questions', $importedImages);
+
+                $quizQuestion = Question::create([
+                    'id_quiz' => $quiz->id,
+                    'question' => $questionData['question'],
+                    'type' => $questionData['type'],
+                    'image_url' => $questionImage,
+                ]);
+
+                // Them dap an
+                foreach ($questionData['options'] as $optionIndex => $optionData) {
+                    $optionText = is_array($optionData) ? $optionData['text'] : $optionData;
+                    // Tải ảnh option từ url
+                    $optionImage = $this->downloadImageFromUrl($optionData['image_url'] ?? null, 'options', $importedImages);
+
+                    // nếu câu trả lời không có text hoặc image thì chặn
+                    if (empty($optionText) && !$optionImage) {
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'Phải có nội dung cho câu trả lời thứ ' . ($optionIndex + 1),
+                            'data' => []
+                        ], 400);
+                    }
+
+                    $option = Option::create([
+                        'id_question' => $quizQuestion->id,
+                        'option' => $optionText,
+                        'image_url' => $this->uploadImage($optionImage, 'options'),
+                        'is_correct' => $this->isCorrectAnswer($questionData, $optionIndex)
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Xóa các ảnh đã tải về nếu có lỗi
+            foreach ($importedImages as $filePath) {
+                Storage::delete($filePath);
+            }
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage(),
@@ -424,5 +528,25 @@ class ModuleQuizController extends Controller
         return null;
     }
 
+    private function downloadImageFromUrl($url, $type, &$importedImages)
+    {
+        if ($url) {
+            $reponse = Http::get($url);
+            if ($reponse->successful()) {
+                // Lấy định dạng từ url
+                $extention = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
+
+                $imageName = $type . '_' . Str::uuid() . '.' . $extention;
+                $filePath = 'images/' . $type . '/' . $imageName;
+
+                // save
+                Storage::put($filePath, $reponse->body());
+                $importedImages[] = $filePath; // them anh vao mang (dung cho rollback)
+
+                return $filePath;
+            }
+        }
+        return null;
+    }
 
 }
