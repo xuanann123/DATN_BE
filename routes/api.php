@@ -129,6 +129,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/lesson-detail/{lesson}', [LessonController::class, 'lessonDetail']);
         Route::get('/quiz-detail/{quiz}', [LessonController::class, 'quizDetail']);
         Route::put('/lesson-progress/{lesson}', [LessonController::class, 'updateLessonProgress']);
+        Route::post('coding/{coding}/check-coding', [LessonController::class, 'checkCoding']);
         Route::post('quiz/check-quiz', [LessonController::class, 'checkQuiz']);
         Route::put('quiz/quiz-progress/{quiz}', [LessonController::class, 'updateQuizProgress']);
         Route::get('quiz/result/{userId}/{quizId}', [LessonController::class, 'getQuizResult']);
