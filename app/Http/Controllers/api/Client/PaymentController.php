@@ -652,7 +652,7 @@ class PaymentController extends Controller
         // Số thứ tự trang;
         $page = $request->page ?? 1;
         // Số bản ghi trên một trang;
-        $perPage = $request->perPage ?? 12;
+        $perPage = $request->perPage ?? 5;
 
         $historyWithdraw = WithdrawMoney::select(
             'withdraw_money.id',
