@@ -191,7 +191,7 @@
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center fw-medium">
-                                                    <img src="{{ Storage::url($item->avatar) }}" alt=""
+                                                    <img src="{{ $item->avatar != null  ? Storage::url($item->avatar) :  'https://png.pngtree.com/png-clipart/20210608/ourlarge/pngtree-dark-gray-simple-avatar-png-image_3418404.jpg'}}" alt=""
                                                          class="avatar-xxs me-2">
                                                     <a href="#" class="currency_name">{{ $item->name }}</a>
                                                 </div>

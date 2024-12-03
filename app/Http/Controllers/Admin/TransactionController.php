@@ -108,7 +108,8 @@ class TransactionController extends Controller
                 'users.name',
                 'users.email'
             )
-                ->join('users', 'users.id', '=', 'transactions.transactionable_id')
+                ->join('purchase_wallets', 'purchase_wallets.id', '=', 'transactions.transactionable_id')
+                ->join('users', 'users.id', '=', 'purchase_wallets.id_user')
                 ->where('transactions.transactionable_type', '=', PurchaseWallet::class)
                 ->where(function ($query) use ($key) {
                     $query->where('users.name', 'LIKE', "%$key%")
@@ -132,7 +133,8 @@ class TransactionController extends Controller
             'users.name',
             'users.email'
         )
-            ->join('users', 'users.id', '=', 'transactions.transactionable_id')
+            ->join('purchase_wallets', 'purchase_wallets.id', '=', 'transactions.transactionable_id')
+            ->join('users', 'users.id', '=', 'purchase_wallets.id_user')
             ->where('transactions.transactionable_type', '=', PurchaseWallet::class)
             ->orderBy('transactions.created_at', 'desc')
             ->paginate(10);
@@ -156,7 +158,8 @@ class TransactionController extends Controller
                 'users.name',
                 'users.email'
             )
-                ->join('users', 'users.id', '=', 'transactions.transactionable_id')
+                ->join('withdrawal_wallets', 'withdrawal_wallets.id', '=', 'transactions.transactionable_id')
+                ->join('users', 'users.id', '=', 'withdrawal_wallets.id_user')
                 ->where('transactions.transactionable_type', '=', WithdrawalWallet::class)
                 ->where(function ($query) use ($key) {
                     $query->where('users.name', 'LIKE', "%$key%")
@@ -180,7 +183,8 @@ class TransactionController extends Controller
             'users.name',
             'users.email'
         )
-            ->join('users', 'users.id', '=', 'transactions.transactionable_id')
+            ->join('withdrawal_wallets', 'withdrawal_wallets.id', '=', 'transactions.transactionable_id')
+            ->join('users', 'users.id', '=', 'withdrawal_wallets.id_user')
             ->where('transactions.transactionable_type', '=', WithdrawalWallet::class)
             ->orderBy('transactions.created_at', 'desc')
             ->paginate(10);
