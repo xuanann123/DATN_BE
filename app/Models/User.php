@@ -14,6 +14,9 @@ class User extends Authenticatable implements MustVerifyEmail
     const TYPE_ADMIN = 'admin';
     const TYPE_MEMBER = 'member';
     const TYPE_TEACHER = 'teacher';
+
+    const STATUS_PENDING = 'pending';
+    const STATUS_APPROVED = 'approved';
     /**
      * The attributes that are mass assignable.
      *
