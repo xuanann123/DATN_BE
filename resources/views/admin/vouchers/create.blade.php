@@ -410,7 +410,7 @@
                                     <div class="mb-3">
                                         <label for="is_publish" class="form-label">Áp dụng riêng</label> <br>
                                         <label class="switch">
-                                            <input {{ old('is_publish') == 1 ? 'checked' : '' }} name="is_publish"
+                                            <input {{ old('is_publish_all') == 1 ? 'checked' : '' }} name="is_publish_all"
                                                 id="is_publish" value="1" type="checkbox">
                                             <div class="slider">
                                                 <div class="circle">
@@ -449,11 +449,10 @@
                                     <select class="form-control" name="course_id" id="course_id">
                                         <option value="">Chọn khóa học</option>
                                         @foreach ($courses as $course)
-                                        @php
-                                        $url = Storage::url($course->thumbnail)
-                                    @endphp
-                                        <option value="{{ $course->id }}">{{ $course->name }}</option>
-
+                                            @php
+                                                $url = Storage::url($course->thumbnail);
+                                            @endphp
+                                            <option value="{{ $course->id }}">{{ $course->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -481,47 +480,33 @@
     <script src="theme/admin/assets/libs/cleave.js/cleave.min.js"></script>
     <script src="theme/admin/assets/js/pages/form-masks.init.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script>
+   <script>
         document.addEventListener("DOMContentLoaded", function() {
-    const isPublishCheckbox = document.getElementById('is_publish');
-    const courseSelector = document.getElementById('course_selector');
-    const courseSelect = document.getElementById('course_id');
+            const isPublishCheckbox = document.getElementById('is_publish');
+            const courseSelector = document.getElementById('course_selector');
+            const courseSelect = document.getElementById('course_id');
 
-    // Toggle the visibility of the select field based on the checkbox status
-    isPublishCheckbox.addEventListener('change', function() {
-        if (isPublishCheckbox.checked) {
-            // Show the select dropdown
-            courseSelector.style.display = 'block';
+            // Kiểm tra trạng thái của checkbox khi trang được tải
+            if (isPublishCheckbox.checked) {
+                courseSelector.style.display = 'block';
 
-            // Optionally, load the list of courses if needed
-            loadCourses();
-        } else {
-            // Hide the select dropdown
-            courseSelector.style.display = 'none';
-        }
-    });
+            }
 
-    // Function to load courses into the select dropdown
-    function loadCourses() {
-        // Make an AJAX request to fetch the courses (you can replace this with your actual AJAX call)
-        fetch('/api/courses') // Đây là API mà bạn sẽ sử dụng để lấy danh sách khóa học
-            .then(response => response.json())
-            .then(data => {
-                // Clear the select element before adding new options
-                courseSelect.innerHTML = '<option value="">Chọn khóa học</option>';
+            // Toggle the visibility of the select field based on the checkbox status
+            isPublishCheckbox.addEventListener('change', function() {
+                if (isPublishCheckbox.checked) {
+                    // Show the select dropdown
+                    courseSelector.style.display = 'block';
 
-                // Add the courses to the select dropdown
-                data.courses.forEach(course => {
-                    const option = document.createElement('option');
-                    option.value = course.id;
-                    option.textContent = course.name;
-                    courseSelect.appendChild(option);
-                });
-            })
-            .catch(error => console.error('Error fetching courses:', error));
-    }
-});
+                } else {
+                    // Hide the select dropdown
+                    courseSelector.style.display = 'none';
+                }
+            });
 
+            // Function to load courses into the select dropdown
+
+        });
     </script>
     <script>
         $(document).ready(function() {

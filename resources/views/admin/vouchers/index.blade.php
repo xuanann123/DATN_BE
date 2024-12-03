@@ -73,8 +73,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
-                        style="width:100%">
+                    <table id="example" class="table table-bordered  table-striped align-middle table-responsive"  >
                         <thead>
                             <tr>
                                 <th scope="col" style="width: 10px;">
@@ -138,9 +137,16 @@
 
                                     <td class="td_is_active">
                                         @if ($voucher->is_active == 1)
-                                            <span class="badge rounded-pill bg-success">On</span>
+                                            <span class="badge rounded-pill bg-success">Hoạt động</span>
                                         @else
-                                            <span class="badge rounded-pill bg-danger">Off</span>
+                                            <span class="badge rounded-pill bg-danger">Kết thúc</span>
+                                        @endif
+                                    </td>
+                                     <td class="td_is_active">
+                                        @if ($voucher->is_publish_all == 1)
+                                            <span class="badge rounded-pill bg-success">Toàn bộ</span>
+                                        @else
+                                            <span class="badge rounded-pill bg-danger">Riêng cho khoá học</span>
                                         @endif
                                     </td>
 

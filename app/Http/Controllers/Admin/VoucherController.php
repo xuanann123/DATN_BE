@@ -59,13 +59,13 @@ class VoucherController extends Controller
     {
         $title = "Thêm mới voucher";
         //Lấy danh sách khóa học đang được hoạt động
-        $courses = Course::select('id',  'name','thumbnail')
-                ->where('is_active', 1)
-                ->where('status', 'approved')
-                ->latest('id')
-                ->get();
+        $courses = Course::select('id', 'name', 'thumbnail')
+            ->where('is_active', 1)
+            ->where('status', 'approved')
+            ->latest('id')
+            ->get();
 
-        return view('admin.vouchers.create', compact('title','courses'));
+        return view('admin.vouchers.create', compact('title', 'courses'));
     }
 
 
@@ -87,10 +87,9 @@ class VoucherController extends Controller
             //Thêm dữ liệu
             $newVoucher = Voucher::query()->create($data);
             //Thêm dữ liệu bảng trung gian
-        // if($request->course_id) {
-
-        //     $newVoucher->courses()->attach($request->course_id);
-        // }
+            if ($request->course_id) {
+                $newVoucher->courses()->attach($request->course_id);
+            }
 
             //realtime voucher
             event(new VoucherCreated($newVoucher));
@@ -99,7 +98,6 @@ class VoucherController extends Controller
             return redirect()->route('admin.vouchers.index')->with(['success' => 'Thêm voucher thành công']);
         } catch (\Exception $e) {
             DB::rollBack();
-
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
@@ -114,7 +112,15 @@ class VoucherController extends Controller
     {
         $title = "Chỉnh sửa voucher";
         $voucher = Voucher::find($id);
-        return view('admin.vouchers.edit', compact('voucher', 'title'));
+        $courses = Course::select('id', 'name', 'thumbnail')
+            ->where('is_active', 1)
+            ->where('status', 'approved')
+            ->latest('id')
+            ->get();
+        //Lấy danh sách khoá voucher trong này ra
+       $listVoucherCourse = $voucher->courses()->where("id_voucher", $id)->get()->pluck('id')->toArray();
+
+        return view('admin.vouchers.edit', compact('voucher', 'title', 'courses', 'listVoucherCourse'));
     }
 
 
@@ -126,6 +132,9 @@ class VoucherController extends Controller
         if (!$request->is_active) {
             $data['is_active'] = 0;
         }
+        if (!$request->course_id) {
+            $data['course_id'] = 0;
+        }
 
         $voucher = Voucher::find($id);
 
@@ -136,6 +145,7 @@ class VoucherController extends Controller
         }
 
         if ($voucher->update($data)) {
+            $voucher->courses()->sync($request->course_id);
             return redirect()->route('admin.vouchers.index')->with(['message' => 'Cập nhật thành công!']);
         }
 
