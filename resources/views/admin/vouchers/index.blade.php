@@ -21,7 +21,7 @@
             justify-content: end;
         }
     </style>
-    
+
 @endsection
 @section('content')
     <div class="row">
@@ -93,6 +93,7 @@
                                 <th>Số lượng</th>
                                 <th>Đã sử dụng</th>
                                 <th>Trạng thái</th>
+                                <th>Áp dụng</th>
                                 <th>Thao tác</th>
                             </tr>
                         </thead>
@@ -180,7 +181,7 @@
             </div>
         </div><!--end col-->
     </div><!--end row-->
-    
+
 @endsection
 
 @section('script-libs')
