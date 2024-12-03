@@ -143,47 +143,46 @@
                     </div>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarCourses" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false" aria-controls="sidebarCourses">
-                        <i class="ri-book-open-line"></i> <span> Khóa học </span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="sidebarCourses">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="{{ route('admin.courses.list') }}" class="nav-link" data-key="t-one-page">
-                                    Danh sách khoá học</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('admin.courses.create') }}" class="nav-link" data-key="t-job">
-                                    Thêm mới khoá học</a>
-                                {{-- <li class="nav-item">
-                                <a href="{{ route('admin.courses.my') }}" class="nav-link" data-key="t-one-page">
-                                    Khoá học của tôi</a>
-                            </li> --}}
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+{{--                <li class="nav-item">--}}
+{{--                    <a class="nav-link menu-link" href="#sidebarCourses" data-bs-toggle="collapse" role="button"--}}
+{{--                        aria-expanded="false" aria-controls="sidebarCourses">--}}
+{{--                        <i class="ri-book-open-line"></i> <span> Khóa học </span>--}}
+{{--                    </a>--}}
+{{--                    <div class="collapse menu-dropdown" id="sidebarCourses">--}}
+{{--                        <ul class="nav nav-sm flex-column">--}}
+{{--                            <li class="nav-item">--}}
+{{--                                <a href="{{ route('admin.courses.list') }}" class="nav-link" data-key="t-one-page">--}}
+{{--                                    Danh sách khoá học</a>--}}
+{{--                            </li>--}}
+{{--                            <li class="nav-item">--}}
+{{--                                <a href="{{ route('admin.courses.create') }}" class="nav-link" data-key="t-job">--}}
+{{--                                    Thêm mới khoá học</a>--}}
+{{--                                 <li class="nav-item">--}}
+{{--                                <a href="{{ route('admin.courses.my') }}" class="nav-link" data-key="t-one-page">--}}
+{{--                                    Khoá học của tôi</a>--}}
+{{--                            </li> --}}
+{{--                        </ul>--}}
+{{--                    </div>--}}
+{{--                </li>--}}
 
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarTags" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false" aria-controls="sidebarTags">
-                        <i class="bx bx-purchase-tag"></i> <span>Thẻ đính kèm</span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="sidebarTags">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="{{ route('admin.tags.index') }}" class="nav-link" data-key="t-one-page">
-                                    Danh sách thẻ</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('admin.tags.create') }}" class="nav-link" data-key="t-job">
-                                    Thêm mới thẻ</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+{{--                <li class="nav-item">--}}
+{{--                    <a class="nav-link menu-link" href="#sidebarTags" data-bs-toggle="collapse" role="button"--}}
+{{--                        aria-expanded="false" aria-controls="sidebarTags">--}}
+{{--                        <i class="bx bx-purchase-tag"></i> <span>Thẻ đính kèm</span>--}}
+{{--                    </a>--}}
+{{--                    <div class="collapse menu-dropdown" id="sidebarTags">--}}
+{{--                        <ul class="nav nav-sm flex-column">--}}
+{{--                            <li class="nav-item">--}}
+{{--                                <a href="{{ route('admin.tags.index') }}" class="nav-link" data-key="t-one-page">--}}
+{{--                                    Danh sách thẻ</a>--}}
+{{--                            </li>--}}
+{{--                            <li class="nav-item">--}}
+{{--                                <a href="{{ route('admin.tags.create') }}" class="nav-link" data-key="t-job">--}}
+{{--                                    Thêm mới thẻ</a>--}}
+{{--                            </li>--}}
+{{--                        </ul>--}}
+{{--                    </div>--}}
+{{--                </li>--}}
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarCertificate" data-bs-toggle="collapse"
                         role="button" aria-expanded="false" aria-controls="sidebarCertificate">
@@ -203,17 +202,17 @@
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarPost" data-bs-toggle="collapse" role="button"
                         aria-expanded="false" aria-controls="sidebarPost">
-                        <i class="ri-notification-2-line"></i> <span>Thông báo</span>
+                        <i class="ri-notification-2-line"></i> <span>Bài viết</span>
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarPost">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
                                 <a href="{{ route('admin.posts.index') }}" class="nav-link" data-key="t-one-page">
-                                    Danh sách thông báo</a>
+                                    Danh sách bài viết</a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{ route('admin.posts.create') }}" class="nav-link" data-key="t-one-page">
-                                    Thêm mới thông báo</a>
+                                    Thêm mới bài viết</a>
                             </li>
                         </ul>
                     </div>
