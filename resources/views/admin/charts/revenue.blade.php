@@ -93,9 +93,9 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="card">
-                            <div class="card-header border-0 align-items-center d-flex">
+                            <div class="card-header border-0 col-12">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-5">
                                         @if (isset($countOrders))
                                             <h4 class="card-title mb-0 flex-grow-1">
                                                 Doanh thu từ {{ \Carbon\Carbon::parse($start_date)->format('h:i:s d-m-Y') }}
@@ -107,10 +107,10 @@
                                             <i class="text-muted">Được thống kê bởi coursea</i>
                                         @endif
                                     </div>
-                                    <div class="ms-auto col-md-5 d-flex">
+                                    <div class="ms-auto col-7">
                                         <form action="{{ route('admin.charts.revenue') }}" method="GET">
                                             @csrf
-                                            <div class="d-flex justify-content-end ">
+                                            <div class="d-flex justify-content-end">
                                                 <div class="d-flex align-items-center">
                                                     <label class="text-nowrap" style="margin-top: 10px;">Ngày bắt
                                                         đầu</label>

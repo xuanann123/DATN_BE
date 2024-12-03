@@ -692,6 +692,11 @@ class PaymentController extends Controller
     public function historyWithdraw(Request $request)
     {
         $userId = $request->id_user;
+        // Số thứ tự trang;
+        $page = $request->page ?? 1;
+        // Số bản ghi trên một trang;
+        $perPage = $request->perPage ?? 12;
+
         $historyWithdraw = WithdrawMoney::select(
             'withdraw_money.id',
             'withdraw_money.coin',
@@ -708,7 +713,7 @@ class PaymentController extends Controller
             ->leftJoin('users as users2', 'users2.id', '=', 'withdraw_money.id_depositor')
             ->where('withdraw_money.id_user', $userId)
             ->orderbyDesc('withdraw_money.created_at')
-            ->paginate(10);
+            ->paginate($perPage, ['*'], 'page', $page);
 
         if (!$historyWithdraw) {
             return response()->json([
