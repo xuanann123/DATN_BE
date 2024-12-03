@@ -6,6 +6,7 @@ use App\Events\VoucherCreated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Vouchers\CreateVoucherRequest;
 use App\Http\Requests\Admin\Vouchers\UpdateVoucherRequest;
+use App\Models\Course;
 use App\Models\Voucher;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -57,24 +58,43 @@ class VoucherController extends Controller
     public function create()
     {
         $title = "Thêm mới voucher";
-        return view('admin.vouchers.create', compact('title'));
+        //Lấy danh sách khóa học đang được hoạt động
+        $courses = Course::select('id',  'name','thumbnail')
+                ->where('is_active', 1)
+                ->where('status', 'approved')
+                ->latest('id')
+                ->get();
+
+        return view('admin.vouchers.create', compact('title','courses'));
     }
 
 
     public function store(CreateVoucherRequest $request)
     {
+        // dd($request->all());
         $data = $request->all();
 
         $data['used_count'] = 0;
 
         if (!$request->is_active) {
             $data['is_active'] = 0;
+
+        }
+        if (!$request->is_publish) {
+            $data['is_publish'] = 0;
         }
         try {
             //Thêm dữ liệu
             $newVoucher = Voucher::query()->create($data);
+            //Thêm dữ liệu bảng trung gian
+        // if($request->course_id) {
+
+        //     $newVoucher->courses()->attach($request->course_id);
+        // }
+
             //realtime voucher
             event(new VoucherCreated($newVoucher));
+
 
             return redirect()->route('admin.vouchers.index')->with(['success' => 'Thêm voucher thành công']);
         } catch (\Exception $e) {

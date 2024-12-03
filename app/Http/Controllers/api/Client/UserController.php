@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Client\User\UpdateProfileRequest;
 use App\Http\Requests\Client\User\ChangePasswordRequest;
 use App\Models\Course;
+use App\Models\Education;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
 use App\Models\Quiz;
@@ -265,21 +266,21 @@ class UserController extends Controller
             }
         });
     }
-    public function registerTeacher()
+    public function registerTeacher(Request $request)
     {
         $user = Auth::user();
-        //Kiểm tra phải là user mí cậo nhật lên thành giảng viên
-        if ($user->user_type != User::TYPE_MEMBER) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Vui lòng kiểm tra lại bạn có phải thành viên không?',
-                'data' => []
-            ], 403);
-        }
-        //Đi cập nhật dữ liệu và thông báo
-        $user->update([
-            'user_type' => User::TYPE_TEACHER
+        $validatedData = $request->validate([
+            'certificates' => 'required|array',
+            'certificates.*' => 'string', // Nếu lưu tên file, dùng string. Nếu file thực, dùng file validation.
+            'qa_pairs' => 'required|array',
         ]);
+        // Lưu dữ liệu vào database
+        $education = Education::create([
+            'id_profile' => $user->profile->id,
+            'certificates' => $validatedData['certificates'], // Lưu mảng JSON
+            'qa_pairs' => $validatedData['qa_pairs'], // Lưu key-value JSON
+        ]);
+        //Tiếp đó gửi dữ liệu này lên bên phía Admin thông báo để kiểm duyệt
         return response()->json([
             'status' => 'success',
             'message' => 'Đăng kí trở thành giảng viên thành công.',

@@ -21,4 +21,9 @@ class Education extends Model
     {
         return $this->belongsTo(Profile::class, 'id_profile');
     }
+    //Chỉnh sửa kiểu dạng dữ liệu
+    protected $casts = [
+        'certificates' => 'array',
+        'qa_pairs' => 'array', // Chuyển đổi JSON sang mảng tự động
+    ];
 }
