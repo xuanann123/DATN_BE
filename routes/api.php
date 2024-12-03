@@ -301,6 +301,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/check-saved/{slug}', [PostController::class, 'checkSavedPost']);
         Route::post('/like/{slug}', [PostController::class, 'likePost']);
         Route::post('/unlike/{slug}', [PostController::class, 'unlikePost']);
+        // Route::get('/search', [PostController::class,'search']);
         Route::get('/check-like/{slug}', [PostController::class, 'checkLikePost']);
     });
 
