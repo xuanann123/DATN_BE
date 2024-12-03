@@ -268,24 +268,60 @@ class UserController extends Controller
     }
     public function registerTeacher(Request $request)
     {
-        $user = Auth::user();
-        $validatedData = $request->validate([
-            'certificates' => 'required|array',
-            'certificates.*' => 'string', // Nếu lưu tên file, dùng string. Nếu file thực, dùng file validation.
-            'qa_pairs' => 'required|array',
-        ]);
-        // Lưu dữ liệu vào database
-        $education = Education::create([
-            'id_profile' => $user->profile->id,
-            'certificates' => $validatedData['certificates'], // Lưu mảng JSON
-            'qa_pairs' => $validatedData['qa_pairs'], // Lưu key-value JSON
-        ]);
-        //Tiếp đó gửi dữ liệu này lên bên phía Admin thông báo để kiểm duyệt
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Đăng kí trở thành giảng viên thành công.',
-            'data' => []
-        ], 200);
+        try {
+            $user = Auth::user();
+            if (!$user->profile) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'User profile not found.',
+                    'data' => []
+                ], 404);
+            }
+
+            // Validate dữ liệu
+            $validatedData = $request->validate([
+                'certificates' => 'required|array',
+                'certificates.*' => 'string',
+                'qa_pairs' => 'required|array',
+                'qa_pairs.*.question' => 'required|string',
+                'qa_pairs.*.answer' => 'required|string',
+                'degree' => 'nullable|string',
+                'institution_name' => 'nullable|string',
+                'start_date' => 'nullable|date',
+            ]);
+            // DB::enableQueryLog();
+            DB::beginTransaction();
+            try {
+                $education = Education::create([
+                    'id_profile' => $user->profile->id,
+                    'certificates' => json_encode($validatedData['certificates']),
+                    'qa_pairs' => json_encode($validatedData['qa_pairs']),
+                    'degree' => $validatedData['degree'],
+                    'institution_name' => $validatedData['institution_name'],
+                    'start_date' => $validatedData['start_date'],
+                ]);
+                // \log::info(DB::getQueryLog());
+                User::find($user->id)->update(['status' => User::STATUS_PENDING]);
+                DB::commit();
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Lỗi: ' . $e->getMessage(),
+                    'data' => []
+                ]);
+            }
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Đăng kí giảng viên thành công.',
+                'data' => $education
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Lỗi: ' . $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
     }
     public function checkLearning(Request $request)
     {
@@ -377,8 +413,8 @@ class UserController extends Controller
                 ], 204);
             }
             //Lấy những khoá học của user đó đăng lên
-            $coursesByUser = $user->courses()->select('id', 'name', 'slug', 'description', 'thumbnail', 'sort_description','price', 'price_sale','level')
-            ->withCount('ratings')
+            $coursesByUser = $user->courses()->select('id', 'name', 'slug', 'description', 'thumbnail', 'sort_description', 'price', 'price_sale', 'level')
+                ->withCount('ratings')
                 ->withAvg('ratings', 'rate')
                 ->withCount([
                     'modules as lessons_count' => function ($query) {
@@ -393,50 +429,50 @@ class UserController extends Controller
                 ->where('is_active', 1)
                 ->where('status', Course::COURSE_STATUS_APPROVED)
                 ->get();
-                //Duyệt vòng lập những khóa học thằng này
-                foreach ($coursesByUser as $course) {
-                    $total_lessons = $course->modules->flatMap->lessons->count();
-                    $total_quiz = $course->modules->flatMap->lessons->where('content_type', 'quiz')->count();
-                    $course->total_lessons = $total_lessons + $total_quiz;
+            //Duyệt vòng lập những khóa học thằng này
+            foreach ($coursesByUser as $course) {
+                $total_lessons = $course->modules->flatMap->lessons->count();
+                $total_quiz = $course->modules->flatMap->lessons->where('content_type', 'quiz')->count();
+                $course->total_lessons = $total_lessons + $total_quiz;
 
-                    //Tính thời gian có sẵn lưu vào datatable
-                    $totalDurationVideo = $course->modules->flatMap(function ($module) {
-                        return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
-                            return $lesson->lessonable->duration ?? 0;
-                        });
-                    })->sum();
-                    //Tính thời gian độc docs
-                    $totalDurationDocs = $course->modules->flatMap(function ($module) {
-                        return $module->lessons->where('content_type', 'document')->map(function ($lesson) {
-                            $wordCount = $lesson->lessonable->word_count ?? str_word_count(strip_tags($lesson->lessonable->content));
-                            return ceil(($wordCount / 200) * 60);
-                        });
-                    })->sum();
-                    //Tính tổng thời gian của video và docs
-                    $course->total_duration_video = $totalDurationVideo + $totalDurationDocs;
+                //Tính thời gian có sẵn lưu vào datatable
+                $totalDurationVideo = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                        return $lesson->lessonable->duration ?? 0;
+                    });
+                })->sum();
+                //Tính thời gian độc docs
+                $totalDurationDocs = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'document')->map(function ($lesson) {
+                        $wordCount = $lesson->lessonable->word_count ?? str_word_count(strip_tags($lesson->lessonable->content));
+                        return ceil(($wordCount / 200) * 60);
+                    });
+                })->sum();
+                //Tính tổng thời gian của video và docs
+                $course->total_duration_video = $totalDurationVideo + $totalDurationDocs;
 
-                    $course->ratings_avg_rate = number_format(round($course->ratings_avg_rate ?? 0, 1), 1);
-                    $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
+                $course->ratings_avg_rate = number_format(round($course->ratings_avg_rate ?? 0, 1), 1);
+                $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
 
-                    $course->makeHidden(['modules', 'ratings']);
-                }
+                $course->makeHidden(['modules', 'ratings']);
+            }
 
 
             $coursesUserBought = [];
             $listCoursesUserBought = UserCourse::where('id_user', $user->id)->get();
             foreach ($listCoursesUserBought as $item) {
-                $coursesUserBought[] = $course = Course::select('id', 'name', 'slug', 'description', 'thumbnail', 'sort_description','price', 'price_sale','level')->withCount('ratings')
-                ->withAvg('ratings', 'rate')
-                ->withCount([
-                    'modules as lessons_count' => function ($query) {
-                        $query->whereHas('lessons');
-                    },
-                    'modules as quiz_count' => function ($query) {
-                        $query->whereHas('lessons', function ($query) {
-                            $query->where('content_type', 'quiz');
-                        });
-                    }
-                ])->find($item->id_course);
+                $coursesUserBought[] = $course = Course::select('id', 'name', 'slug', 'description', 'thumbnail', 'sort_description', 'price', 'price_sale', 'level')->withCount('ratings')
+                    ->withAvg('ratings', 'rate')
+                    ->withCount([
+                        'modules as lessons_count' => function ($query) {
+                            $query->whereHas('lessons');
+                        },
+                        'modules as quiz_count' => function ($query) {
+                            $query->whereHas('lessons', function ($query) {
+                                $query->where('content_type', 'quiz');
+                            });
+                        }
+                    ])->find($item->id_course);
                 $total_lessons = $course->modules->flatMap->lessons->count();
                 $total_quiz = $course->modules->flatMap->lessons->where('content_type', 'quiz')->count();
                 $course->total_lessons = $total_lessons + $total_quiz;
@@ -460,18 +496,18 @@ class UserController extends Controller
                 $course->ratings_avg_rate = number_format(round($course->ratings_avg_rate ?? 0, 1), 1);
                 $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
                 $progress = DB::table('user_courses')
-                ->where('id_course', $course->id)
-                ->where('id_user', $user->id)
-                ->first();
-            $course['progress_percent'] = $progress->progress_percent ?? 0;
-            if (DB::table('user_courses')->where('id_user', auth()->id())->where('id_course', $course->id)->exists()) {
-                $course->is_course_bought = true;
-            } else {
-                $course->is_course_bought = false;
-            }
-            //Ẩn đi module
-            $course->makeHidden('ratings');
-            $course->makeHidden('modules');
+                    ->where('id_course', $course->id)
+                    ->where('id_user', $user->id)
+                    ->first();
+                $course['progress_percent'] = $progress->progress_percent ?? 0;
+                if (DB::table('user_courses')->where('id_user', auth()->id())->where('id_course', $course->id)->exists()) {
+                    $course->is_course_bought = true;
+                } else {
+                    $course->is_course_bought = false;
+                }
+                //Ẩn đi module
+                $course->makeHidden('ratings');
+                $course->makeHidden('modules');
             }
 
 
