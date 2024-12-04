@@ -117,15 +117,13 @@ class VoucherController extends Controller
     {
         $title = "Chỉnh sửa voucher";
         $voucher = Voucher::find($id);
-        $courses = Course::select('id', 'name', 'thumbnail')
-            ->where('is_active', 1)
-            ->where('status', 'approved')
-            ->latest('id')
-            ->get();
+        $listCourse = Category::with(['courses' => function ($query) {
+            $query->where('is_active', 1)->where('status', 'approved'); }])->get();
+
         //Lấy danh sách khoá voucher trong này ra
        $listVoucherCourse = $voucher->courses()->where("id_voucher", $id)->get()->pluck('id')->toArray();
 
-        return view('admin.vouchers.edit', compact('voucher', 'title', 'courses', 'listVoucherCourse'));
+        return view('admin.vouchers.edit', compact('voucher', 'title', 'listCourse', 'listVoucherCourse'));
     }
 
 
@@ -133,12 +131,17 @@ class VoucherController extends Controller
     {
 
         $data = $request->all();
+        // dd($data);
 
         if (!$request->is_active) {
             $data['is_active'] = 0;
         }
-        if (!$request->course_id) {
-            $data['course_id'] = 0;
+        if (!$request->id_course) {
+            $data['id_course'] = 0;
+        }
+
+        if (!$request->is_private) {
+            $data['is_private'] = 0;
         }
 
         $voucher = Voucher::find($id);
@@ -150,7 +153,10 @@ class VoucherController extends Controller
         }
 
         if ($voucher->update($data)) {
-            $voucher->courses()->sync($request->course_id);
+            //Đi cập nhật dữ liệu nếu có 
+            if($data['is_private'] == 1 && isset($data['id_course'])) {
+                $voucher->courses()->sync($data['id_course']);
+            }
             return redirect()->route('admin.vouchers.index')->with(['message' => 'Cập nhật thành công!']);
         }
 
