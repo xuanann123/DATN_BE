@@ -143,7 +143,7 @@
                                         @endif
                                     </td>
                                      <td class="td_is_active">
-                                        @if ($voucher->is_publish_all == 1)
+                                        @if ($voucher->is_private == 0)
                                             <span class="badge rounded-pill bg-success">Toàn bộ</span>
                                         @else
                                             <span class="badge rounded-pill bg-danger">Riêng cho khoá học</span>

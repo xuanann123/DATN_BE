@@ -5,6 +5,8 @@
 @endsection
 
 @section('style-libs')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <style>
         .switch {
             /* switch */
@@ -369,7 +371,7 @@
                         <div class="border mt-3 border-dashed"></div>
                         <div class="mt-4">
                             <div class="row">
-                                <div class="col-xl-2">
+                                <div class="col-xl-4">
                                     <div class="mb-3">
                                         <label for="is_active" class="form-label">Trạng thái</label> <br>
                                         <label class="switch">
@@ -406,12 +408,12 @@
                                     </div>
                                 </div>
 
-                                <div class="col-xl-4">
+                                <div class="col-xl-2">
                                     <div class="mb-3">
-                                        <label for="is_publish" class="form-label">Áp dụng riêng</label> <br>
+                                        <label for="is_private mb-2" class="form-label">Áp dụng riêng</label>
+                                        <br>
                                         <label class="switch">
-                                            <input {{ old('is_publish_all') == 1 ? 'checked' : '' }} name="is_publish_all"
-                                                id="is_publish" value="1" type="checkbox">
+                                            <input name="is_private" id="is_private" value="1" type="checkbox">
                                             <div class="slider">
                                                 <div class="circle">
                                                     <svg class="cross" xml:space="preserve"
@@ -442,22 +444,24 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div class="col-xl-6" id="course_selector" style="display: none;">
-
-                                    <!-- Select dropdown for courses -->
-                                    <label for="course_id" class="form-label">Chọn khóa học</label>
-                                    <select class="form-control" name="course_id" id="course_id">
-                                        <option value="">Chọn khóa học</option>
-                                        @foreach ($courses as $course)
-                                            @php
-                                                $url = Storage::url($course->thumbnail);
-                                            @endphp
-                                            <option value="{{ $course->id }}">{{ $course->name }}</option>
-                                        @endforeach
-                                    </select>
+                                <div class="col-xl-6" id="select" style="display: none">
+                                    <div class="mb-3">
+                                        <select class="form-control select-flag-templating" name="id_course">
+                                            <option value="">Dành riêng cho khoá học</option>
+                                            @foreach ($listCourse as $category)
+                                                <optgroup label="{{ $category->name }}">
+                                                    @foreach ($category->courses as $course)
+                                                        <option value="{{ $course->id }}">{{ $course->name }}</option>
+                                                    @endforeach
+                                                </optgroup>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
+
 
                         <div class="mt-4">
                             <div class="row">
@@ -477,37 +481,18 @@
 @endsection
 
 @section('script-libs')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!--select2 cdn-->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script src="theme/admin/assets/js/pages/select2.init.js"></script>
     <script src="theme/admin/assets/libs/cleave.js/cleave.min.js"></script>
     <script src="theme/admin/assets/js/pages/form-masks.init.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-   <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const isPublishCheckbox = document.getElementById('is_publish');
-            const courseSelector = document.getElementById('course_selector');
-            const courseSelect = document.getElementById('course_id');
+    {{-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> --}}
 
-            // Kiểm tra trạng thái của checkbox khi trang được tải
-            if (isPublishCheckbox.checked) {
-                courseSelector.style.display = 'block';
 
-            }
-
-            // Toggle the visibility of the select field based on the checkbox status
-            isPublishCheckbox.addEventListener('change', function() {
-                if (isPublishCheckbox.checked) {
-                    // Show the select dropdown
-                    courseSelector.style.display = 'block';
-
-                } else {
-                    // Hide the select dropdown
-                    courseSelector.style.display = 'none';
-                }
-            });
-
-            // Function to load courses into the select dropdown
-
-        });
-    </script>
     <script>
         $(document).ready(function() {
             $('#type').change(function() {
@@ -519,6 +504,26 @@
                     unitElement.text('coin')
                 }
                 discountInput.val('')
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            // Hàm kiểm tra và ẩn/hiện div
+            function toggleCourseSelect() {
+                if ($('#is_private').is(':checked')) {
+                    $('#select').show(); // Hiện phần chọn khóa học
+                } else {
+                    $('#select').hide(); // Ẩn phần chọn khóa học
+                }
+            }
+
+            // Kiểm tra ngay khi tải trang
+            toggleCourseSelect();
+
+            // Lắng nghe sự kiện thay đổi trạng thái checkbox
+            $('#is_private').on('change', function() {
+                toggleCourseSelect();
             });
         });
     </script>

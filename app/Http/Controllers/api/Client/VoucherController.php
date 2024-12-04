@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api\Client;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\RollbackCountVoucher;
+use App\Models\Course;
 use App\Models\Voucher;
 use App\Models\VoucherUse;
 use Illuminate\Http\Request;
@@ -39,10 +40,31 @@ class VoucherController extends Controller
             ]
         ], 200);
     }
-    public function getMyVouchers()
+    public function getMyVouchers(Request $request)
     {
+        $slug = $request->slug;
+
+        // Lấy thông tin khóa học
+        $course = Course::where('slug', $slug)->first();
+        if (!$course) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Khóa học không tồn tại',
+                'data' => []
+            ], 204);
+        }
+
         try {
-            $vouchers = Voucher::select(
+            // Điều kiện chung cho cả hai loại voucher
+            $commonConditions = [
+                ['start_time', '<', now()],
+                ['end_time', '>', now()],
+                ['count', '>', 'used_count'],
+                ['is_active', 1]
+            ];
+
+            // Lấy danh sách voucher chung (không riêng tư)
+            $listVoucherAllCourse = Voucher::select(
                 'id',
                 'code',
                 'discount',
@@ -52,37 +74,60 @@ class VoucherController extends Controller
                 'used_count',
                 'start_time',
                 'end_time'
-            )->where('start_time', '<', now())
-                ->where('end_time', '>', now())
-                ->whereColumn('count', '>', 'used_count')
-                ->where('is_active', 1)
+            )
+                ->where($commonConditions)
+                ->where('is_private', 0)
                 ->orderByDesc('created_at')
                 ->get();
 
+            // Lấy danh sách voucher riêng tư cho khóa học
+            $voucherIdsForCourse = DB::table('course_vouchers')
+                ->where('id_course', $course->id)
+                ->pluck('id_voucher');
 
+            $listVoucherPrivateCourse = Voucher::select(
+                'id',
+                'code',
+                'discount',
+                'type',
+                'description',
+                'count',
+                'used_count',
+                'start_time',
+                'end_time'
+            )
+                ->where($commonConditions)
+                ->where('is_private', 1)
+                ->whereIn('id', $voucherIdsForCourse)
+                ->orderByDesc('created_at')
+                ->get();
 
-            if (count($vouchers) <= 0) {
+            if ($listVoucherAllCourse->isEmpty() && $listVoucherPrivateCourse->isEmpty()) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Danh sách mã giảm giá trống',
                     'data' => []
                 ], 204);
             }
+
             return response()->json([
-                'status' => 'error',
+                'status' => 'success',
                 'message' => 'Danh sách mã giảm giá',
-                'data' => $vouchers
+                'data' => [
+                    'listVoucherAllCourse' => $listVoucherAllCourse,
+                    'listVoucherPrivateCourse' => $listVoucherPrivateCourse
+                ]
             ], 200);
 
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Đã xảy ra lỗi khi lay danh sách mã giảm giá trống' . $e->getMessage(),
+                'message' => 'Đã xảy ra lỗi khi lấy danh sách mã giảm giá: ' . $e->getMessage(),
                 'data' => []
-            ]);
+            ], 500);
         }
-
     }
+
     public function applyCoupon(Request $request)
     {
         $userId = $request->id_user;

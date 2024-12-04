@@ -21,6 +21,7 @@ class Voucher extends Model
         'count',
         'used_count',
         'is_active',
+        'is_private'
     ];
     //mối quan hệ nhiều nhiều với khóa học thông qua bảng trung gian
     public function courses()
