@@ -759,7 +759,12 @@
                                 iconClass = ' ri-user-follow-line'
                                 bgColorClass = 'bg-info-subtle'
                                 title = notification.data.message
-                                break
+                                break;
+                            case 'register_teacher':
+                                iconClass = ' ri-user-add-line'
+                                bgColorClass = 'bg-info-subtle'
+                                title = notification.data.message
+                                break;
                             default:
                                 iconClass = 'bx bx-bell'
                                 bgColorClass = 'bg-light'
@@ -860,6 +865,13 @@
         window.Echo.private(`App.Models.UserFollow.${userId}`)
             .notification((notification) => {
                 console.log(notification);
+                fetchUnreadNotificationCount()
+                // loadNotifications()
+            })
+        //Làm phần kiểm duyệt giảng viên
+        window.Echo.private(`App.Models.Education.${userId}`)
+            .notification((notification) => {
+                // console.log(notification);
                 fetchUnreadNotificationCount()
                 // loadNotifications()
             })

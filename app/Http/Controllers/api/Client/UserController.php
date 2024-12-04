@@ -21,6 +21,7 @@ use App\Models\QuizProgress;
 use App\Models\User;
 use App\Models\UserCourse;
 use App\Models\Video;
+use App\Notifications\Client\Student\RegisterTeacherNotification;
 use Carbon\Carbon;
 use Dompdf\FrameDecorator\Table;
 use Flasher\Prime\EventDispatcher\Event\ResponseEvent;
@@ -277,31 +278,51 @@ class UserController extends Controller
                     'data' => []
                 ], 404);
             }
+            
 
             // Validate dữ liệu
             $validatedData = $request->validate([
                 'certificates' => 'required|array',
-                'certificates.*' => 'string',
                 'qa_pairs' => 'required|array',
                 'qa_pairs.*.question' => 'required|string',
                 'qa_pairs.*.answer' => 'required|string',
                 'degree' => 'nullable|string',
                 'institution_name' => 'nullable|string',
-                'start_date' => 'nullable|date',
+                // 'start_date' => 'nullable|date',
             ]);
-            // DB::enableQueryLog();
+            // //Lưu đường dẫn vào storage của validate certificates
+            foreach ($validatedData['certificates'] as $index => $certificate) {
+                $validatedData['certificates'][$index] = Storage::disk('public')->put('certificates', $certificate);
+            }
+
             DB::beginTransaction();
             try {
+                
+                $newEducation = [];
                 $education = Education::create([
                     'id_profile' => $user->profile->id,
                     'certificates' => json_encode($validatedData['certificates']),
                     'qa_pairs' => json_encode($validatedData['qa_pairs']),
                     'degree' => $validatedData['degree'],
                     'institution_name' => $validatedData['institution_name'],
-                    'start_date' => $validatedData['start_date'],
+                    // 'start_date' => $validatedData['start_date'],
                 ]);
+                
                 // \log::info(DB::getQueryLog());
                 User::find($user->id)->update(['status' => User::STATUS_PENDING]);
+                //Một mảng dữ liệu mới lưu được education new và kèm theo tên giảng viên
+                $newEducation = [
+                    'id' => $education->id,
+                    'id_profile' => $education->id_profile, // Sửa lại để đúng với cột `id_profile`
+                    'name_student' => $user->name, // Đổi `student_name` thành `name_student` cho nhất quán
+                ];
+             
+                //Kiểm duyệt qua toàn bộ admin
+                $admins = User::where('user_type', 'admin')->get();
+                foreach ($admins as $admin) {
+                    $admin->notify(new RegisterTeacherNotification($newEducation));
+                }
+
                 DB::commit();
             } catch (\Exception $e) {
                 return response()->json([
@@ -315,6 +336,7 @@ class UserController extends Controller
                 'message' => 'Đăng kí giảng viên thành công.',
                 'data' => $education
             ], 200);
+            
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
