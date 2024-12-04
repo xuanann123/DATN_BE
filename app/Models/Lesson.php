@@ -14,6 +14,7 @@ class Lesson extends Model
         'title',
         'thumbnail',
         'description',
+        'is_preview',
         'content_type',
         'lessonable_id',
         'lessonable_type',

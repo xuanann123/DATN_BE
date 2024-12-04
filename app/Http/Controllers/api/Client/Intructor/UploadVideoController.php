@@ -19,6 +19,7 @@ class UploadVideoController extends Controller
     {
         $data = [
             'title' => $request['title'],
+            'is_preview' => $request['is_preview'],
             'type' => $request['check'],
         ];
 
@@ -62,6 +63,7 @@ class UploadVideoController extends Controller
             'id_module' => $moduleId,
             'title' => $data['title'],
             'description' => $description,
+            'is_preview' => $data['is_preview'],
             'content_type' => 'video',
             'position' => $maxPosition + 1,
         ]);
@@ -135,6 +137,7 @@ class UploadVideoController extends Controller
             if ($lesson->lessonable_type == Video::class) {
                 $data = [
                     'title' => $request['title'],
+                    'is_preview' => $request['is_preview'],
                 ];
 
                 if ($request['check'] && $request['check'] == 'upload' && !empty($request['video'])) {
