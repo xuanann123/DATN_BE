@@ -137,7 +137,6 @@ class UploadVideoController extends Controller
             if ($lesson->lessonable_type == Video::class) {
                 $data = [
                     'title' => $request['title'],
-                    'is_preview' => $request['is_preview'],
                 ];
 
                 if ($request['check'] && $request['check'] == 'upload' && !empty($request['video'])) {
@@ -168,6 +167,7 @@ class UploadVideoController extends Controller
             $lesson->update([
                 'title' => $request['title'],
                 'description' => $request['description'],
+                'is_preview' => $request['is_preview'],
             ]);
 
             DB::commit();
