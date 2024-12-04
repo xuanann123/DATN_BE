@@ -17,10 +17,13 @@ class TeacherController extends Controller
     {
         //Số lượng giới hạn trên 1 trạng
         $limit = $request->input('limit', 12);
+        //Làm phần search tên giảng viên
+        $searchQuery = $request->input('search');
         //Lấy toàn bộ danh sách giảng viên
 
         $teachers = User::select('id', 'name', 'avatar')
-            ->whereHas('courses' , function ($query) {
+            ->where("name", "LIKE", "%{$searchQuery}%")
+            ->whereHas('courses', function ($query) {
                 $query->where('status', 'approved');
                 $query->where("is_active", 1);
             })
@@ -30,7 +33,7 @@ class TeacherController extends Controller
                     $query->where("is_active", 1);
                 }
             ])
-            ->whereIn('user_type', [User::TYPE_TEACHER, User::TYPE_ADMIN])
+            ->where('user_type', User::TYPE_TEACHER)
             ->latest('id')
             ->orderBy('total_courses', 'desc')
             ->paginate($limit);
@@ -52,6 +55,8 @@ class TeacherController extends Controller
             $teacher->ratings_avg_rate = number_format(round($ratings_avg_rate, 1), 1);
             $teacher->total_student = DB::table('user_courses')->where('id_user', $teacher->id)->count();
             $teacher->ratings_avg_rate = number_format($ratings_avg_rate, 1);
+            $teachers->makeHidden(['courses']);
+            
         }
         if ($teachers->count() <= 0) {
             return response()->json([
