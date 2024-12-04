@@ -687,74 +687,116 @@ class PaymentController extends Controller
         ], 200);
     }
 
-    public function historyBuyCourses(Request $request)
+//    public function historyBuyCourses(Request $request)
+//    {
+//        $userId = $request->id_user;
+//        // Số thứ tự trang;
+//        $page = $request->page ?? 1;
+//        // Số bản ghi trên một trang;
+//        $perPage = $request->perPage ?? 5;
+//
+//        if($request->start_date && $request->end_date) {
+//            $start_date = $request->start_date;
+//            $end_date = $request->end_date;
+//            $hisroryBuyCourses = Bill::select(
+//                'bills.id',
+//                'bills.total_coin_after_discount as price',
+//                'bills.status',
+//                'bills.created_at',
+//                'users.name as teacher_name',
+//                'courses.thumbnail',
+//                'courses.name',
+//            )
+//                ->join('courses', 'courses.id', '=', 'bills.id_course')
+//                ->join('users', 'users.id', '=', 'courses.id_user')
+//                ->where('bills.id_user', $userId)
+//                ->where('bills.created_at', '>=', $start_date)
+//                ->where('bills.created_at', '<=', $end_date)
+//                ->orderbyDesc('bills.created_at')
+//                ->paginate($perPage, ['*'], 'page', $page);
+//
+//            if ($hisroryBuyCourses->count() == 0) {
+//                return response()->json([
+//                    'status' => 'error',
+//                    'message' => 'Lịch sử mua khóa học trống'
+//                ], 204);
+//            }
+//
+//            return response()->json([
+//                'status' => 'success',
+//                'message' => 'Lịch sử mua khóa học',
+//                'data' => $hisroryBuyCourses
+//            ], 200);
+//        }
+//
+//        $hisroryBuyCourses = Bill::select(
+//            'bills.id',
+//            'bills.total_coin_after_discount as price',
+//            'bills.status',
+//            'bills.created_at',
+//            'users.name as teacher_name',
+//            'courses.thumbnail',
+//            'courses.name',
+//        )
+//            ->join('courses', 'courses.id', '=', 'bills.id_course')
+//            ->join('users', 'users.id', '=', 'courses.id_user')
+//            ->where('bills.id_user', $userId)
+//            ->orderbyDesc('bills.created_at')
+//            ->paginate($perPage, ['*'], 'page', $page);
+//
+//        if ($hisroryBuyCourses->count() == 0) {
+//            return response()->json([
+//                'status' => 'error',
+//                'message' => 'Lịch sử mua khóa học trống'
+//            ], 204);
+//        }
+//
+//        return response()->json([
+//            'status' => 'success',
+//            'message' => 'Lịch sử mua khóa học',
+//            'data' => $hisroryBuyCourses
+//        ], 200);
+//    }
+
+    public function historyBuyCourse(Request $request)
     {
         $userId = $request->id_user;
-        // Số thứ tự trang;
-        $page = $request->page ?? 1;
-        // Số bản ghi trên một trang;
-        $perPage = $request->perPage ?? 5;
-
-        if($request->start_date && $request->end_date) {
-            $start_date = $request->start_date;
-            $end_date = $request->end_date;
-            $hisroryBuyCourses = Bill::select(
-                'bills.id',
-                'bills.total_coin_after_discount as price',
-                'bills.status',
-                'bills.created_at',
-                'users.name as teacher_name',
-                'courses.thumbnail',
-                'courses.name',
-            )
-                ->join('courses', 'courses.id', '=', 'bills.id_course')
-                ->join('users', 'users.id', '=', 'courses.id_user')
-                ->where('bills.id_user', $userId)
-                ->where('bills.created_at', '>=', $start_date)
-                ->where('bills.created_at', '<=', $end_date)
-                ->orderbyDesc('bills.created_at')
-                ->paginate($perPage, ['*'], 'page', $page);
-
-            if ($hisroryBuyCourses->count() == 0) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Lịch sử mua khóa học trống'
-                ], 204);
-            }
-
+        $user = User::find($userId);
+        if (!$user) {
             return response()->json([
-                'status' => 'success',
-                'message' => 'Lịch sử mua khóa học',
-                'data' => $hisroryBuyCourses
-            ], 200);
+                'code' => 204,
+                'status' => 'error',
+                'message' => 'Người dùng không tồn tại'
+            ]);
         }
 
-        $hisroryBuyCourses = Bill::select(
-            'bills.id',
-            'bills.total_coin_after_discount as price',
-            'bills.status',
-            'bills.created_at',
-            'users.name as teacher_name',
-            'courses.thumbnail',
-            'courses.name',
-        )
-            ->join('courses', 'courses.id', '=', 'bills.id_course')
-            ->join('users', 'users.id', '=', 'courses.id_user')
-            ->where('bills.id_user', $userId)
-            ->orderbyDesc('bills.created_at')
-            ->paginate($perPage, ['*'], 'page', $page);
+        $listHistoryByCourse = DB::table('bills as b')
+            ->selectRaw('
+                u.name as name,
+                c.name as course_name,
+                b.id as bill_id,
+                b.total_coin_after_discount as total_coin,
+                b.status,
+                b.created_at as date_of_purchase
+            ')
+            ->join('users as u', 'u.id', '=', 'b.id_user')
+            ->join('courses as c', 'c.id', '=', 'b.id_course')
+            ->where('b.id_user', $userId)
+            ->orderByDesc('date_of_purchase')
+            ->get();
 
-        if ($hisroryBuyCourses->count() == 0) {
+        if ($listHistoryByCourse->count() == 0) {
             return response()->json([
+                'code' => 204,
                 'status' => 'error',
-                'message' => 'Lịch sử mua khóa học trống'
-            ], 204);
+                'message' => 'Không có lịch sử mua khóa học'
+            ]);
         }
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'Lịch sử mua khóa học',
-            'data' => $hisroryBuyCourses
+            'status' => "success",
+            'message' => 'Danh sách lịch sử mua khóa học',
+            'data' => $listHistoryByCourse
         ], 200);
     }
 }

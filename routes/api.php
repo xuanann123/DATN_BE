@@ -168,7 +168,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/posts/{id}', [PostController::class, 'getListPostByUser']);
         Route::get('/balance/{user}', [PaymentController::class, 'balancePurchaseWallet']);
         Route::get('/my-course-bought', [UserController::class, 'myCourseBought']);
-        Route::get('/history-buy-course/{id_user}', [PaymentController::class, 'historyBuyCourses']);
+        Route::get('/history-buy-course/{id_user}', [PaymentController::class, 'historyBuyCourse']);
         Route::get('/history-transactions/{id_user}', [PaymentController::class, 'historyTransactionsPurchase']);
         Route::post('/follow', [FollowController::class, 'follow']);
         Route::post('/unfollow', [FollowController::class, 'unfollow']);
