@@ -822,7 +822,7 @@ class PaymentController extends Controller
                     'bills.created_at',
                     'users.name as student_name',
                     'courses.thumbnail',
-                    'courses.name',
+                    'courses.name as course_name',
                 )
                     ->join('courses', 'courses.id', '=', 'bills.id_course')
                     ->join('users', 'users.id', '=', 'courses.id_user')
@@ -854,7 +854,7 @@ class PaymentController extends Controller
                 'bills.created_at',
                 'users.name as student_name',
                 'courses.thumbnail',
-                'courses.name',
+                'courses.name as course_name',
             )
                 ->join('courses', 'courses.id', '=', 'bills.id_course')
                 ->join('users', 'users.id', '=', 'courses.id_user')
@@ -887,7 +887,7 @@ class PaymentController extends Controller
                 'bills.created_at',
                 'users.name as student_name',
                 'courses.thumbnail',
-                'courses.name',
+                'courses.name as course_name',
             )
                 ->join('courses', 'courses.id', '=', 'bills.id_course')
                 ->join('users', 'users.id', '=', 'courses.id_user')
@@ -917,7 +917,7 @@ class PaymentController extends Controller
             'bills.created_at',
             'users.name as student_name',
             'courses.thumbnail',
-            'courses.name',
+            'courses.name as course_name',
         )
             ->join('courses', 'courses.id', '=', 'bills.id_course')
             ->join('users', 'users.id', '=', 'courses.id_user')
