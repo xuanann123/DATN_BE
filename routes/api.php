@@ -200,6 +200,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/balance/{user}', [PaymentController::class, 'balanceWithdrawalWallets']);
         Route::post('/add-request-withdraw/{id_user}', [PaymentController::class, 'createCommandWithdrawMoney']);
         Route::get('/history-withdraw/{id_user}', [PaymentController::class, 'historyWithdraw']);
+        // Lịch sử mua khóa học;
+        Route::get('/history-buy-course/{id_user}', [PaymentController::class, 'historyBuyCoursesInTeacher']);
         // Danh sách khóa học
         Route::get('/course', [CourseController::class, 'index']);
         Route::get('/course/approved', [CourseController::class, 'getApprovedCourses']);
