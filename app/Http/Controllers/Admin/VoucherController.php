@@ -6,6 +6,7 @@ use App\Events\VoucherCreated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Vouchers\CreateVoucherRequest;
 use App\Http\Requests\Admin\Vouchers\UpdateVoucherRequest;
+use App\Models\Category;
 use App\Models\Course;
 use App\Models\Voucher;
 use Carbon\Carbon;
@@ -59,52 +60,56 @@ class VoucherController extends Controller
     {
         $title = "Thêm mới voucher";
         //Lấy danh sách khóa học đang được hoạt động
-        $courses = Course::select('id', 'name', 'thumbnail')
-            ->where('is_active', 1)
-            ->where('status', 'approved')
-            ->latest('id')
-            ->get();
-
-        return view('admin.vouchers.create', compact('title', 'courses'));
+        //Lấy danh mục là key và toàn bộ mảng là khoá học bên trong
+        $listCourse = Category::with( ['courses' => function ($query) { $query->where('is_active', 1)->where('status', 'approved');} ])->get();
+        // dd($listCourse);
+        return view('admin.vouchers.create', compact('title', 'listCourse'));
     }
 
 
     public function store(CreateVoucherRequest $request)
     {
-        // dd($request->all());
         $data = $request->all();
 
         $data['used_count'] = 0;
+        $data['is_active'] = $request->is_active ?? 0;
+        $data['is_private'] = $request->is_private ?? 0;
+        // dd($data);
 
-        if (!$request->is_active) {
-            $data['is_active'] = 0;
+        DB::beginTransaction(); // Bắt đầu transaction
 
-        }
-        if (!$request->is_publish) {
-            $data['is_publish'] = 0;
-        }
         try {
-            //Thêm dữ liệu
-            $newVoucher = Voucher::query()->create($data);
-            //Thêm dữ liệu bảng trung gian
-            if ($request->course_id) {
-                $newVoucher->courses()->attach($request->course_id);
+            // Tạo voucher mới
+            $newVoucher = Voucher::create([
+                'name' => $data['name'],
+                'code' => $data['code'],
+                'description' => $data['description'],
+                'type' => $data['type'],
+                'discount' => $data['discount'],
+                'start_time' => $data['start_time'],
+                'end_time' => $data['end_time'],
+                'count' => $data['count'],
+                'used_count' => $data['used_count'],
+                'is_active' => $data['is_active'],
+                'is_private' => $data['is_private']
+            ]);
+
+            // Nếu là voucher riêng tư, thêm liên kết với khóa học
+            if ($data['is_private'] == 1 && isset($data['id_course'])) {
+                $newVoucher->courses()->attach($data['id_course']);
             }
 
-            //realtime voucher
+            // Gửi sự kiện realtime
             event(new VoucherCreated($newVoucher));
 
-
-            return redirect()->route('admin.vouchers.index')->with(['success' => 'Thêm voucher thành công']);
+            DB::commit(); // Xác nhận transaction
+            return redirect()->route('admin.vouchers.index')->with('success', 'Thêm voucher thành công');
         } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
+            DB::rollBack(); // Rollback nếu có lỗi
+            return redirect()->back()->withErrors(['error' => 'Có lỗi xảy ra: ' . $e->getMessage()]);
         }
-
     }
+
 
 
 
