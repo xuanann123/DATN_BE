@@ -168,6 +168,7 @@ class UploadVideoController extends Controller
             $lesson->update([
                 'title' => $request['title'],
                 'description' => $request['description'],
+                'is_preview' => $request['is_preview'],
             ]);
 
             DB::commit();
