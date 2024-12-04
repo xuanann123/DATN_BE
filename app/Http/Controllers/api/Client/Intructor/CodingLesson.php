@@ -34,6 +34,7 @@ class CodingLesson extends Controller
                 'id_module' => $module->id,
                 'title' => $request->input('title'),
                 'description' => $request->input('description'),
+                'is_preview' => $request->input('is_preview'),
                 'content_type' => 'coding',
                 'position' => $maxPosition + 1
             ]);
@@ -90,6 +91,7 @@ class CodingLesson extends Controller
             $lesson->update([
                 'title' => $request->input('title'),
                 'description' => $request->input('description'),
+                'is_preview' => $request->input('is_preview'),
             ]);
 
             DB::commit();

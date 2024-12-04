@@ -34,6 +34,7 @@ class TextLessonController extends Controller
 
             $lesson = Lesson::create([
                 'title' => $request->title,
+                'is_preview' => $request->input('is_preview'),
                 'id_module' => $module->id,
                 'content_type' => 'document',
                 'lessonable_type' => Document::class,
@@ -79,6 +80,7 @@ class TextLessonController extends Controller
 
             $lesson->update([
                 'title' => $request->title,
+                'is_preview' => $request->input('is_preview'),
             ]);
 
             DB::commit();

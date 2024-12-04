@@ -160,6 +160,7 @@ class LessonController extends Controller
                     'content_type' => 'video',
                     'lessonable_type' => Video::class,
                     'description' => $request->input('description'),
+                    'is_preview' => $request->input('is_preview'),
                     'lessonable_id' => $newVideo->id
                 ]);
             } elseif ($newType === 'document') {
@@ -183,6 +184,7 @@ class LessonController extends Controller
                 $lesson->update([
                     'title' => $newTitle,
                     'description' => $request->input('description'),
+                    'is_preview' => $request->input('is_preview'),
                     'content_type' => 'document',
                     'lessonable_type' => Document::class,
                     'lessonable_id' => $newDocument->id

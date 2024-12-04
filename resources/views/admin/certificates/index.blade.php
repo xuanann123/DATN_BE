@@ -69,7 +69,7 @@
                                             @endif
                                         </td>
                                         <td class="d-flex gap-2">
-                                            <a href="{{ route('admin.certificates.show', $key) }}" class="btn btn-info btn-sm d-flex align-items-center justify-content-center" title="Xem trước">
+                                            <a href="{{ route('admin.certificates.show', $key) }}" class="btn btn-info btn-sm d-flex align-items-center justify-content-center" title="Xem trước" target="_blank">
                                                 <i class="ri-eye-fill"></i>
                                                 <span class="ms-1">Xem trước</span>
                                             </a>

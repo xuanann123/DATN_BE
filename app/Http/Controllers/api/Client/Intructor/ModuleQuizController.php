@@ -170,7 +170,7 @@ class ModuleQuizController extends Controller
             ]);
             // Tạo 1 vòng duyệt qua từng option rồi thêm dữ liệu vào database
             foreach ($request->input('options') as $optionIndex => $optionData) {
-                $optionText = is_array($optionData) ? $optionData['text'] : $optionData;
+                $optionText = is_array($optionData) ? ($optionData['text'] ?? null) : $optionData;
                 $optionImage = $request->file("options.{$optionIndex}.image") ?? null;
                 // nếu câu trả lời không có text hoặc image thì chặn
                 if (empty($optionText) && !$optionImage) {
@@ -426,7 +426,7 @@ class ModuleQuizController extends Controller
 
                 // Them dap an
                 foreach ($questionData['options'] as $optionIndex => $optionData) {
-                    $optionText = is_array($optionData) ? $optionData['text'] : $optionData;
+                    $optionText = is_array($optionData) ? ($optionData['text'] ?? null) : $optionData;
                     // Tải ảnh option từ url
                     $optionImage = $this->downloadImageFromUrl($optionData['image'] ?? null, 'options', $importedImages);
 
