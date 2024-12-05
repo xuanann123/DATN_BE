@@ -262,6 +262,12 @@
                         <i class="ri-book-open-line"></i> <span>Kiểm duyệt Khóa học </span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ route('admin.approval.teachers.list') }}"
+                        data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                        <i class=" ri-folder-user-line"></i> <span>Kiểm duyệt giảng viên </span>
+                    </a>
+                </li>
 
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components">Quản lý tài
                         khoản</span></li>

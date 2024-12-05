@@ -39,11 +39,8 @@ class RegisterTeacherNotification extends Notification implements ShouldBroadcas
         return [
             'type' => 'register_teacher',
             'id' => $this->education['id'],
-            'student_name' => $this->education['name_student'],
+            'name_student' => $this->education['name_student'],
             'message' => "Sinh viên {$this->education['name_student']} đã đăng ký trở thành giảng viên.",
         ];
     }
-
-
-    
 }
