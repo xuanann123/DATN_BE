@@ -578,12 +578,15 @@ class ModuleQuizController extends Controller
         if ($url) {
             $imageData = @file_get_contents($url);
 
+            // return response()->json([$imageData]);
+
             if ($imageData === false) {
                 return null;
             }
 
             // Lấy định dạng từ url
-            $extention = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
+            // $extention = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
+            $extention = 'jpg';
 
             $imageName = $type . '_' . Str::uuid() . '.' . $extention;
             $filePath = 'images/' . $type . '/' . $imageName;
