@@ -15,6 +15,8 @@ class Education extends Model
         'major',
         'start_date',
         'end_date',
+        'certificates',
+        'qa_pairs'
     ];
     //Thuộc về một profile
     public function profile()

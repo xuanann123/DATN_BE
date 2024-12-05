@@ -57,11 +57,7 @@ class CourseApprovalStatusNotification extends Notification implements ShouldBro
         ];
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
+ 
     public function toBroadcast(object $notifiable)
     {
         return new BroadcastMessage([

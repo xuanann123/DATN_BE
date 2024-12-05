@@ -12,12 +12,16 @@ use Illuminate\Support\Facades\Broadcast;
 | used to check if an authenticated user can listen to the channel.
 |
 */
-
+//Khoá học
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
-
+//Follow
 Broadcast::channel('App.Models.UserFollow.{id}', function ($user, $id) {
+    return (int) $user->id === (int) $id;
+});
+//Kiểm duyệt giảng viên
+Broadcast::channel('App.Models.Education.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
