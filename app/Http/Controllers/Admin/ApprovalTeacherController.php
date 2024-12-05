@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\Approvals\RegisterAppoveEmail;
+use App\Mail\Approvals\RegisterApproveFailEmail;
+use App\Models\AdminReview;
 use App\Models\User;
 use App\Notifications\Client\Student\RegisterApproveTeacherNotification;
 use Illuminate\Http\Request;
@@ -26,8 +28,45 @@ class ApprovalTeacherController extends Controller
     public function approve(Request $request, $id)
     {
         try {
+
             //Đi cập nhật thằng user sang trạng thái 
             $user = User::findOrFail($id);
+            $reject = $request->input('reject');
+            $admin_comments = $request->input('admin_comments') ? $request->input('admin_comments') : NULL;
+            if ($reject) {
+                AdminReview::updateOrCreate(
+                    [
+                        'reviewable_id' => $user->id,
+                        'reviewable_type' => User::class,
+                    ],
+                    [
+                        'user_id' => auth()->id(), // admin hiện tại đăng nhập
+                        'action' => 'reject',
+                        'admin_comments' => $request->admin_comments ?? 'Từ chối phê duyệt giảng viên',
+                    ]
+                );
+                //Xử lý huỷ thằng này đi
+                $user->update([
+                    'status' => User::STATUS_REJECTED
+                ]);
+                Mail::to($user->email)->queue(new RegisterApproveFailEmail($user, $admin_comments));
+
+                //Cái này cũng phải đi lưu thông báo cho bên phía client
+
+                //Gửi cả gmail thông báo về việc bị từ chối
+                return redirect()->route('admin.approval.teachers.list')->with('success', "Từ chối giảng viên thành công");
+            }
+            AdminReview::updateOrCreate(
+                [
+                    'reviewable_id' => $user->id,
+                    'reviewable_type' => User::class,
+                ],
+                [
+                    'user_id' => auth()->id(), // admin hiện tại đăng nhập
+                    'action' => 'approve',
+                    'admin_comments' => $request->admin_comments ?? 'Phê duyệt giảng viên thành công',
+                ]
+            );
             $user->update([
                 'status' => User::STATUS_APPROVED,
                 'user_type' => User::TYPE_TEACHER
@@ -36,10 +75,14 @@ class ApprovalTeacherController extends Controller
             Mail::to($user->email)->queue(new RegisterAppoveEmail($user));
             // Gửi thông báo cho giảng viên khi chấp thuận
             $user->notify(new RegisterApproveTeacherNotification($user));
-            return redirect()->route('admin.approval.teachers.list');
+            return redirect()->route('admin.approval.teachers.list')->with('success', "Đã phê duyệt giảng viên");
         } catch (\Exception $e) {
             return redirect()->route('admin.teachers.index')->with('error', "Không thể thêm được dữ liệu");
         }
 
+    }
+    public function reject(Request $request)
+    {
+        dd($request);
     }
 }

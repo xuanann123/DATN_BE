@@ -93,13 +93,48 @@
                         </li>
                     </ul>
                     <div class="flex-shrink-0">
+                        @if ($user->status == 'pending')
+                            <a href="{{ route('admin.approval.teachers.approve', $user->id) }}" class="btn btn-success"> Phê
+                                duyệt</a>
+                            <button type="button" name="reject" class="btn btn-danger" data-bs-toggle="modal"
+                                data-bs-target="#rejectModal" id="reject-btn">Từ
+                                chối</button>
+                        @else
+                        <button class="btn btn-primary">Đã kiểm duyệt!</button>
+                        @endif
 
-                        <a href="{{ route('admin.approval.teachers.approve', $user->id) }}" class="btn btn-success"> Phê
-                            duyệt</a>
-                        <a href="{{ route('admin.approval.teachers.reject', $user->id) }}" class="btn btn-danger"> Từ
-                            chối</a>
                     </div>
                 </div>
+
+                <div class="modal modal-lg fade zoomIn" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header border-bottom bg-primary-subtle">
+                                <h4 class="modal-title" id="rejectModalLabel"><i
+                                        class="mdi mdi-close-circle text-danger"></i> Từ chối chấp nhận
+                                </h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ route('admin.approval.teachers.approve', $user->id) }}" id="reject-form">
+                                    <h6 class="fs-15 mt-2">Lí do:</h6>
+                                    <textarea name="admin_comments" class="form-control"></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                @csrf
+                                {{-- <input type="hidden" name="id" value="{{ $user->id }}"> --}}
+                                <input type="hidden" name="reject" value="reject">
+                                <button type="submit" class="btn btn-danger" id="reject-btn-2">Xác
+                                    nhận</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
             <!-- Tab panes -->
             <div class="tab-content pt-4 text-muted">
@@ -212,7 +247,7 @@
                                 </div>
                                 <!--end card-body-->
                             </div><!-- end card -->
-                            
+
                         </div>
                         <!--end col-->
                     </div>
@@ -349,11 +384,13 @@
                                         </div>
                                     </div>
 
+                                    <!-- Modal từ chối -->
+
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div> 
+                </div>
                 <!--end tab-pane-->
             </div>
             <!--end tab-content-->

@@ -179,7 +179,6 @@ Route::middleware('auth:sanctum')->group(function () {
         //Lấy thông tin user qua email
         Route::get('/by-email/{email}', [UserController::class, 'getUserByEmail']);
         //CHAT AI
-
         // Route::get('/qna', [QnAController::class, 'index'])->name('qna');
         Route::prefix('qna')->group(function () {
             Route::get('/', [QnAController::class, 'index'])->name('qna');

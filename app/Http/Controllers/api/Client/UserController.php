@@ -307,19 +307,17 @@ class UserController extends Controller
                 $newEducation = [];
                 $education = Education::create([
                     'id_profile' => $user->profile->id,
-                    'certificates' => $validatedData['certificates'], // Bỏ json_encode
-                    'qa_pairs' => $validatedData['qa_pairs'], // Bỏ json_encode
+                    'certificates' => $validatedData['certificates'], 
+                    'qa_pairs' => $validatedData['qa_pairs'], 
                     'degree' => $validatedData['degree'],
                     'institution_name' => $validatedData['institution_name'],
                 ]);
 
-                // \log::info(DB::getQueryLog());
                 $user->update(['status' => User::STATUS_PENDING]);
-                //Một mảng dữ liệu mới lưu được education new và kèm theo tên giảng viên
                 $newEducation = [
                     'id' => $education->id,
-                    'id_profile' => $education->id_profile, // Sửa lại để đúng với cột `id_profile`
-                    'name_student' => $user->name, // Đổi `student_name` thành `name_student` cho nhất quán
+                    'id_profile' => $education->id_profile, 
+                    'name_student' => $user->name, 
                 ];
 
                 $admins = User::where('user_type', 'admin')->get();
