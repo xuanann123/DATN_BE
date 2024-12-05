@@ -93,8 +93,9 @@
                         </li>
                     </ul>
                     <div class="flex-shrink-0">
-                        <a href="{{ route('admin.users.profile.edit') }}" class="btn btn-success"> Phê duyệt</a>
-                        <a href="{{ route('admin.users.profile.edit') }}" class="btn btn-danger"> Từ chối</a>
+                       
+                        <a href="{{ route('admin.approval.teachers.approve', $user->id) }}" class="btn btn-success"> Phê duyệt</a>
+                        <a href="{{ route('admin.approval.teachers.reject', $user->id) }}" class="btn btn-danger"> Từ chối</a>
                     </div>
                 </div>
             </div>
