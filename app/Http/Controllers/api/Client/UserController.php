@@ -238,6 +238,12 @@ class UserController extends Controller
                 ->where('id_user', $authUser->id)
                 ->first();
             $course['progress_percent'] = $progress->progress_percent ?? 0;
+            //Kiểm tra khoá học đã được mua khoá hay 
+            if (DB::table('user_courses')->where('id_user', auth()->id())->where('id_course', $course->id)->exists()) {
+                $course->is_course_bought = true;
+            } else {
+                $course->is_course_bought = false;
+            }
 
             $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
             $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
@@ -320,7 +326,7 @@ class UserController extends Controller
                 $admins = User::where('user_type', 'admin')->get();
                 //Gửi thông báo kiểm duyệt cho admin
                 foreach ($admins as $admin) {
-                    $admin->notify(new RegisterTeacherNotification($newEducation));
+                    $admin->notify(new RegisterTeacherNotification($newEducation, $user));
                 }
 
                 DB::commit();
