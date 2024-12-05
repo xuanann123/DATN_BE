@@ -73,7 +73,7 @@
                     <!-- Nav tabs -->
                     <ul class="nav nav-pills animation-nav profile-nav gap-2 gap-lg-3 flex-grow-1" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link fs-14 " data-bs-toggle="tab" href="#overview-tab" role="tab">
+                            <a class="nav-link fs-14 active" data-bs-toggle="tab" href="#overview-tab" role="tab">
                                 <i class="ri-airplay-fill d-inline-block d-md-none"></i> <span
                                     class="d-none d-md-inline-block">Tổng quan</span>
                             </a>
@@ -86,7 +86,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fs-14 active" data-bs-toggle="tab" href="#documents" role="tab">
+                            <a class="nav-link fs-14 " data-bs-toggle="tab" href="#documents" role="tab">
                                 <i class="ri-folder-4-line d-inline-block d-md-none"></i> <span
                                     class="d-none d-md-inline-block">Ảnh chứng chỉ</span>
                             </a>
@@ -101,7 +101,7 @@
             </div>
             <!-- Tab panes -->
             <div class="tab-content pt-4 text-muted">
-                <div class="tab-pane fade" id="overview-tab" role="tabpanel">
+                <div class="tab-pane active" id="overview-tab" role="tabpanel">
                     <div class="row">
                         <div class="col-xxl-4">
 
@@ -1233,7 +1233,7 @@
                     </div>
                 </div>
 
-                <div class="tab-pane active" id="documents" role="tabpanel">
+                {{-- <div class="tab-pane fade" id="documents" role="tabpanel">
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-4">
@@ -1353,7 +1353,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
                 <!--end tab-pane-->
             </div>
             <!--end tab-content-->

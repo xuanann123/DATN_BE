@@ -35,7 +35,7 @@ class ApprovalTeacherController extends Controller
             //Thông báo đến người sử dụng mail này
             Mail::to($user->email)->queue(new RegisterAppoveEmail($user));
             // Gửi thông báo cho giảng viên khi chấp thuận
-            // $user->notify(new RegisterApproveTeacherNotification($user, $course->status));
+            $user->notify(new RegisterApproveTeacherNotification($user));
             return redirect()->route('admin.approval.teachers.list');
         } catch (\Exception $e) {
             return redirect()->route('admin.teachers.index')->with('error', "Không thể thêm được dữ liệu");

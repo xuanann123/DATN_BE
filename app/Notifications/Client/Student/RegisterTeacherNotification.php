@@ -13,10 +13,14 @@ class RegisterTeacherNotification extends Notification implements ShouldBroadcas
     use Queueable;
 
     protected $education;
+    protected $user;
 
-    public function __construct(array $education)
+
+    public function __construct(array $education, $user)
     {
         $this->education = $education;
+        $this->user = $user;
+
     }
 
     public function via(object $notifiable): array
@@ -31,6 +35,7 @@ class RegisterTeacherNotification extends Notification implements ShouldBroadcas
             'id' => $this->education['id'],
             'student_name' => $this->education['name_student'],
             'message' => "Sinh viên {$this->education['name_student']} muốn đăng ký trở thành giảng viên.",
+            'url' => route('admin.approval.teachers.detail', ['id' => $this->user->id]),
         ];
     }
 
@@ -41,6 +46,7 @@ class RegisterTeacherNotification extends Notification implements ShouldBroadcas
             'id' => $this->education['id'],
             'name_student' => $this->education['name_student'],
             'message' => "Sinh viên {$this->education['name_student']} muốn đăng ký trở thành giảng viên.",
+            'url' => route('admin.approval.teachers.detail', ['id' => $this->user->id]),
         ];
     }
 }
