@@ -118,7 +118,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function admin_review()
     {
-        return $this->hasOne(AdminReview::class, 'user_id');
+        return $this->morphOne(AdminReview::class, 'reviewable');
     }
 
     // hàm search
