@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ApprovalCourseController;
+use App\Http\Controllers\Admin\ApprovalTeacherController;
 use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\ChatController;
 use App\Http\Controllers\Admin\NotificationController;
@@ -211,6 +212,14 @@ Route::prefix("admin")
                         Route::get("/action", [ApprovalCourseController::class, 'action'])->name('action');
                         Route::get("/{id}", [ApprovalCourseController::class, 'show'])->name('detail');
                         Route::post("/{id}/approve", [ApprovalCourseController::class, 'approve'])->name('approve');
+                    });
+                Route::prefix('teachers')
+                    ->as('teachers.')
+                    ->group(function () {
+                        Route::get("/", [ApprovalTeacherController::class, 'index'])->name('list');
+                        Route::get("/{id}", [ApprovalTeacherController::class, 'show'])->name('detail');
+
+
                     });
             });
 

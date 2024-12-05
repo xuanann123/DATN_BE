@@ -17,6 +17,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
     const STATUS_PENDING = 'pending';
     const STATUS_APPROVED = 'approved';
+    //Từ chối
+    const STATUS_REJECTED = 'rejected';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -27,6 +30,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'avatar',
+        'status',
         'is_active',
         'user_verify',
         'user_type',

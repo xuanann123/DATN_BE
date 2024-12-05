@@ -175,6 +175,7 @@ class UserController extends Controller
         $limit = $request->input('limit', 6);
         $authUser = Auth::user();
         $myCourseBought = $authUser->usercourses()->with('modules', 'user')
+            ->withCount('ratings')
             ->withAvg('ratings', 'rate')
             ->withCount([
                 'modules as lessons_count' => function ($query) {
@@ -278,7 +279,7 @@ class UserController extends Controller
                     'data' => []
                 ], 404);
             }
-            
+
 
             // Validate dữ liệu
             $validatedData = $request->validate([
@@ -297,28 +298,27 @@ class UserController extends Controller
 
             DB::beginTransaction();
             try {
-                
+
                 $newEducation = [];
                 $education = Education::create([
                     'id_profile' => $user->profile->id,
-                    'certificates' => json_encode($validatedData['certificates']),
-                    'qa_pairs' => json_encode($validatedData['qa_pairs']),
+                    'certificates' => $validatedData['certificates'], // Bỏ json_encode
+                    'qa_pairs' => $validatedData['qa_pairs'], // Bỏ json_encode
                     'degree' => $validatedData['degree'],
                     'institution_name' => $validatedData['institution_name'],
-                    // 'start_date' => $validatedData['start_date'],
                 ]);
-                
+
                 // \log::info(DB::getQueryLog());
-                User::find($user->id)->update(['status' => User::STATUS_PENDING]);
+                $user->update(['status' => User::STATUS_PENDING]);
                 //Một mảng dữ liệu mới lưu được education new và kèm theo tên giảng viên
                 $newEducation = [
                     'id' => $education->id,
                     'id_profile' => $education->id_profile, // Sửa lại để đúng với cột `id_profile`
                     'name_student' => $user->name, // Đổi `student_name` thành `name_student` cho nhất quán
                 ];
-             
-                //Kiểm duyệt qua toàn bộ admin
+
                 $admins = User::where('user_type', 'admin')->get();
+                //Gửi thông báo kiểm duyệt cho admin
                 foreach ($admins as $admin) {
                     $admin->notify(new RegisterTeacherNotification($newEducation));
                 }
@@ -336,7 +336,7 @@ class UserController extends Controller
                 'message' => 'Đăng kí giảng viên thành công.',
                 'data' => $education
             ], 200);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -435,7 +435,8 @@ class UserController extends Controller
                 ], 204);
             }
             //Lấy những khoá học của user đó đăng lên
-            $coursesByUser = $user->courses()->select('id', 'name', 'slug', 'description', 'thumbnail', 'sort_description', 'price', 'price_sale', 'level')
+            $coursesByUser = $user->courses()->select('id', 'name', 'slug', 'description', 'thumbnail', 'sort_description', 'price', 'price_sale', 'level', 'id_user')
+                ->with('user:id,name')
                 ->withCount('ratings')
                 ->withAvg('ratings', 'rate')
                 ->withCount([
@@ -483,7 +484,9 @@ class UserController extends Controller
             $coursesUserBought = [];
             $listCoursesUserBought = UserCourse::where('id_user', $user->id)->get();
             foreach ($listCoursesUserBought as $item) {
-                $coursesUserBought[] = $course = Course::select('id', 'name', 'slug', 'description', 'thumbnail', 'sort_description', 'price', 'price_sale', 'level')->withCount('ratings')
+                $coursesUserBought[] = $course = Course::select('id', 'name', 'slug', 'description', 'thumbnail', 'sort_description', 'price', 'price_sale', 'level', 'id_user')
+                    ->with('user:id,name')
+                    ->withCount('ratings')
                     ->withAvg('ratings', 'rate')
                     ->withCount([
                         'modules as lessons_count' => function ($query) {
