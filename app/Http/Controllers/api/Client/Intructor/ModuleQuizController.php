@@ -381,6 +381,28 @@ class ModuleQuizController extends Controller
         }
     }
 
+    public function downloadQuizForm(Request $request) {
+        try {
+            $filePath = public_path('storage/quizForm.xlsx');
+
+            if (!file_exists($filePath)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không tìm thấy file.',
+                ], 404);
+            }
+
+            return response()->download($filePath, 'quizForm.xlsx');
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Lỗi server',
+                'error' =>  $e->getMessage() . '|' . $e->getLine(),
+                'data' => []
+            ], 500);
+        }
+    }
+
     public function importQuestionsAndOptions(Request $request, Quiz $quiz)
     {
         DB::beginTransaction();
@@ -557,11 +579,7 @@ class ModuleQuizController extends Controller
             $imageData = @file_get_contents($url);
 
             if ($imageData === false) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Không thể tải ảnh từ URL: ' . $url,
-                    'data' => []
-                ], 400);
+                return null;
             }
 
             // Lấy định dạng từ url
