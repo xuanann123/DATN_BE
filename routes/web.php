@@ -218,7 +218,7 @@ Route::prefix("admin")
                     ->group(function () {
                         Route::get("/", [ApprovalTeacherController::class, 'index'])->name('list');
                         Route::get("/{id}", [ApprovalTeacherController::class, 'show'])->name('detail');
-                        Route::post("/{id}/approve", [ApprovalTeacherController::class, 'approve'])->name('approve');
+                        Route::get("/{id}/approve", [ApprovalTeacherController::class, 'approve'])->name('approve');
                         Route::post("/{id}/reject", [ApprovalTeacherController::class, 'reject'])->name('reject');
 
                     });

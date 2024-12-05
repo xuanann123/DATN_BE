@@ -30,7 +30,7 @@ class RegisterTeacherNotification extends Notification implements ShouldBroadcas
             'type' => 'register_teacher',
             'id' => $this->education['id'],
             'student_name' => $this->education['name_student'],
-            'message' => "Sinh viên {$this->education['name_student']} đã đăng ký trở thành giảng viên.",
+            'message' => "Sinh viên {$this->education['name_student']} muốn đăng ký trở thành giảng viên.",
         ];
     }
 
@@ -40,7 +40,7 @@ class RegisterTeacherNotification extends Notification implements ShouldBroadcas
             'type' => 'register_teacher',
             'id' => $this->education['id'],
             'name_student' => $this->education['name_student'],
-            'message' => "Sinh viên {$this->education['name_student']} đã đăng ký trở thành giảng viên.",
+            'message' => "Sinh viên {$this->education['name_student']} muốn đăng ký trở thành giảng viên.",
         ];
     }
 }

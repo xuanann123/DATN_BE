@@ -14,7 +14,7 @@ class ApprovalTeacherController extends Controller
     public function index()
     {
         $title = "Kiểm duyệt giảng viên";
-        $listStudent = User::with('profile.education')->where('status', User::STATUS_PENDING)->get();
+        $listStudent = User::with('profile.education')->whereNotNull('status')->get();
         // dd($listStudent);
         return view('admin.teachers.index', compact('title', 'listStudent'));
     }
@@ -36,7 +36,7 @@ class ApprovalTeacherController extends Controller
             Mail::to($user->email)->queue(new RegisterAppoveEmail($user));
             // Gửi thông báo cho giảng viên khi chấp thuận
             // $user->notify(new RegisterApproveTeacherNotification($user, $course->status));
-            return redirect()->route('admin.teachers.index');
+            return redirect()->route('admin.approval.teachers.list');
         } catch (\Exception $e) {
             return redirect()->route('admin.teachers.index')->with('error', "Không thể thêm được dữ liệu");
         }
