@@ -436,7 +436,7 @@ class UserController extends Controller
             }
             //Lấy những khoá học của user đó đăng lên
             $coursesByUser = $user->courses()->select('id', 'name', 'slug', 'description', 'thumbnail', 'sort_description', 'price', 'price_sale', 'level', 'id_user')
-                ->with('user:id,name')
+                ->with('user:id,name,avatar')
                 ->withCount('ratings')
                 ->withAvg('ratings', 'rate')
                 ->withCount([
@@ -485,7 +485,7 @@ class UserController extends Controller
             $listCoursesUserBought = UserCourse::where('id_user', $user->id)->get();
             foreach ($listCoursesUserBought as $item) {
                 $coursesUserBought[] = $course = Course::select('id', 'name', 'slug', 'description', 'thumbnail', 'sort_description', 'price', 'price_sale', 'level', 'id_user')
-                    ->with('user:id,name')
+                    ->with('user:id,name,avatar')
                     ->withCount('ratings')
                     ->withAvg('ratings', 'rate')
                     ->withCount([
