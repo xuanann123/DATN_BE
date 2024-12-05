@@ -30,7 +30,7 @@ class ApprovalTeacherController extends Controller
             $user = User::findOrFail($id);
             $user->update([
                 'status' => User::STATUS_APPROVED,
-                'type' => User::TYPE_TEACHER
+                'user_type' => User::TYPE_TEACHER
             ]);
             //Thông báo đến người sử dụng mail này
             Mail::to($user->email)->queue(new RegisterAppoveEmail($user));

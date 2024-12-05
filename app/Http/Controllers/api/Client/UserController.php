@@ -297,7 +297,6 @@ class UserController extends Controller
                 'institution_name' => 'nullable|string',
                 // 'start_date' => 'nullable|date',
             ]);
-            // //Lưu đường dẫn vào storage của validate certificates
             foreach ($validatedData['certificates'] as $index => $certificate) {
                 $validatedData['certificates'][$index] = Storage::disk('public')->put('certificates', $certificate);
             }
