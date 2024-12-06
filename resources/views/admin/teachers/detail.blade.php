@@ -43,25 +43,7 @@
                     </div>
                 </div>
             </div>
-            <!--end col-->
-            <div class="col-12 col-lg-auto order-last order-lg-0">
-                <div class="row text text-white-50 text-center">
-                    <div class="col-lg-6 col-4">
-                        <div class="p-2">
-                            <h4 class="text-white mb-1">24.3K</h4>
-                            <p class="fs-14 mb-0">Người theo dõi</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-4">
-                        <div class="p-2">
-                            <h4 class="text-white mb-1">1.3K</h4>
-                            <p class="fs-14 mb-0">Đang theo dõi</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--end col-->
-
+         
         </div>
         <!--end row-->
     </div>
@@ -94,13 +76,14 @@
                     </ul>
                     <div class="flex-shrink-0">
                         @if ($user->status == 'pending')
-                            <a href="{{ route('admin.approval.teachers.approve', $user->id) }}" class="btn btn-success"> Phê
+                            <a href="{{ route('admin.approval.teachers.approve', $user->id) }}" class="btn btn-success"
+                                id="approve-btn"> Phê
                                 duyệt</a>
                             <button type="button" name="reject" class="btn btn-danger" data-bs-toggle="modal"
                                 data-bs-target="#rejectModal" id="reject-btn">Từ
                                 chối</button>
                         @else
-                        <button class="btn btn-primary">Đã kiểm duyệt!</button>
+                            <button class="btn btn-primary">Đã kiểm duyệt!</button>
                         @endif
 
                     </div>
@@ -311,11 +294,22 @@
                                                         ); // Ngày tải lên
                                                     @endphp
                                                     <tr>
-                                                        @if ($fileExtension == 'jpg')
+                                                        @if ($fileExtension == 'jpg' || $fileExtension == 'jpeg' || $fileExtension == 'png')
                                                             <td>
                                                                 <img class="rounded"
                                                                     src="{{ asset('storage/' . $certificate) }}"
                                                                     width="100px" alt="">
+                                                            </td>
+                                                        @elseif ($fileExtension == 'pdf')
+                                                            <td>
+                                                                <div>
+                                                                    <a href="{{ asset('storage/' . $certificate) }}"
+                                                                        target="_blank">
+                                                                        <i class="ri-file-pdf-line"
+                                                                            style="font-size: 24px; color: red;"></i> PDF
+                                                                        File
+                                                                    </a>
+                                                                </div>
                                                             </td>
                                                         @else
                                                             <td>
@@ -356,6 +350,14 @@
                                                                                 class="ri-eye-fill me-2 align-middle"></i>Chi
                                                                             tiết</a>
                                                                     </li>
+                                                                    <li>
+                                                                        <a class="dropdown-item view-pdf-btn"
+                                                                            href="javascript:void(0);"
+                                                                            data-pdf-url="{{ asset('storage/' . $certificate) }}">
+                                                                            <i class="ri-eye-fill me-2 align-middle"></i>
+                                                                            Xem PDF
+                                                                        </a>
+                                                                    </li>
 
                                                                 </ul>
                                                             </div>
@@ -384,6 +386,22 @@
                                         </div>
                                     </div>
 
+                                    <div class="modal fade" id="pdfModal" tabindex="-1"
+                                        aria-labelledby="pdfModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="pdfModalLabel">Xem chi tiết PDF</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <!-- Nội dung PDF sẽ được thêm vào đây -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <!-- Modal từ chối -->
 
                                 </div>
@@ -406,14 +424,18 @@
 @endsection
 @section('script-libs')
     <script defer>
+        //Xem chi tiết ảnh
         document.addEventListener('DOMContentLoaded', function() {
+            //Lấy nút bấm ảnh
             const viewButtons = document.querySelectorAll('.view-image-btn');
 
             viewButtons.forEach(button => {
+                //Khi bấm vào button
                 button.addEventListener('click', function() {
+                    //Lấy được đường dẫn
                     const imageUrl = this.getAttribute('data-image-url');
                     const modalImage = document.getElementById('modalImage');
-
+                    //Đẩy thuộc tính hiển thị lên modal
                     if (imageUrl) {
                         modalImage.src = imageUrl;
                     }
@@ -423,7 +445,45 @@
                 });
             });
         });
+        //Xem chi tiết pdf => tương tự và việc hiển thị xoay ifr
+        document.addEventListener('DOMContentLoaded', function() {
+            const pdfButtons = document.querySelectorAll('.view-pdf-btn');
+            pdfButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const pdfUrl = this.getAttribute('data-pdf-url');
+                    const modalContent = `
+                <iframe src="${pdfUrl}" frameborder="0" style="width:100%; height:500px;"></iframe>
+            `;
+                    // Hiển thị modal chứa iframe
+                    const modal = new bootstrap.Modal(document.getElementById('pdfModal'));
+                    document.querySelector('#pdfModal .modal-body').innerHTML = modalContent;
+                    modal.show();
+                });
+            });
+        });
+        //Chống click nhiều lần 
+        document.addEventListener('DOMContentLoaded', function() {
+            const approveBtn = document.getElementById('approve-btn');
+
+            if (approveBtn) {
+                approveBtn.addEventListener('click', function(event) {
+                    // Vô hiệu hóa nút bấm
+                    approveBtn.classList.add('disabled');
+                    approveBtn.setAttribute('aria-disabled', 'true');
+                    approveBtn.textContent = 'Đang xử lý...'; // Thay đổi nội dung nút (nếu muốn)
+
+                    // Ngăn người dùng nhấp nhiều lần
+                    event.preventDefault();
+
+                    // Tiếp tục hành động sau 1 khoảng thời gian (nếu cần, ví dụ gửi form hoặc chuyển trang)
+                    setTimeout(() => {
+                        window.location.href = approveBtn.href; // Tiến hành điều hướng
+                    }, 100); // Chỉnh thời gian xử lý tùy theo logic của bạn
+                });
+            }
+        });
     </script>
+
     <!-- swiper js -->
     <script src="{{ asset('theme/admin/assets/libs/swiper/swiper-bundle.min.js') }}"></script>
 
