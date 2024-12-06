@@ -14,10 +14,12 @@ use App\Models\Voucher;
 use App\Models\VoucherUse;
 use App\Models\WithdrawalWallet;
 use App\Models\WithdrawMoney;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use function Symfony\Component\String\s;
 
 class PaymentController extends Controller
 {
@@ -595,6 +597,13 @@ class PaymentController extends Controller
             ], 200);
         }
 
+        if($request->coin < 100 || $request->coin > 10000) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Số tiền rút không hợp lệ'
+            ], 500);
+        }
+
         $newRequestWithdrawalWallet = WithdrawMoney::query()->create([
             'id_user' => $userId,
             'coin' => $request->coin,
@@ -865,6 +874,36 @@ class PaymentController extends Controller
             'status' => 'success',
             'message' => 'Lịch sử mua khóa học',
             'data' => $hisroryBuyCourses
+        ], 200);
+    }
+
+    public function checkWithdraw(Request $request)
+    {
+        $userId = $request->id_user;
+        $withdrawCount = DB::table('withdraw_money')
+            ->where('id_user', $userId)
+            ->whereBetween('created_at', [
+                Carbon::now()->startOfMonth(),
+                Carbon::now()->endOfMonth()
+            ])
+            ->count();
+
+        if($withdrawCount >= 5){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Bạn đã hết dùng hết yêu cầu rút tiền của tháng này',
+                'data' => [
+                    'status' => 'block'
+                ]
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Đủ điều kiện rút tiền',
+            'data' => [
+                'status' => 'allow'
+            ]
         ], 200);
     }
 }
