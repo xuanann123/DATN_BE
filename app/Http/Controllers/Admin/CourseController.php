@@ -152,7 +152,7 @@ class CourseController extends Controller
     //Cập nhật mục tiêu cho nó tiếp => Ngay sau khi thêm khoá học mới
     public function addTargetCourse($id)
     {
-        //Kiểm tra quyền xem người đó sở hữu 
+        //Kiểm tra quyền xem người đó sở hữu
         if (auth()->id() !== Course::find($id)->id_user) {
             return redirect()->route('admin.courses.list')->with(['error' => 'Bạn không có quyền truy cập khoá học này!']);
         }
@@ -252,7 +252,7 @@ class CourseController extends Controller
                 return $lesson->lessonable->duration ?? 0;
             });
         })->sum();
-        //Điểm nổi bật 
+        //Điểm nổi bật
         $goals = $course->goals;
         $requirements = $course->requirements;
         $audiences = $course->audiences;
@@ -270,11 +270,11 @@ class CourseController extends Controller
 
     public function edit(string $id)
     {
-        //Kiểm tra quyền xem người đó sở hữu 
+        //Kiểm tra quyền xem người đó sở hữu
         if (auth()->id() !== Course::find($id)->id_user) {
             return redirect()->route('admin.courses.list')->with(['error' => 'Bạn không có quyền truy cập khoá học này!']);
         }
-        //level modeule course 
+        //level modeule course
 
 
         $levels = Course::LEVEL_ARRAY;
@@ -283,7 +283,7 @@ class CourseController extends Controller
         $title = "Chỉnh sửa khóa học";
         $categories = Category::whereNull('parent_id')->with('children')->get();
         $options = $this->getCategoryOptions($categories);
-        //Dữ liệu của khoá học lấy luôn dữ liệu đang có của khoá học đó 
+        //Dữ liệu của khoá học lấy luôn dữ liệu đang có của khoá học đó
         $course = Course::with('goals', 'requirements', 'audiences')->findOrFail($id);
 
         $tags = Tag::all();
@@ -468,5 +468,45 @@ class CourseController extends Controller
             'status' => 'success',
             'data' => $user
         ]);
+    }
+
+    public function courseOutstanding()
+    {
+        $title = "Khóa học nổi bật";
+        $courses = Course::select(
+            'courses.id',
+            'courses.name as name_course',
+            'courses.thumbnail',
+            'courses.price',
+            'courses.price_sale',
+            'courses.status',
+            'courses.is_trending',
+            'courses.created_at',
+            'categories.name as name_category',
+            'users.name as name_teacher'
+        )
+            ->join('categories', 'categories.id', '=', 'courses.id_category')
+            ->join('users', 'users.id', '=', 'courses.id_user')
+            ->where('courses.status', '=', 'approved')
+            ->orderBy('courses.is_trending', 'desc')
+            ->paginate(10);
+        return view('admin.courses.course_outstanding', compact('title', 'courses'));
+    }
+
+    public function outstanding(Request $request)
+    {
+        $courseId = $request->id_course;
+        $course = Course::find($courseId);
+        if (!$course) {
+            return back()->with(['error' => 'Khóa học không tồn tại']);
+        }
+
+        if($course->is_trending == 1){
+            $course->update(['is_trending' => 0]);
+            return back()->with(['success' => 'Bỏ nổi bật thành công']);
+        }
+
+        $course->update(['is_trending' => 1]);
+        return back()->with(['success' => 'Thêm khóa học nổi bật thành công']);
     }
 }
