@@ -41,7 +41,7 @@ class RegisterApproveTeacherNotification extends Notification implements ShouldB
             'id' => $this->user['id'],
             'student_name' => $this->user['name'],
             'message' => "Chúc mừng bạn đã trở thành giảng viên.",
-           
+            'url' => env('FE_URL') . 'instructor/dashboard/'
         ];
     }
 }

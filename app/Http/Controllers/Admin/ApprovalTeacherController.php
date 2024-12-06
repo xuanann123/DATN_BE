@@ -9,6 +9,7 @@ use App\Models\AdminReview;
 use App\Models\User;
 use App\Notifications\Client\Student\RegisterApproveTeacherNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class ApprovalTeacherController extends Controller
@@ -28,12 +29,13 @@ class ApprovalTeacherController extends Controller
     public function approve(Request $request, $id)
     {
         try {
-
+            DB::beginTransaction();
             //Đi cập nhật thằng user sang trạng thái 
             $user = User::findOrFail($id);
             $reject = $request->input('reject');
             $admin_comments = $request->input('admin_comments') ? $request->input('admin_comments') : NULL;
             if ($reject) {
+
                 AdminReview::updateOrCreate(
                     [
                         'reviewable_id' => $user->id,
@@ -75,14 +77,13 @@ class ApprovalTeacherController extends Controller
             Mail::to($user->email)->queue(new RegisterAppoveEmail($user));
             // Gửi thông báo cho giảng viên khi chấp thuận
             $user->notify(new RegisterApproveTeacherNotification($user));
+            DB::commit();
             return redirect()->route('admin.approval.teachers.list')->with('success', "Đã phê duyệt giảng viên");
+
         } catch (\Exception $e) {
-            return redirect()->route('admin.teachers.index')->with('error', "Không thể thêm được dữ liệu");
+            DB::rollBack();
+            return redirect()->route('admin.approval.teachers.index')->with('error', "Đã xảy ra lỗi trong quá trình thêm");
         }
 
-    }
-    public function reject(Request $request)
-    {
-        dd($request);
     }
 }
