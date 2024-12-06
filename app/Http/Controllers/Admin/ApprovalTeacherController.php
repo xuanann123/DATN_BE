@@ -14,12 +14,39 @@ use Illuminate\Support\Facades\Mail;
 
 class ApprovalTeacherController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $title = "Kiểm duyệt giảng viên";
-        $listStudent = User::with('profile.education')->whereNotNull('status')->get();
+        $status = $request->query('status', 'all');
+        // Khởi tạo listAct ban đầu
+        $listAct = match ($status) {
+            'pending' => [
+                'approve' => 'Phê duyệt',
+                'reject' => 'Từ chối'
+            ], // chờ phê duyệt
+            'approved' => ['disable' => 'Vô hiệu hóa'], // đã phê duyệt
+            'rejected' => ['enable' => 'Kích hoạt'], // vô hiệu hóa
+            default => [], // default null (k co act)
+        };
+
+
+        $listStudent = User::with('profile.education')->whereNotNull('status')
+            ->when($status != 'all', function ($query) use ($status) {
+                return match ($status) {
+                    'pending' => $query->where('status', 'pending'),
+                    'approved' => $query->where('status', 'approved'),
+                    'rejected' => $query->where('status', 'rejected'),
+                    default => $query
+                };
+            })->get();
         // dd($listStudent);
-        return view('admin.teachers.index', compact('title', 'listStudent'));
+        $count = [
+            "all" => User::whereNotNull('status')->count(),
+            "pending" => User::where('status', 'pending')->count(),
+            "approved" => User::where('status', 'approved')->count(),
+            "rejected" => User::where('status', 'rejected')->count(),
+        ];
+        return view('admin.teachers.index', compact('title', 'listStudent', 'listAct', 'count'));
     }
     public function show($id)
     {
@@ -35,7 +62,7 @@ class ApprovalTeacherController extends Controller
             $reject = $request->input('reject');
             $admin_comments = $request->input('admin_comments') ? $request->input('admin_comments') : NULL;
             if ($reject) {
-
+                //Không xác nhận
                 AdminReview::updateOrCreate(
                     [
                         'reviewable_id' => $user->id,
@@ -52,12 +79,12 @@ class ApprovalTeacherController extends Controller
                     'status' => User::STATUS_REJECTED
                 ]);
                 Mail::to($user->email)->queue(new RegisterApproveFailEmail($user, $admin_comments));
+                //Thông báo đăng kí thất bại nauwx
 
-                //Cái này cũng phải đi lưu thông báo cho bên phía client
-
-                //Gửi cả gmail thông báo về việc bị từ chối
+                
                 return redirect()->route('admin.approval.teachers.list')->with('success', "Từ chối giảng viên thành công");
             }
+            //Xác nhận
             AdminReview::updateOrCreate(
                 [
                     'reviewable_id' => $user->id,
