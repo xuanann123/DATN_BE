@@ -45,7 +45,7 @@ class ApprovalCourseController extends Controller
                     default => $query
                 };
             })
-            ->get();
+            ->get();    
 
         $count = [
             'all' => Course::whereNotNull('submited_at')->where('status', '!=', 'draft')->count(),

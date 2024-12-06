@@ -53,7 +53,7 @@
                             </select>
                             <button type="submit" class="ms-2 btn btn-primary">Chọn</button>
                         </div> --}}
-                        {{-- <div class="col-sm-auto d-flex">
+                        <div class="col-sm-auto d-flex">
                             <ul class="d-flex gap-4 mt-1 list-unstyled">
                                 <li><a href="{{ request()->fullUrlWithQuery(['status' => 'all']) }}">Tất
                                         cả({{ $count['all'] }})</a></li>
@@ -64,7 +64,7 @@
                                 <li><a href="{{ request()->fullUrlWithQuery(['status' => 'rejected']) }}">Đã từ
                                         chối({{ $count['rejected'] }})</a></li>
                             </ul>
-                        </div> --}}
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">

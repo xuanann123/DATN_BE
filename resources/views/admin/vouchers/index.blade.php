@@ -21,7 +21,6 @@
             justify-content: end;
         }
     </style>
-
 @endsection
 @section('content')
     <div class="row">
@@ -73,113 +72,117 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <table id="example" class="table table-bordered  table-striped align-middle table-responsive"  >
-                        <thead>
-                            <tr>
-                                <th scope="col" style="width: 10px;">
-                                    <div class="form-check">
-                                        <input class="form-check-input fs-15" type="checkbox" id="checkAll" value="option">
-                                    </div>
-                                </th>
-                                <th data-ordering="false">ID</th>
-                                <th data-ordering="false">Tên</th>
-                                <th data-ordering="false">Mã voucher</th>
-                                <th>Mô tả</th>
-                                <th>Loại voucher</th>
-                                <th>Số phần trăm/xu giảm</th>
-                                <th>Ngày bắt đầu</th>
-                                <th>Ngày kết thúc</th>
-                                <th>Số lượng</th>
-                                <th>Đã sử dụng</th>
-                                <th>Trạng thái</th>
-                                <th>Áp dụng</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($vouchers as $voucher)
+                    <div class="table-responsive">
+                        <table id="example" class="table table-bordered  table-striped align-middle">
+                            <thead>
                                 <tr>
-                                    <th scope="row">
+                                    <th scope="col" style="width: 10px;">
                                         <div class="form-check">
-                                            <input class="form-check-input fs-15" type="checkbox" name="checkAll"
-                                                value="{{ $voucher->id }}">
+                                            <input class="form-check-input fs-15" type="checkbox" id="checkAll"
+                                                value="option">
                                         </div>
                                     </th>
-                                    <td>{{ $voucher->id }}</td>
-                                    <td>{{ $voucher->name }}</td>
-                                    <td>
-                                        {{ $voucher->code }}
-                                    </td>
-                                    <td>
-                                        {{ $voucher->description }}
-                                    </td>
-                                    <td>
-                                        {{ $voucher->type }}
-                                    </td>
-                                    <td>
-                                        <span class="badge rounded-pill bg-info">
-                                            {{ $voucher->type == 'Percent' ? $voucher->discount . ' %' : $voucher->discount . ' xu' }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        {{ $voucher->start_time }}
-                                    </td>
-                                    <td>
-                                        {{ $voucher->end_time }}
-                                    </td>
-
-                                    <td>
-                                        <span class="badge rounded-pill bg-success">{{ $voucher->count }}</span>
-                                    </td>
-                                    <td>
-                                        <span class="badge rounded-pill bg-danger">{{ $voucher->used_count }}</span>
-                                    </td>
-
-                                    <td class="td_is_active">
-                                        @if ($voucher->is_active == 1)
-                                            <span class="badge rounded-pill bg-success">Hoạt động</span>
-                                        @else
-                                            <span class="badge rounded-pill bg-danger">Kết thúc</span>
-                                        @endif
-                                    </td>
-                                     <td class="td_is_active">
-                                        @if ($voucher->is_private == 0)
-                                            <span class="badge rounded-pill bg-success">Toàn bộ</span>
-                                        @else
-                                            <span class="badge rounded-pill bg-danger">Riêng cho khoá học</span>
-                                        @endif
-                                    </td>
-
-                                    <td>
-                                        <div class="dropdown d-inline-block">
-                                            <button class="btn btn-soft-secondary btn-sm dropdown" type="button"
-                                                data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class="ri-more-fill align-middle"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li><a href="{{ route('admin.vouchers.edit', ['voucher' => $voucher->id]) }}"
-                                                        class="dropdown-item edit-item-btn"><i
-                                                            class="ri-pencil-fill align-bottom me-2 text-muted"></i>
-                                                        Sửa</a></li>
-                                                <li>
-                                                    <form
-                                                        action="{{ route('admin.vouchers.destroy', ['voucher' => $voucher->id]) }}"
-                                                        method="post">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button class="dropdown-item remove-item-btn"
-                                                            onclick="return confirm('Xác nhận xóa ?')"><i
-                                                                class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
-                                                            Xóa</button>
-                                                    </form>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </td>
+                                    <th data-ordering="false">ID</th>
+                                    <th data-ordering="false">Tên</th>
+                                    <th data-ordering="false">Mã voucher</th>
+                                    {{-- <th>Mô tả</th> --}}
+                                    <th>Loại voucher</th>
+                                    <th>Số phần trăm/xu giảm</th>
+                                    <th>Ngày bắt đầu</th>
+                                    <th>Ngày kết thúc</th>
+                                    <th>Số lượng</th>
+                                    <th>Đã sử dụng</th>
+                                    <th>Trạng thái</th>
+                                    <th>Áp dụng</th>
+                                    <th>Thao tác</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach ($vouchers as $voucher)
+                                    <tr>
+                                        <th scope="row">
+                                            <div class="form-check">
+                                                <input class="form-check-input fs-15" type="checkbox" name="checkAll"
+                                                    value="{{ $voucher->id }}">
+                                            </div>
+                                        </th>
+                                        <td>{{ $voucher->id }}</td>
+                                        <td>{{ $voucher->name }}</td>
+                                        <td>
+                                            {{ $voucher->code }}
+                                        </td>
+                                        {{-- <td>
+                                            {{ $voucher->description }}
+                                        </td> --}}
+                                        <td>
+                                            {{ $voucher->type == 'Percent' ? 'Phần trăm' : 'Tiền xu' }}
+                                        </td>
+                                        <td>
+                                            <span class="badge rounded-pill bg-info">
+                                                {{ $voucher->type == 'Percent' ? $voucher->discount . ' %' : $voucher->discount . ' xu' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {{ \Carbon\Carbon::parse($voucher->start_time)->format('d-m-Y') }}
+                                        </td>
+                                        <td>
+                                            {{ \Carbon\Carbon::parse($voucher->end_time)->format('d-m-Y') }}
+                                        </td>
+
+                                        <td>
+                                            <span class="badge rounded-pill bg-success">{{ $voucher->count }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge rounded-pill bg-danger">{{ $voucher->used_count }}</span>
+                                        </td>
+
+                                        <td class="td_is_active">
+                                            @if ($voucher->is_active == 1)
+                                                <span class="badge rounded-pill bg-success">Hoạt động</span>
+                                            @else
+                                                <span class="badge rounded-pill bg-danger">Kết thúc</span>
+                                            @endif
+                                        </td>
+                                        <td class="td_is_active">
+                                            @if ($voucher->is_private == 0)
+                                                <span class="badge rounded-pill bg-success">Toàn bộ</span>
+                                            @else
+                                                <span class="badge rounded-pill bg-danger">Riêng cho khoá học</span>
+                                            @endif
+                                        </td>
+
+                                        <td>
+                                            <div class="dropdown d-inline-block">
+                                                <button class="btn btn-soft-secondary btn-sm dropdown" type="button"
+                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="ri-more-fill align-middle"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    <li><a href="{{ route('admin.vouchers.edit', ['voucher' => $voucher->id]) }}"
+                                                            class="dropdown-item edit-item-btn"><i
+                                                                class="ri-pencil-fill align-bottom me-2 text-muted"></i>
+                                                            Sửa</a></li>
+                                                    <li>
+                                                        <form
+                                                            action="{{ route('admin.vouchers.destroy', ['voucher' => $voucher->id]) }}"
+                                                            method="post">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button class="dropdown-item remove-item-btn"
+                                                                onclick="return confirm('Xác nhận xóa ?')"><i
+                                                                    class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
+                                                                Xóa</button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
                     <div class="paginate-data">
                         {{ $vouchers->links() }}
                     </div>
@@ -187,7 +190,6 @@
             </div>
         </div><!--end col-->
     </div><!--end row-->
-
 @endsection
 
 @section('script-libs')
