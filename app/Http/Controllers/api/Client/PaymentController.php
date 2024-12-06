@@ -589,19 +589,19 @@ class PaymentController extends Controller
             ], 200);
         }
 
+        if($request->coin < 100 || $request->coin > 10000) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Số tiền rút không hợp lệ'
+            ], 500);
+        }
+
         if ($withdrawalWallet->balance < $request->coin) {
             return response()->json([
                 'code' => 422,
                 'status' => 'error',
                 'message' => 'Số dư của bạn không đủ'
             ], 200);
-        }
-
-        if($request->coin < 100 || $request->coin > 10000) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Số tiền rút không hợp lệ'
-            ], 500);
         }
 
         $newRequestWithdrawalWallet = WithdrawMoney::query()->create([
