@@ -113,8 +113,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('{course}/update-progress', [StudentCourseController::class, 'updateProgress']);
         Route::get('check-done-course/{slug}', [StudentCourseController::class, 'checkDoneCourse']);
         Route::get('detail-login/{slug}', [CourseDetailController::class, 'courseDetailLogin']);
-        //preview khi chưa khoá học 
-        Route::get('lesson-preview/{lesson}', [CourseDetailController::class, 'lessonPreview']);
+        
     });
 
 
@@ -136,6 +135,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('quiz/quiz-progress/{quiz}', [LessonController::class, 'updateQuizProgress']);
         Route::get('quiz/result/{userId}/{quizId}', [LessonController::class, 'getQuizResult']);
         Route::get('{lesson}/download-resourse', [LessonController::class, 'downloadResource']);
+        //preview khi chưa khoá học 
+        Route::get('preview/{lesson}', [CourseDetailController::class, 'lessonPreview']);
     });
 
     # ===================== ROUTE FOR NOTE ===========================

@@ -110,7 +110,7 @@ class TeacherController extends Controller
         }
         $limit = $request->input('limit', 5);
         // Lấy các khóa học nổi bật dựa vào số lượt mua và đánh giá trung bình
-        $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user')
+        $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user','level')
             ->with('user')
             ->where('is_active', 1)
             ->whereHas('user', function ($query) {
