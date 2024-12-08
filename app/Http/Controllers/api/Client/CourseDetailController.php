@@ -10,9 +10,11 @@ use Illuminate\Http\Request;
 use App\Models\LessonProgress;
 use App\Http\Controllers\Controller;
 use App\Models\Follow;
+use App\Models\Lesson;
 use App\Models\QuizProgress;
 use App\Models\User;
 use App\Models\WishList;
+use Exception;
 use Illuminate\Support\Facades\DB;
 
 class CourseDetailController extends Controller // di ve sinh
@@ -119,7 +121,7 @@ class CourseDetailController extends Controller // di ve sinh
                     return ceil(($wordCount / 200) * 60);
                 });
             })->sum();
-            
+
 
             //Kiểm tra tiến độ
             $course->progress_percent = UserCourse::where('id_user', $user->id)->where('id_course', $course->id)->first()->progress_percent ?? 0;
@@ -160,7 +162,7 @@ class CourseDetailController extends Controller // di ve sinh
             $course->total_lessons = $total_lessons + $total_quiz;
             //Tính tổng thời gian của video và docs
             $course->total_duration_video = $totalDurationVideo + $totalDurationDocs;
-      
+
             $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
 
             // Trả về dữ liệu bên phía client khi lấy được thành công
@@ -474,6 +476,29 @@ class CourseDetailController extends Controller // di ve sinh
                 'message' => 'Đã xảy ra listring khi lết ra khóa học.',
                 'data' => []
             ], 500);
+        }
+    }
+    public function lessonPreview(Lesson $lesson)
+    {
+        try {
+            //Lấy ra bài học đó 
+            $lesson = Lesson::with(['lessonable'])
+                ->where('id', $lesson->id)
+                ->where('is_preview', 1)
+                ->firstOrFail();
+            return response()->json(
+                [
+                    'status' => 'success',
+                    'message' => "Bài học preview.",
+                    'data' => $lesson
+                ], 200
+            );
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => "error",
+                'message' => "Có lỗi : " . $e->getMessage(),
+                'data' => []
+            ]);
         }
     }
 }
