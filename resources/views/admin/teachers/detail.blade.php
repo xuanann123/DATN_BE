@@ -342,22 +342,27 @@
                                                                 </a>
                                                                 <ul class="dropdown-menu dropdown-menu-end"
                                                                     aria-labelledby="dropdownMenuLink7">
-                                                                    <li>
+                                                                    @if ($fileExtension == 'jpg')
+                                                                         <li>
                                                                         <a class="dropdown-item view-image-btn"
                                                                             href="javascript:void(0);"
                                                                             data-image-url="{{ asset('storage/' . $certificate) }}">
                                                                             <i
-                                                                                class="ri-eye-fill me-2 align-middle"></i>Chi
+                                                                                class="ri-eye-fill me-2 align-middle"></i>Xem chi
                                                                             tiết</a>
                                                                     </li>
-                                                                    <li>
+                                                                    @else
+                                                                        <li>
                                                                         <a class="dropdown-item view-pdf-btn"
                                                                             href="javascript:void(0);"
                                                                             data-pdf-url="{{ asset('storage/' . $certificate) }}">
                                                                             <i class="ri-eye-fill me-2 align-middle"></i>
-                                                                            Xem PDF
+                                                                            Xem chi tiết
                                                                         </a>
                                                                     </li>
+                                                                    @endif
+                                                                   
+                                                                    
 
                                                                 </ul>
                                                             </div>
