@@ -130,4 +130,9 @@ class User extends Authenticatable implements MustVerifyEmail
                 ->orWhere('email', 'LIKE', "%{$searchQuery}%");
         });
     }
+    //định nghĩa mối quan hệ với roadmap
+    public function roadmaps()
+    {
+        return $this->hasMany(Roadmap::class, 'id_user');
+    }
 }
