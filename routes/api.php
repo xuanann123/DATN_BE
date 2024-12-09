@@ -37,7 +37,9 @@ use App\Http\Controllers\api\Client\Student\CourseController as StudentCourseCon
 use App\Http\Controllers\api\Client\Intructor\LessonController as LessonTeacherController;
 use App\Http\Controllers\api\Client\Intructor\PreviewCourseController;
 use App\Http\Controllers\api\Client\Intructor\RatingController as IntructorRatingController;
+use App\Http\Controllers\api\Client\Intructor\RoadmapController;
 use App\Http\Controllers\api\Client\QnAController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -113,7 +115,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('{course}/update-progress', [StudentCourseController::class, 'updateProgress']);
         Route::get('check-done-course/{slug}', [StudentCourseController::class, 'checkDoneCourse']);
         Route::get('detail-login/{slug}', [CourseDetailController::class, 'courseDetailLogin']);
-        
+
     });
 
 
@@ -210,6 +212,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/course/approved', [CourseController::class, 'getApprovedCourses']);
         Route::post('/course', [CourseController::class, 'storeNewCourse']);
         Route::get('/course/{course}/preview', [PreviewCourseController::class, 'index']);
+        Route::prefix('roadmap')->group(function () {
+            Route::get('/', [RoadmapController::class, 'getRoadmap']);
+            //Tạo lộ trình
+            Route::post('/', [RoadmapController::class, 'storeRoadmap']);
+            //Tạo phần giai đoạn của quá trình
+            Route::post('/phase', [RoadmapController::class, 'storePhase']);
+        });
+
 
 
         # ===================== ROUTE FOR TEACHERS MANAGE ===========================
@@ -282,8 +292,8 @@ Route::middleware('auth:sanctum')->group(function () {
                 // Thống kê chung
                 Route::get('/', [StatisticController::class, 'index']);
                 // Thống kê trong 1 khóa học
-                Route::get('/get-students', [StatisticController::class,'getStudents']);
-                Route::get('/get-ratings', [StatisticController::class,'getRatings']);
+                Route::get('/get-students', [StatisticController::class, 'getStudents']);
+                Route::get('/get-ratings', [StatisticController::class, 'getRatings']);
             });
             // tra loi danh gia
             Route::post('/rating/{rating}/reply', [IntructorRatingController::class, 'replyToRating']);

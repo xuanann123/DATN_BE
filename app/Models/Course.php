@@ -195,5 +195,9 @@ class Course extends Model
             }
         });
     }
+    public function phases()
+    {
+        return $this->belongsToMany(Phase::class, 'phase_course', 'id_course', 'id_phase');
+    }
 
 }
