@@ -1,0 +1,4 @@
+﻿question,question_type,option 1,image 1,option 2,image 2,option 3,image 3,option 4,image 4,correct_answer,question_image
+JavaScript là ngôn ngữ thuộc loại nào?,one_choice,Ngôn ngữ lập trình biên dịch,https://gratisography.com/wp-content/uploads/2024/10/gratisography-cool-cat-800x525.jpg,Ngôn ngữ kịch bản phía máy khách,,Ngôn ngữ lập trình phía máy chủ,,Ngôn ngữ đánh dấu,,1,https://gratisography.com/wp-content/uploads/2024/10/gratisography-cool-cat-800x525.jpg
+Đoạn mã nào sau đây khai báo một mảng trong JavaScript?,one_choice,var array = {};,https://gratisography.com/wp-content/uploads/2024/10/gratisography-cool-cat-800x525.jpg,var array = [];,,var array = new Array();,,Cả B và C đều đúng,,2,
+"(Chọn nhiều đáp án): Trong JavaScript, giá trị nào được coi là ""falsy""?",multiple_choice,FALSE,https://gratisography.com/wp-content/uploads/2024/10/gratisography-cool-cat-800x525.jpg,"""0""",,null,,undefined,,"1,2,3,4",
