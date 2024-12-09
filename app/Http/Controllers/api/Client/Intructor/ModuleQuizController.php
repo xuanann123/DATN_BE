@@ -383,7 +383,7 @@ class ModuleQuizController extends Controller
 
     public function downloadQuizForm(Request $request) {
         try {
-            $filePath = public_path('storage/quizForm.xlsx');
+            $filePath = public_path('storage/quizForm.csv');
 
             if (!file_exists($filePath)) {
                 return response()->json([
@@ -392,7 +392,7 @@ class ModuleQuizController extends Controller
                 ], 404);
             }
 
-            return response()->download($filePath, 'quizForm.xlsx');
+            return response()->download($filePath, 'quizForm.csv');
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
