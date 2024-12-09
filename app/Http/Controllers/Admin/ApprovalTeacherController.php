@@ -7,6 +7,7 @@ use App\Mail\Approvals\RegisterAppoveEmail;
 use App\Mail\Approvals\RegisterApproveFailEmail;
 use App\Models\AdminReview;
 use App\Models\User;
+use App\Notifications\Client\Student\RegisterApproveFailNotification;
 use App\Notifications\Client\Student\RegisterApproveTeacherNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -79,9 +80,10 @@ class ApprovalTeacherController extends Controller
                     'status' => User::STATUS_REJECTED
                 ]);
                 Mail::to($user->email)->queue(new RegisterApproveFailEmail($user, $admin_comments));
-                //Thông báo đăng kí thất bại nauwx
+                //Thông báo đăng kí thất bại 
+                $user->notify(new RegisterApproveFailNotification($user));
+                DB::commit();
 
-                
                 return redirect()->route('admin.approval.teachers.list')->with('success', "Từ chối giảng viên thành công");
             }
             //Xác nhận
