@@ -21,7 +21,7 @@ class CategoryController extends Controller
                     'status' => 'error',
                     'message' => 'Không có danh mục nào.',
                     'data' => []
-                ], status: 404);
+                ], status: 204);
             }
             //Lấy dữ liệu thành công thì trả về 200
             return response()->json([
@@ -52,7 +52,7 @@ class CategoryController extends Controller
                     'status' => 'error',
                     'message' => 'Không có danh mục nào.',
                     'data' => []
-                ], status: 404);
+                ], status: 204);
             }
             //Lấy dữ liệu thành công thì trả về 200
             return response()->json([

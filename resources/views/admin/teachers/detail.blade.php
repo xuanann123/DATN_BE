@@ -43,7 +43,7 @@
                     </div>
                 </div>
             </div>
-         
+
         </div>
         <!--end row-->
     </div>
@@ -237,21 +237,29 @@
                     <!--end row-->
                 </div>
                 <div class="tab-pane fade" id="projects" role="tabpanel">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center mb-4">
-                                <h5 class="card-title flex-grow-1 mb-0">Câu hỏi và câu trả lời của giảng viên</h5>
+                    <div class="container mt-4">
+                        <div class="card shadow">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0 text-white">Câu hỏi và câu trả lời của người ứng tuyển</h5>
                             </div>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    @foreach ($user->profile->education->qa_pairs as $pair)
-                                        <p><strong>Câu hỏi hệ thống:</strong> <i>{{ $pair['question'] }}</i> </p>
-                                        <p><strong>Câu trả lời {{ $user->name }}:</strong> {{ $pair['answer'] }}</p>
-                                    @endforeach
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        @foreach ($user->profile->education->qa_pairs as $pair)
+                                            <div class="mb-4">
+                                                <p class="fw-bold text-primary">Câu hỏi hệ thống:</p>
+                                                <p class="fst-italic ms-3">{{ $pair['question'] }}</p>
+                                                <p class="fw-bold text-success">Câu trả lời {{ $user->name }}:</p>
+                                                <p class="ms-3">{{ $pair['answer'] }}</p>
+                                            </div>
+                                            <hr>
+                                        @endforeach
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
 
                 <div class="tab-pane fade" id="documents" role="tabpanel">
@@ -343,26 +351,28 @@
                                                                 <ul class="dropdown-menu dropdown-menu-end"
                                                                     aria-labelledby="dropdownMenuLink7">
                                                                     @if ($fileExtension == 'jpg')
-                                                                         <li>
-                                                                        <a class="dropdown-item view-image-btn"
-                                                                            href="javascript:void(0);"
-                                                                            data-image-url="{{ asset('storage/' . $certificate) }}">
-                                                                            <i
-                                                                                class="ri-eye-fill me-2 align-middle"></i>Xem chi
-                                                                            tiết</a>
-                                                                    </li>
+                                                                        <li>
+                                                                            <a class="dropdown-item view-image-btn"
+                                                                                href="javascript:void(0);"
+                                                                                data-image-url="{{ asset('storage/' . $certificate) }}">
+                                                                                <i
+                                                                                    class="ri-eye-fill me-2 align-middle"></i>Xem
+                                                                                chi
+                                                                                tiết</a>
+                                                                        </li>
                                                                     @else
                                                                         <li>
-                                                                        <a class="dropdown-item view-pdf-btn"
-                                                                            href="javascript:void(0);"
-                                                                            data-pdf-url="{{ asset('storage/' . $certificate) }}">
-                                                                            <i class="ri-eye-fill me-2 align-middle"></i>
-                                                                            Xem chi tiết
-                                                                        </a>
-                                                                    </li>
+                                                                            <a class="dropdown-item view-pdf-btn"
+                                                                                href="javascript:void(0);"
+                                                                                data-pdf-url="{{ asset('storage/' . $certificate) }}">
+                                                                                <i
+                                                                                    class="ri-eye-fill me-2 align-middle"></i>
+                                                                                Xem chi tiết
+                                                                            </a>
+                                                                        </li>
                                                                     @endif
-                                                                   
-                                                                    
+
+
 
                                                                 </ul>
                                                             </div>
