@@ -212,6 +212,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/course/approved', [CourseController::class, 'getApprovedCourses']);
         Route::post('/course', [CourseController::class, 'storeNewCourse']);
         Route::get('/course/{course}/preview', [PreviewCourseController::class, 'index']);
+        //Lộ trình
         Route::prefix('roadmap')->group(function () {
             Route::get('/', [RoadmapController::class, 'getRoadmap']);
             //Tạo lộ trình

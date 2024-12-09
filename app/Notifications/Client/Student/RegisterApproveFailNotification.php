@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class RegisterApproveTeacherNotification extends Notification implements ShouldBroadcast
+class RegisterApproveFailNotification extends Notification implements ShouldBroadcast
 {
     use Queueable;
     public $user;
@@ -32,8 +32,8 @@ class RegisterApproveTeacherNotification extends Notification implements ShouldB
             'user_role' => 'student',
             'id' => $this->user['id'],
             'student_name' => $this->user['name'],
-            'message' => "Chúc mừng bạn đã trở thành giảng viên.",
-            'url' => env('FE_URL') . 'instructor/dashboard/'
+            'message' => "Hệ thống từ chối ứng tuyển vị trí giảng viên, cám ơn bạn!.",
+            'url' => env('FE_URL') . 'account/profile/'
         ];
     }
     public function toBroadcast(object $notifiable): array
@@ -42,8 +42,8 @@ class RegisterApproveTeacherNotification extends Notification implements ShouldB
             'type' => 'register_teacher',
             'id' => $this->user['id'],
             'student_name' => $this->user['name'],
-            'message' => "Chúc mừng bạn đã trở thành giảng viên.",
-            'url' => env('FE_URL') . 'instructor/dashboard/'
+            'message' => "Hệ thống từ chối ứng tuyển vị trí giảng viên, cám ơn bạn!.",
+            'url' => env('FE_URL') . 'account/profile/'
         ];
     }
 }

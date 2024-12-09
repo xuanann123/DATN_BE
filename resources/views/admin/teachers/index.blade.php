@@ -89,69 +89,73 @@
                                     </tr>
                                 </thead>
                                 <tbody class="list form-check-all">
-                                    @foreach ($listStudent as $student)
-                                        <tr>
-                                            <td>
-                                                <div>
-                                                    <a class="d-flex gap-2 align-items-center"
-                                                        href="{{ route('admin.users.detail', $student->id) }}">
-                                                        <div class="flex-shrink-0">
-                                                            @if ($student->avatar && Storage::disk('public')->exists($student->avatar))
-                                                                <img src="{{ Storage::url($student->avatar) }}"
-                                                                    alt="" class="avatar-xs rounded-circle" />
-                                                            @else
-                                                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNL_ZnOTpXSvhf1UaK7beHey2BX42U6solRA&s"
-                                                                    alt="" class="avatar-xs rounded-circle" />
-                                                            @endif
+                              
+                                        @foreach ($listStudent as $student)
+                                            <tr>
+                                                <td>
+                                                    <div>
+                                                        <a class="d-flex gap-2 align-items-center"
+                                                            href="{{ route('admin.users.detail', $student->id) }}">
+                                                            <div class="flex-shrink-0">
+                                                                @if ($student->avatar && Storage::disk('public')->exists($student->avatar))
+                                                                    <img src="{{ Storage::url($student->avatar) }}"
+                                                                        alt="" class="avatar-xs rounded-circle" />
+                                                                @else
+                                                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNL_ZnOTpXSvhf1UaK7beHey2BX42U6solRA&s"
+                                                                        alt="" class="avatar-xs rounded-circle" />
+                                                                @endif
 
-                                                        </div>
-                                                        <div class="flex-grow-1">
-                                                            {{ $student->name }}
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                            <td>{{ $student->email }}</td>
-                                            <td>{{ $student->profile->experience }}</td>
-                                            <td>
-                                                {{ $student->profile->education->institution_name }}
-                                            </td>
-                                            <td>
-                                                {{ $student->profile->education->degree }}
-                                            </td>
-                                            <td>
-                                                @if ($student->status == 'pending')
-                                                    <span class="badge bg-success">Chờ duyêt</span>
-                                                @else
-                                                    @if ($student->status == 'approved')
-                                                        <span class="badge bg-primary">Đã kiểm duyệt</span>
+                                                            </div>
+                                                            <div class="flex-grow-1">
+                                                                {{ $student->name }}
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                                <td>{{ $student->email }}</td>
+                                                <td>{{ $student->profile->experience }}</td>
+                                                <td>
+                                                    {{ $student->profile->education->institution_name }}
+                                                </td>
+                                                <td>
+                                                    {{ $student->profile->education->degree }}
+                                                </td>
+                                                <td>
+                                                    @if ($student->status == 'pending')
+                                                        <span class="badge bg-success">Chờ duyêt</span>
                                                     @else
-                                                        <span class="text-white badge bg-danger">Đã từ chối</span>
+                                                        @if ($student->status == 'approved')
+                                                            <span class="badge bg-primary">Đã kiểm duyệt</span>
+                                                        @else
+                                                            <span class="text-white badge bg-danger">Đã từ chối</span>
+                                                        @endif
                                                     @endif
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if ($student->admin_review)
-                                                    <span class="badge bg-primary">{{ $student->admin_review->user->name }}</span>
-                                                @else
-                                                    <span class="badge bg-primary">Chưa kiểm duyệt</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                 @if ($student->admin_review)
-                                                    <span class="badge bg-primary">{{ $student->admin_review->updated_at }}</span>
-                                                @else
-                                                    <span class="badge bg-primary">Chưa kiểm duyệt</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                <a href="{{ route('admin.approval.teachers.detail', $student->id) }}"
-                                                    class="btn btn-sm btn-soft-primary">Xem</a>
-                                            </td>
+                                                </td>
+                                                <td>
+                                                    @if ($student->admin_review)
+                                                        <span
+                                                            class="badge bg-primary">{{ $student->admin_review->user->name }}</span>
+                                                    @else
+                                                        <span class="badge bg-primary">Chưa kiểm duyệt</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if ($student->admin_review)
+                                                        <span
+                                                            class="badge bg-primary">{{ $student->admin_review->updated_at }}</span>
+                                                    @else
+                                                        <span class="badge bg-primary">Chưa kiểm duyệt</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <a href="{{ route('admin.approval.teachers.detail', $student->id) }}"
+                                                        class="btn btn-sm btn-soft-primary">Xem</a>
+                                                </td>
 
 
-                                        </tr>
-                                    @endforeach
+                                            </tr>
+                                        @endforeach
+                              
                                 </tbody>
                             </table>
                         </div>

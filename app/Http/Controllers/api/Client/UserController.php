@@ -21,7 +21,7 @@ use App\Models\QuizProgress;
 use App\Models\User;
 use App\Models\UserCourse;
 use App\Models\Video;
-use App\Notifications\Client\Student\RegisterTeacherNotification;
+use App\Notifications\Admin\RegisterTeacherNotification;
 use Carbon\Carbon;
 use Dompdf\FrameDecorator\Table;
 use Flasher\Prime\EventDispatcher\Event\ResponseEvent;
@@ -325,7 +325,6 @@ class UserController extends Controller
                 foreach ($admins as $admin) {
                     $admin->notify(new RegisterTeacherNotification($newEducation, $user));
                 }
-
                 DB::commit();
             } catch (\Exception $e) {
                 return response()->json([
