@@ -628,11 +628,9 @@ class CourseController extends Controller
 
             // Sắp xếp theo A-Z hoặc Z-A
             if ($request->filled('arrange')) {
-                if ($request->input('arrange') === 'A-Z') {
-                    $courses->orderBy('name', 'asc');
-                } elseif ($request->input('arrange') === 'Z-A') {
-                    $courses->orderBy('name', 'desc');
-                }
+                //Xử dùng hàm có sẵn trong modal Course SortBy
+                $courses->sortBy($request->input('arrange'));
+
             }
 
             // Phân trang kết quả
@@ -647,7 +645,6 @@ class CourseController extends Controller
 
             // Load thêm dữ liệu cần thiết sau khi lấy danh sách khóa học
             $courses->load(['modules.lessons', 'modules.quiz']);
-
             // Tính tổng số lesson, quiz và duration
             foreach ($courses as $course) {
                 // Tính tổng lessons và quiz
