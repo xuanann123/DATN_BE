@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
     <style>
         .dataTables_paginate,
-        .dataTables_info {
+        .dataTables_info, #example_filter, #example_length {
             display: none;
         }
 
@@ -40,19 +40,8 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
-                <form action="{{ route('admin.approval.courses.action') }}">
-                    @csrf
-                    <div class="card-header d-flex justify-content-center">
-                        {{-- <div class="col-sm-auto d-flex">
-                            <select name="act" id="" class="form-select">
-                                <option value="" class="form-control">Thao tác nhiều bản ghi</option>
-                                @foreach ($listAct as $key => $act)
-                                    <option value="{{ $key }}" class="form-control">{{ $act }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <button type="submit" class="ms-2 btn btn-primary">Chọn</button>
-                        </div> --}}
+                <div>
+                    <div class="card-header d-flex justify-content-between">
                         <div class="col-sm-auto d-flex">
                             <ul class="d-flex gap-4 mt-1 list-unstyled">
                                 <li><a href="{{ request()->fullUrlWithQuery(['status' => 'all']) }}">Tất
@@ -65,111 +54,121 @@
                                         chối({{ $count['rejected'] }})</a></li>
                             </ul>
                         </div>
-                    </div>
-                    <div class="card-body">
-                        <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
-                            style="width:100%">
-                            <thead>
-                                <tr>
-                                    {{-- <th scope="col" style="width: 50px;">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="selectAll" value="option">
-                                        </div>
-                                    </th> --}}
-                                    <th data-ordering="false">Tên khóa học</th>
-                                    <th data-ordering="false">Danh mục</th>
-                                    <th data-ordering="false">Giảng viên</th>
-                                    <th data-ordering="false">Ảnh bìa</th>
-                                    <th>Giá</th>
-                                    <th>Ngày gửi</th>
-                                    <th>Trạng thái</th>
-                                    <th>Người kiểm duyệt</th>
-                                    <th>Ngày kiểm duyệt</th>
-                                    <th>Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody class="list form-check-all">
-                                @foreach ($courses as $course)
-                                    <tr>
-                                        {{-- <th scope="row">
-                                            <div class="form-check">
-                                                <input class="form-check-input checkbox" type="checkbox" name="listCheck[]"
-                                                    value="{{ $course->id }}">
-                                            </div>
-                                        </th> --}}
-                                        <td>{{ $course->name }}</td>
-                                        <td>{{ $course->category->name }}</td>
-                                        <td>{{ $course->user->name }}</td>
-                                        <td>
-                                            <img src="{{ Storage::url($course->thumbnail) }}" width="100px"
-                                                alt="">
-                                        </td>
-                                        <td>
-                                            @if ($course->is_free)
-                                                <span class="badge bg-success">Free</span>
-                                            @else
-                                                @if ($course->price_sale)
-                                                    <span
-                                                        class="text-decoration-line-through">{{ number_format($course->price, 0) }}</span>
-                                                    <span
-                                                        class="text-danger">{{ number_format($course->price_sale, 0) }}</span>
-                                                    <i class="ri-bit-coin-line"></i>
-                                                @else
-                                                    <span class="text-danger">{{ number_format($course->price, 0) }}</span>
-                                                    <i class="ri-bit-coin-line"></i>
-                                                @endif
-                                            @endif
-                                        </td>
-                                        <td>{{ $course->submited_at }}</td>
-                                        <td>
-                                            <span
-                                                class="badge rounded-pill
-                                                    {{ $course->status == 'pending'
-                                                        ? 'bg-warning'
-                                                        : ($course->status == 'approved'
-                                                            ? 'bg-success'
-                                                            : ($course->status == 'rejected'
-                                                                ? 'bg-danger'
-                                                                : '')) }}">
-                                                {{ $course->status == 'pending'
-                                                    ? 'Chờ phê duyệt'
-                                                    : ($course->status == 'approved'
-                                                        ? 'Đã chấp thuận'
-                                                        : ($course->status == 'rejected'
-                                                            ? 'Đã từ chối'
-                                                            : '')) }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge rounded-pill bg-primary">
-                                                @if ($course->admin_review)
-                                                    {{ $course->admin_review->user->name }}
-                                                @else
-                                                    Chưa có
-                                                @endif
-                                            </span>
-                                        </td>
-                                        <td>
-                                            @if ($course->admin_review)
-                                                {{ $course->admin_review->updated_at }}
-                                            @else
-                                                <span class="badge rounded-pill bg-primary-subtle text-primary">
-                                                    Chưa có
-                                                </span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <a href="{{ route('admin.approval.courses.detail', $course->id) }}"
-                                                class="btn btn-sm btn-soft-primary">Xem</a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-
-                        <div class="paginate-data">
+                        <div class="col-sm-auto d-flex ms-2">
+                            <form action="" method="GET" class="d-flex gap-2">
+                                @csrf
+                                <input type="text" class="form-control ml-2" placeholder="Tìm kiếm ..." name="keyword"
+                                       value="{{ request()->input('keyword') }}">
+                                <button class="btn btn-outline-primary ms-2" type="submit">
+                                    <i class="ri-search-line"></i>
+                                </button>
+                            </form>
                         </div>
                     </div>
-                </form>
+                    <div class="card-body">
+                            <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
+                                style="width:100%">
+                                <thead>
+                                    <tr>
+{{--                                         <th scope="col" style="width: 50px;">--}}
+{{--                                            <div class="form-check">--}}
+{{--                                                <input class="form-check-input" type="checkbox" id="selectAll" value="option">--}}
+{{--                                            </div>--}}
+{{--                                        </th>--}}
+                                        <th data-ordering="false">Tên khóa học</th>
+                                        <th data-ordering="false">Danh mục</th>
+                                        <th data-ordering="false">Giảng viên</th>
+                                        <th data-ordering="false">Ảnh bìa</th>
+                                        <th>Giá</th>
+                                        <th>Ngày gửi</th>
+                                        <th>Trạng thái</th>
+                                        <th>Người kiểm duyệt</th>
+                                        <th>Ngày kiểm duyệt</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="list form-check-all">
+                                    @foreach ($courses as $course)
+                                        <tr>
+{{--                                             <th scope="row">--}}
+{{--                                                <div class="form-check">--}}
+{{--                                                    <input class="form-check-input checkbox" type="checkbox" name="listCheck[]"--}}
+{{--                                                        value="{{ $course->id }}">--}}
+{{--                                                </div>--}}
+{{--                                            </th>--}}
+                                            <td>{{ $course->name }}</td>
+                                            <td>{{ $course->category->name }}</td>
+                                            <td>{{ $course->user->name }}</td>
+                                            <td>
+                                                <img src="{{ Storage::url($course->thumbnail) }}" width="100px"
+                                                    alt="">
+                                            </td>
+                                            <td>
+                                                @if ($course->is_free)
+                                                    <span class="badge bg-success">Free</span>
+                                                @else
+                                                    @if ($course->price_sale)
+                                                        <span
+                                                            class="text-decoration-line-through">{{ number_format($course->price, 0) }}</span>
+                                                        <span
+                                                            class="text-danger">{{ number_format($course->price_sale, 0) }}</span>
+                                                        <i class="ri-bit-coin-line"></i>
+                                                    @else
+                                                        <span class="text-danger">{{ number_format($course->price, 0) }}</span>
+                                                        <i class="ri-bit-coin-line"></i>
+                                                    @endif
+                                                @endif
+                                            </td>
+                                            <td>{{ $course->submited_at }}</td>
+                                            <td>
+                                                <span
+                                                    class="badge rounded-pill
+                                                        {{ $course->status == 'pending'
+                                                            ? 'bg-warning'
+                                                            : ($course->status == 'approved'
+                                                                ? 'bg-success'
+                                                                : ($course->status == 'rejected'
+                                                                    ? 'bg-danger'
+                                                                    : '')) }}">
+                                                    {{ $course->status == 'pending'
+                                                        ? 'Chờ phê duyệt'
+                                                        : ($course->status == 'approved'
+                                                            ? 'Đã chấp thuận'
+                                                            : ($course->status == 'rejected'
+                                                                ? 'Đã từ chối'
+                                                                : '')) }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge rounded-pill bg-primary">
+                                                    @if ($course->admin_review)
+                                                        {{ $course->admin_review->user->name }}
+                                                    @else
+                                                        Chưa có
+                                                    @endif
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if ($course->admin_review)
+                                                    {{ $course->admin_review->updated_at }}
+                                                @else
+                                                    <span class="badge rounded-pill bg-primary-subtle text-primary">
+                                                        Chưa có
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <a href="{{ route('admin.approval.courses.detail', $course->id) }}"
+                                                    class="btn btn-sm btn-soft-primary">Xem</a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        <div class="paginate-data">
+                            {{ $courses->links() }}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

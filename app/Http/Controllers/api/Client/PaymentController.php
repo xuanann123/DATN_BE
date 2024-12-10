@@ -593,7 +593,7 @@ class PaymentController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Số tiền rút không hợp lệ'
-            ], 500);
+            ], 200);
         }
 
         if ($withdrawalWallet->balance < $request->coin) {
@@ -602,6 +602,22 @@ class PaymentController extends Controller
                 'status' => 'error',
                 'message' => 'Số dư của bạn không đủ'
             ], 200);
+        }
+
+        $withdrawCount = DB::table('withdraw_money')
+            ->where('id_user', $userId)
+            ->whereBetween('created_at', [
+                Carbon::now()->startOfMonth(),
+                Carbon::now()->endOfMonth()
+            ])
+            ->count();
+
+        if($withdrawCount >= 5){
+            return response()->json([
+                'code' => 422,
+                'status' => 'error',
+                'message' => 'Bạn đã hết dùng hết yêu cầu rút tiền của tháng này',
+            ], 422);
         }
 
         $newRequestWithdrawalWallet = WithdrawMoney::query()->create([

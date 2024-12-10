@@ -211,6 +211,7 @@ Route::prefix("admin")
                         Route::get("/", [ApprovalCourseController::class, 'index'])->name('list');
                         Route::get("/course-outstanding", [CourseController::class, 'courseOutstanding'])->name('course-outstanding');
                         Route::put("/outstanding/{id_course}", [CourseController::class, 'outstanding'])->name('outstanding');
+                        Route::put("/add-and-remove-outstanding", [CourseController::class, 'handleRemoveAndAddCourseOutstanding'])->name('add-and-remove-outstanding');
                         Route::get("/action", [ApprovalCourseController::class, 'action'])->name('action');
                         Route::get("/{id}", [ApprovalCourseController::class, 'show'])->name('detail');
                         Route::post("/{id}/approve", [ApprovalCourseController::class, 'approve'])->name('approve');
