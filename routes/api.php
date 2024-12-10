@@ -60,6 +60,11 @@ Route::prefix('auth')->group(function () {
     Route::post('/verify-otp-resetpassword', [AuthController::class, 'verifyOtpForResetPassword']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
+    /// đăng nhập bằng các nền tảng khác
+    Route::get('/{social}', [SocialAuthController::class, 'redirectToSocial']);
+    Route::get('/{social}/callback', [SocialAuthController::class, 'handleSocialCallback']);
+
+
 
 });
 
@@ -279,8 +284,8 @@ Route::middleware('auth:sanctum')->group(function () {
                 // Thống kê chung
                 Route::get('/', [StatisticController::class, 'index']);
                 // Thống kê trong 1 khóa học
-                Route::get('/get-students', [StatisticController::class,'getStudents']);
-                Route::get('/get-ratings', [StatisticController::class,'getRatings']);
+                Route::get('/get-students', [StatisticController::class, 'getStudents']);
+                Route::get('/get-ratings', [StatisticController::class, 'getRatings']);
             });
             // tra loi danh gia
             Route::post('/rating/{rating}/reply', [IntructorRatingController::class, 'replyToRating']);

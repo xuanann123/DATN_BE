@@ -231,7 +231,7 @@ class AuthController extends Controller
                 'expires_at' => now()->addDays(30), // 1 month
             ]);
 
-            $cookie = cookie('refresh_token', $refreshToken, 43200, null, null, false, true, true, null);
+            $cookie = cookie('refresh_token', $refreshToken, 43200, null, null, false, true, true, 'Strict');
 
             return response()->json([
                 'message' => 'Đăng nhập thành công.',
@@ -241,7 +241,7 @@ class AuthController extends Controller
                     'profile' => $user->profile
                 ],
                 'status' => 200,
-            ], 200)->cookie($cookie);
+            ], 200)->withCookie($cookie);
         } catch (Throwable $e) {
             Log::error("Error: " . $e->getMessage());
             return response()->json([
