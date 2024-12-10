@@ -62,6 +62,11 @@ Route::prefix('auth')->group(function () {
     Route::post('/verify-otp-resetpassword', [AuthController::class, 'verifyOtpForResetPassword']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
+    /// đăng nhập bằng các nền tảng khác
+    Route::get('/{social}', [SocialAuthController::class, 'redirectToSocial']);
+    Route::get('/{social}/callback', [SocialAuthController::class, 'handleSocialCallback']);
+
+
 
 });
 
