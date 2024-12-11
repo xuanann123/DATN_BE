@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\UploadVideoController;
 use App\Http\Controllers\Admin\FollowController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\QnAController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\api\Client\PaymentController;
 use App\Models\Permission;
 
@@ -294,5 +295,22 @@ Route::prefix("admin")
             Route::post('/update/{permission}', [PermissionController::class, 'update'])->name('update');
             //Xoá quyền
             Route::get('/destroy/{permission}', [PermissionController::class, 'destroy'])->name('destroy');
+        });
+        # ===================== ROUTE FOR ROLE ===========================
+        Route::prefix('roles')
+            ->as('roles.')
+            ->group(function () {
+            //Danh sách vai trò
+            Route::get('/', [RoleController::class, 'index'])->name('index');
+            //Thêm role
+            Route::get('/create', [RoleController::class, 'create'])->name('create');
+            //Lưu trữ
+            Route::post('/', [RoleController::class, 'store'])->name('store');
+            //Chỉnh sửa roles
+            Route::get('/edit/{role}', [RoleController::class, 'edit'])->name('edit');
+            //Cập nhật
+            Route::post('/update/{role}', [RoleController::class, 'update'])->name('update');
+            //Xoá
+            Route::get('/destroy/{role}', [RoleController::class, 'destroy'])->name('destroy');
         });
     });
