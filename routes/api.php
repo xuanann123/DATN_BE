@@ -221,12 +221,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('roadmap')->group(function () {
             //Danh sách lộ trình
             Route::get('/', [RoadmapController::class, 'getRoadmap']);
+            //Chi tiết của lộ trình
+            Route::get('/{roadmap}', [RoadmapController::class, 'roadmapDetail']);
             //Tạo lộ trình
             Route::post('/', [RoadmapController::class, 'storeRoadmap']);
             //Sửa lộ trình
             Route::put('/{roadmap}', [RoadmapController::class, 'updateRoadmap']);
             //Xoá lộ trình
             Route::delete('/{roadmap}', [RoadmapController::class, 'destroyRoadmap']);
+            //Giai đoạn
             Route::prefix('phase')->group(function () {
                 //Tạo phần giai đoạn của quá trình
                 Route::post('/', [RoadmapController::class, 'storePhase']);
