@@ -470,9 +470,74 @@ class CourseController extends Controller
         ]);
     }
 
-    public function courseOutstanding()
+    public function courseOutstanding(Request $request)
     {
         $title = "Khóa học nổi bật";
+        // Đếm số lượng khóa học;
+        $countCourse = DB::table('courses')
+            ->where('status', 'approved')
+            ->count();
+        // Đếm số lượng khóa học nổi bật;
+        $countCourseOutstanding = DB::table('courses')
+            ->where('status', 'approved')
+            ->where('is_trending', true)
+            ->count();
+
+        if($request->keyword) {
+            // Đếm số lượng khóa học
+            $countCourse = DB::table('courses')
+                ->join('categories', 'categories.id', '=', 'courses.id_category')
+                ->join('users', 'users.id', '=', 'courses.id_user')
+                ->where('courses.status', 'approved')
+                ->when($request->keyword, function ($query, $keyword) {
+                    $query->where(function ($q) use ($keyword) {
+                        $q->where('courses.name', 'like', "%{$keyword}%")
+                            ->orWhere('users.name', 'like', "%{$keyword}%")
+                            ->orWhere('categories.name', 'like', "%{$keyword}%");
+                    });
+                })
+                ->count();
+
+            // Đếm số lượng khóa học nổi bật
+            $countCourseOutstanding = DB::table('courses')
+                ->join('categories', 'categories.id', '=', 'courses.id_category')
+                ->join('users', 'users.id', '=', 'courses.id_user')
+                ->where('courses.status', 'approved')
+                ->where('courses.is_trending', true)
+                ->when($request->keyword, function ($query, $keyword) {
+                    $query->where(function ($q) use ($keyword) {
+                        $q->where('courses.name', 'like', "%{$keyword}%")
+                            ->orWhere('users.name', 'like', "%{$keyword}%")
+                            ->orWhere('categories.name', 'like', "%{$keyword}%");
+                    });
+                })
+                ->count();
+
+            $courses = Course::select(
+                'courses.id',
+                'courses.name as name_course',
+                'courses.thumbnail',
+                'courses.price',
+                'courses.price_sale',
+                'courses.status',
+                'courses.is_trending',
+                'courses.created_at',
+                'categories.name as name_category',
+                'users.name as name_teacher'
+            )
+                ->join('categories', 'categories.id', '=', 'courses.id_category')
+                ->join('users', 'users.id', '=', 'courses.id_user')
+                ->where('courses.status', '=', 'approved') // Điều kiện cố định
+                ->where(function ($query) use ($request) {
+                    $query->where('courses.name', 'like', "%{$request->keyword}%")
+                        ->orWhere('users.name', 'like', "%{$request->keyword}%")
+                        ->orWhere('categories.name', 'like', "%{$request->keyword}%");
+                })
+                ->orderBy('courses.is_trending', 'desc')
+                ->paginate(10);
+            return view('admin.courses.course_outstanding', compact('title', 'courses', 'countCourse', 'countCourseOutstanding'));
+        }
+
         $courses = Course::select(
             'courses.id',
             'courses.name as name_course',
@@ -490,7 +555,7 @@ class CourseController extends Controller
             ->where('courses.status', '=', 'approved')
             ->orderBy('courses.is_trending', 'desc')
             ->paginate(10);
-        return view('admin.courses.course_outstanding', compact('title', 'courses'));
+        return view('admin.courses.course_outstanding', compact('title', 'courses', 'countCourse', 'countCourseOutstanding'));
     }
 
     public function outstanding(Request $request)
@@ -508,5 +573,29 @@ class CourseController extends Controller
 
         $course->update(['is_trending' => 1]);
         return back()->with(['success' => 'Thêm khóa học nổi bật thành công']);
+    }
+
+    public function handleRemoveAndAddCourseOutstanding(Request $request)
+    {
+        $action = $request->action;
+        $listChecks = $request->listCheck;
+
+        if (!$listChecks || !is_array($listChecks)) {
+            return redirect()->back()->with('error', 'Vui lòng chọn ít nhất một bản ghi.');
+        }
+
+        switch ($action) {
+            case 'remove-course-outstanding':
+                Course::whereIn('id', $listChecks)->update(['is_trending' => 0]);
+                return redirect()->back()->with('success', 'Đã xóa nổi bật cho các khóa học được chọn.');
+
+            case 'add-course-outstanding':
+                Course::whereIn('id', $listChecks)->update(['is_trending' => 1]);
+                return redirect()->back()->with('success', 'Đã thêm nổi bật cho các khóa học được chọn.');
+
+            default:
+                return redirect()->back()->with('error', 'Hành động không hợp lệ.');
+        }
+
     }
 }

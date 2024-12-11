@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
     <style>
         .dataTables_paginate,
-        .dataTables_info {
+        .dataTables_info, #example_filter, #example_length {
             display: none;
         }
 
@@ -40,19 +40,8 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
-                <form action="{{ route('admin.approval.courses.action') }}">
-                    @csrf
-                    <div class="card-header d-flex justify-content-center">
-                        {{-- <div class="col-sm-auto d-flex">
-                            <select name="act" id="" class="form-select">
-                                <option value="" class="form-control">Thao tác nhiều bản ghi</option>
-                                @foreach ($listAct as $key => $act)
-                                    <option value="{{ $key }}" class="form-control">{{ $act }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <button type="submit" class="ms-2 btn btn-primary">Chọn</button>
-                        </div> --}}
+                <div>
+                    <div class="card-header d-flex justify-content-between">
                         <div class="col-sm-auto d-flex">
                             <ul class="d-flex gap-4 mt-1 list-unstyled">
                                 <li><a href="{{ request()->fullUrlWithQuery(['status' => 'all']) }}">Tất
@@ -64,6 +53,16 @@
                                 <li><a href="{{ request()->fullUrlWithQuery(['status' => 'rejected']) }}">Đã từ
                                         chối({{ $count['rejected'] }})</a></li>
                             </ul>
+                        </div>
+                        <div class="col-sm-auto d-flex ms-2">
+                            <form action="" method="GET" class="d-flex gap-2">
+                                @csrf
+                                <input type="text" class="form-control ml-2" placeholder="Tìm kiếm ..." name="keyword"
+                                       value="{{ request()->input('keyword') }}">
+                                <button class="btn btn-outline-primary ms-2" type="submit">
+                                    <i class="ri-search-line"></i>
+                                </button>
+                            </form>
                         </div>
                     </div>
                     <div class="card-body">
@@ -89,7 +88,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="list form-check-all">
-                              
+
                                         @foreach ($listStudent as $student)
                                             <tr>
                                                 <td>
@@ -155,7 +154,7 @@
 
                                             </tr>
                                         @endforeach
-                              
+
                                 </tbody>
                             </table>
                         </div>
@@ -164,7 +163,7 @@
                         <div class="paginate-data">
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
