@@ -17,7 +17,7 @@ class Roadmap extends Model
     ];
     //Nó thuốc vệ một user tạo ra
     public function user() {
-        return $this->belongsTo(User::class, 'id_user');
+        return $this->belongsTo(User::class, 'user_id');
     }
     //Một thằng này có nhiều giai đoạn
     public function phases() {

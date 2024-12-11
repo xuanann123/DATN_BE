@@ -8,6 +8,7 @@ use App\Http\Requests\Client\Roadmap\StoreRoadmapRequest;
 use App\Http\Requests\Client\Roadmap\UpdateRoadmapRequest;
 use App\Models\Phase;
 use App\Models\Roadmap;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -43,6 +44,34 @@ class RoadmapController extends Controller
                 'data' => []
             ]);
         }
+    }
+    public function roadmapDetail(Roadmap $roadmap)
+    {
+        try {
+            $detailRoadmap = Roadmap::with([
+                'phases' => function ($query) {
+                    // Sắp xếp phases theo order
+                    $query->orderBy('order');
+                    // Lấy các khóa học liên kết trong phases (chỉ lấy id, name, thumbnail, level)
+                    $query->with(['courses:id,name,thumbnail,level']);
+                }
+            ])
+                ->with(['user:id,name,avatar'])
+                ->where('id', $roadmap->id)
+                ->first();
+            return response()->json([
+                'success' => true,
+                'message' => "Chi tiết lộ trình",
+                'data' => $detailRoadmap
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => true,
+                'message' => "Đã xảy ra lỗi " . $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
+
     }
 
 
@@ -182,7 +211,7 @@ class RoadmapController extends Controller
     public function updatePhase(Request $request, Phase $phase)
     {
         try {
- 
+
 
             // Cập nhật thông tin giai đoạn
             $phase->update([
