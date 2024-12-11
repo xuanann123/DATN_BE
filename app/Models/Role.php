@@ -13,4 +13,8 @@ class Role extends Model
         'name',
         'description',
     ];
+    //Định nghĩa mối quan hệ với permissions
+    public function permissions() {
+        return $this->belongsToMany(Permission::class, 'role_permissions', 'id_role', 'id_permission');
+    }
 }

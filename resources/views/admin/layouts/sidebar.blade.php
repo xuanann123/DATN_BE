@@ -279,10 +279,10 @@
                                         <a href="{{ route('admin.permissions.index') }}" class="nav-link" data-key="t-alerts">Quyền</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="ui-alerts.html" class="nav-link" data-key="t-alerts">Thêm vai trò</a>
+                                        <a href="{{ route('admin.roles.create') }}" class="nav-link" data-key="t-alerts">Thêm vai trò</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="ui-badges.html" class="nav-link" data-key="t-badges">Danh sách vai trò</a>
+                                        <a href="{{ route("admin.roles.index") }}" class="nav-link" data-key="t-badges">Danh sách vai trò</a>
                                     </li>
                                 </ul>
                             </div>
