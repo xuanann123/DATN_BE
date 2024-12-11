@@ -12,6 +12,8 @@ class Roadmap extends Model
         'user_id',
         'name',
         'description',
+        'sort_description',
+        'thumbnail'
     ];
     //Nó thuốc vệ một user tạo ra
     public function user() {

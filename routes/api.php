@@ -214,11 +214,23 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/course/{course}/preview', [PreviewCourseController::class, 'index']);
         //Lộ trình
         Route::prefix('roadmap')->group(function () {
+            //Danh sách lộ trình
             Route::get('/', [RoadmapController::class, 'getRoadmap']);
             //Tạo lộ trình
             Route::post('/', [RoadmapController::class, 'storeRoadmap']);
-            //Tạo phần giai đoạn của quá trình
-            Route::post('/phase', [RoadmapController::class, 'storePhase']);
+            //Sửa lộ trình
+            Route::put('/{roadmap}', [RoadmapController::class, 'updateRoadmap']);
+            //Xoá lộ trình
+            Route::delete('/{roadmap}', [RoadmapController::class, 'destroyRoadmap']);
+            Route::prefix('phase')->group(function () {
+                //Tạo phần giai đoạn của quá trình
+                Route::post('/', [RoadmapController::class, 'storePhase']);
+                //Sửa phần giai đoạn của quá trình
+                Route::put('/{phase}', [RoadmapController::class, 'updatePhase']);
+                //Xoá phần giai đoạn của quá trình
+                Route::delete('/{phase}', [RoadmapController::class, 'destroyPhase']);
+            });
+
         });
 
 

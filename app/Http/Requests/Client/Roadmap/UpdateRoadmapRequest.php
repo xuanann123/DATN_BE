@@ -4,7 +4,7 @@ namespace App\Http\Requests\Client\Roadmap;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreRoadmapRequest extends FormRequest
+class UpdateRoadmapRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,17 +25,17 @@ class StoreRoadmapRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:5000',
             'sort_description' => 'nullable|string|max:255',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Tối đa 2MB
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
     public function messages()
     {
         return [
-            'name.required' => 'Tên lộ trình là bắt buộc.',
-            'name.string' => 'Tên lộ trình phải là chuỗi.',
-            'name.max' => 'Tên lộ trình không được vượt quá 255 ký tự.',
-            'description.string' => 'Mô tả phải là chuỗi.',
-            'description.max' => 'Mô tả không được vượt quá 5000 ký tự.',
+            'name.required' => 'Tên bắt buộc',
+            'name.max' => 'Tên không quá 255 ký tự',
+            'description.max' => 'Mô tả không quá 5000 ký tự',
+            'sort_description.max' => 'Mô tả không quá 255 ký tự',
+            'thumbnail.max' => 'Link ảnh không quá 255 ký tự',
         ];
     }
 }
