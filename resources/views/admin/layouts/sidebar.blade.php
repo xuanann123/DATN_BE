@@ -276,11 +276,13 @@
                             <div class="col-lg-4">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="ui-alerts.html" class="nav-link" data-key="t-alerts">Thêm mới</a>
-
+                                        <a href="{{ route('admin.permissions.index') }}" class="nav-link" data-key="t-alerts">Quyền</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="ui-badges.html" class="nav-link" data-key="t-badges">Danh sách</a>
+                                        <a href="ui-alerts.html" class="nav-link" data-key="t-alerts">Thêm vai trò</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="ui-badges.html" class="nav-link" data-key="t-badges">Danh sách vai trò</a>
                                     </li>
                                 </ul>
                             </div>

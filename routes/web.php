@@ -26,9 +26,10 @@ use App\Http\Controllers\Admin\ChartController;
 
 use App\Http\Controllers\Admin\UploadVideoController;
 use App\Http\Controllers\Admin\FollowController;
+use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\QnAController;
 use App\Http\Controllers\api\Client\PaymentController;
-
+use App\Models\Permission;
 
 /*
 |--------------------------------------------------------------------------
@@ -279,4 +280,19 @@ Route::prefix("admin")
                 Route::get('/search', [QnAController::class, 'search']);
                 Route::get('/delete-all', [QnAController::class, 'deleteAll'])->name('qna.delete.all');
             });
+        # ===================== ROUTE FOR PERMISSION ===========================
+        Route::prefix('permissions')
+            ->as('permissions.')
+            ->group(function () {
+            //Danh sách quyền
+            Route::get('/', [PermissionController::class, 'index'])->name('index');
+            //Thêm quyền
+            Route::post('/store', [PermissionController::class, 'store'])->name('store');
+            //Sửa quyền
+            Route::get('/edit/{permission}', [PermissionController::class, 'edit'])->name('edit');
+            //Cập nhật quyền
+            Route::post('/update/{permission}', [PermissionController::class, 'update'])->name('update');
+            //Xoá quyền
+            Route::get('/destroy/{permission}', [PermissionController::class, 'destroy'])->name('destroy');
+        });
     });
