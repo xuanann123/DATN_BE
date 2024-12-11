@@ -319,6 +319,17 @@
                                 </div>
                                 <!--end col-->
 
+
+                                @if ($user->user_type = 'admin')
+                                    <div class="col-lg-12 mb-3">
+                                        <label for="">Chọn vai trò của người dùng trên hệ thống</label>
+                                        <select name="roles[]" id="role" multiple class="form-control">
+                                            @foreach ($listRole as $role)
+                                                <option {{ in_array($role->id, $userRoleId) ? 'selected' : ""  }}  value="{{ $role->id }}"> {{ $role->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                @endif
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         <label for="is_active" class="form-label">Trạng thái</label> <br>
@@ -355,16 +366,14 @@
                                         </label>
                                     </div>
                                 </div>
-
                                 <div class="col-lg-12">
                                     <div class="mb-3">
                                         <div class="text-start mb-4">
                                             <button type="submit" class="btn btn-success w-sm">Cập nhật</button>
-                                            <button type="reset" class="btn btn-secondary w-sm">Xóa tất cả</button>
+                                            <a href="{{ route("admin.users.list-admin") }}" type="reset" class="btn btn-secondary w-sm">Quay lại</a>
                                         </div>
                                     </div>
                                 </div>
-
                             </form>
                             <!--end row-->
                         </div>

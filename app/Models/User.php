@@ -137,4 +137,8 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Roadmap::class, 'id_user');
     }
+    //Một user có nhiều vai trò trên hệ thống
+    public function roles() {
+        return $this->belongsToMany(Role::class, 'user_roles', 'id_user', 'id_role');
+    }
 }
