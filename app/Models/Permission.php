@@ -14,4 +14,9 @@ class Permission extends Model
         'slug',
         'description',
     ];
+    //Quyền này thuộc có mối quan hệ nhiều nhiều với role
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
 }

@@ -70,7 +70,7 @@ class RoadmapController extends Controller
                 'success' => 'success',
                 'message' => 'Tạo lộ trình thành công',
                 'data' => $roadmap
-            ], 200);
+            ], 201);
 
         } catch (\Exception $e) {
             return response()->json([
@@ -169,7 +169,7 @@ class RoadmapController extends Controller
                 'success' => 'success',
                 'message' => 'Tạo giai đo thành công',
                 'data' => $phase
-            ]);
+            ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
