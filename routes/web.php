@@ -141,6 +141,8 @@ Route::prefix("admin")
             Route::get("/restore/{id}", [UserController::class, 'restore'])->name('restore');
             Route::get("/forceDelete/{id}", [UserController::class, 'forceDelete'])->name('forceDelete');
             Route::get("/list-teachers", [UserController::class, 'listTeachers'])->name('list-teachers');
+            Route::get("/list-admin", [UserController::class, 'listAdmin'])->name('list-admin');
+
             Route::prefix('profile')
                 ->as('profile.')
                 ->group(function () {

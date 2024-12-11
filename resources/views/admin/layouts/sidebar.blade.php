@@ -256,6 +256,10 @@
                                            data-key="t-alerts">Danh sách giảng viên</a>
                                     </li>
                                     <li class="nav-item">
+                                        <a href="{{ route('admin.users.list-admin') }}" class="nav-link"
+                                           data-key="t-alerts">Danh sách người quản trị</a>
+                                    </li>
+                                    <li class="nav-item">
                                         <a href="{{ route('admin.users.create') }}" class="nav-link"
                                             data-key="t-alerts">Thêm mới người dùng</a>
                                     </li>
