@@ -64,7 +64,7 @@
                                 <div class="d-flex justify-content-sm-end">
                                     <div class="search-box me-2">
                                         <input type="text" name="keyword" class="form-control search"
-                                            placeholder="Search..." value="{{ request()->input('keyword') }}">
+                                            placeholder="Tìm kiếm..." value="{{ request()->input('keyword') }}">
                                         <i class="ri-search-line search-icon"></i>
                                     </div>
                                     <input type="text" hidden name="status" value="{{ request()->input('status') }}">
@@ -84,7 +84,7 @@
                                         <option value="0">Chọn thao tác trên nhiều bản ghi</option>
 
                                     </select>
-                                    <button type="submit" class="btn btn-secondary">Done</button>
+                                    <button type="submit" class="btn btn-primary">Chọn</button>
                                 </div>
                             </div>
                         </div>
