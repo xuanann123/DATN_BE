@@ -19,14 +19,13 @@ class RoadmapController extends Controller
         // Lấy người dùng hiện tại
         try {
             $user = auth()->user();
-
             // Truy vấn các lộ trình của người dùng, sắp xếp phases theo order
             $roadmaps = Roadmap::with([
                 'phases' => function ($query) {
                     // Sắp xếp phases theo order
                     $query->orderBy('order');
                     // Lấy các khóa học liên kết trong phases (chỉ lấy id, name, thumbnail, level)
-                    $query->with(['courses:id,name,thumbnail,level']);
+                    $query->with(['courses:id,name,thumbnail,level,price,price_sale,description,slug']);
                 }
             ])
                 ->where('user_id', $user->id)
@@ -36,13 +35,13 @@ class RoadmapController extends Controller
                 'success' => true,
                 'message' => "Danh sách lộ trình",
                 'data' => $roadmaps
-            ]);
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
                 'data' => []
-            ]);
+            ], 500);
         }
     }
     public function roadmapDetail(Roadmap $roadmap)
@@ -53,7 +52,7 @@ class RoadmapController extends Controller
                     // Sắp xếp phases theo order
                     $query->orderBy('order');
                     // Lấy các khóa học liên kết trong phases (chỉ lấy id, name, thumbnail, level)
-                    $query->with(['courses:id,name,thumbnail,level']);
+                    $query->with(['courses:id,name,thumbnail,level,price,price_sale,description,slug']);
                 }
             ])
                 ->with(['user:id,name,avatar'])
@@ -106,7 +105,7 @@ class RoadmapController extends Controller
                 'success' => false,
                 'message' => $e->getMessage(),
                 'data' => []
-            ]);
+            ], 500);
         }
     }
     //Sửa lộ trình
