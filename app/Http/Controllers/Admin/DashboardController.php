@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Bill;
 use App\Models\Course;
 use App\Models\User;
+use App\Services\PermissionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,9 +14,10 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        if(auth()->user()->roles->count() < 1) {
-            return view("admin.wait_permission");
-        } else {
+        $user = auth()->user();
+        // check xem co phai super_admin or nguoi co quyen xem thong ke
+        $hasRevenuePermission = PermissionService::hasPermission($user, 'revenue.read');
+        if ($user->user_type === User::TYPE_SUPER_ADMIN || $hasRevenuePermission) {
             $totalRevenue = Bill::sum('total_coin') * 1000;
             $totalProfits = Bill::sum('total_coin') * 1000 * 0.3;
             $countTeachers = User::where('user_type', 'teacher')->count();
@@ -102,6 +104,8 @@ class DashboardController extends Controller
             $revenuesJson = json_encode($revenues);
             $profitsJson = json_encode($profits);
             return view('admin.dashboard', data: compact('totalRevenue', 'totalProfits', 'countTeachers', 'countCourses', 'countStudents', 'topInstructors', 'topCourses', 'monthsJson', 'revenuesJson', 'profitsJson'));
+        } else {
+            return view("admin.wait_permission");
         }
     }
 }

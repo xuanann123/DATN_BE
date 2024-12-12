@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Admin\Permissions;
 
+use App\Configs\PermissionConfig;
+use App\Configs\PermissionConfigs;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePermissionRequest extends FormRequest
@@ -23,7 +25,15 @@ class StorePermissionRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'slug' => 'required|unique:permissions,slug',
+            'slug' => [
+                'required',
+                'unique:permissions,slug',
+                function ($attr, $value, $fail) {
+                    if (!PermissionConfig::isValid($value)) {
+                        $fail('Slug quyền không hợp lệ, vui lòng nhập đúng slug quyền.');
+                    };
+                }
+            ],
             'description' => 'nullable|max:255',
         ];
     }

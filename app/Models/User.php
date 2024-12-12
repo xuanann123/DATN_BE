@@ -12,6 +12,7 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
     const TYPE_ADMIN = 'admin';
+    const TYPE_SUPER_ADMIN = 'super_admin';
     const TYPE_MEMBER = 'member';
     const TYPE_TEACHER = 'teacher';
 
@@ -153,5 +154,4 @@ class User extends Authenticatable implements MustVerifyEmail
         }
         return false;
     }
-
 }

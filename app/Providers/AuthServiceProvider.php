@@ -5,6 +5,7 @@ namespace App\Providers;
 // use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Permission;
+use App\Models\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -25,8 +26,12 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
         // Vòng lập quyền check xem user đó có quyền hay không ... tối ưu hệ thống
-        foreach(Permission::all() as $permission) {
+        foreach (Permission::all() as $permission) {
             Gate::define($permission->slug, function ($user) use ($permission) {
+                // super admin thì không cần check
+                if ($user->user_type === User::TYPE_SUPER_ADMIN) {
+                    return true;
+                }
                 return $user->hasPermission($permission->slug);
             });
         }

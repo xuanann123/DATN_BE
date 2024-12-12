@@ -17,7 +17,12 @@ class AdminAuthenticate
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && Auth::user()->user_type == User::TYPE_ADMIN && Auth::user()->is_active == 1 && Auth::user()->email_verified_at != null) {
+        if (
+            Auth::check() &&
+            (Auth::user()->user_type === User::TYPE_ADMIN || Auth::user()->user_type === User::TYPE_SUPER_ADMIN) &&
+            Auth::user()->is_active == 1 &&
+            Auth::user()->email_verified_at != null
+        ) {
             return $next($request);
         }
 
