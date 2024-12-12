@@ -73,9 +73,9 @@ Route::prefix("admin")
         Route::prefix("certificates")
             ->as('certificates.')
             ->group(function () {
-            Route::get("/", [CertificateController::class, 'index'])->name('index');
-            Route::get("/preview/{template}", [CertificateController::class, 'show'])->name('show');
-            Route::post('/select', [CertificateController::class, 'select'])->name('select');
+            Route::get("/", [CertificateController::class, 'index'])->name('index')->can('certificate.read');
+            Route::get("/preview/{template}", [CertificateController::class, 'show'])->name('show')->can('certificate.read');
+            Route::post('/select', [CertificateController::class, 'select'])->name('select')->can('certificate.update');
         });
         #============================== BANNERS DONE =============================
         Route::prefix("banners")
@@ -220,21 +220,20 @@ Route::prefix("admin")
                 Route::prefix('courses')
                     ->as('courses.')
                     ->group(function () {
-                        Route::get("/", [ApprovalCourseController::class, 'index'])->name('list');
+                        Route::get("/", [ApprovalCourseController::class, 'index'])->name('list')->can('course.approve');
                         Route::get("/course-outstanding", [CourseController::class, 'courseOutstanding'])->name('course-outstanding');
                         Route::put("/outstanding/{id_course}", [CourseController::class, 'outstanding'])->name('outstanding');
                         Route::put("/add-and-remove-outstanding", [CourseController::class, 'handleRemoveAndAddCourseOutstanding'])->name('add-and-remove-outstanding');
-                        Route::get("/action", [ApprovalCourseController::class, 'action'])->name('action');
-                        Route::get("/{id}", [ApprovalCourseController::class, 'show'])->name('detail');
-                        Route::post("/{id}/approve", [ApprovalCourseController::class, 'approve'])->name('approve');
+                        Route::get("/action", [ApprovalCourseController::class, 'action'])->name('action')->can('course.approve');
+                        Route::get("/{id}", [ApprovalCourseController::class, 'show'])->name('detail')->can('course.approve');
+                        Route::post("/{id}/approve", [ApprovalCourseController::class, 'approve'])->name('approve')->can('course.approve');
                     });
                 Route::prefix('teachers')
                     ->as('teachers.')
                     ->group(function () {
-                        Route::get("/", [ApprovalTeacherController::class, 'index'])->name('list');
-                        Route::get("/{id}", [ApprovalTeacherController::class, 'show'])->name('detail');
-                        Route::get("/{id}/approve", [ApprovalTeacherController::class, 'approve'])->name('approve');
-
+                        Route::get("/", [ApprovalTeacherController::class, 'index'])->name('list')->can('teacher.approve');
+                        Route::get("/{id}", [ApprovalTeacherController::class, 'show'])->name('detail')->can('teacher.approve');
+                        Route::get("/{id}/approve", [ApprovalTeacherController::class, 'approve'])->name('approve')->can('teacher.approve');
                     });
             });
 
@@ -242,13 +241,13 @@ Route::prefix("admin")
         Route::prefix('transactions')
             ->as('transactions.')
             ->group(function () {
-            Route::get('/history-buy-course', [TransactionController::class, 'historyBuyCourse'])->name('history-buy-course');
-            Route::get('/detail-bill-course/{bill}', [TransactionController::class, 'detailBillCourse'])->name('detail-bill-course');
-            Route::get('/history-deposit', [TransactionController::class, 'historyDeposit'])->name('history-deposit');
-            Route::get('/history-withdraw', [TransactionController::class, 'historyWithdraw'])->name('history-withdraw');
-            Route::get('/withdraw-money', [TransactionController::class, 'withdrawMoneys'])->name('withdraw-money');
-            Route::get('/get-status-request-money/{id}', [TransactionController::class, 'getStatusRequestMoney'])->name('status-request-money');
-            Route::put('/update-status-request-money', [TransactionController::class, 'updateStatusRequest'])->name('update-status-request-money');
+            Route::get('/history-buy-course', [TransactionController::class, 'historyBuyCourse'])->name('history-buy-course')->can('transaction.read');
+            Route::get('/detail-bill-course/{bill}', [TransactionController::class, 'detailBillCourse'])->name('detail-bill-course')->can('transaction.read');
+            Route::get('/history-deposit', [TransactionController::class, 'historyDeposit'])->name('history-deposit')->can('transaction.read');
+            Route::get('/history-withdraw', [TransactionController::class, 'historyWithdraw'])->name('history-withdraw')->can('transaction.read');
+            Route::get('/withdraw-money', [TransactionController::class, 'withdrawMoneys'])->name('withdraw-money')->can('transaction.read');
+            Route::get('/get-status-request-money/{id}', [TransactionController::class, 'getStatusRequestMoney'])->name('status-request-money')->can('transaction.read');
+            Route::put('/update-status-request-money', [TransactionController::class, 'updateStatusRequest'])->name('update-status-request-money')->can('transaction.update');
         });
         #========================================== ROUTE FOR POSTS =========================================
         Route::prefix('posts')

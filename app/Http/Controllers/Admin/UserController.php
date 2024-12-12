@@ -121,8 +121,16 @@ class UserController extends Controller
                 $data['avatar'] = $user->avatar;
             }
 
-            // Mảng dữ liệu id update cho roles
-            $rolesID = $request->roles;
+            //Nếu như mảng 1 value bằng 0 thì cập nhật nó là []
+            $rolesID = [];
+            foreach($request->roles as $role) {
+                if($role == 0) {
+                    $rolesID = [];
+                } else {
+                    $rolesID[] = $role;
+                }
+            }
+           
             // dd($rolesID);
 
             // Cập nhật thông tin người dùng
@@ -142,7 +150,7 @@ class UserController extends Controller
             // Log lỗi nếu cần thiết (tùy thuộc vào hệ thống log của bạn)
             Log::error('Lỗi cập nhật người dùng: ' . $e->getMessage());
 
-            return redirect()->route('admin.users.list')->with(['error' => 'Có lỗi xảy ra trong quá trình cập nhật người dùng!']);
+            return redirect()->back()->with(['error' => 'Có lỗi xảy ra trong quá trình cập nhật người dùng!']);
         }
     }
 
