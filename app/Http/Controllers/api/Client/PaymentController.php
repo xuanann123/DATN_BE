@@ -593,7 +593,7 @@ class PaymentController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Số tiền rút không hợp lệ'
-            ], 200);
+            ], 422);
         }
 
         if ($withdrawalWallet->balance < $request->coin) {
