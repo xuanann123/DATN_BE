@@ -10,6 +10,7 @@ use App\Models\Phase;
 use App\Models\Roadmap;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class RoadmapController extends Controller
@@ -259,6 +260,45 @@ class RoadmapController extends Controller
             ], 500);
         }
     }
+    public function destroyCourseInPhase(Request $request)
+    {
+        try {
+            $idPhase = $request->id_phase;
+            $idCourse = $request->id_course;
+
+            $data = DB::table('phase_course')
+                ->where('id_phase', $idPhase)
+                ->where('id_course', $idCourse)
+                ->first();
+
+            if ($data) {
+                // Xóa bản ghi thông qua query builder
+                DB::table('phase_course')
+                    ->where('id_phase', $idPhase)
+                    ->where('id_course', $idCourse)
+                    ->delete();
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không tìm thấy khoá học trong giai đoạn này',
+                    "data" => []
+                ], 204);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Xóa khoá học trong lộ trình thành công',
+                'data' => []
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+                "data" => []
+            ], 500);
+        }
+    }
+
 
 
 }
