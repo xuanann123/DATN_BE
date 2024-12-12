@@ -237,8 +237,9 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::put('/{phase}', [RoadmapController::class, 'updatePhase']);
                 //Xoá phần giai đoạn của quá trình
                 Route::delete('/{phase}', [RoadmapController::class, 'destroyPhase']);
+                //Xoá khoá học trong lộ trình 
+                Route::post('/delete-course', [RoadmapController::class, 'destroyCourseInPhase']);
             });
-
         });
 
 
