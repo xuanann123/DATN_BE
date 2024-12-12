@@ -92,10 +92,13 @@
                 @endcan
 
 
+                @canany(['category.create', 'category.read', 'category.update', 'category.delete', 'post.create',
+                    'post.read', 'post.update', 'post.delete', 'voucher.create', 'voucher.read', 'voucher.update',
+                    'voucher.delete'])
+                    <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý nội dung</span>
+                    </li>
+                @endcanany
 
-
-                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý nội dung</span>
-                </li>
                 @canany(['banner.create', 'banner.read', 'banner.update', 'banner.delete'])
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarBanners" data-bs-toggle="collapse" role="button"
@@ -120,7 +123,7 @@
                         </div>
                     </li>
                 @endcanany
-                @canany(['post.create', 'post.read', 'post.update', 'post.delete'])
+                @canany(['category.create', 'category.read', 'category.update', 'category.delete'])
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarCategories" data-bs-toggle="collapse" role="button"
                             aria-expanded="false" aria-controls="sidebarCategories">
@@ -128,14 +131,14 @@
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarCategories">
                             <ul class="nav nav-sm flex-column">
-                                @can('post.read')
+                                @can('category.read')
                                     <li class="nav-item">
                                         <a href="{{ route('admin.categories.index') }}" class="nav-link"
                                             data-key="t-one-page">
                                             Danh sách danh mục</a>
                                     </li>
                                 @endcan
-                                @can('post.create')
+                                @can('category.create')
                                     <li class="nav-item">
                                         <a href="{{ route('admin.categories.create') }}" class="nav-link" data-key="t-job">
                                             Thêm mới danh mục</a>
@@ -221,63 +224,88 @@
 
 
 
-                {{-- Giao dịch --}}
-                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý giao dịch</span>
-                </li>
+                @canany(['transaction.update', 'transaction.read'])
+                    <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý giao dịch</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#sidebarMoney" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="sidebarCertificate">
+                            <i class="ri-money-euro-circle-line"></i> <span>Giao dịch</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="sidebarMoney">
+                            <ul class="nav nav-sm flex-column">
+                                @can('transaction.read')
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.transactions.history-buy-course') }}" class="nav-link"
+                                            data-key="t-one-page">
+                                            Khóa học đã bán</a>
+                                    </li>
+                                @endcan
 
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarMoney" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false" aria-controls="sidebarCertificate">
-                        <i class="ri-money-euro-circle-line"></i> <span>Giao dịch</span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="sidebarMoney">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="{{ route('admin.transactions.history-buy-course') }}" class="nav-link"
-                                    data-key="t-one-page">
-                                    Khóa học đã bán</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('admin.transactions.history-deposit') }}" class="nav-link"
-                                    data-key="t-one-page">
-                                    Giao dịch nạp tiền</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('admin.transactions.history-withdraw') }}" class="nav-link"
-                                    data-key="t-one-page">
-                                    Giao dịch rút tiền</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('admin.transactions.withdraw-money') }}" class="nav-link"
-                                    data-key="t-one-page">
-                                    Yêu cầu rút tiền</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+                                @can('transaction.read')
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.transactions.history-deposit') }}" class="nav-link"
+                                            data-key="t-one-page">
+                                            Giao dịch nạp tiền</a>
+                                    </li>
+                                @endcan
+
+                                @can('transaction.read')
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.transactions.history-withdraw') }}" class="nav-link"
+                                            data-key="t-one-page">
+                                            Giao dịch rút tiền</a>
+                                    </li>
+                                @endcan
+
+                                @can('transaction.update')
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.transactions.withdraw-money') }}" class="nav-link"
+                                            data-key="t-one-page">
+                                            Yêu cầu rút tiền</a>
+                                    </li>
+                                @endcan
+                            </ul>
+                        </div>
+                    </li>
+                @endcanany
+
+
+
                 {{-- Kiểm duyệt --}}
-                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý kiểm
-                        duyệt</span>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ route('admin.approval.courses.list') }}"
-                        data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class="ri-book-open-line"></i> <span>Kiểm duyệt khóa học </span>
-                    </a>
-                </li>
+                @canany(['teacher.approve', 'course.approve'])
+                    <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý kiểm
+                            duyệt</span>
+                    </li>
+                    @can('course.approve')
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="{{ route('admin.approval.courses.list') }}"
+                                data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                                <i class="ri-book-open-line"></i> <span>Kiểm duyệt khóa học </span>
+                            </a>
+                        </li>
+                    @endcan
 
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ route('admin.approval.courses.course-outstanding') }}"
-                        data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class="ri-book-open-line"></i> <span>Khóa học nổi bật</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ route('admin.approval.teachers.list') }}"
-                        data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class=" ri-folder-user-line"></i> <span>Kiểm duyệt giảng viên </span>
-                    </a>
-                </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="{{ route('admin.approval.courses.course-outstanding') }}"
+                            data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                            <i class="ri-book-open-line"></i> <span>Khóa học nổi bật</span>
+                        </a>
+                    </li>
+
+                    @can('teacher.approve')
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="{{ route('admin.approval.teachers.list') }}"
+                                data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                                <i class=" ri-folder-user-line"></i> <span>Kiểm duyệt giảng viên </span>
+                            </a>
+                        </li>
+                    @endcan
+
+                @endcanany
+
+
                 @canany(['user.create', 'user.read', 'user.update', 'user.delete', 'permission.create',
                     'permission.read', 'permission.update', 'permission.delete', 'role.create', 'role.read', 'role.update',
                     'role.delete'])

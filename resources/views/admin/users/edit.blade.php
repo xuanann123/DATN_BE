@@ -324,12 +324,14 @@
                                     <div class="col-lg-12 mb-3">
                                         <label for="">Chọn vai trò của người dùng trên hệ thống</label>
                                         <select name="roles[]" id="role" multiple class="form-control">
+                                            <option {{ $user->roles->count() == 0 ? 'selected' : "" }} value="0">Không có quyền trên hệ thống</option>
                                             @foreach ($listRole as $role)
                                                 <option {{ in_array($role->id, $userRoleId) ? 'selected' : ""  }}  value="{{ $role->id }}"> {{ $role->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                 @endif
+                                
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         <label for="is_active" class="form-label">Trạng thái</label> <br>
