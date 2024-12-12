@@ -61,122 +61,162 @@
             <div id="two-column-menu">
             </div>
             <ul class="navbar-nav" id="navbar-nav">
-                <li class="menu-title"><span data-key="t-menu">Quản lý thống kê</span></li>
-                <li class="nav-item">
-                    <a href="{{ route('admin.dashboard') }}" class="nav-link">
-                        <i class="ri-dashboard-line"></i> <span>Quản trị hệ thống</span>
-                    </a>
-                </li>
-                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ route('admin.charts.revenue') }}"
-                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class="ri-bar-chart-line"></i> <span>Thống kê doanh thu</span>
-                    </a>
-                </li>
+                @canany(['system.read', 'revenue.read', 'top.read'])
+                    <li class="menu-title"><span data-key="t-menu">Quản lý thống kê</span></li>
+                @endcanany
 
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ route('admin.charts.top-courses') }}"
-                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
-                        <i class="ri-bar-chart-line"></i> <span>Top khóa học</span>
-                    </a>
-                </li>
+                @can('system.read')
+                    <li class="nav-item">
+                        <a href="{{ route('admin.dashboard') }}" class="nav-link">
+                            <i class="ri-dashboard-line"></i> <span>Quản trị hệ thống</span>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('revenue.read')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="{{ route('admin.charts.revenue') }}" data-bs-toggle=""
+                            role="button" aria-expanded="false" aria-controls="">
+                            <i class="ri-bar-chart-line"></i> <span>Thống kê doanh thu</span>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('top.read')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="{{ route('admin.charts.top-courses') }}" data-bs-toggle=""
+                            role="button" aria-expanded="false" aria-controls="">
+                            <i class="ri-bar-chart-line"></i> <span>Top khóa học</span>
+                        </a>
+                    </li>
+                @endcan
+
 
 
 
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý nội dung</span>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarBanners" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false" aria-controls="sidebarBanners">
-                        <i class="ri-image-2-line"></i> <span>Banners</span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="sidebarBanners">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="{{ route('admin.banners.index') }}" class="nav-link"
-                                    data-key="t-horizontal">Danh sách banners</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('admin.banners.create') }}" class="nav-link"
-                                    data-key="t-detached">Thêm mới banner</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+                @canany(['banner.create', 'banner.read', 'banner.update', 'banner.delete'])
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#sidebarBanners" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="sidebarBanners">
+                            <i class="ri-image-2-line"></i> <span>Banners</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="sidebarBanners">
+                            <ul class="nav nav-sm flex-column">
+                                @can('banner.read')
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.banners.index') }}" class="nav-link"
+                                            data-key="t-horizontal">Danh sách banners</a>
+                                    </li>
+                                @endcan
+                                @can('banner.create')
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.banners.create') }}" class="nav-link"
+                                            data-key="t-detached">Thêm mới banner</a>
+                                    </li>
+                                @endcan
+                            </ul>
+                        </div>
+                    </li>
+                @endcanany
+                @canany(['post.create', 'post.read', 'post.update', 'post.delete'])
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#sidebarCategories" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="sidebarCategories">
+                            <i class="bx bx-list-minus"></i> <span>Danh mục</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="sidebarCategories">
+                            <ul class="nav nav-sm flex-column">
+                                @can('post.read')
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.categories.index') }}" class="nav-link"
+                                            data-key="t-one-page">
+                                            Danh sách danh mục</a>
+                                    </li>
+                                @endcan
+                                @can('post.create')
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.categories.create') }}" class="nav-link" data-key="t-job">
+                                            Thêm mới danh mục</a>
+                                    </li>
+                                @endcan
+                            </ul>
+                        </div>
+                    </li>
+                @endcanany
 
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarCategories" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false" aria-controls="sidebarCategories">
-                        <i class="bx bx-list-minus"></i> <span>Danh mục</span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="sidebarCategories">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="{{ route('admin.categories.index') }}" class="nav-link" data-key="t-one-page">
-                                    Danh sách danh mục</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('admin.categories.create') }}" class="nav-link" data-key="t-job">
-                                    Thêm mới danh mục</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
 
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarVouchers" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false" aria-controls="sidebarVouchers">
-                        <i class="ri-ticket-2-line"></i> <span>Mã giảm giá</span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="sidebarVouchers">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="{{ route('admin.vouchers.index') }}" class="nav-link"
-                                    data-key="t-one-page">
-                                    Danh sách mã</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('admin.vouchers.create') }}" class="nav-link" data-key="t-job">
-                                    Thêm mới mã</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+                @canany(['voucher.create', 'voucher.read', 'voucher.update', 'voucher.delete'])
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#sidebarVouchers" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="sidebarVouchers">
+                            <i class="ri-ticket-2-line"></i> <span>Mã giảm giá</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="sidebarVouchers">
+                            <ul class="nav nav-sm flex-column">
+                                @can('voucher.read')
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.vouchers.index') }}" class="nav-link"
+                                            data-key="t-one-page">
+                                            Danh sách mã</a>
+                                    </li>
+                                @endcan
+                                @can('voucher.create')
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.vouchers.create') }}" class="nav-link" data-key="t-job">
+                                            Thêm mới mã</a>
+                                    </li>
+                                @endcan
+                            </ul>
+                        </div>
+                    </li>
+                @endcanany
 
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarCertificate" data-bs-toggle="collapse"
-                        role="button" aria-expanded="false" aria-controls="sidebarCertificate">
-                        <i class="ri-graduation-cap-line"></i> <span>Chứng chỉ</span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="sidebarCertificate">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="{{ route('admin.certificates.index') }}" class="nav-link" data-key="t-one-page">
-                                    Danh sách chứng chỉ</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+                @can('certificate.read')
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#sidebarCertificate" data-bs-toggle="collapse"
+                            role="button" aria-expanded="false" aria-controls="sidebarCertificate">
+                            <i class="ri-graduation-cap-line"></i> <span>Chứng chỉ</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="sidebarCertificate">
+                            <ul class="nav nav-sm flex-column">
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.certificates.index') }}" class="nav-link"
+                                        data-key="t-one-page">
+                                        Danh sách chứng chỉ</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                @endcan
 
                 {{-- Bài viết --}}
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarPost" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false" aria-controls="sidebarPost">
-                        <i class="ri-notification-2-line"></i> <span>Bài viết</span>
-                    </a>
-                    <div class="collapse menu-dropdown" id="sidebarPost">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="{{ route('admin.posts.index') }}" class="nav-link" data-key="t-one-page">
-                                    Danh sách bài viết</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('admin.posts.create') }}" class="nav-link" data-key="t-one-page">
-                                    Thêm mới bài viết</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+                @canany(['post.create', 'post.read', 'post.update', 'post.delete'])
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#sidebarPost" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="sidebarPost">
+                            <i class="ri-notification-2-line"></i> <span>Bài viết</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="sidebarPost">
+                            <ul class="nav nav-sm flex-column">
+                                @can('post.read')
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.posts.index') }}" class="nav-link" data-key="t-one-page">
+                                            Danh sách bài viết</a>
+                                    </li>
+                                @endcan
+                                @can('post.create')
+                                    <li class="nav-item">
+                                        <a href="{{ route('admin.posts.create') }}" class="nav-link" data-key="t-one-page">
+                                            Thêm mới bài viết</a>
+                                    </li>
+                                @endcan
+
+                            </ul>
+                        </div>
+                    </li>
+                @endcanany
 
 
 
@@ -186,32 +226,35 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarMoney" data-bs-toggle="collapse"
-                       role="button" aria-expanded="false" aria-controls="sidebarCertificate">
+                    <a class="nav-link menu-link" href="#sidebarMoney" data-bs-toggle="collapse" role="button"
+                        aria-expanded="false" aria-controls="sidebarCertificate">
                         <i class="ri-money-euro-circle-line"></i> <span>Giao dịch</span>
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarMoney">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="{{ route('admin.transactions.history-buy-course') }}" class="nav-link" data-key="t-one-page">
+                                <a href="{{ route('admin.transactions.history-buy-course') }}" class="nav-link"
+                                    data-key="t-one-page">
                                     Khóa học đã bán</a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('admin.transactions.history-deposit') }}" class="nav-link" data-key="t-one-page">
+                                <a href="{{ route('admin.transactions.history-deposit') }}" class="nav-link"
+                                    data-key="t-one-page">
                                     Giao dịch nạp tiền</a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('admin.transactions.history-withdraw') }}" class="nav-link" data-key="t-one-page">
+                                <a href="{{ route('admin.transactions.history-withdraw') }}" class="nav-link"
+                                    data-key="t-one-page">
                                     Giao dịch rút tiền</a>
                             </li>
                             <li class="nav-item">
-                                <a href="{{ route('admin.transactions.withdraw-money') }}" class="nav-link" data-key="t-one-page">
+                                <a href="{{ route('admin.transactions.withdraw-money') }}" class="nav-link"
+                                    data-key="t-one-page">
                                     Yêu cầu rút tiền</a>
                             </li>
                         </ul>
                     </div>
                 </li>
-
                 {{-- Kiểm duyệt --}}
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Quản lý kiểm
                         duyệt</span>
@@ -225,7 +268,7 @@
 
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('admin.approval.courses.course-outstanding') }}"
-                       data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
+                        data-bs-toggle="" role="button" aria-expanded="false" aria-controls="">
                         <i class="ri-book-open-line"></i> <span>Khóa học nổi bật</span>
                     </a>
                 </li>
@@ -235,65 +278,98 @@
                         <i class=" ri-folder-user-line"></i> <span>Kiểm duyệt giảng viên </span>
                     </a>
                 </li>
+                @canany(['user.create', 'user.read', 'user.update', 'user.delete', 'permission.create',
+                    'permission.read', 'permission.update', 'permission.delete', 'role.create', 'role.read', 'role.update',
+                    'role.delete'])
+                    <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components">Quản lý tài
+                            khoản</span></li>
+                @endcanany
 
-                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components">Quản lý tài
-                        khoản</span></li>
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarStudent" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false" aria-controls="sidebarStudent">
-                        <i class="ri-account-circle-line"></i> <span data-key="t-base-ui">Quản lý thành viên</span>
-                    </a>
-                    <div class="collapse menu-dropdown mega-dropdown-menu" id="sidebarStudent">
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.users.list') }}" class="nav-link"
-                                            data-key="t-badges">Tất cả người dùng</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.users.list-teachers') }}" class="nav-link"
-                                           data-key="t-alerts">Danh sách giảng viên</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.users.list-admin') }}" class="nav-link"
-                                           data-key="t-alerts">Danh sách người quản trị</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.users.create') }}" class="nav-link"
-                                            data-key="t-alerts">Thêm mới người dùng</a>
-                                    </li>
-                                </ul>
+                @canany(['user.create', 'user.read', 'user.update', 'user.delete'])
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#sidebarStudent" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="sidebarStudent">
+                            <i class="ri-account-circle-line"></i> <span data-key="t-base-ui">Quản lý thành viên</span>
+                        </a>
+                        <div class="collapse menu-dropdown mega-dropdown-menu" id="sidebarStudent">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <ul class="nav nav-sm flex-column">
+                                        @can('user.read')
+                                            <li class="nav-item">
+                                                <a href="{{ route('admin.users.list') }}" class="nav-link"
+                                                    data-key="t-badges">Tất cả người dùng</a>
+                                            </li>
+                                        @endcan
+
+                                        @can('user.read')
+                                            <li class="nav-item">
+                                                <a href="{{ route('admin.users.list-teachers') }}" class="nav-link"
+                                                    data-key="t-alerts">Danh sách giảng viên</a>
+                                            </li>
+                                        @endcan
+
+                                        @can('user.read')
+                                            <li class="nav-item">
+
+                                                <a href="{{ route('admin.users.list-admin') }}" class="nav-link"
+                                                    data-key="t-alerts">Danh sách người quản trị</a>
+                                            </li>
+                                        @endcan
+
+                                        @can('user.create')
+                                            <li class="nav-item">
+                                                <a href="{{ route('admin.users.create') }}" class="nav-link"
+                                                    data-key="t-alerts">Thêm mới người dùng</a>
+                                            </li>
+                                        @endcan
+
+                                    </ul>
+                                </div>
                             </div>
+
                         </div>
+                    </li>
+                @endcanany
 
-                    </div>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarPermission" data-bs-toggle="collapse" role="button"
-                        aria-expanded="false" aria-controls="sidebarPermission">
-                        <i class="ri-angularjs-line"></i> <span data-key="t-base-ui">Quản lý phân quyền</span>
-                    </a>
-                    <div class="collapse menu-dropdown mega-dropdown-menu" id="sidebarPermission">
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.permissions.index') }}" class="nav-link" data-key="t-alerts">Quyền</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.roles.create') }}" class="nav-link" data-key="t-alerts">Thêm vai trò</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route("admin.roles.index") }}" class="nav-link" data-key="t-badges">Danh sách vai trò</a>
-                                    </li>
-                                </ul>
+                @canany(['permission.create', 'permission.read', 'permission.update', 'permission.delete',
+                    'role.create', 'role.read', 'role.update', 'role.delete'])
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#sidebarPermission" data-bs-toggle="collapse" role="button"
+                            aria-expanded="false" aria-controls="sidebarPermission">
+                            <i class="ri-angularjs-line"></i> <span data-key="t-base-ui">Quản lý phân quyền</span>
+                        </a>
+                        <div class="collapse menu-dropdown mega-dropdown-menu" id="sidebarPermission">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <ul class="nav nav-sm flex-column">
+                                        @canany(['permission.create', 'permission.read', 'permission.update',
+                                            'permission.delete'])
+                                            <li class="nav-item">
+                                                <a href="{{ route('admin.permissions.index') }}" class="nav-link"
+                                                    data-key="t-alerts">Quyền</a>
+                                            </li>
+                                        @endcanany
+                                        @can('role.create')
+                                            <li class="nav-item">
+                                                <a href="{{ route('admin.roles.create') }}" class="nav-link"
+                                                    data-key="t-alerts">Thêm vai trò</a>
+                                            </li>
+                                        @endcan
+                                        @can('role.read')
+                                            <li class="nav-item">
+                                                <a href="{{ route('admin.roles.index') }}" class="nav-link"
+                                                    data-key="t-badges">Danh sách vai trò</a>
+                                            </li>
+                                        @endcan
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
 
-                    </div>
-                </li>
+                        </div>
+                    </li>
+                @endcanany
+
 
             </ul>
         </div>

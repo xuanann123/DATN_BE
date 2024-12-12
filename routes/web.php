@@ -81,32 +81,31 @@ Route::prefix("admin")
         Route::prefix("banners")
             ->as('banners.')
             ->group(function () {
-
-            Route::get("/", [BannerController::class, 'index'])->name('index');
-            Route::get("show", [BannerController::class, 'show'])->name('show');
-            Route::get("/create", [BannerController::class, 'create'])->name('create');
-            Route::post("/store", [BannerController::class, 'store'])->name('store');
-            Route::get("/edit/{banner}", [BannerController::class, 'edit'])->name('edit');
-            Route::put("/update/{banner}", [BannerController::class, 'update'])->name('update');
-            Route::get("/destroy/{banner}", [BannerController::class, 'destroy'])->name('destroy');
-            Route::get('action', [BannerController::class, 'action'])->name('action');
-            Route::get('restore/{id}', [BannerController::class, 'restore'])->name('restore');
-            Route::get('forceDelete/{id}', [BannerController::class, 'forceDelete'])->name('forceDelete');
+            Route::get("/", [BannerController::class, 'index'])->name('index')->can('banner.read');
+            Route::get("show", [BannerController::class, 'show'])->name('show')->can('banner.read');
+            Route::get("/create", [BannerController::class, 'create'])->name('create')->can('banner.create');
+            Route::post("/store", [BannerController::class, 'store'])->name('store')->can('banner.create');
+            Route::get("/edit/{banner}", [BannerController::class, 'edit'])->name('edit')->can('banner.update');
+            Route::put("/update/{banner}", [BannerController::class, 'update'])->name('update')->can('banner.update');
+            Route::get("/destroy/{banner}", [BannerController::class, 'destroy'])->name('destroy')->can('banner.delete');
+            Route::get('action', [BannerController::class, 'action'])->name('action')->can('banner.update');
+            Route::get('restore/{id}', [BannerController::class, 'restore'])->name('restore')->can('banner.update');
+            Route::get('forceDelete/{id}', [BannerController::class, 'forceDelete'])->name('forceDelete')->can('banner.update');
         });
 
 
         Route::prefix("categories")
             ->as('categories.')
             ->group(function () {
-                Route::get("/", [CategoryController::class, 'index'])->name('index');
-                Route::get("/create", [CategoryController::class, 'create'])->name('create');
-                Route::post("/store", [CategoryController::class, 'store'])->name('store');
-                Route::get("/edit/{category}", [CategoryController::class, 'edit'])->name('edit');
-                Route::put("/update/{category}", [CategoryController::class, 'update'])->name('update');
-                Route::get("/destroy/{category}", [CategoryController::class, 'destroy'])->name('destroy');
-                Route::get('action', [CategoryController::class, 'action'])->name('action');
-                Route::get('restore/{id}', [CategoryController::class, 'restore'])->name('restore');
-                Route::get('forceDelete/{id}', [CategoryController::class, 'forceDelete'])->name('forceDelete');
+                Route::get("/", [CategoryController::class, 'index'])->name('index')->can('category.read');
+                Route::get("/create", [CategoryController::class, 'create'])->name('create')->can('category.create');
+                Route::post("/store", [CategoryController::class, 'store'])->name('store')->can('category.create');
+                Route::get("/edit/{category}", [CategoryController::class, 'edit'])->name('edit')->can('category.update');
+                Route::put("/update/{category}", [CategoryController::class, 'update'])->name('update')->can('category.update');
+                Route::get("/destroy/{category}", [CategoryController::class, 'destroy'])->name('destroy')->can('category.delete');
+                Route::get('action', [CategoryController::class, 'action'])->name('action')->can('category.update');
+                Route::get('restore/{id}', [CategoryController::class, 'restore'])->name('restore')->can('category.update');
+                Route::get('forceDelete/{id}', [CategoryController::class, 'forceDelete'])->name('forceDelete')->can('category.update');
             });
         #============================== TAGS DONE =============================
         Route::prefix("tags")
@@ -123,25 +122,34 @@ Route::prefix("admin")
             Route::get('forceDelete/{id}', [TagController::class, 'forceDelete'])->name('forceDelete');
         });
 
-        Route::resource('vouchers', VoucherController::class)->except('show');
-
+        // Route::resource('vouchers', VoucherController::class)->except('show');
+        Route::prefix("vouchers")
+            ->as('vouchers.')
+            ->group(function () {
+            Route::get('', [VoucherController::class, 'index'])->name('index')->can('voucher.read');
+            Route::get('/create', [VoucherController::class, 'create'])->name('create')->can('voucher.create');
+            Route::post('', [VoucherController::class, 'store'])->name('store')->can('voucher.create');
+            Route::get('/{voucher}/edit', [VoucherController::class, 'edit'])->name('edit')->can('voucher.update');
+            Route::put('/{voucher}', [VoucherController::class, 'update'])->name('update')->can('voucher.update');
+            Route::delete('/{voucher}', [VoucherController::class, 'destroy'])->name('destroy')->can('voucher.delete');
+        });
         //Về phần user thì sao nhỉ
         Route::prefix('users')
             ->as('users.')
             ->group(function () {
-            Route::get("/", [UserController::class, 'index'])->name('list');
-            Route::get("/create", [UserController::class, 'create'])->name('create');
-            Route::post("/store", [UserController::class, 'store'])->name('store');
-            Route::get("/destroy/{user}", [UserController::class, 'destroy'])->name('destroy');
-            Route::get("/action", [UserController::class, 'action'])->name('action');
-            Route::get("/edit/{user}", [UserController::class, 'edit'])->name('edit');
-            Route::put("/update/{user}", [UserController::class, 'update'])->name('update');
-            Route::put("/change-password/{user}", [UserController::class, 'changePassword'])->name('change-password');
-            Route::get("/detail/{user}", [UserController::class, 'detail'])->name('detail');
-            Route::get("/restore/{id}", [UserController::class, 'restore'])->name('restore');
-            Route::get("/forceDelete/{id}", [UserController::class, 'forceDelete'])->name('forceDelete');
-            Route::get("/list-teachers", [UserController::class, 'listTeachers'])->name('list-teachers');
-            Route::get("/list-admin", [UserController::class, 'listAdmin'])->name('list-admin');
+            Route::get("/", [UserController::class, 'index'])->name('list')->can('user.read');
+            Route::get("/create", [UserController::class, 'create'])->name('create')->can('user.create');
+            Route::post("/store", [UserController::class, 'store'])->name('store')->can('user.create');
+            Route::get("/destroy/{user}", [UserController::class, 'destroy'])->name('destroy')->can('user.delete');
+            Route::get("/action", [UserController::class, 'action'])->name('action')->can('user.update');
+            Route::get("/edit/{user}", [UserController::class, 'edit'])->name('edit')->can('user.update');
+            Route::put("/update/{user}", [UserController::class, 'update'])->name('update')->can('user.update');
+            Route::put("/change-password/{user}", [UserController::class, 'changePassword'])->name('change-password')->can('user.update');
+            Route::get("/detail/{user}", [UserController::class, 'detail'])->name('detail')->can('user.read');
+            Route::get("/restore/{id}", [UserController::class, 'restore'])->name('restore')->can('user.update');
+            Route::get("/forceDelete/{id}", [UserController::class, 'forceDelete'])->name('forceDelete')->can('user.update');
+            Route::get("/list-teachers", [UserController::class, 'listTeachers'])->name('list-teachers')->can('user.read');
+            Route::get("/list-admin", [UserController::class, 'listAdmin'])->name('list-admin')->can('user.read');
 
             Route::prefix('profile')
                 ->as('profile.')
@@ -242,17 +250,27 @@ Route::prefix("admin")
             Route::get('/get-status-request-money/{id}', [TransactionController::class, 'getStatusRequestMoney'])->name('status-request-money');
             Route::put('/update-status-request-money', [TransactionController::class, 'updateStatusRequest'])->name('update-status-request-money');
         });
-        // route post
+        #========================================== ROUTE FOR POSTS =========================================
         Route::prefix('posts')
             ->as('posts.')
             ->group(function () {
-            Route::post('/{id}/disable', [PostController::class, 'disable'])->name('disable');
-            Route::post('/{id}/enable', [PostController::class, 'enable'])->name('enable');
-            Route::get('/trash', [PostController::class, 'trash'])->name('trash');
-            Route::post('/{id}/restore', [PostController::class, 'restore'])->name('restore');
-            Route::delete('/{id}/force-delete', [PostController::class, 'forceDelete'])->name('forceDelete');
+            // Routes từ resource
+            Route::get('/', [PostController::class, 'index'])->name('index')->can('post.read');
+            Route::get('/create', [PostController::class, 'create'])->name('create')->can('post.create');
+            Route::post('/', [PostController::class, 'store'])->name('store')->can('post.create');
+            Route::get('/{post}', [PostController::class, 'show'])->name('show')->can('post.read');
+            Route::get('/{post}/edit', [PostController::class, 'edit'])->name('edit')->can('post.update');
+            Route::put('/{post}', [PostController::class, 'update'])->name('update')->can('post.update');
+            Route::delete('/{post}', [PostController::class, 'destroy'])->name('destroy')->can('post.delete');
+
+            // Routes bổ sung
+            Route::post('/{id}/disable', [PostController::class, 'disable'])->name('disable')->can('post.update');
+            Route::post('/{id}/enable', [PostController::class, 'enable'])->name('enable')->can('post.update');
+            Route::get('/trash', [PostController::class, 'trash'])->name('trash')->can('post.update');
+            Route::post('/{id}/restore', [PostController::class, 'restore'])->name('restore')->can('post.update');
+            Route::delete('/{id}/force-delete', [PostController::class, 'forceDelete'])->name('forceDelete')->can('post.update');
         });
-        Route::resource('posts', PostController::class);
+
         Route::prefix('chat')
             ->as('chat.')
             ->group(function () {
@@ -284,35 +302,36 @@ Route::prefix("admin")
                 Route::get('/delete-all', [QnAController::class, 'deleteAll'])->name('qna.delete.all');
             });
         # ===================== ROUTE FOR PERMISSION ===========================
+
         Route::prefix('permissions')
             ->as('permissions.')
             ->group(function () {
             //Danh sách quyền
-            Route::get('/', [PermissionController::class, 'index'])->name('index');
+            Route::get('/', [PermissionController::class, 'index'])->name('index')->can('permission.read');
             //Thêm quyền
-            Route::post('/store', [PermissionController::class, 'store'])->name('store');
+                Route::post('/store', [PermissionController::class, 'store'])->name('store')->can('permission.create');
             //Sửa quyền
-            Route::get('/edit/{permission}', [PermissionController::class, 'edit'])->name('edit');
+                Route::get('/edit/{permission}', [PermissionController::class, 'edit'])->name('edit')->can('permission.update');
             //Cập nhật quyền
-            Route::post('/update/{permission}', [PermissionController::class, 'update'])->name('update');
+                Route::post('/update/{permission}', [PermissionController::class, 'update'])->name('update')->can('permission.update');
             //Xoá quyền
-            Route::get('/destroy/{permission}', [PermissionController::class, 'destroy'])->name('destroy');
+                Route::get('/destroy/{permission}', [PermissionController::class, 'destroy'])->name('destroy')->can('permission.delete');
         });
         # ===================== ROUTE FOR ROLE ===========================
         Route::prefix('roles')
             ->as('roles.')
             ->group(function () {
             //Danh sách vai trò
-            Route::get('/', [RoleController::class, 'index'])->name('index');
+            Route::get('/', [RoleController::class, 'index'])->name('index')->can('role.read');
             //Thêm role
-            Route::get('/create', [RoleController::class, 'create'])->name('create');
+            Route::get('/create', [RoleController::class, 'create'])->name('create')->can('role.create');
             //Lưu trữ
-            Route::post('/', [RoleController::class, 'store'])->name('store');
+            Route::post('/', [RoleController::class, 'store'])->name('store')->can('role.create');
             //Chỉnh sửa roles
-            Route::get('/edit/{role}', [RoleController::class, 'edit'])->name('edit');
+            Route::get('/edit/{role}', [RoleController::class, 'edit'])->name('edit')->can('role.update');
             //Cập nhật
-            Route::post('/update/{role}', [RoleController::class, 'update'])->name('update');
+            Route::post('/update/{role}', [RoleController::class, 'update'])->name('update')->can('role.update');
             //Xoá
-            Route::get('/destroy/{role}', [RoleController::class, 'destroy'])->name('destroy');
+            Route::get('/destroy/{role}', [RoleController::class, 'destroy'])->name('destroy')->can('role.delete');
         });
     });

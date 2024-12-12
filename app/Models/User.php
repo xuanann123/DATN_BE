@@ -114,7 +114,8 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     // phản hồi của đánh giá
-    public function rating_replies() {
+    public function rating_replies()
+    {
         return $this->hasMany(RatingReply::class, 'user_id');
     }
 
@@ -138,7 +139,19 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Roadmap::class, 'id_user');
     }
     //Một user có nhiều vai trò trên hệ thống
-    public function roles() {
+    public function roles()
+    {
         return $this->belongsToMany(Role::class, 'user_roles', 'id_user', 'id_role');
     }
+    //Kiểm tra xem người đó có quyền hay không
+    public function hasPermission($permission)
+    {
+        foreach ($this->roles as $role) {
+            if ($role->permissions->where('slug', $permission)->count() > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

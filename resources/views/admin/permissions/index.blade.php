@@ -59,7 +59,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-
+                                @php
+                                    $t = 0;
+                                @endphp
                                 @foreach ($listPermission as $groupPermission => $arrayGroupPermission)
                                     <tr>
                                         <td scope="row"></td>
@@ -68,9 +70,7 @@
                                         <td></td>
                                         <td></td>
                                     </tr>
-                                    @php
-                                        $t = 0;
-                                    @endphp
+
                                     @foreach ($arrayGroupPermission as $permission)
                                         <tr>
                                             <td scope="row">{{ ++$t }}</td>
