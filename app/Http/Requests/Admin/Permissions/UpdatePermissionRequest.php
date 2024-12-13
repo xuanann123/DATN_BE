@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Permissions;
 
+use App\Configs\PermissionConfig;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePermissionRequest extends FormRequest
@@ -25,11 +26,20 @@ class UpdatePermissionRequest extends FormRequest
 
         return [
             'name' => 'required',
-            'slug' => 'required|unique:permissions,slug,' . $permissionId . ',id',
+            'slug' => [
+                'required',
+                'unique:permissions,slug,' . $permissionId . ',id',
+                function ($attr, $value, $fail) {
+                    if (!PermissionConfig::isValid($value)) {
+                        $fail('Slug quyền không hợp lệ, vui lòng nhập đúng slug quyền.');
+                    };
+                }
+            ],
             'description' => 'nullable|max:255',
         ];
     }
-    public function messages() {
+    public function messages()
+    {
         return [
             'name.required' => 'Vui lòng nhập tên quyền',
             'slug.required' => 'Vui lòng nhập slug',

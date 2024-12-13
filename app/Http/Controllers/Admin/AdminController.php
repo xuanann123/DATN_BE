@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\Admin\Auth\LoginRequest;
+use App\Models\User;
 use Illuminate\Support\Facades\Session;
 
 class AdminController extends Controller
@@ -30,7 +31,9 @@ class AdminController extends Controller
         // check login
         if (Auth::attempt($credentials)) {
             // check admin
-            if (Auth::user()->user_type == 'admin' && Auth::user()->is_active == 1) {
+            if ((Auth::user()->user_type === User::TYPE_ADMIN || Auth::user()->user_type === User::TYPE_SUPER_ADMIN) &&
+                Auth::user()->is_active == 1
+            ) {
                 return redirect()->route('admin.dashboard');
             } else {
                 Auth::logout();

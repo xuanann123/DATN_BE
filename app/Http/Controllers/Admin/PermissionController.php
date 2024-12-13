@@ -17,7 +17,7 @@ class PermissionController extends Controller
         $listPermission = Permission::all();
         //Chuyển đổi dữ liệu mảng thông qua biến .slug gom nhóm dữ liệu liên quan đến nhau như post.add or post.edit
         $listPermission = $listPermission->groupBy(function ($permission) {
-            //Lấy thằng chuỗi đằng trước ra 
+            //Lấy thằng chuỗi đằng trước ra
             return explode(".", $permission->slug)[0];
         });
         return view('admin.permissions.index', compact('title', 'listPermission'));
@@ -28,7 +28,7 @@ class PermissionController extends Controller
             $title = "Danh sách quyền trên hệ thống";
             //Đi validate dữ liệu
             $validateData = $request->validated();
-            //Thêm dữ liệu 
+            //Thêm dữ liệu
             $permission = Permission::create($validateData);
             return redirect()->route('admin.permissions.index')->with('success', 'Thêm quyền thành công');
         } catch (\Exception $e) {
@@ -42,15 +42,13 @@ class PermissionController extends Controller
             $listPermission = Permission::all();
             //Chuyển đổi dữ liệu mảng thông qua biến .slug gom nhóm dữ liệu liên quan đến nhau như post.add or post.edit
             $listPermission = $listPermission->groupBy(function ($permission) {
-                //Lấy thằng chuỗi đằng trước ra 
+                //Lấy thằng chuỗi đằng trước ra
                 return explode(".", $permission->slug)[0];
             });
             return view('admin.permissions.index', compact('title', 'listPermission', 'permission'));
-        } catch (\Throwable $th) {
+        } catch (\Throwable $e) {
             return redirect()->route('admin.permissions.index')->with('error', 'Lỗi: ' . $e->getMessage());
         }
-
-
     }
     public function update(UpdatePermissionRequest $request, Permission $permission)
     {
@@ -70,7 +68,6 @@ class PermissionController extends Controller
             return redirect()->route('admin.permissions.index')->with('success', 'Xoá quyền thành công');
         } catch (\Exception $e) {
             return redirect()->route('admin.permissions.index')->with('error', 'Lỗi: ' . $e->getMessage());
-
         }
     }
 }
