@@ -64,10 +64,11 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request)
     {
+        // dd($request->all());
         DB::beginTransaction();
         try {
             $data = $request->validated();
-
+        
             if ($request->thumbnail && $request->hasFile('thumbnail')) {
                 $image = $request->file('thumbnail');
                 $newNameImage = 'banner_' . time() . '.' . $image->getClientOriginalExtension();

@@ -34,7 +34,7 @@
                 <a href="{{ route('admin.posts.create') }}" type="button"
                     class="btn btn-success btn-label waves-effect waves-light">
                     <i class="ri-add-circle-line label-icon"></i>
-                    Tạo thông báo</span>
+                    Tạo bài viết</span>
                 </a>
                 <div>
                     @if (request()->url() === route('admin.posts.trash'))
@@ -127,7 +127,9 @@
                                             @else
                                                 <span class="badge badge-gradient-warning ms-2 fs-10">Riêng tư</span>
                                             @endif
-
+                                              @if ($post->is_notification === 1)
+                                                <span class="badge badge-gradient-danger ms-2 fs-10">Thông báo</span>
+                                            @endif
                                         </h5>
                                         
                                         <div class="d-flex">

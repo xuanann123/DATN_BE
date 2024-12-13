@@ -18,6 +18,7 @@ class Post extends Model
         'thumbnail',
         'is_active',
         'is_banned',
+        'is_notification',
         'status',
         'views',
         'allow_comments',
