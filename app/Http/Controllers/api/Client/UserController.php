@@ -18,6 +18,7 @@ use App\Models\Lesson;
 use App\Models\LessonProgress;
 use App\Models\Quiz;
 use App\Models\QuizProgress;
+use App\Models\Roadmap;
 use App\Models\User;
 use App\Models\UserCourse;
 use App\Models\Video;
@@ -307,8 +308,8 @@ class UserController extends Controller
                 $newEducation = [];
                 $education = Education::create([
                     'id_profile' => $user->profile->id,
-                    'certificates' => $validatedData['certificates'], 
-                    'qa_pairs' => $validatedData['qa_pairs'], 
+                    'certificates' => $validatedData['certificates'],
+                    'qa_pairs' => $validatedData['qa_pairs'],
                     'degree' => $validatedData['degree'],
                     'institution_name' => $validatedData['institution_name'],
                 ]);
@@ -316,8 +317,8 @@ class UserController extends Controller
                 $user->update(['status' => User::STATUS_PENDING]);
                 $newEducation = [
                     'id' => $education->id,
-                    'id_profile' => $education->id_profile, 
-                    'name_student' => $user->name, 
+                    'id_profile' => $education->id_profile,
+                    'name_student' => $user->name,
                 ];
 
                 $admins = User::where('user_type', 'admin')->get();
@@ -557,6 +558,45 @@ class UserController extends Controller
             ]);
         }
 
+    }
+    public function myRoadmap()
+    {
+        try {
+            //Lấy người dùng hiện tại
+            $user = Auth::user();
+            //Lấy lộ trình của giảng viên đó
+            $roadmaps = Roadmap::with([
+                'phases' => function ($query) {
+                    // Sắp xếp phases theo order
+                    $query->orderBy('order');
+                    // Lấy các khóa học liên kết trong phases (chỉ lấy id, name, thumbnail, level)
+                    $query->with(['courses:id,name,thumbnail,level,price,price_sale,description,slug']);
+                }
+            ])
+                ->where('user_id', $user->id)
+                ->get();
+                if(empty($roadmaps)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "Không có dữ liệu",
+                    'data' => []
+                ], 204);
+                }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => "Lộ trình khoá học của tôi",
+                'data' => [
+                    'roadmaps' => $roadmaps,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => "error",
+                'message' => "Đã xảy ra lỗi trong quá trình lấy lộ trình" . $e->getMessage(),
+                'data' => []
+            ]);
+        }
     }
 
 }
