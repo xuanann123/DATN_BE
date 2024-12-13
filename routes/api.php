@@ -190,7 +190,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/by-email/{email}', [UserController::class, 'getUserByEmail']);
         
         //Làm phần lộ trình khoá học của giảng viên
-        Route::get('/my-roadmap', [UserController::class, 'myRoadmap']);
+        // Route::get('/my-roadmap', [UserController::class, 'myRoadmap']);
 
         Route::prefix('qna')->group(function () {
             Route::get('/', [QnAController::class, 'index'])->name('qna');

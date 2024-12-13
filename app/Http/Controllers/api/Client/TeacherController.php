@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\Roadmap;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -110,6 +111,7 @@ class TeacherController extends Controller
         }
         $limit = $request->input('limit', 5);
         // Lấy các khóa học nổi bật dựa vào số lượt mua và đánh giá trung bình
+        
         $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user','level')
             ->with('user')
             ->where('is_active', 1)
@@ -171,6 +173,16 @@ class TeacherController extends Controller
             $course->makeHidden('ratings');
             $course->makeHidden('modules');
         }
+        $roadmaps = Roadmap::with([
+            'phases' => function ($query) {
+                // Sắp xếp phases theo order
+                $query->orderBy('order');
+                // Lấy các khóa học liên kết trong phases (chỉ lấy id, name, thumbnail, level)
+                $query->with(['courses:id,name,thumbnail,level,price,price_sale,description,slug']);
+            }
+        ])
+            ->where('user_id', $teacher)
+            ->get();
 
         return response()->json([
             'status' => 'success',
@@ -178,7 +190,8 @@ class TeacherController extends Controller
                 'dataCourses' => $courses,
                 'dataTeacher' => $teacher,
                 'totalStudent' => $totalStudent,
-                'totalFollower' => $totalFollower
+                'totalFollower' => $totalFollower,
+                'roadmaps' => $roadmaps
             ]
         ], 200);
     }
