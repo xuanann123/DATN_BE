@@ -593,7 +593,7 @@ class PaymentController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Số tiền rút không hợp lệ'
-            ], 200);
+            ], 422);
         }
 
         if ($withdrawalWallet->balance < $request->coin) {
@@ -779,7 +779,7 @@ class PaymentController extends Controller
                     'courses.name as course_name',
                 )
                     ->join('courses', 'courses.id', '=', 'bills.id_course')
-                    ->join('users', 'users.id', '=', 'courses.id_user')
+                    ->join('users', 'users.id', '=', 'bills.id_user')
                     ->where('courses.id_user', $userId)
                     ->where('courses.id', $courseId)
                     ->where('bills.created_at', '>=', $start_date)
@@ -811,7 +811,7 @@ class PaymentController extends Controller
                 'courses.name as course_name',
             )
                 ->join('courses', 'courses.id', '=', 'bills.id_course')
-                ->join('users', 'users.id', '=', 'courses.id_user')
+                ->join('users', 'users.id', '=', 'bills.id_user')
                 ->where('courses.id_user', $userId)
                 ->where('bills.created_at', '>=', $start_date)
                 ->where('bills.created_at', '<=', $end_date)
@@ -844,7 +844,7 @@ class PaymentController extends Controller
                 'courses.name as course_name',
             )
                 ->join('courses', 'courses.id', '=', 'bills.id_course')
-                ->join('users', 'users.id', '=', 'courses.id_user')
+                ->join('users', 'users.id', '=', 'bills.id_user')
                 ->where('courses.id_user', $userId)
                 ->where('courses.id', $courseId)
                 ->orderbyDesc('bills.created_at')
@@ -874,7 +874,7 @@ class PaymentController extends Controller
             'courses.name as course_name',
         )
             ->join('courses', 'courses.id', '=', 'bills.id_course')
-            ->join('users', 'users.id', '=', 'courses.id_user')
+            ->join('users', 'users.id', '=', 'bills.id_user')
             ->where('courses.id_user', $userId)
             ->orderbyDesc('bills.created_at')
             ->paginate($perPage, ['*'], 'page', $page);

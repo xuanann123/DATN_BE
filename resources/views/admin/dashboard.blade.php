@@ -27,10 +27,10 @@
 
                                         </div>
                                         <!--end col-->
-                                        <div class="col-auto">
-                                            <a href="{{ route('admin.courses.create') }}" class="btn btn-soft-primary"><i
-                                                    class="ri-add-circle-line align-middle me-1"></i>Thêm khóa học</a>
-                                        </div>
+{{--                                        <div class="col-auto">--}}
+{{--                                            <a href="{{ route('admin.courses.create') }}" class="btn btn-soft-primary"><i--}}
+{{--                                                    class="ri-add-circle-line align-middle me-1"></i>Thêm khóa học</a>--}}
+{{--                                        </div>--}}
 
                                     </div>
                                     <!--end row-->

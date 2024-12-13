@@ -7,13 +7,17 @@ use App\Http\Requests\Admin\Profile\UpdateExperienceRequest;
 use App\Http\Requests\Admin\Profile\UpdateInfoBasicRequest;
 use App\Http\Requests\Admin\Profile\UpdateInforNomalRequest;
 use App\Http\Requests\Admin\Profile\UpdatePasswordRequest;
+use App\Models\AdminReview;
+use App\Models\Course;
 use App\Models\Education;
+use App\Models\Post;
 use App\Models\Profile;
 use App\Models\User;
 use Dotenv\Exception\ValidationException;
 use Google\Service\CloudRedis\UpdateInfo;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Google\Service\ServiceControl\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -22,7 +26,46 @@ class ProfileController extends Controller
 {
     public function index()
     {
-        return view("admin.profiles.index");
+        $listNewPosts = Post::select(
+            'posts.id',
+            'posts.title',
+            'posts.thumbnail',
+            'posts.created_at',
+        )
+            ->orderBy('posts.created_at', 'desc')
+            ->paginate(5);
+
+        $courses = AdminReview::select(
+            'admin_reviews.created_at',
+            'courses.id',
+            'courses.name as course_name',
+            'courses.status',
+            'users.name as author_name',
+            'users.avatar',
+        )->join('courses', 'courses.id', '=', 'admin_reviews.reviewable_id')
+            ->join('users', 'users.id', '=', 'courses.id_user')
+            ->where('admin_reviews.reviewable_type', 'App\Models\Course')
+            ->where('admin_reviews.user_id', auth()->id())
+            ->where('admin_reviews.action', 'approved')
+            ->orderBy('admin_reviews.created_at', 'desc')
+            ->get();
+
+        $teachers = AdminReview::select(
+            'admin_reviews.created_at',
+            'users.id',
+            'users.name',
+            'users.status',
+            'users.avatar',
+            'profiles.experience'
+        )->join('users', 'users.id', '=', 'admin_reviews.reviewable_id')
+            ->join('profiles', 'profiles.id_user', '=', 'users.id')
+            ->where('admin_reviews.reviewable_type', 'App\Models\User')
+            ->where('admin_reviews.user_id', auth()->id())
+            ->where('admin_reviews.action', 'approved')
+            ->orderBy('admin_reviews.created_at', 'desc')
+            ->get();
+
+        return view("admin.profiles.index", compact("listNewPosts", "courses", "teachers"));
     }
     public function edit()
     {
@@ -80,7 +123,7 @@ class ProfileController extends Controller
             if (!Hash::check($request->oldPassword, $user->password)) {
                 return redirect()->back()->with("error", "Mật này cũ không chính xác vui lòng mời bạn nhập lại")->with('tab', 'changePassword');
             } else {
-                //Trường hơp mật khảu đúng 
+                //Trường hơp mật khảu đúng
                 $user->update(['password' => Hash::make($request->newPassword)]);
                 return redirect()->back()->with("success", "Động thay đổi mật khẩu")->with('tab', 'changePassword');
             }
