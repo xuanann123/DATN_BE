@@ -188,8 +188,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('vouchers', [VoucherController::class, 'getMyVouchers']);
         //Lấy thông tin user qua email
         Route::get('/by-email/{email}', [UserController::class, 'getUserByEmail']);
-        //CHAT AI
-        // Route::get('/qna', [QnAController::class, 'index'])->name('qna');
+        
+        //Làm phần lộ trình khoá học của giảng viên
+        Route::get('/my-roadmap', [UserController::class, 'myRoadmap']);
+
         Route::prefix('qna')->group(function () {
             Route::get('/', [QnAController::class, 'index'])->name('qna');
             Route::post('/ask', [QnAController::class, 'askQuestion']);
