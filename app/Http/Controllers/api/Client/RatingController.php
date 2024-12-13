@@ -142,22 +142,7 @@ class RatingController extends Controller
 
     public function getRatingHomePage()
     {
-        // $listRating = DB::table('ratings as r')
-        //     ->select(
-        //         'u.name as name',
-        //         'u.email as email',
-        //         'u.avatar as avatar',
-        //         'r.content as content',
-        //         'r.rate as rate',
-        //         'r.created_at as created_at'
-        //     )
-        //     ->join('users as u', 'u.id', '=', 'r.id_user')
-        //     ->where('r.rate', 5)
-        //     ->orderByDesc('r.created_at')
-        //     ->limit(6)
-        //     ->get();
-        //Lấy danh sách rating mới nhất của tất cả người dùng
-        $listRating = Rating::query()->with(['user:id,name,avatar', 'course:id,name,thumbnail'])->latest('created_at')->limit(6)->get();
+        $listRating = Rating::query()->with(['user:id,name,avatar', 'course:id,name,thumbnail,slug'])->latest('created_at')->limit(6)->get();
         if (count($listRating) == 0) {
             return response()->json([
                 'status' => 'error',
