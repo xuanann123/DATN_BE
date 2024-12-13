@@ -200,6 +200,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/all-and-unread', [NotificationController::class, 'getUnreadCount']);
             Route::post('/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
             Route::delete('/{id}/delete', [NotificationController::class, 'delete']);
+            //Thông báo về bài viết
+            Route::get('/admin-post', [NotificationController::class, 'getNotificationPost']);
         });
     });
 

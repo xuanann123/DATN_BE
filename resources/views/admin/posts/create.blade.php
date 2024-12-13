@@ -106,6 +106,9 @@
                                     <option value="0" {{ old('is_active') == 0 ? 'selected' : '' }}>Riêng tư</option>
                                 </select>
                             </div>
+                            
+                        </div>
+                        <div class="row mb-3">
                             <div class="col-lg-6">
                                 <label for="post-visibility-input" class="form-label">Bình luận</label>
                                 <div class="form-check form-switch form-switch-lg form-switch-primary mt-1">
@@ -113,6 +116,17 @@
                                     <input class="form-check-input" name="allow_comments" type="checkbox" role="switch"
                                         id="allow-comments-input" value="1"
                                         {{ old('allow_comments') == 1 ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="allow-comments-input">Cho
+                                        phép</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="post-visibility-input" class="form-label">Thông báo</label>
+                                <div class="form-check form-switch form-switch-lg form-switch-primary mt-1">
+                                    <input type="hidden" name="is_notification" value="0">
+                                    <input class="form-check-input" name="is_notification" type="checkbox" role="switch"
+                                        id="allow-comments-input" value="1"
+                                        {{ old('is_notification') == 1 ? 'checked' : '' }}>
                                     <label class="form-check-label" for="allow-comments-input">Cho
                                         phép</label>
                                 </div>

@@ -30,6 +30,7 @@ class UpdatePostRequest extends FormRequest
             'published_at' => 'nullable|date',
             'is_active' => 'nullable|boolean',
             'allow_comments' => 'nullable|boolean',
+            'is_notification' => 'nullable|boolean',
             'content' => 'required|string',
             'categories' => 'required|array',
             'categories.*' => 'exists:categories,id',

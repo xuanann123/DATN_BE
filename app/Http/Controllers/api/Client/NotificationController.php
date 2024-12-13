@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api\Client;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
@@ -117,6 +118,34 @@ class NotificationController extends Controller
                 'data' => []
             ], 500);
         }
+    }
+    public function getNotificationPost() {
+        try {
+
+            $listNotification = Post::with('user:id,name,avatar', 'tags:id,name,slug', 'categories:id,name,slug')->where('is_notification', 1)->select('id', 'title', 'description', 'content', 'thumbnail', 'slug', 'created_at', 'views', 'user_id')->limit(10)->latest('created_at')->get();
+            if ($listNotification->isEmpty()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Không có thông báo từ admin',
+                    'data' => [],
+                ], 204);
+            }
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Danh sách notification',
+                    'data' => $listNotification,
+                ], 200);
+
+
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Loi khi lay danh sach notification.',
+                'error' => $e->getMessage(),
+                'data' => []
+            ], 500);
+        }   
     }
 
 }
