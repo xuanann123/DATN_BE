@@ -181,7 +181,7 @@ class TeacherController extends Controller
                 $query->with(['courses:id,name,thumbnail,level,price,price_sale,description,slug']);
             }
         ])
-            ->where('user_id', $teacher)
+            ->where('user_id', $teacher->id)
             ->get();
 
         return response()->json([
