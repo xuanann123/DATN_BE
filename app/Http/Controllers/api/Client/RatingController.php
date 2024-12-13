@@ -77,7 +77,7 @@ class RatingController extends Controller
             ->where('id_course', $courseId)
             ->first();
 
-        if(!$checkProgressCourse){
+        if (!$checkProgressCourse) {
             return response()->json([
                 'code' => 204,
                 'status' => 'error',
@@ -85,7 +85,7 @@ class RatingController extends Controller
             ]);
         }
 
-        if($checkProgressCourse->progress_percent != 100) {
+        if ($checkProgressCourse->progress_percent != 100) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Bạn chưa hoàn thành khóa học',
@@ -99,7 +99,7 @@ class RatingController extends Controller
             ->where('id_course', $courseId)
             ->first();
 
-        if($checkRating){
+        if ($checkRating) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Bạn đã đánh giá khóa học này rồi',
@@ -142,26 +142,27 @@ class RatingController extends Controller
 
     public function getRatingHomePage()
     {
-        $listRating = DB::table('ratings as r')
-            ->select(
-                'u.name as name',
-                'u.email as email',
-                'u.avatar as avatar',
-                'r.content as content',
-                'r.rate as rate',
-                'r.created_at as created_at'
-            )
-            ->join('users as u', 'u.id', '=', 'r.id_user')
-            ->where('r.rate', 5)
-            ->orderByDesc('r.created_at')
-            ->limit(6)
-            ->get();
-
+        // $listRating = DB::table('ratings as r')
+        //     ->select(
+        //         'u.name as name',
+        //         'u.email as email',
+        //         'u.avatar as avatar',
+        //         'r.content as content',
+        //         'r.rate as rate',
+        //         'r.created_at as created_at'
+        //     )
+        //     ->join('users as u', 'u.id', '=', 'r.id_user')
+        //     ->where('r.rate', 5)
+        //     ->orderByDesc('r.created_at')
+        //     ->limit(6)
+        //     ->get();
+        //Lấy danh sách rating mới nhất của tất cả người dùng
+        $listRating = Rating::query()->with(['user:id,name,avatar', 'course:id,name,thumbnail'])->latest('created_at')->limit(6)->get();
         if (count($listRating) == 0) {
             return response()->json([
-                'code' => 204,
                 'status' => 'error',
-                'message' => 'Không có đánh giá'
+                'message' => 'Không có đánh giá',
+                'data' => []
             ]);
         }
 
