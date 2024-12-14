@@ -57,7 +57,7 @@ class TeacherController extends Controller
             $teacher->total_student = DB::table('user_courses')->where('id_user', $teacher->id)->count();
             $teacher->ratings_avg_rate = number_format($ratings_avg_rate, 1);
             $teachers->makeHidden(['courses']);
-            
+
         }
         if ($teachers->count() <= 0) {
             return response()->json([
@@ -100,6 +100,8 @@ class TeacherController extends Controller
     {
 
         $teacher = $this->teacherId($id);
+        //Lấy người dùng hiện tại đang đăng nhập
+        //Thêm progress vào lộ trình khoá học
         $totalStudent = 0;
         $totalFollower = 0;
 
@@ -111,8 +113,8 @@ class TeacherController extends Controller
         }
         $limit = $request->input('limit', 5);
         // Lấy các khóa học nổi bật dựa vào số lượt mua và đánh giá trung bình
-        
-        $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user','level')
+
+        $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user', 'level')
             ->with('user')
             ->where('is_active', 1)
             ->whereHas('user', function ($query) {
@@ -183,6 +185,25 @@ class TeacherController extends Controller
         ])
             ->where('user_id', $teacher->id)
             ->get();
+        //Duyệt ra để thêm progress cho từng khoá học đối với những user đang đặp nhật
+        foreach ($roadmaps as $roadmap) {
+            foreach ($roadmap->phases as $phase) {
+                foreach ($phase->courses as $course) {
+                    $progress = DB::table('user_courses')
+                        ->where('id_user', Auth::user()->id)
+                        ->where('id_course', $course->id)
+                        ->first();
+                    if ($progress) {
+                        $course->progress = $progress->progress;
+                        $course->is_bought_course = true;
+                        ;
+                    } else {
+                        $course->progress = 0;
+                        $course->is_bought_course = false;
+                    }
+                }
+            }
+        }
 
         return response()->json([
             'status' => 'success',
