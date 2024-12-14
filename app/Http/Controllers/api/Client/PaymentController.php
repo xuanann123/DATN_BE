@@ -756,7 +756,7 @@ class PaymentController extends Controller
 
     public function historyBuyCoursesInTeacher(Request $request)
     {
-        $userId = $request->id_user;
+        $userId = auth()->id();
 
         // Số thứ tự trang;
         $page = $request->page ?? 1;
