@@ -197,7 +197,7 @@ class TeacherController extends Controller
                             ->where('id_course', $course->id)
                             ->first();
                         if ($progress) {
-                            $course->progress = $progress->progress;
+                            $course->progress = $progress->progress_percent;
                             $course->is_bought_course = true;
                             ;
                         } else {

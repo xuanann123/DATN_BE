@@ -330,6 +330,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('teachers')->group(function () {
         Route::get('/', [TeacherController::class, 'getTeachers']);
         Route::get('/list-teacher-month', [TeacherController::class, 'listTeacherMonth']);
+        //Trang chi tiết giảng viên
         Route::get('/list-courses/{id}', [TeacherController::class, 'getCoursesTeacher']);
     });
 
