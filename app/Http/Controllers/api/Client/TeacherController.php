@@ -99,122 +99,133 @@ class TeacherController extends Controller
     public function getCoursesTeacher(Request $request, $id)
     {
 
-        $teacher = $this->teacherId($id);
-        //Lấy người dùng hiện tại đang đăng nhập
-        //Thêm progress vào lộ trình khoá học
-        $totalStudent = 0;
-        $totalFollower = 0;
+        try {
+            $teacher = $this->teacherId($id);
+            $user = Auth::user();
+            //Lấy người dùng hiện tại đang đăng nhập
+            //Thêm progress vào lộ trình khoá học
+            $totalStudent = 0;
+            $totalFollower = 0;
 
-        if (!$teacher) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Không tồn tại giảng viên',
-            ], 204);
-        }
-        $limit = $request->input('limit', 5);
-        // Lấy các khóa học nổi bật dựa vào số lượt mua và đánh giá trung bình
+            if (!$teacher) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không tồn tại giảng viên',
+                ], 204);
+            }
+            $limit = $request->input('limit', 5);
+            // Lấy các khóa học nổi bật dựa vào số lượt mua và đánh giá trung bình
 
-        $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user', 'level')
-            ->with('user')
-            ->where('is_active', 1)
-            ->whereHas('user', function ($query) {
-                $query->whereIn('user_type', [User::TYPE_TEACHER, User::TYPE_ADMIN]);
-            })
-            ->where('status', 'approved')
-            ->where('id_user', $id)
-            ->withCount('ratings')
-            ->withAvg('ratings', 'rate')
-            ->withCount([
-                'modules as lessons_count' => function ($query) {
-                    $query->whereHas('lessons');
-                },
-                'modules as quiz_count' => function ($query) {
-                    $query->whereHas('quiz');
+            $courses = Course::select('id', 'slug', 'name', 'thumbnail', 'price', 'price_sale', 'total_student', 'id_user', 'level')
+                ->with('user')
+                ->where('is_active', 1)
+                ->whereHas('user', function ($query) {
+                    $query->whereIn('user_type', [User::TYPE_TEACHER, User::TYPE_ADMIN]);
+                })
+                ->where('status', 'approved')
+                ->where('id_user', $id)
+                ->withCount('ratings')
+                ->withAvg('ratings', 'rate')
+                ->withCount([
+                    'modules as lessons_count' => function ($query) {
+                        $query->whereHas('lessons');
+                    },
+                    'modules as quiz_count' => function ($query) {
+                        $query->whereHas('quiz');
+                    }
+                ])
+                ->orderByDesc('total_student')
+                ->orderByDesc('ratings_avg_rate')
+                ->limit($limit)
+                ->get();
+
+
+
+            if ($courses->count() <= 0) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không có dữ liệu',
+                ], 204);
+            }
+            //Lấy số lượng sinh viên đang tham gia khoá học này
+            foreach ($courses as $course) {
+                $totalStudent += DB::table('user_courses')->where('id_course', $course->id)->count();
+            }
+
+
+            //Lấy số lượng follow của giảng viên
+            $follow = DB::table('follows')
+                ->where('following_id', $id)
+                ->count();
+            $totalFollower = $follow;
+
+            // Tính tổng số lesson, quiz và duration
+            foreach ($courses as $course) {
+                // Tính tổng lessons và quiz
+                $total_lessons = $course->modules->flatMap->lessons->count();
+                $total_quiz = $course->modules->whereNotNull('quiz')->count();
+                $course->total_lessons = $total_lessons + $total_quiz;
+                // Tính tổng duration của các lesson vid
+                $course->total_duration_video = $course->modules->flatMap(function ($module) {
+                    return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
+                        return $lesson->lessonable->duration ?? 0;
+                    });
+                })->sum();
+                $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
+                $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
+
+                $course->makeHidden('ratings');
+                $course->makeHidden('modules');
+            }
+            $roadmaps = Roadmap::with([
+                'phases' => function ($query) {
+                    // Sắp xếp phases theo order
+                    $query->orderBy('order');
+                    // Lấy các khóa học liên kết trong phases (chỉ lấy id, name, thumbnail, level)
+                    $query->with(['courses:id,name,thumbnail,level,price,price_sale,description,slug']);
                 }
             ])
-            ->orderByDesc('total_student')
-            ->orderByDesc('ratings_avg_rate')
-            ->limit($limit)
-            ->get();
-
-
-
-        if ($courses->count() <= 0) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Không có dữ liệu',
-            ], 204);
-        }
-        //Lấy số lượng sinh viên đang tham gia khoá học này
-        foreach ($courses as $course) {
-            $totalStudent += DB::table('user_courses')->where('id_course', $course->id)->count();
-        }
-
-
-        //Lấy số lượng follow của giảng viên
-        $follow = DB::table('follows')
-            ->where('following_id', $id)
-            ->count();
-        $totalFollower = $follow;
-
-        // Tính tổng số lesson, quiz và duration
-        foreach ($courses as $course) {
-            // Tính tổng lessons và quiz
-            $total_lessons = $course->modules->flatMap->lessons->count();
-            $total_quiz = $course->modules->whereNotNull('quiz')->count();
-            $course->total_lessons = $total_lessons + $total_quiz;
-            // Tính tổng duration của các lesson vid
-            $course->total_duration_video = $course->modules->flatMap(function ($module) {
-                return $module->lessons->where('content_type', 'video')->map(function ($lesson) {
-                    return $lesson->lessonable->duration ?? 0;
-                });
-            })->sum();
-            $course->ratings_avg_rate = number_format(round($course->ratings->avg('rate'), 1), 1);
-            $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
-
-            $course->makeHidden('ratings');
-            $course->makeHidden('modules');
-        }
-        $roadmaps = Roadmap::with([
-            'phases' => function ($query) {
-                // Sắp xếp phases theo order
-                $query->orderBy('order');
-                // Lấy các khóa học liên kết trong phases (chỉ lấy id, name, thumbnail, level)
-                $query->with(['courses:id,name,thumbnail,level,price,price_sale,description,slug']);
-            }
-        ])
-            ->where('user_id', $teacher->id)
-            ->get();
-        //Duyệt ra để thêm progress cho từng khoá học đối với những user đang đặp nhật
-        foreach ($roadmaps as $roadmap) {
-            foreach ($roadmap->phases as $phase) {
-                foreach ($phase->courses as $course) {
-                    $progress = DB::table('user_courses')
-                        ->where('id_user', Auth::user()->id)
-                        ->where('id_course', $course->id)
-                        ->first();
-                    if ($progress) {
-                        $course->progress = $progress->progress;
-                        $course->is_bought_course = true;
-                        ;
-                    } else {
-                        $course->progress = 0;
-                        $course->is_bought_course = false;
+                ->where('user_id', $teacher->id)
+                ->get();
+            //Duyệt ra để thêm progress cho từng khoá học đối với những user đang đặp nhật
+            foreach ($roadmaps as $roadmap) {
+                foreach ($roadmap->phases as $phase) {
+                    foreach ($phase->courses as $course) {
+                  
+                        $progress = DB::table('user_courses')
+                            ->where('id_user', $user->id)
+                            ->where('id_course', $course->id)
+                            ->first();
+                        if ($progress) {
+                            $course->progress = $progress->progress;
+                            $course->is_bought_course = true;
+                            ;
+                        } else {
+                            $course->progress = 0;
+                            $course->is_bought_course = false;
+                        }
                     }
                 }
             }
-        }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => [
-                'dataCourses' => $courses,
-                'dataTeacher' => $teacher,
-                'totalStudent' => $totalStudent,
-                'totalFollower' => $totalFollower,
-                'roadmaps' => $roadmaps
-            ]
-        ], 200);
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'dataCourses' => $courses,
+                    'dataTeacher' => $teacher,
+                    'totalStudent' => $totalStudent,
+                    'totalFollower' => $totalFollower,
+                    'roadmaps' => $roadmaps
+                ]
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'data' => []
+            ]);
+        }
+        
     }
 
     public function ratingTeacher($id)

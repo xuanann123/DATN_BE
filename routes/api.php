@@ -330,6 +330,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('teachers')->group(function () {
         Route::get('/', [TeacherController::class, 'getTeachers']);
         Route::get('/list-teacher-month', [TeacherController::class, 'listTeacherMonth']);
+        Route::get('/list-courses/{id}', [TeacherController::class, 'getCoursesTeacher']);
     });
 
 
@@ -398,7 +399,7 @@ Route::get('/post-outstanding', [PostController::class, 'listPostOutstanding']);
 
 # ===================== ROUTE FOR TEACHER ===========================
 Route::prefix('teachers')->group(function () {
-    Route::get('/list-courses/{id}', [TeacherController::class, 'getCoursesTeacher']);
+    
     Route::get('/search-teacher', [TeacherController::class, 'searchTeachers']);
 });
 
