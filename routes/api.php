@@ -103,7 +103,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     # ===================== ROUTE FOR CHECKOUT ===========================
     Route::prefix('vouchers')->group(function () {
-        Route::get('/apply-coupon/{id_user}/{voucher_code}', [VoucherController::class, 'applyCoupon']);
+        Route::get('/apply-coupon/{id_course}/{voucher_code}', [VoucherController::class, 'applyCoupon']);
 
     });
 
@@ -142,7 +142,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('quiz/quiz-progress/{quiz}', [LessonController::class, 'updateQuizProgress']);
         Route::get('quiz/result/{userId}/{quizId}', [LessonController::class, 'getQuizResult']);
         Route::get('{lesson}/download-resourse', [LessonController::class, 'downloadResource']);
-        //preview khi chưa khoá học 
+        //preview khi chưa khoá học
         Route::get('preview/{lesson}', [CourseDetailController::class, 'lessonPreview']);
     });
 
@@ -188,7 +188,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('vouchers', [VoucherController::class, 'getMyVouchers']);
         //Lấy thông tin user qua email
         Route::get('/by-email/{email}', [UserController::class, 'getUserByEmail']);
-        
+
         //Làm phần lộ trình khoá học của giảng viên
         // Route::get('/my-roadmap', [UserController::class, 'myRoadmap']);
 
@@ -215,7 +215,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/history-withdraw/{id_user}', [PaymentController::class, 'historyWithdraw']);
         Route::get('/check-withdraw/{id_user}', [PaymentController::class, 'checkWithdraw']);
         // Lịch sử mua khóa học;
-        Route::get('/history-buy-course/{id_user}', [PaymentController::class, 'historyBuyCoursesInTeacher']);
+        Route::get('/history-buy-course', [PaymentController::class, 'historyBuyCoursesInTeacher']);
         // Danh sách khóa học
         Route::get('/course', [CourseController::class, 'index']);
         Route::get('/course/approved', [CourseController::class, 'getApprovedCourses']);
@@ -241,7 +241,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::put('/{phase}', [RoadmapController::class, 'updatePhase']);
                 //Xoá phần giai đoạn của quá trình
                 Route::delete('/{phase}', [RoadmapController::class, 'destroyPhase']);
-                //Xoá khoá học trong lộ trình 
+                //Xoá khoá học trong lộ trình
                 Route::post('/delete-course', [RoadmapController::class, 'destroyCourseInPhase']);
             });
         });

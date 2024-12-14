@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api\Client;
 use App\Http\Controllers\Controller;
 use App\Jobs\RollbackCountVoucher;
 use App\Models\Course;
+use App\Models\CourseVoucher;
 use App\Models\Voucher;
 use App\Models\VoucherUse;
 use Illuminate\Http\Request;
@@ -130,7 +131,8 @@ class VoucherController extends Controller
 
     public function applyCoupon(Request $request)
     {
-        $userId = $request->id_user;
+        $userId = auth()->id();
+        $courseId = $request->id_course;
         $voucherCode = $request->voucher_code;
 
         $voucher = Voucher::where('code', $voucherCode)
@@ -153,6 +155,19 @@ class VoucherController extends Controller
                     'message' => 'Mã đã hết lượt sử dụng'
                 ]
             ]);
+        }
+
+        // Check voucher theo khóa học;
+        $voucherCourse = CourseVoucher::where('id_voucher', $voucher->id)->first();
+        if ($voucherCourse) {
+            if($voucherCourse->id_course != $courseId){
+                return response()->json([
+                    'data' => [
+                        'status' => 'error',
+                        'message' => 'Mã giảm giá không áp dụng cho khóa học này'
+                    ]
+                ]);
+            }
         }
 
         $checkVoucher = VoucherUse::where('id_voucher', $voucher->id)
