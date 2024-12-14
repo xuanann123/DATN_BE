@@ -3,9 +3,10 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Gate;
-use App\Models\Permission;
 use App\Models\User;
+use App\Models\Permission;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -22,17 +23,36 @@ class AuthServiceProvider extends ServiceProvider
     /**
      * Register any authentication / authorization services.
      */
-    public function boot(): void
+    public function boot()
     {
         $this->registerPolicies();
-        // Vòng lập quyền check xem user đó có quyền hay không ... tối ưu hệ thống
-        foreach (Permission::all() as $permission) {
-            Gate::define($permission->slug, function ($user) use ($permission) {
-                // super admin thì không cần check
-                if ($user->user_type === User::TYPE_SUPER_ADMIN) {
-                    return true;
+
+        // Super_admin có toàn quyền, không cần check
+        Gate::before(function ($user, $ability) {
+            if ($user->user_type === User::TYPE_SUPER_ADMIN) {
+                return true;
+            }
+        });
+
+        if (Schema::hasTable('permissions')) {
+            $permissions = Permission::all();
+
+            if ($permissions->isNotEmpty()) {
+                // Vòng lặp quyền check xem user đó có quyền hay không ... tối ưu hệ thống
+                foreach ($permissions as $permission) {
+                    Gate::define($permission->slug, function ($user, $subSlug = null) use ($permission) {
+                        $fullSlug = $permission->slug;
+                        if ($subSlug) {
+                            $fullSlug .= '.' . $subSlug;
+                        }
+                        return $user->hasPermission($fullSlug);
+                    });
                 }
-                return $user->hasPermission($permission->slug);
+            }
+        } else {
+            // Nếu không có bảng permissions -> vẫn định nghĩa quyền default (quyền dự phòng)
+            Gate::define('default', function ($user) {
+                return false;
             });
         }
     }

@@ -150,11 +150,20 @@ class StatisticController extends Controller
             ->count();
 
         // Top khóa học bán chạy nhất
-        $topCourses = Course::where('id_user', $userId)
+        $topCourses = Course::with('category')
+            ->withCount('ratings')
+            ->where('id_user', $userId)
+            ->where('status', 'approved')
             ->withCount(['bills' => fn($query) => $this->applyTimeFilter($query, $timeFilter)])
             ->orderBy('bills_count', 'desc')
-            ->limit(5)
+            ->limit(4)
             ->get();
+
+        foreach ($topCourses as $topCourse) {
+            $topCourse->ratings_avg_rate = round($topCourse->ratings->avg('rate'), 1);
+        }
+
+        $topCourses->makeHidden('ratings');
 
         return [
             'total_revenue' => $totalRevenue,
