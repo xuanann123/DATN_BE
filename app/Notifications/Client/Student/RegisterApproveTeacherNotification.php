@@ -39,8 +39,9 @@ class RegisterApproveTeacherNotification extends Notification implements ShouldB
     public function toBroadcast(object $notifiable): array
     {
         return [
-            'type' => 'register_teacher',
+            'user_type' => 'register_teacher',
             'id' => $this->user['id'],
+            'status'=> true,
             'student_name' => $this->user['name'],
             'message' => "Chúc mừng bạn đã trở thành giảng viên.",
             'url' => env('FE_URL') . 'instructor/dashboard/'
