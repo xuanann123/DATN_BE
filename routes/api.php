@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use PHPUnit\Framework\Attributes\Group;
 use App\Http\Middleware\VerifyCsrfToken;
+use App\Http\Controllers\api\BroadcastController;
+use App\Http\Controllers\api\Client\QnAController;
 use App\Http\Controllers\api\Client\AuthController;
 use App\Http\Controllers\api\Client\PostController;
 use App\Http\Controllers\api\Client\UserController;
@@ -17,28 +19,27 @@ use App\Http\Controllers\api\Client\VoucherController;
 use App\Http\Controllers\api\Client\CategoryController;
 use App\Http\Controllers\api\Client\SocialAuthController;
 use App\Http\Controllers\api\Client\CourseDetailController;
+use App\Http\Controllers\api\Client\Intructor\CodingLesson;
+
 use App\Http\Controllers\api\Client\NotificationController;
 use App\Http\Controllers\api\Client\Student\NoteController;
+use App\Http\Controllers\api\Client\GeneralSearchController;
 use App\Http\Controllers\api\Client\Student\LessonController;
-
 use App\Http\Controllers\api\Client\Intructor\CourseController;
 use App\Http\Controllers\api\Client\Intructor\ModuleController;
 use App\Http\Controllers\api\Client\Intructor\TargetController;
+use App\Http\Controllers\api\Client\Intructor\RoadmapController;
 use App\Http\Controllers\api\Client\Intructor\StatisticController;
 use App\Http\Controllers\api\Client\Student\CertificateController;
 use App\Http\Controllers\api\Client\Intructor\CurriculumController;
 use App\Http\Controllers\api\Client\Intructor\ModuleQuizController;
 use App\Http\Controllers\api\Client\Intructor\TextLessonController;
 use App\Http\Controllers\api\Client\Intructor\UploadVideoController;
+use App\Http\Controllers\api\Client\Intructor\PreviewCourseController;
 use App\Http\Controllers\api\Client\CourseController as CourseHomePageController;
-use App\Http\Controllers\api\Client\GeneralSearchController;
-use App\Http\Controllers\api\Client\Intructor\CodingLesson;
 use App\Http\Controllers\api\Client\Student\CourseController as StudentCourseController;
 use App\Http\Controllers\api\Client\Intructor\LessonController as LessonTeacherController;
-use App\Http\Controllers\api\Client\Intructor\PreviewCourseController;
 use App\Http\Controllers\api\Client\Intructor\RatingController as IntructorRatingController;
-use App\Http\Controllers\api\Client\Intructor\RoadmapController;
-use App\Http\Controllers\api\Client\QnAController;
 
 
 /*
@@ -72,6 +73,9 @@ Route::prefix('auth')->group(function () {
 
 //Xác thực cần đăng nhập để thao tác
 Route::middleware('auth:sanctum')->group(function () {
+
+    # ===================== ROUTE FOR AUTH ===========================
+    Route::post('/broadcasting/auth', [BroadcastController::class, 'Authenticate']);
 
     # ===================== ROUTE FOR AUTH ===========================
     Route::prefix('auth')->group(function () {
@@ -400,7 +404,7 @@ Route::get('/post-outstanding', [PostController::class, 'listPostOutstanding']);
 
 # ===================== ROUTE FOR TEACHER ===========================
 Route::prefix('teachers')->group(function () {
-    
+
     Route::get('/search-teacher', [TeacherController::class, 'searchTeachers']);
 });
 
