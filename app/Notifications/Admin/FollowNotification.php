@@ -51,6 +51,7 @@ class FollowNotification extends Notification implements ShouldBroadcast
     {
         return [
             'type' => 'user_followed',
+            'user_role' => 'instructor',
             'follower_id' => $this->user->id,
             'follower_name' => $this->user->name,
             'message' => "Thành viên {$this->user->name} đã theo dõi bạn.",
