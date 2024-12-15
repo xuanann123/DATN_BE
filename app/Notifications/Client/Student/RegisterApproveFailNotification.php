@@ -29,7 +29,7 @@ class RegisterApproveFailNotification extends Notification implements ShouldBroa
     {
         return [
             'type' => 'register_teacher',
-            'user_role' => 'student',
+            'user_role' => 'member',
             'id' => $this->user['id'],
             'student_name' => $this->user['name'],
             'message' => "Hệ thống từ chối ứng tuyển vị trí giảng viên, cám ơn bạn!.",

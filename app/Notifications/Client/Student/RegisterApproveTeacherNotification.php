@@ -29,7 +29,7 @@ class RegisterApproveTeacherNotification extends Notification implements ShouldB
     {
         return [
             'type' => 'register_teacher',
-            'user_role' => 'student',
+            'user_role' => 'member',
             'id' => $this->user['id'],
             'student_name' => $this->user['name'],
             'message' => "Chúc mừng bạn đã trở thành giảng viên.",
