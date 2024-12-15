@@ -39,8 +39,9 @@ class RegisterApproveFailNotification extends Notification implements ShouldBroa
     public function toBroadcast(object $notifiable): array
     {
         return [
-            'type' => 'register_teacher',
+            'user_type' => 'register_teacher',
             'id' => $this->user['id'],
+            'status'=> false,
             'student_name' => $this->user['name'],
             'message' => "Hệ thống từ chối ứng tuyển vị trí giảng viên, cám ơn bạn!.",
             'url' => env('FE_URL') . 'account/profile/'
