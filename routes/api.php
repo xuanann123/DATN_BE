@@ -40,7 +40,7 @@ use App\Http\Controllers\api\Client\CourseController as CourseHomePageController
 use App\Http\Controllers\api\Client\Student\CourseController as StudentCourseController;
 use App\Http\Controllers\api\Client\Intructor\LessonController as LessonTeacherController;
 use App\Http\Controllers\api\Client\Intructor\RatingController as IntructorRatingController;
-
+use App\Http\Controllers\ConversationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -249,6 +249,17 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::post('/delete-course', [RoadmapController::class, 'destroyCourseInPhase']);
             });
         });
+        //Route for CHAT realtime
+        Route::prefix('conversations')->group(function () {
+            //Tạo nhóm chat
+            Route::post('/', [ConversationController::class, 'storeConversation']);
+            Route::get('/{id}', [ConversationController::class, 'getConversation']);
+
+            // Quản lý tin nhắn
+            Route::post('/messages', [ConversationController::class, 'sendMessage']);
+            Route::get('/messages/{conversationId}', [ConversationController::class, 'getMessages']);
+        });
+
 
 
 

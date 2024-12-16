@@ -32,17 +32,27 @@ Broadcast::channel('vouchers', function () {
 });
 
 
-//Yêu cầu phải login
-Broadcast::channel('chat', function ($user) {
-    if ($user) {
-        return [
-            'name' => $user->name,
-            'id' => $user->id,
-            'avatar' => $user->avatar
-        ];
-    }
-    return false;
+
+// Broadcast::channel('chat', function ($user) {
+//     if ($user) {
+//         return [
+//             'name' => $user->name,
+//             'id' => $user->id,
+//             'avatar' => $user->avatar
+//         ];
+//     }
+//     return false;
+// });
+
+// Định nghĩa channel cho các cuộc hội thoại
+Broadcast::channel('conversations.{conversationId}', function ($user, $conversationId) {
+    // Kiểm tra xem user có thuộc cuộc hội thoại này không
+    return \App\Models\ConversationMember::where('conversation_id', $conversationId)
+        ->where('user_id', $user->id)
+        ->exists();
 });
+
+
 //Sự kiện private channel khi nào đượ dùng (người nhận)
 Broadcast::channel('chat.greet.{receiver_id}', function ($user, $receiver_id) {
     return (int) $user->id === (int) $receiver_id;

@@ -9,12 +9,21 @@ class Message extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'user_id',
-        'message',
+        'conversation_id',
+        'sender_id',
+        'content',
+        'type',
     ];
-    //Tin nhắn thuộc về người dùng
-    public function user()
+
+    // Quan hệ: Tin nhắn thuộc một hội thoại
+    public function conversation()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Conversation::class);
+    }
+
+    // Quan hệ: Người gửi là một user
+    public function sender()
+    {
+        return $this->belongsTo(User::class, 'sender_id');
     }
 }

@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        //Tạo nhóm chat theo khoá học
         Schema::create('conversations', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable(); // tên nhóm, null thì là chat riêng
