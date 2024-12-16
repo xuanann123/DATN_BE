@@ -199,5 +199,9 @@ class Course extends Model
     {
         return $this->belongsToMany(Phase::class, 'phase_course', 'id_course', 'id_phase');
     }
+    //Một khoá học sẽ có một cuộc hội thoại
+    public function conversation() {
+        return $this->hasOne(Conversation::class);
+    }
 
 }
