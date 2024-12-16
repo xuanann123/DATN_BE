@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\Client\MessageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use PHPUnit\Framework\Attributes\Group;
@@ -17,6 +18,8 @@ use App\Http\Controllers\api\Client\PaymentController;
 use App\Http\Controllers\api\Client\TeacherController;
 use App\Http\Controllers\api\Client\VoucherController;
 use App\Http\Controllers\api\Client\CategoryController;
+use App\Http\Controllers\api\Client\ChatController;
+use App\Http\Controllers\api\Client\ConversationController as ClientConversationController;
 use App\Http\Controllers\api\Client\SocialAuthController;
 use App\Http\Controllers\api\Client\CourseDetailController;
 use App\Http\Controllers\api\Client\Intructor\CodingLesson;
@@ -209,6 +212,26 @@ Route::middleware('auth:sanctum')->group(function () {
             //Thông báo về bài viết
             Route::get('/admin-post', [NotificationController::class, 'getNotificationPost']);
         });
+    });
+
+    # ===================== ROUTE FOR CHAT ===========================
+    Route::prefix('chats')->group(function () {
+        // search người dùng (học viên | giảng viên)
+        Route::get('/search', [ChatController::class, 'search']);
+        // Cuộc trò chuyện
+        // Danh sách đoạn chat
+        Route::prefix('conversations')->group(function () {
+            Route::get('/', [ClientConversationController::class, 'index']);
+            // Chat 1:1
+            Route::get('/private/{conversationId}', [ClientConversationController::class, 'showPrivateConversation']);
+        });
+        // Gửi tin nhắn riêng
+        Route::post('/send-private-message', [MessageController::class, 'sendPrivateMessage']);
+        Route::get('/{id}', [ConversationController::class, 'getConversation']);
+
+        // Quản lý tin nhắn
+        Route::post('/messages', [ConversationController::class, 'sendMessage']);
+        Route::get('/messages/{conversationId}', [ConversationController::class, 'getMessages']);
     });
 
 

@@ -26,4 +26,10 @@ class Message extends Model
     {
         return $this->belongsTo(User::class, 'sender_id');
     }
+
+    // trang thai doc tin nhan
+    public function receipts()
+    {
+        return $this->hasMany(MessageReceipt::class);
+    }
 }

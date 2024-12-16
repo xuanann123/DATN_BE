@@ -84,6 +84,10 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Course::class, 'user_courses', 'id_user', 'id_course');
     }
+    public function user_course()
+    {
+        return $this->hasMany(UserCourse::class, 'id_user');
+    }
     //Định nghĩa mối quan hệ người được theo dõi
     public function following()
     {
@@ -153,5 +157,24 @@ class User extends Authenticatable implements MustVerifyEmail
             }
         }
         return false;
+    }
+
+    // Cuoc tro chuyen
+    public function conversations()
+    {
+        return $this->belongsToMany(Conversation::class, 'conversation_members', 'user_id', 'conversation_id')
+            ->withPivot('role', 'is_owner', 'is_muted', 'banned_at', 'joined_at', 'left_at');
+    }
+
+    // Tin nhan
+    public function messages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    // Trang thai doc tin nhan
+    public function messageReceipts()
+    {
+        return $this->hasMany(MessageReceipt::class);
     }
 }
