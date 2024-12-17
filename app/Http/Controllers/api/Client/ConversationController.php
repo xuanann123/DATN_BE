@@ -54,12 +54,18 @@ class ConversationController extends Controller
                     $lastMessage->content = "$senderName đã thu hồi một tin nhắn.";
                 }
 
+                $lastMessageContent = $lastMessage ? $lastMessage->content : ' ';
+                if ($lastMessage && $lastMessage->sender_id == $user->id) {
+                    $lastMessageContent = 'Bạn: ' . $lastMessageContent;
+                }
+
                 return [
                     'conversation_id' => $conversation->id,
                     'avatar' => $group->avatar ?? $partner->avatar,
+                    'sender_id' => $lastMessage ? $lastMessage->sender_id : null,
                     'name' => $conversation->name ?? $partner->makeHidden('pivot')->name,
                     'type' => $conversation->type,
-                    'last_message' => $lastMessage ? $lastMessage->content : ' ',
+                    'last_message' => $lastMessageContent,
                     'last_message_time' => $lastMessage ? $lastMessage->created_at->format('Y-m-d H:i:s') : null,
                     'is_read' => $readStatus ? 1 : 0,
                     'unread_messages_count' => $unreadMessagesCount,
