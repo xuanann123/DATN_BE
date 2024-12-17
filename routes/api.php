@@ -223,7 +223,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('conversations')->group(function () {
             Route::get('/', [ClientConversationController::class, 'index']);
             // Chat 1:1
-            Route::get('/private/{conversationId}', [ClientConversationController::class, 'showPrivateConversation']);
+            Route::get('/private', [ClientConversationController::class, 'showPrivateConversation']);
         });
         // Gửi tin nhắn riêng
         Route::post('/send-private-message', [MessageController::class, 'sendPrivateMessage']);

@@ -72,7 +72,7 @@ class MessageController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Tin nhắn đã được gửi thành công.',
-                'data' => $message,
+                'data' => $message->load('sender:id,name,avatar'),
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();

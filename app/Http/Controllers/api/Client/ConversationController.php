@@ -9,10 +9,12 @@ use App\Http\Controllers\Controller;
 
 class ConversationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try {
             $user = auth()->user();
+
+            $limit = $request->query('limit', 20);
 
             // Get tất cả cuộc trò chuyện của user logged in
             $conversations = Conversation::with(['members', 'messages'])
@@ -20,7 +22,7 @@ class ConversationController extends Controller
                     $query->where('user_id', $user->id);
                 })
                 ->orderByDesc('updated_at')
-                ->get();
+                ->paginate($limit);
 
             $response = $conversations->map(function ($conversation) use ($user) {
                 $lastMessage = $conversation->messages->last(); // lấy tin nhắn cuối cùng
@@ -35,10 +37,10 @@ class ConversationController extends Controller
                 $member = $conversation->members->firstWhere('user_id', $user->id);
                 $role = $member ? $member->role : null;
                 // Tên đối phương nếu là chat riêng
-                $partnerName = $conversation->type == 'direct' ?
+                $partner = $conversation->type == 'direct' ?
                     $conversation->members()
                         ->where('user_id', '<>', $user->id)
-                        ->select('name')
+                        ->select(['users.avatar', 'users.name'])
                         ->first() : (object) ['name' => 'Đoạn Chat'];
                 // Trạng thái tin nhắn
                 $readStatus = $lastMessage->receipts()
@@ -54,7 +56,8 @@ class ConversationController extends Controller
 
                 return [
                     'conversation_id' => $conversation->id,
-                    'name' => $conversation->name ?? $partnerName->makeHidden('pivot')->name,
+                    'avatar' => $group->avatar ?? $partner->avatar,
+                    'name' => $conversation->name ?? $partner->makeHidden('pivot')->name,
                     'type' => $conversation->type,
                     'last_message' => $lastMessage ? $lastMessage->content : ' ',
                     'last_message_time' => $lastMessage ? $lastMessage->created_at->format('Y-m-d H:i:s') : null,
@@ -68,7 +71,17 @@ class ConversationController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Danh sách cuộc trò chuyện.',
-                'data' => $response,
+                'data' => [
+                    'conversations' => $response,
+                    'pagination' => [
+                        'current_page' => $conversations->currentPage(),
+                        'next_page_url' => $conversations->nextPageUrl(),
+                        'prev_page_url' => $conversations->previousPageUrl(),
+                        'per_page' => $conversations->perPage(),
+                        'total' => $conversations->total(),
+                        'last_page' => $conversations->lastPage(),
+                    ]
+                ],
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -79,18 +92,61 @@ class ConversationController extends Controller
         }
     }
 
-    public function showPrivateConversation($conversationId, Request $request)
+    public function showPrivateConversation(Request $request)
     {
         DB::beginTransaction();
         try {
             $user = auth()->user();
+            // id nguoi nhan
+            $receiverId = $request->query('receiver_id');
+            // id cuoc tro chuyen
+            $conversationId = $request->query('conversation_id');
 
-            // Check xem user có tham gia cuộc trò chuyện không
-            $conversation = Conversation::with('members')
-                ->whereHas('members', function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                })
-                ->find($conversationId);
+            // Tự nhắn cho bản thân
+            if ($receiverId == $user->id) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Yêu cầu không hợp lệ.',
+                    'data' => null,
+                ], 400);
+            }
+
+            // Nếu truy cập bằng receiverId
+            if ($receiverId) {
+                $conversation = Conversation::with('members')
+                    ->where('type', 'direct')
+                    ->whereHas('members', function ($query) use ($user, $receiverId) {
+                        $query->where('user_id', $user->id);
+                    })
+                    ->whereHas('members', function ($query) use ($receiverId) {
+                        $query->where('user_id', $receiverId);
+                    })
+                    ->first();
+
+                // Nếu chưa nhắn tin
+                if (!$conversation) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Chưa có cuộc trò chuyện với người nhận này.',
+                        'data' => null,
+                    ], 204);
+                }
+            }
+            // Nếu truy cập bằng conversationId
+            else if ($conversationId) {
+                // Check xem user có tham gia cuộc trò chuyện không
+                $conversation = Conversation::with('members')
+                    ->whereHas('members', function ($query) use ($user) {
+                        $query->where('user_id', $user->id);
+                    })
+                    ->find($conversationId);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Yêu cầu không hợp lệ.',
+                    'data' => null,
+                ], 400);
+            }
 
             if (!$conversation) {
                 return response()->json([
@@ -100,11 +156,11 @@ class ConversationController extends Controller
                 ], 403);
             }
 
-            // Tên đối phương nếu là chat riêng
-            $partnerName = $conversation->type == 'direct' ?
+            // Check đối phương (người nhận)
+            $partner = $conversation->type == 'direct' ?
                 $conversation->members()
                     ->where('user_id', '<>', $user->id)
-                    ->select('name')
+                    ->select(['users.id', 'users.name', 'users.avatar'])
                     ->first() : (object) ['name' => 'Đoạn Chat'];
 
             // Lấy list msg trong cuộc trò chuyện
@@ -153,7 +209,7 @@ class ConversationController extends Controller
 
                 // Trạng thái đọc của đối phương
                 $otherUserReceipt = $message->receipts->where('user_id', '!=', $user->id)->first();
-                
+
                 return [
                     'message_id' => $message->id,
                     'content' => $message ? $message->content : ' ',
@@ -179,13 +235,18 @@ class ConversationController extends Controller
                 'message' => 'Nội dung cuộc trò chuyện.',
                 'data' => [
                     'conversation_id' => $conversation->id,
-                    'name' => $conversation->name ?? $partnerName->makeHidden('pivot')->name,
+                    'receiver_id' => $partner->id,
+                    'receiver_avatar' => $partner->avatar,
+                    'receiver_name' => $conversation->name ?? $partner->makeHidden('pivot')->name,
                     'type' => $conversation->type,
                     'messages' => $response,
                     'pagination' => [
                         'current_page' => $messages->currentPage(),
-                        'last_page' => $messages->lastPage(),
+                        'next_page_url' => $messages->nextPageUrl(),
+                        'prev_page_url' => $messages->previousPageUrl(),
+                        'per_page' => $messages->perPage(),
                         'total' => $messages->total(),
+                        'last_page' => $messages->lastPage(),
                     ],
                 ],
             ], 200);
