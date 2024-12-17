@@ -16,6 +16,7 @@ class Transaction extends Model
         'amount',
         'coin',
         'status',
+        'id_depositor'
     ];
 
     public function transactionable()

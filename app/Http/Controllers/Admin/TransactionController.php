@@ -155,11 +155,14 @@ class TransactionController extends Controller
                 'transactions.coin',
                 'transactions.created_at',
                 'transactions.status',
-                'users.name',
+//                'users.name',
+                'users1.name as user_name',
+                'users2.name as approver_name',
                 'users.email'
             )
                 ->join('withdrawal_wallets', 'withdrawal_wallets.id', '=', 'transactions.transactionable_id')
                 ->join('users', 'users.id', '=', 'withdrawal_wallets.id_user')
+                ->leftJoin('users as users2', 'users2.id', '=', 'transactions.id_depositor')
                 ->where('transactions.transactionable_type', '=', WithdrawalWallet::class)
                 ->where(function ($query) use ($key) {
                     $query->where('users.name', 'LIKE', "%$key%")
@@ -180,11 +183,14 @@ class TransactionController extends Controller
             'transactions.coin',
             'transactions.created_at',
             'transactions.status',
-            'users.name',
-            'users.email'
+            'users1.name as user_name',
+            'users2.name as approver_name',
+            'users1.email as user_email',
+            'users2.email as approver_email',
         )
             ->join('withdrawal_wallets', 'withdrawal_wallets.id', '=', 'transactions.transactionable_id')
-            ->join('users', 'users.id', '=', 'withdrawal_wallets.id_user')
+            ->join('users as users1', 'users1.id', '=', 'withdrawal_wallets.id_user')
+            ->leftJoin('users as users2', 'users2.id', '=', 'transactions.id_depositor')
             ->where('transactions.transactionable_type', '=', WithdrawalWallet::class)
             ->orderBy('transactions.created_at', 'desc')
             ->paginate(10);
@@ -303,6 +309,7 @@ class TransactionController extends Controller
                 'amount' => $requestMoney->amount,
                 'coin' => $requestMoney->coin,
                 'status' => 'Thất bại',
+                'id_depositor' => auth()->id()
             ]);
         } else if ($data['status'] == 'Hoàn thành') {
             $withdrawWallet = WithdrawalWallet::where('id_user', $requestMoney->id_user)->first();
@@ -313,6 +320,7 @@ class TransactionController extends Controller
                 'amount' => $requestMoney->amount,
                 'coin' => $requestMoney->coin,
                 'status' => 'Thành công',
+                'id_depositor' => auth()->id()
             ]);
         }
 
