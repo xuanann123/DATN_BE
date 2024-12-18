@@ -509,8 +509,8 @@
                 <!-- Preview Lesson Modal -->
                 <div class="modal fade" id="previewLessonModal" tabindex="-1" aria-labelledby="previewLessonModal"
                     aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-lg">
-                        <div class="modal-content border-0" style="width: 900px!important;">
+                    <div class="modal-dialog modal-dialog-centered modal-xl">
+                        <div class="modal-content border-0 modal-xl" >
                             <div class="modal-header bg-primary-subtle">
                                 <h5 class="modal-title mb-3" id="previewLessonModalLabel">Xem trước bài học</h5>
                                 <button type="button" class="btn-close mb-2" data-bs-dismiss="modal"
@@ -524,8 +524,8 @@
                 {{-- Preview Quiz --}}
                 <div class="modal fade" id="previewQuizModal" tabindex="-1" aria-labelledby="previewQuizModal"
                     aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-lg">
-                        <div class="modal-content border-0 shadow-lg">
+                    <div class="modal-dialog modal-dialog-centered modal-xxl">
+                        <div class="modal-content border-0 shadow-xxl">
                             <div class="modal-header bg-primary-subtle">
                                 <h4 class="modal-title mb-3" id="previewQuizModalLabel">Lesson Preview</h4>
                                 <button type="button" class="btn-close mb-2" data-bs-dismiss="modal"
@@ -612,14 +612,14 @@
             <div class="card-body">
                 <div class="row">
                     <!-- Gợi ý code -->
-                    <div class="col-xl-12 mb-3">
+                    <div class="col-xl-6 mb-3">
                         <label class="form-label fw-bold">Gợi ý code</label>
                         <textarea id="sampleCode" class="form-control bg-dark text-white" 
                                   style="min-height: 300px; resize: none;" readonly>${data.sample_code}</textarea>
                     </div>
 
                     <!-- Kết quả code -->
-                    <div class="col-xl-12 mb-3">
+                    <div class="col-xl-6 mb-3">
                         <label class="form-label fw-bold">Kết quả code</label>
                         <textarea id="resultCode" class="form-control bg-dark text-white" 
                                   style="min-height: 300px; resize: none;" readonly>${data.result_code}</textarea>
