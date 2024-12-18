@@ -449,6 +449,7 @@
 
                     </div>
                 </div>
+                
 
                 <div class="tab-pane fade" id="course-content" role="tabpanel">
                     <div class="card">
