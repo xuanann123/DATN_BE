@@ -68,6 +68,7 @@
                                 <th data-ordering="false">Tỉ lệ chuyển đổi</th>
                                 <th>Số xu</th>
                                 <th>Ngày giao dịch</th>
+                                <th>Người duyệt</th>
                                 <th>Trạng thái</th>
                             </tr>
                         </thead>
@@ -77,7 +78,7 @@
                                     <td>
                                         {{ $withdraw->id }}
                                     </td>
-                                    <td>{{ $withdraw->name != '' ? $withdraw->name : $withdraw->email }}</td>
+                                    <td>{{ $withdraw->user_name != '' ? $withdraw->user_name : $withdraw->user_email }}</td>
                                     <td>
                                         {{ number_format($withdraw->amount, 1, '.', ',') }}
                                     </td>
@@ -89,6 +90,9 @@
                                     </td>
                                     <td>
                                         {{ $withdraw->created_at }}
+                                    </td>
+                                    <td>
+                                        {{ $withdraw->approver_name != '' ? $withdraw->approver_name : $withdraw->approver_email }}
                                     </td>
                                     <td>
                                         <span

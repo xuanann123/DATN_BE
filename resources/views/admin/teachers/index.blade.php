@@ -1,7 +1,7 @@
 @extends('admin.layouts.master')
 
 @section('title')
-    Danh sách khóa học chờ phê duyệt
+    Danh sách giảng viên
 @endsection
 
 @section('style-libs')

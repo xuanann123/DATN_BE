@@ -133,7 +133,7 @@ Route::prefix("admin")
             Route::put('/{voucher}', [VoucherController::class, 'update'])->name('update')->can('voucher.update');
             Route::delete('/{voucher}', [VoucherController::class, 'destroy'])->name('destroy')->can('voucher.delete');
         });
-        //Về phần user thì sao nhỉ
+        // User
         Route::prefix('users')
             ->as('users.')
             ->group(function () {
