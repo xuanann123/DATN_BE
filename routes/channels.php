@@ -25,7 +25,7 @@ Broadcast::channel('App.Models.Education.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
-//Gửi voucher tạo ra cho các user toàn bộ hệ thống 
+//Gửi voucher tạo ra cho các user toàn bộ hệ thống
 Broadcast::channel('vouchers', function () {
     //Vì là kênh công khai nên auto trả về true
     return true;
@@ -45,7 +45,7 @@ Broadcast::channel('vouchers', function () {
 // });
 
 // Định nghĩa channel cho các cuộc hội thoại
-Broadcast::channel('conversations.{conversationId}', function ($user, $conversationId) {
+Broadcast::channel('conversation.{conversationId}', function ($user, $conversationId) {
     // Kiểm tra xem user có thuộc cuộc hội thoại này không
     return \App\Models\ConversationMember::where('conversation_id', $conversationId)
         ->where('user_id', $user->id)

@@ -365,14 +365,15 @@
                                                             </div>
                                                             @if ($lesson->content_type === 'video')
                                                                 <div class="card-body">
-                                                                @php
-                                                                    $timeLesson = $lesson->lessonable->duration;
-                                                                @endphp
-                                                                <i class="mb-0 fs-11">Thời gian: {{ ceil($timeLesson / 60) }}
-                                                                    phút</i>
-                                                            </div>  
+                                                                    @php
+                                                                        $timeLesson = $lesson->lessonable->duration;
+                                                                    @endphp
+                                                                    <i class="mb-0 fs-11">Thời gian:
+                                                                        {{ ceil($timeLesson / 60) }}
+                                                                        phút</i>
+                                                                </div>
                                                             @endif
-                                                          
+
                                                         </div>
                                                     @endforeach
                                                     @if ($module->quiz)
@@ -509,14 +510,16 @@
                 <!-- Preview Lesson Modal -->
                 <div class="modal fade" id="previewLessonModal" tabindex="-1" aria-labelledby="previewLessonModal"
                     aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-xl">
-                        <div class="modal-content border-0 modal-xl" >
+                    <div class="modal-dialog modal-dialog-centered modal-xl" style="max-height: 90%">
+                        <div class="modal-content border-0 modal-xl">
                             <div class="modal-header bg-primary-subtle">
                                 <h5 class="modal-title mb-3" id="previewLessonModalLabel">Xem trước bài học</h5>
                                 <button type="button" class="btn-close mb-2" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
-                            <div class="modal-body p-4">
+                            <div data-simplebar style="max-height: 90vh">
+                                <div class="modal-body p-4">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -581,14 +584,15 @@
                     url: '/admin/lessons/get-lesson-details/' + lessonId,
                     method: 'GET',
                     success: function(data) {
-                        $('#previewLessonModalLabel').text(data.title)
+                        $('#previewLessonModalLabel').text(data.title).addClass(
+                            'text-uppercase')
                         console.log(data);
                         // lesson text
                         if (data.lesson_type === 'document') {
                             $('#previewLessonModal .modal-body').html(`
                                 <div data-simplebar style="max-height: 450px; max-width: 100%">${data.content}</div>
                             `)
-                        } else if (data.lesson_type == 'video') {
+                        } else if (data.lesson_type == 'video' && data.type != 'upload') {
                             $('#previewLessonModal .modal-body').html(`
                                 <iframe width="100%" height="500px" src="https://www.youtube.com/embed/${data.video_youtube_id}" title="YouTube video player"
                                     frameborder="0"
@@ -596,15 +600,27 @@
                                     referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
                                 </iframe>
                             `)
+                        } else if (data.lesson_type === 'video' && data.type == 'upload') {
+                            $('#previewLessonModal .modal-body').html(`
+                                <video width="100%" height="auto" controls>
+                                    <source
+                                        src="${data.url}"
+                                        type="video/mp4">
+                                    Trình duyệt của bạn không hỗ trợ video.
+                                </video>
+                            `)
                         } else {
+                            var statementContent = data.statement.replace(/<\/?p>/g, '')
                             $('#previewLessonModal .modal-body').html(`
 <div class="row">
     <div class="col-xl-12">
         <div class="card">
             <!-- Card Header -->
             <div class="card-header">
-                <h6 class="card-title mb-0 text-uppercase">${data.statement}</h6>
-                <br>
+                <h6 class="card-title fs-15 mb-2"><strong>Mục tiêu học tập:</strong> ${statementContent}</h6>
+            </div>
+            <div class="card-header">
+                <h6 class="card-title fs-15 mb-2">Đề bài: ${statementContent}</h6>
                 <span class="badge bg-primary text-uppercase">Ngôn ngữ lập trình ${data.language}</span>
             </div>
 
@@ -614,14 +630,14 @@
                     <!-- Gợi ý code -->
                     <div class="col-xl-6 mb-3">
                         <label class="form-label fw-bold">Gợi ý code</label>
-                        <textarea id="sampleCode" class="form-control bg-dark text-white" 
+                        <textarea id="sampleCode" class="form-control bg-dark text-white"
                                   style="min-height: 300px; resize: none;" readonly>${data.sample_code}</textarea>
                     </div>
 
                     <!-- Kết quả code -->
                     <div class="col-xl-6 mb-3">
-                        <label class="form-label fw-bold">Kết quả code</label>
-                        <textarea id="resultCode" class="form-control bg-dark text-white" 
+                        <label class="form-label fw-bold">Code giải pháp</label>
+                        <textarea id="resultCode" class="form-control bg-dark text-white"
                                   style="min-height: 300px; resize: none;" readonly>${data.result_code}</textarea>
                     </div>
                 </div>
@@ -629,11 +645,17 @@
                     <!-- Gợi ý code -->
                     <div class="col-xl-12 mb-3">
                         <label class="form-label fw-bold">Kết quả code</label>
-                        <textarea id="resultCode" class="form-control bg-dark text-white" 
+                        <textarea id="resultCode" class="form-control bg-dark text-white"
                                   style="min-height: 100px; resize: none;" readonly>${data.output}</textarea>
                     </div>
-
-                  
+                </div>
+                <div class="row">
+                    <!-- Gợi ý code -->
+                    <div class="col-xl-12 mb-3">
+                        <label class="form-label fw-bold">Gợi ý của giảng viên</label>
+                        <textarea id="resultCode" class="form-control bg-light"
+                                  style="min-height: 100px; resize: none;" readonly>${data.output}</textarea>
+                    </div>
                 </div>
             </div>
         </div>
