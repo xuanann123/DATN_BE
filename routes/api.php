@@ -224,9 +224,16 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/', [ClientConversationController::class, 'index']);
             // Chat 1:1
             Route::get('/private', [ClientConversationController::class, 'showPrivateConversation']);
+            // Đọc tin nhắn trong đoạn chat
+            Route::put('/{conversationId}/read-message', [ClientConversationController::class, 'readMessage']);
         });
         // Gửi tin nhắn riêng
         Route::post('/send-private-message', [MessageController::class, 'sendPrivateMessage']);
+        // Xóa tin nhắn (ở phía bản thân)
+        Route::put('/delete-message/{messageId}', [MessageController::class, 'deleteMessage']);
+        // Thu hồi tin nhắn
+        Route::put('/unsend-message/{messageId}', [MessageController::class, 'unsendMessage']);
+
         Route::get('/{id}', [ConversationController::class, 'getConversation']);
 
         // Quản lý tin nhắn

@@ -13,7 +13,8 @@ class MessageReceipt extends Model
         'message_id',
         'user_id',
         'is_read',
-        'read_at'
+        'read_at',
+        'deleted_at'
     ];
 
     public function message()

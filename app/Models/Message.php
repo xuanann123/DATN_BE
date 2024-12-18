@@ -13,6 +13,7 @@ class Message extends Model
         'sender_id',
         'content',
         'type',
+        'deleted_at'
     ];
 
     // Quan hệ: Tin nhắn thuộc một hội thoại

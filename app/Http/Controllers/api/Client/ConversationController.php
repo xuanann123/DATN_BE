@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api\Client;
 
+use App\Events\ReadMessage;
 use App\Models\Conversation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -51,6 +52,13 @@ class ConversationController extends Controller
                 $deletedMessage = $lastMessage && $lastMessage->deleted_at ? $lastMessage : null;
                 if ($deletedMessage) {
                     $senderName = $deletedMessage->sender_id == $user->id ? "Bạn" : $deletedMessage->sender->name;
+
+                    // Rút gọn tên
+                    $nameParts = explode(' ', $senderName);
+                    if (count($nameParts) > 1) {
+                        $senderName = $nameParts[0] . ' ' . $nameParts[1] . ' ...'; // Chỉ lấy 2 từ đầu tiên của tên
+                    }
+
                     $lastMessage->content = "$senderName đã thu hồi một tin nhắn.";
                 }
 
@@ -203,7 +211,7 @@ class ConversationController extends Controller
 
                 // Loại bỏ tin nhắn nếu người dùng hiện tại đã xóa ở phía mình
                 return !$currentUserReceipt || is_null($currentUserReceipt->deleted_at);
-            })->map(function ($message) use ($user) {
+            })->values()->map(function ($message) use ($user) {
                 // Tin nhắn đã thu hồi
                 $deletedMessage = $message && $message->deleted_at ? $message : null;
                 if ($deletedMessage) {
@@ -261,6 +269,92 @@ class ConversationController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Đã xảy ra lỗi khi truy cập nội dung cuộc trò chuyện.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function readMessage($conversationId)
+    {
+        DB::beginTransaction();
+        try {
+            $user = auth()->user();
+            $conversation = Conversation::find($conversationId);
+
+            if ($conversation) {
+                $conversation->messages()
+                    ->whereHas('receipts', function ($query) use ($user) {
+                        $query->where('user_id', $user->id);
+                    })
+                    ->first();
+            }
+
+            if (!$conversation) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không có quyền truy cập.',
+                    'data' => ''
+                ], 403);
+            }
+
+            // Đánh dấu tin nhắn là đã đọc (nếu chưa đọc)
+            $conversation->messages()
+                ->whereHas('receipts', function ($query) use ($user) {
+                    $query->where('user_id', $user->id)
+                        ->where('read_at', null);
+                })
+                ->each(function ($message) use ($user) {
+                    // update những tin nhắn chưa đọc
+                    $message->receipts()
+                        ->where('user_id', $user->id)
+                        ->update([
+                            'is_read' => 1,
+                            'read_at' => now(),
+                        ]);
+                });
+
+            // Lấy tin nhắn mới nhất từ cuộc trò chuyện
+            $lastMessage = $conversation->messages()
+                ->latest('created_at')
+                ->first();
+
+            // Trạng thái đọc của chính user đang đăng nhập
+            $currentUserReceipt = $lastMessage->receipts->firstWhere('user_id', $user->id);
+
+            // Trạng thái đọc của đối phương
+            // $otherUserReceipt = $lastMessage->receipts->where('user_id', '!=', $user->id)->first();
+
+            $latestMessage = [
+                'id' => $lastMessage->id,
+                'conversation_id' => $lastMessage->conversation_id,
+                'type' => $lastMessage->type,
+                'sender' => [
+                    'id' => $lastMessage->sender->id,
+                    'name' => $lastMessage->sender->name,
+                    'avatar' => $lastMessage->sender->avatar,
+                ],
+                'is_read' => $currentUserReceipt ? $currentUserReceipt->is_read : 0,
+                'read_at' => $currentUserReceipt ? $currentUserReceipt->read_at : null,
+                // 'is_read_by_other' => $otherUserReceipt ? $otherUserReceipt->is_read : 0,
+                // 'read_at_by_other' => $otherUserReceipt ? $otherUserReceipt->read_at : null,
+                'created_at' => $lastMessage->created_at->format('Y-m-d H:i:s'),
+                'deleted_at' => $lastMessage->deleted_at ? $lastMessage->deleted_at : null,
+            ];
+
+            broadcast(new ReadMessage($latestMessage));
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => '',
+                'data' => $latestMessage,
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi đọc tin nhắn.',
                 'error' => $e->getMessage(),
             ], 500);
         }
