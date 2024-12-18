@@ -78,10 +78,7 @@ class ApprovalCourseController extends Controller
                 return $lesson->lessonable->duration ?? 0;
             });
         })->sum();
-        // Chuyển đổi sang định dạng X giờ, Y phút
-        $hours = floor($totalDurationVideo / 3600);
-        $minutes = ceil(($totalDurationVideo % 3600) / 60);
-        $totalDurationVideo = trim(($hours ? $hours . ' Giờ ' : '') . ($minutes ? $minutes . ' Phút' : ''));
+
 
         $lecturesCount = $course->modules->sum(function ($module) {
             return $module->lessons->whereIn('content_type', ['document', 'video'])->count();
@@ -98,6 +95,7 @@ class ApprovalCourseController extends Controller
         $audiences = $course->audiences;
         //Lấy ra phần danh sách đánh giá của khoá học này
         $ratings = $course->ratings;
+ 
 
         return view('admin.course_censors.detail', compact('title', 'course', 'totalDurationVideo', 'lecturesCount', 'quizzesCount', 'maxModulePosition', 'conditions', 'goals', 'requirements', 'audiences', 'ratings'));
     }

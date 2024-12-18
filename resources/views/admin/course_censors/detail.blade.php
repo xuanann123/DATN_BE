@@ -139,6 +139,12 @@
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#course-information"
+                                    role="tab">
+                                    Thông tin
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#course-content" role="tab">
                                     Nội dung
                                 </a>
@@ -159,16 +165,18 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="tab-content text-muted">
-                <div class="tab-pane fade show active" id="course-overview" role="tabpanel">
+                <div class="tab-pane fade" id="course-overview" role="tabpanel">
                     <div class="row">
                         <div class="col-xl-9 col-lg-8">
                             <div class="card">
                                 <div class="card-body">
                                     <div class="text-muted">
-                                        <h6 class="mb-3 fw-semibold text-uppercase">Mô tả
-                                        </h6>
-                                        <div id="course-description">{!! $course->description !!}</div>
-
+                                        <h5 class="mb-3 fw-semibold text-uppercase">Video trailer khoá học
+                                        </h5>
+                                        <div id="course-description">
+                                            <video src="{{ Storage::url($course->trailer) }}" class="img-fluid rounded"
+                                                style="width: 100%!important" controls></video>
+                                        </div>
                                         <div class="pt-3 border-top border-top-dashed mt-4" data-simplebar
                                             style="max-height: 500px">
                                             {!! $course->learned !!}
@@ -180,16 +188,18 @@
                         <div class="col-xl-3 col-lg-4">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5 class="card-title mb-0">Tổng quan khóa học</h5>
+                                    <h6 class="card-title mb-0 text-uppercase">Tổng quan khóa học</h6>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive table-card">
                                         <table class="table table-borderless align-middle mb-0">
                                             <tbody>
                                                 <tr>
-                                                    <td class="fw-medium">Thời gian video</td>
+                                                    <td class="fw-medium">Thời gian</td>
                                                     <td id="course-duration">
-                                                        {{ $totalDurationVideo ? $totalDurationVideo : 'Chưa xác định' }}
+                                                        {{-- Hiển thị số lượng phút ra đây --}}
+                                                        {{ ceil($totalDurationVideo / 60) }}
+                                                        phút</i>
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -201,33 +211,36 @@
                                                     <td id="quiz-count">{{ $quizzesCount ?? 'Chưa có' }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="fw-medium">Trình độ</td>
-                                                    <td id="quiz-count">{{ $course->level ?? 'Chưa có' }}</td>
-                                                </tr>
-                                                <tr>
                                                     <td class="fw-medium">Học viên</td>
-                                                    <td id="course-language">{{ $course->total_student }}</td>
+                                                    <td id="course-language">
+                                                        @if ($course->total_student <= 0)
+                                                            Không có học viên
+                                                        @else
+                                                            {{ $course->total_student . ' sinh viên' }}
+                                                        @endif
+                                                    </td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="fw-medium">Price</td>
+                                                    <td class="fw-semibold">Giá khoá học</td>
                                                     <td>
                                                         @if ($course->is_free)
-                                                            <span class="badge bg-success">Free</span>
+                                                            <span class="badge bg-success rounded-pill">Miễn phí</span>
                                                         @else
                                                             @if ($course->price_sale)
                                                                 <span
-                                                                    class="text-decoration-line-through">{{ number_format($course->price, 0) }}</span>
+                                                                    class="text-muted text-decoration-line-through me-2">{{ number_format($course->price, 0) }}</span>
                                                                 <span
-                                                                    class="text-danger">{{ number_format($course->price_sale, 0) }}</span>
-                                                                <i class="ri-bit-coin-line fw-bold text-warning"></i>
+                                                                    class="fw-bold text-danger me-2">{{ number_format($course->price_sale, 0) }}</span>
+                                                                <i class="ri-bit-coin-line text-warning"></i>
                                                             @else
                                                                 <span
-                                                                    class="text-danger">{{ number_format($course->price, 0) }}</span>
-                                                                <i class="ri-bit-coin-line fw-bold text-warning"></i>
+                                                                    class="fw-bold text-danger me-2">{{ number_format($course->price, 0) }}</span>
+                                                                <i class="ri-bit-coin-line text-warning"></i>
                                                             @endif
                                                         @endif
                                                     </td>
                                                 </tr>
+
                                             </tbody>
                                         </table>
                                     </div>
@@ -236,7 +249,66 @@
                         </div>
                     </div>
                 </div>
+                <div class="tab-pane fade" id="course-information" role="tabpanel">
+                    <div class="row">
+                        <div class="col-xl-7 col-lg-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="card-title mb-0 text-uppercase">Mô tả về khoá học khóa học</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="text-muted">
+                                        <span class="d-flex"> {!! $course->description !!}</span>
+                                    </div>
 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-5 col-lg-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="text-muted">
+                                        <h5 class="mb-3 fw-semibold text-uppercase">Mục tiêu tham gia khoá học</h5>
+                                        <ul class="list-unstyled mb-0">
+                                            @foreach ($goals as $goal)
+                                                <li>
+                                                    <i class="ri-check-double-line label-icon align-middle fs-16 me-2"></i>
+                                                    <span>{{ $goal->goal }}</span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                    <hr>
+                                    <div class="text-muted mt-3">
+                                        <h5 class="mb-3 fw-semibold text-uppercase">Yêu cầu tham gia khoá học</h5>
+                                        <ul class="list-unstyled mb-0">
+                                            @foreach ($requirements as $requirement)
+                                                <li>
+                                                    <i class="ri-check-double-line label-icon align-middle fs-16 me-2"></i>
+                                                    <span>{{ $requirement->requirement }}</span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                    <hr>
+                                    <div class="text-muted mt-3">
+                                        <h5 class="mb-3 fw-semibold text-uppercase">Yêu cầu tham gia khoá học</h5>
+                                        <ul class="list-unstyled mb-0">
+                                            @foreach ($audiences as $audience)
+                                                <li>
+                                                    <i class="ri-check-double-line label-icon align-middle fs-16 me-2"></i>
+                                                    <span>{{ $audience->audience }}</span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
                 <div class="tab-pane fade" id="course-content" role="tabpanel">
                     <div class="card">
                         <div class="card-body">
@@ -272,6 +344,9 @@
                                                                         <i class="ri-video-line text-primary me-2"></i>
                                                                     @elseif($lesson->content_type === 'document')
                                                                         <i class="ri-file-text-line text-success me-2"></i>
+                                                                    @elseif($lesson->content_type === 'coding')
+                                                                        <i
+                                                                            class="ri-code-s-slash-fill text-success me-2"></i>
                                                                     @elseif($lesson->content_type === 'quiz')
                                                                         <i
                                                                             class="ri-questionnaire-fill text-warning me-2"></i>
@@ -288,10 +363,16 @@
                                                                     </button>
                                                                 </div>
                                                             </div>
-                                                            <div class="card-body">
-                                                                <i class="mb-0 fs-11">Thời gian: {{ $lesson->duration }}
+                                                            @if ($lesson->content_type === 'video')
+                                                                <div class="card-body">
+                                                                @php
+                                                                    $timeLesson = $lesson->lessonable->duration;
+                                                                @endphp
+                                                                <i class="mb-0 fs-11">Thời gian: {{ ceil($timeLesson / 60) }}
                                                                     phút</i>
-                                                            </div>
+                                                            </div>  
+                                                            @endif
+                                                          
                                                         </div>
                                                     @endforeach
                                                     @if ($module->quiz)
@@ -332,7 +413,6 @@
                         </div>
                     </div>
                 </div>
-
                 {{-- Điều kiện hoàn thành khóa học --}}
                 <div class="tab-pane fade" id="course-completion" role="tabpanel">
                     <div class="card">
@@ -352,7 +432,6 @@
                         </div>
                     </div>
                 </div>
-
                 {{-- Modal chấp thuận --}}
                 <div class="modal fade zoomIn" id="approvalModal" tabindex="-1" aria-labelledby="approvalModalLabel"
                     aria-hidden="true">
@@ -385,7 +464,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- Modal từ chối -->
                 <div class="modal modal-lg fade zoomIn" id="rejectModal" tabindex="-1"
                     aria-labelledby="rejectModalLabel" aria-hidden="true">
@@ -428,14 +506,13 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- Preview Lesson Modal -->
                 <div class="modal fade" id="previewLessonModal" tabindex="-1" aria-labelledby="previewLessonModal"
                     aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
-                        <div class="modal-content border-0 shadow-lg">
+                        <div class="modal-content border-0" style="width: 900px!important;">
                             <div class="modal-header bg-primary-subtle">
-                                <h5 class="modal-title mb-3" id="previewLessonModalLabel">Lesson Preview</h5>
+                                <h5 class="modal-title mb-3" id="previewLessonModalLabel">Xem trước bài học</h5>
                                 <button type="button" class="btn-close mb-2" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
@@ -466,6 +543,7 @@
             </div>
         </div>
     </div>
+
 @endsection
 
 @section('script-libs')
@@ -517,6 +595,51 @@
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
                                 </iframe>
+                            `)
+                        } else {
+                            $('#previewLessonModal .modal-body').html(`
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <!-- Card Header -->
+            <div class="card-header">
+                <h6 class="card-title mb-0 text-uppercase">${data.statement}</h6>
+                <br>
+                <span class="badge bg-primary text-uppercase">Ngôn ngữ lập trình ${data.language}</span>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="row">
+                    <!-- Gợi ý code -->
+                    <div class="col-xl-12 mb-3">
+                        <label class="form-label fw-bold">Gợi ý code</label>
+                        <textarea id="sampleCode" class="form-control bg-dark text-white" 
+                                  style="min-height: 300px; resize: none;" readonly>${data.sample_code}</textarea>
+                    </div>
+
+                    <!-- Kết quả code -->
+                    <div class="col-xl-12 mb-3">
+                        <label class="form-label fw-bold">Kết quả code</label>
+                        <textarea id="resultCode" class="form-control bg-dark text-white" 
+                                  style="min-height: 300px; resize: none;" readonly>${data.result_code}</textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <!-- Gợi ý code -->
+                    <div class="col-xl-12 mb-3">
+                        <label class="form-label fw-bold">Kết quả code</label>
+                        <textarea id="resultCode" class="form-control bg-dark text-white" 
+                                  style="min-height: 100px; resize: none;" readonly>${data.output}</textarea>
+                    </div>
+
+                  
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
                             `)
                         }
                     }
@@ -612,5 +735,10 @@
                 $(this).prop('disabled', true)
             })
         })
+    </script>
+    <script>
+        // Lấy nội dung từ textarea và div
+        const sampleCode = document.getElementById('sampleCode').value;
+        const resultCode = document.getElementById('resultCode').innerText;
     </script>
 @endsection

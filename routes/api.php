@@ -438,7 +438,6 @@ Route::get('/post-outstanding', [PostController::class, 'listPostOutstanding']);
 
 # ===================== ROUTE FOR TEACHER ===========================
 Route::prefix('teachers')->group(function () {
-
     Route::get('/search-teacher', [TeacherController::class, 'searchTeachers']);
 });
 
@@ -463,10 +462,6 @@ Route::prefix('courses')->group(function () {
 });
 
 
-# ===================== ROUTE FOR LESSON ===========================
-// Route::prefix('lessons')->group(function () {
-// Route::get('/lesson-detail/{id}', [LessonController::class, 'lessonDetail']);
-// });
 
 # ===================== ROUTE FOR COMMENT ===========================
 Route::prefix('comments')->group(function () {

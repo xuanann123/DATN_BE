@@ -7,8 +7,10 @@ use App\Models\Document;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Lessons\StoreLessonRequest;
+use App\Models\Coding;
 use App\Models\Video;
 use Illuminate\Support\Facades\Storage;
+use League\CommonMark\Extension\CommonMark\Node\Inline\Code;
 
 class LessonController extends Controller
 {
@@ -54,6 +56,18 @@ class LessonController extends Controller
                 'type' => $lesson->lessonable->type,
                 'url' => Storage::url($lesson->lessonable->url),
                 'video_youtube_id' => $lesson->lessonable->video_youtube_id
+            ]);
+        }
+
+        if ($lesson->lessonable_type == Coding::class) {
+            return response()->json([
+                "title" => $lesson->title,
+                "language" => $lesson->lessonable->language,
+                "statement" => $lesson->lessonable->statement,
+                "hints" => $lesson->lessonable->hints,
+                "sample_code" => $lesson->lessonable->sample_code,
+                "result_code" => $lesson->lessonable->result_code,
+                "output" => $lesson->lessonable->output
             ]);
         }
     }
