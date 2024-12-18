@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api\Client;
 
+use App\Events\MessageSent;
 use App\Models\User;
 use App\Models\Message;
 use App\Models\Conversation;
@@ -67,6 +68,9 @@ class MessageController extends Controller
 
             $this->createMessageReceipts($message->id, $user->id, $receiverId);
 
+            // sent event
+            broadcast(new MessageSent($message));
+
             DB::commit();
 
             return response()->json([
@@ -83,6 +87,131 @@ class MessageController extends Controller
             ], 500);
         }
     }
+
+    public function deleteMessage(Request $request, $messageId)
+    {
+        DB::beginTransaction();
+
+        try {
+            $user = auth()->user();
+
+            $messageReceipt = MessageReceipt::where('message_id', $messageId)
+                ->where('user_id', $user->id)
+                ->first();
+
+            // Nếu không tồn tại receipt
+            if (!$messageReceipt) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Thao tác không hợp lệ.',
+                    'data' => [],
+                ], 400);
+            }
+
+            // check del
+            if ($messageReceipt->deleted_at !== null || $messageReceipt->message->deleted_at !== null) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Tin nhắn đã được xóa trước đó.',
+                    'data' => [],
+                ], 400);
+            }
+
+            $messageReceipt->update([
+                'deleted_at' => now(),
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Tin nhắn đã được xóa thành công.',
+                'data' => [
+                    'message_id' => $messageReceipt->message_id,
+                    'conversation_id' => $messageReceipt->message->conversation_id,
+                    'user_id' => $messageReceipt->user_id,
+                    'action' => 'delete_message',
+                    'deleted_at' => $messageReceipt->deleted_at->format('Y-m-d H:i:s'),
+                ],
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi xóa tin nhắn.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+    public function unsendMessage(Request $request, $messageId)
+    {
+        DB::beginTransaction();
+        try {
+            $user = auth()->user();
+            $message = Message::find($messageId);
+
+            // Check tồn tại
+            if (!$message) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Tin nhắn không tồn tại.',
+                    'data' => [],
+                ], 404);
+            }
+
+            // Chỉ cho người gửi thu hồi
+            if ($message->sender_id !== $user->id) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Thao tác không hợp lệ.',
+                    'data' => [],
+                ], 400);
+            }
+
+            //
+            if ($message->deleted_at !== null) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Tin nhắn đã được thu hồi trước đó.',
+                    'data' => [],
+                ], 400);
+            }
+
+            // Xóa
+            $message->update([
+                'deleted_at' => now(),
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Tin nhắn đã được thu hồi thành công.',
+                'data' => [
+                    'message_id' => $message->id,
+                    'type' => $message->type,
+                    'sender_id' => $message->sender_id,
+                    'is_unsend' => 1,
+                    'conversation_id' => $message->conversation_id,
+                    'created_at' => $message->created_at->format('Y-m-d H:i:s'),
+                    'deleted_at' => $message->deleted_at,
+                ],
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi thu hồi tin nhắn.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 
     // Add thanh vien vao cuoc tro chuyen
     private function addConversationMember($conversationId, $userId)
