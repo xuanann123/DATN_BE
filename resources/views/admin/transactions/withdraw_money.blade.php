@@ -162,7 +162,7 @@
                                 <option value="Đang xử lí" disabled>Đang xử lí</option>
                                 <option value="Hoàn thành">Hoàn thành</option>
                                 <option value="Thất bại">Thất bại</option>
-                                <option value="Đã hủy">Đã hủy</option>
+{{--                                <option value="Đã hủy">Đã hủy</option>--}}
                             </select>
                         </div>
                         <div class="mb-3">
