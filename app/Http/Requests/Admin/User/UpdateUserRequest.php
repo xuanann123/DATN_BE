@@ -25,7 +25,7 @@ class UpdateUserRequest extends FormRequest
                 'email',
                 Rule::unique('users')->ignore($userId),
             ],
-            'user_type' => 'required',
+            'user_type' => 'nullable',
             'email_verified_at' => 'required',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120'
         ];
