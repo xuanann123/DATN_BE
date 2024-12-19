@@ -677,7 +677,7 @@ class PaymentController extends Controller
                     'data' => json_encode([
                         'notifiable_id' => $user->id,
                         'type' => 'request_withdraw_money',
-                        'name' => $user->name,
+                        'name' => auth()->user()->name,
                         'amount' => $newRequestWithdrawalWallet->amount,
                         'message' => 'Có yêu cầu rút ' . number_format($newRequestWithdrawalWallet->amount) . 'đ',
                         'url' => route('admin.transactions.withdraw-money'),
