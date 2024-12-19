@@ -45,4 +45,17 @@ class Category extends Model
     {
         return $this->belongsToMany(Post::class, 'category_post', 'category_id', 'post_id');
     }
+
+    public function hasRelations()
+    {
+        $relations = ['children', 'courses', 'posts'];
+
+        foreach ($relations as $relation) {
+            if ($this->{$relation}()->exists()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

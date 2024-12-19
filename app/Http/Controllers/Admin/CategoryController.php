@@ -111,6 +111,10 @@ class CategoryController extends Controller
     {
         $data = $request->except('image');
 
+        if ($category->hasRelations() && !$request->is_active) {
+            return redirect()->route('admin.categories.index')->with('error', 'Không thể tắt hoạt động danh mục vì đã có liên kết tồn tại.');
+        }
+
         if (!$request->is_active) {
             $data['is_active'] = 0;
         }
@@ -145,56 +149,59 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
+        if ($category->hasRelations()) {
+            return back()->with('error', 'Không thể xóa danh mục vì đã có liên kết tồn tại.');
+        }
 
-        // if ($category->image) {
-        //     $fileExists = Storage::disk('public')->exists($category->image);
-        //     if ($fileExists) {
-        //         Storage::disk('public')->delete($category->image);
-        //     }
-        // }
+        if ($category->image) {
+            $fileExists = Storage::disk('public')->exists($category->image);
+            if ($fileExists) {
+                Storage::disk('public')->delete($category->image);
+            }
+        }
         $category->delete();
         return back()->with(['success' => 'Xóa thành công!']);
     }
 
 
-    public function action(Request $request)
-    {
-        //Kiểm tra danh sách bản ghi tồn tại không
-        $listCheck = $request->listCheck;
-        if (!$listCheck) {
-            return redirect()->route("admin.categories.index")->with('error', 'Vui lòng chọn danh mục cần thao tác');
-        }
-        //Kiểm tra xem ng dùng chọn hành động hay k
-        $act = $request->act;
-        if (!$act) {
-            return redirect()->route("admin.categories.index")->with('error', 'Vui lòng chọn hành động để thao tác');
-        }
-        $message = match ($act) {
-            'trash' => function () use ($listCheck) {
-                Category::whereIn("id", $listCheck)->update(["is_active" => 0]);
-                Category::destroy($listCheck);
-                return 'Xoá thành công toàn bộ bản ghi đã chọn';
-            },
-            'active' => function () use ($listCheck) {
-                Category::whereIn("id", $listCheck)->update(["is_active" => 1]);
-                return 'Đăng toàn bộ những bản ghi đã chọn';
-            },
-            'inactive' => function () use ($listCheck) {
-                Category::whereIn("id", $listCheck)->update(["is_active" => 0]);
-                return 'Chuyển đổi toàn bộ những bản ghi về chờ xác nhận';
-            },
-            'restore' => function () use ($listCheck) {
-                Category::onlyTrashed()->whereIn("id", $listCheck)->restore();
-                return 'Khôi phục thành công toàn bộ bản ghi';
-            },
-            'forceDelete' => function () use ($listCheck) {
-                Category::onlyTrashed()->whereIn("id", $listCheck)->forceDelete();
-                return 'Xoá vĩnh viễn toàn bộ bản ghi khỏi hệ thống';
-            },
-            default => fn() => 'Hành động không hợp lệ',
-        };
-        return redirect()->route("admin.categories.index")->with('success', $message());
-    }
+    // public function action(Request $request)
+    // {
+    //     //Kiểm tra danh sách bản ghi tồn tại không
+    //     $listCheck = $request->listCheck;
+    //     if (!$listCheck) {
+    //         return redirect()->route("admin.categories.index")->with('error', 'Vui lòng chọn danh mục cần thao tác');
+    //     }
+    //     //Kiểm tra xem ng dùng chọn hành động hay k
+    //     $act = $request->act;
+    //     if (!$act) {
+    //         return redirect()->route("admin.categories.index")->with('error', 'Vui lòng chọn hành động để thao tác');
+    //     }
+    //     $message = match ($act) {
+    //         'trash' => function () use ($listCheck) {
+    //                 Category::whereIn("id", $listCheck)->update(["is_active" => 0]);
+    //                 Category::destroy($listCheck);
+    //                 return 'Xoá thành công toàn bộ bản ghi đã chọn';
+    //             },
+    //         'active' => function () use ($listCheck) {
+    //                 Category::whereIn("id", $listCheck)->update(["is_active" => 1]);
+    //                 return 'Đăng toàn bộ những bản ghi đã chọn';
+    //             },
+    //         'inactive' => function () use ($listCheck) {
+    //                 Category::whereIn("id", $listCheck)->update(["is_active" => 0]);
+    //                 return 'Chuyển đổi toàn bộ những bản ghi về chờ xác nhận';
+    //             },
+    //         'restore' => function () use ($listCheck) {
+    //                 Category::onlyTrashed()->whereIn("id", $listCheck)->restore();
+    //                 return 'Khôi phục thành công toàn bộ bản ghi';
+    //             },
+    //         'forceDelete' => function () use ($listCheck) {
+    //                 Category::onlyTrashed()->whereIn("id", $listCheck)->forceDelete();
+    //                 return 'Xoá vĩnh viễn toàn bộ bản ghi khỏi hệ thống';
+    //             },
+    //         default => fn() => 'Hành động không hợp lệ',
+    //     };
+    //     return redirect()->route("admin.categories.index")->with('success', $message());
+    // }
 
 
     public function restore(string $id)
@@ -210,6 +217,9 @@ class CategoryController extends Controller
     public function forceDelete(string $id)
     {
         $category = Category::onlyTrashed()->find($id);
+        if ($category->hasRelations()) {
+            return back()->with('error', 'Không thể xóa danh mục vì đã có liên kết tồn tại.');
+        }
         //Nếu Category đó không tồn tại thì báo lỗi
         if (!$category) {
             return redirect()->route('admin.categories.index')->with(['error' => 'category không tồn tại!']);
