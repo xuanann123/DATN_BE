@@ -122,10 +122,12 @@
                                         {{ $withdraw->approver_name }}
                                     </td>
                                     <td>
-                                        <a class="dropdown-item edit-item-btn cursor-pointer" data-bs-toggle="modal"
-                                            data-bs-target="#addModuleModal" data-request-id="{{ $withdraw->id }}"><i
-                                                class="ri-pencil-fill align-bottom me-2 text-muted"></i>
-                                            Sửa</a>
+                                        @if($withdraw->status == "Đang xử lí")
+                                            <a class="dropdown-item edit-item-btn cursor-pointer" data-bs-toggle="modal"
+                                               data-bs-target="#addModuleModal" data-request-id="{{ $withdraw->id }}"><i
+                                                    class="ri-pencil-fill align-bottom me-2 text-muted"></i>
+                                                Sửa</a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -157,6 +159,7 @@
                         <div class="mb-3">
                             <label for="status_withdraw" class="form-label">Trạng thái</label>
                             <select name="status" id="status_withdraw" class="form-control">
+                                <option value="Đang xử lí" disabled>Đang xử lí</option>
                                 <option value="Hoàn thành">Hoàn thành</option>
                                 <option value="Thất bại">Thất bại</option>
                                 <option value="Đã hủy">Đã hủy</option>

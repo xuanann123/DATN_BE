@@ -291,6 +291,23 @@ class TransactionController extends Controller
         }
 
         $requestMoney = WithdrawMoney::find($requestId);
+
+        if($requestMoney->status == $request->status) {
+            session()->flash('error', 'Trạng thái không hợp lệ');
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Cập nhật thất bại'
+            ], 200);
+        }
+
+        if($request->status != "Hoàn thành" && $request->status != "Đã hủy" && $request->status != "Thất bại") {
+            session()->flash('error', 'Trạng thái không hợp lệ');
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Cập nhật thất bại'
+            ], 200);
+        }
+
         if (!$requestMoney) {
             session()->flash('error', 'Không tồn tại yêu cầu');
             return response()->json([
