@@ -692,6 +692,7 @@ class PaymentController extends Controller
             'withdraw_money.account_holder',
             'withdraw_money.status',
             'withdraw_money.note',
+            'withdraw_money.photo_evidence',
             'users1.name as teacher_name',
             'users2.name as approver_name'
         )

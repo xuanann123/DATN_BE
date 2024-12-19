@@ -13,6 +13,7 @@ use App\Models\WithdrawMoney;
 use App\Notifications\Client\Instructor\RequestWithdrawMoney;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class TransactionController extends Controller
 {
@@ -215,6 +216,7 @@ class TransactionController extends Controller
                 'withdraw_money.account_holder',
                 'withdraw_money.status',
                 'withdraw_money.note',
+                'withdraw_money.photo_evidence',
                 'users1.name as user_name',
                 'users2.name as approver_name'
             )
@@ -244,6 +246,7 @@ class TransactionController extends Controller
             'withdraw_money.account_holder',
             'withdraw_money.status',
             'withdraw_money.note',
+            'withdraw_money.photo_evidence',
             'withdraw_money.created_at',
             'users1.name as user_name',
             'users2.name as approver_name'
@@ -282,7 +285,32 @@ class TransactionController extends Controller
             'note' => $request->status == 'Đã hủy' ? 'Hủy bởi quản trị viên: ' . $request->note : $request->note,
             'id_depositor' => $request->id_depositor
         ];
+
+        if ($request->photo_evidence && $request->hasFile('photo_evidence')) {
+            $image = $request->file('photo_evidence');
+            $newNameImage = 'transaction_' . time() . '.' . $image->getClientOriginalExtension();
+            $pathImage = Storage::putFileAs('transactions', $image, $newNameImage);
+            $data['photo_evidence'] = $pathImage;
+        }
+
         $requestMoney = WithdrawMoney::find($requestId);
+
+        if($requestMoney->status == $request->status) {
+            session()->flash('error', 'Trạng thái không hợp lệ');
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Cập nhật thất bại'
+            ], 200);
+        }
+
+        if($request->status != "Hoàn thành" && $request->status != "Đã hủy" && $request->status != "Thất bại") {
+            session()->flash('error', 'Trạng thái không hợp lệ');
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Cập nhật thất bại'
+            ], 200);
+        }
+
         if (!$requestMoney) {
             session()->flash('error', 'Không tồn tại yêu cầu');
             return response()->json([
