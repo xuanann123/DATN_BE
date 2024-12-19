@@ -155,7 +155,7 @@
 
                                                 <ul class="dropdown-menu dropdown-menu-end">
 
-                                                    <li><a href="{{ route('admin.users.detail', $item->id) }}"
+                                                    <li><a href="{{ route('admin.users.edit', $item->id) }}"
                                                             class="dropdown-item"><i
                                                                 class="ri-eye-fill align-bottom me-2 text-muted"></i>
                                                             Chi tiết</a>
@@ -166,7 +166,7 @@
                                                                 class="ri-pencil-fill align-bottom me-2 text-muted"></i>
                                                             Sửa</a></li>
 
-                                                    <li>
+                                                    {{-- <li>
                                                         <form action=""
                                                             method="post">
                                                             @csrf
@@ -178,7 +178,7 @@
                                                                     Xóa</button>
                                                             @endif
                                                         </form>
-                                                    </li>
+                                                    </li> --}}
                                                 </ul>
                                             </div>
                                         </td>

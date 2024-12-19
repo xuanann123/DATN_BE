@@ -437,9 +437,11 @@ class CourseController extends Controller
                     ]);
                     $message = 'Khóa học của bạn đã được gửi đi để xem xét.';
                     // Gửi thông báo đến admin
-                    $admins = User::where('user_type', User::TYPE_ADMIN)->get();
+                    $admins = User::whereIn('user_type', [User::TYPE_ADMIN, User::TYPE_SUPER_ADMIN])->get();
                     foreach ($admins as $admin) {
-                        $admin->notify(new CourseSubmittedNotification($course));
+                        if ($admin->hasPermission('course.approve') || $admin->user_type === User::TYPE_SUPER_ADMIN) {
+                            $admin->notify(new CourseSubmittedNotification($course));
+                        }
                     }
                     break;
 
@@ -481,9 +483,11 @@ class CourseController extends Controller
                     ]);
                     $message = 'Khóa học của bạn đã được gửi đi để xem xét lại.';
                     // Gửi thông báo đến admin
-                    $admins = User::where('user_type', User::TYPE_ADMIN)->get();
+                    $admins = User::whereIn('user_type', [User::TYPE_ADMIN, User::TYPE_SUPER_ADMIN])->get();
                     foreach ($admins as $admin) {
-                        $admin->notify(new CourseSubmittedNotification($course));
+                        if ($admin->hasPermission('course.approve') || $admin->user_type === User::TYPE_SUPER_ADMIN) {
+                            $admin->notify(new CourseSubmittedNotification($course));
+                        }
                     }
                     break;
 

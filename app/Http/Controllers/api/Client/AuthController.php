@@ -31,15 +31,27 @@ class AuthController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->validated();
+
             $otpCode = rand(100000, 999999);
             $expiresAt = Carbon::now()->addMinutes(15);
 
-            // insert user
-            $user = User::create([
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'password' => bcrypt($data['password']),
-            ]);
+            $user = User::where('email', $data['email'])->first();
+
+            if ($user) {
+                if ($user->email_verified_at !== null) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Email đã được đăng ký trong hệ thống.',
+                        'data' => [],
+                    ], 400);
+                }
+            } else {
+                $user = User::create([
+                    'name' => $data['name'],
+                    'email' => $data['email'],
+                    'password' => bcrypt($data['password']),
+                ]);
+            }
 
             // insert OTP
             OtpCode::create([
@@ -107,7 +119,17 @@ class AuthController extends Controller
                 'expires_at' => now()->addDays(30), // 1 month
             ]);
 
-            $cookie = cookie('refresh_token', $refreshToken, 43200, null, null, false, true, false, null);
+            $cookie = cookie(
+                'refresh_token',
+                $refreshToken,
+                43200,
+                null,
+                null,
+                true,
+                true,
+                false,
+                'None'
+            );
 
             return response()->json([
                 'message' => 'Xác thực thành công, bạn đã đăng nhập.',
@@ -231,7 +253,17 @@ class AuthController extends Controller
                 'expires_at' => now()->addDays(30), // 1 month
             ]);
 
-            $cookie = cookie('refresh_token', $refreshToken, 43200, null, null, false, true, true, 'Strict');
+            $cookie = cookie(
+                'refresh_token',
+                $refreshToken,
+                43200,
+                null,
+                null,
+                true,
+                true,
+                false,
+                'None'
+            );
 
             return response()->json([
                 'message' => 'Đăng nhập thành công.',
@@ -264,7 +296,17 @@ class AuthController extends Controller
                     'message' => 'Refresh token không hợp lệ hoặc đã hết hạn.',
                     'data' => [],
                     'status' => 400
-                ], 400)->withCookie(cookie('refresh_token', '', -1, null, null, false, true, true, null));
+                ], 400)->cookie(cookie(
+                            'refresh_token',
+                            '',
+                            -1,
+                            null,
+                            null,
+                            true,
+                            true,
+                            true,
+                            'None'
+                        ));
             }
 
             $user = $token->user;
@@ -280,7 +322,17 @@ class AuthController extends Controller
                 'expires_at' => now()->addDays(30)
             ]);
 
-            $cookie = cookie('refresh_token', $newRefreshToken, 43200, null, null, false, true, false, 'Strict');
+            $cookie = cookie(
+                'refresh_token',
+                $refreshToken,
+                43200,
+                null,
+                null,
+                true,
+                true,
+                false,
+                'None'
+            );
 
             return response()->json([
                 'message' => 'Refresh token thành công.',
@@ -447,7 +499,17 @@ class AuthController extends Controller
             $user->currentAccessToken()->delete();
 
             // Xóa cookie
-            $cookie = cookie('refresh_token', '', -1, null, null, false, true, true, null);
+            $cookie = cookie(
+                'refresh_token',
+                '',
+                -1,
+                null,
+                null,
+                true,
+                true,
+                true,
+                'None'
+            );
 
             return response()->json([
                 'message' => 'Đăng xuất thành công.',

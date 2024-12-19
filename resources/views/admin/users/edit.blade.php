@@ -209,7 +209,7 @@
                     </div>
                 </div>
             </div>
-            <!--end card-->
+            {{-- <!--end card-->
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-5">
@@ -228,7 +228,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
         </div>
         <!--end col-->
@@ -284,7 +284,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-lg-6">
+                                {{-- <div class="col-lg-6">
                                     <div class="mb-3">
                                         <label for="user_type" class="form-label">Loại người dùng</label>
                                         <select name="user_type" id="user_type" class="form-select">
@@ -301,7 +301,7 @@
                                             @endif
                                         </small>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <!--end col-->
                                 <div class="col-lg-6">
                                     <div class="mb-3">
@@ -320,7 +320,7 @@
                                 <!--end col-->
 
 
-                                @if ($user->user_type = 'admin')
+                                @if ($user->user_type == 'admin' && Auth::user()->user_type == 'super_admin')
                                     <div class="col-lg-12 mb-3">
                                         <label for="">Chọn vai trò của người dùng trên hệ thống</label>
                                         <select name="roles[]" id="role" multiple class="form-control">
@@ -331,7 +331,7 @@
                                         </select>
                                     </div>
                                 @endif
-                                
+
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         <label for="is_active" class="form-label">Trạng thái</label> <br>
@@ -446,11 +446,14 @@
     <script>
         const btnCheckPass = document.getElementById('check-pass');
         const inputPassword = document.getElementById('password');
+        const inputConfirmPassword = document.getElementById('confirm-password');
         btnCheckPass.addEventListener('click', () => {
             if (btnCheckPass.checked) {
                 inputPassword.type = 'text';
+                inputConfirmPassword.type = 'text';
             } else {
                 inputPassword.type = 'password'
+                inputConfirmPassword.type = 'password'
             }
         })
 

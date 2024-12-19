@@ -211,7 +211,7 @@
                     </div>
                 </div>
             </div>
-            <!--end card-->
+            {{-- <!--end card-->
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-5">
@@ -230,7 +230,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
         </div>
         <!--end col-->
@@ -786,11 +786,14 @@
     <script>
         const btnCheckPass = document.getElementById('check-pass');
         const inputPassword = document.getElementById('password');
+        const inputConfirmPassword = document.getElementById('confirm-password');
         btnCheckPass.addEventListener('click', () => {
             if (btnCheckPass.checked) {
                 inputPassword.type = 'text';
+                inputConfirmPassword.type = 'text';
             } else {
                 inputPassword.type = 'password'
+                inputConfirmPassword.type = 'password'
             }
         })
 

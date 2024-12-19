@@ -188,7 +188,8 @@ class ConversationController extends Controller
                 ->paginate($limit); // paginate
 
             // Đánh dấu tin nhắn là đã đọc (nếu chưa đọc)
-            $conversation->messages()
+            $hasUpdatedMessages = false;
+            $affectedRows = $conversation->messages()
                 ->whereHas('receipts', function ($query) use ($user) {
                     $query->where('user_id', $user->id)
                         ->where('read_at', null);
@@ -202,6 +203,10 @@ class ConversationController extends Controller
                             'read_at' => now(),
                         ]);
                 });
+
+            if ($affectedRows > 0) {
+                $hasUpdatedMessages = true;
+            }
 
             // chuẩn hóa resp
             $response = $messages->filter(function ($message) use ($user) {
@@ -241,6 +246,12 @@ class ConversationController extends Controller
                     'deleted_at' => $message->deleted_at ? $message->deleted_at : null,
                 ];
             });
+
+            $lastMessage = $this->getLastMessageData($conversation, $user);
+
+            if ($hasUpdatedMessages) {
+                broadcast(new ReadMessage($lastMessage));
+            }
 
             DB::commit();
 
@@ -358,6 +369,37 @@ class ConversationController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    private function getLastMessageData($conversation, $user)
+    {
+        $lastMessage = $conversation->messages()
+            ->whereHas('receipts', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->latest('created_at')
+            ->first();
+
+        if (!$lastMessage) {
+            return null;
+        }
+
+        $currentUserReceiptLastMessage = $lastMessage->receipts->firstWhere('user_id', $user->id);
+
+        return [
+            'id' => $lastMessage->id,
+            'conversation_id' => $lastMessage->conversation_id,
+            'type' => $lastMessage->type,
+            'sender' => [
+                'id' => $lastMessage->sender->id,
+                'name' => $lastMessage->sender->name,
+                'avatar' => $lastMessage->sender->avatar,
+            ],
+            'is_read' => $currentUserReceiptLastMessage ? $currentUserReceiptLastMessage->is_read : 0,
+            'read_at' => $currentUserReceiptLastMessage ? $currentUserReceiptLastMessage->read_at : null,
+            'created_at' => $lastMessage->created_at->format('Y-m-d H:i:s'),
+            'deleted_at' => $lastMessage->deleted_at ? $lastMessage->deleted_at : null,
+        ];
     }
 
 }
