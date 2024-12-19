@@ -185,7 +185,7 @@ class UserController extends Controller
                 'modules as quiz_count' => function ($query) {
                     $query->whereHas('quiz');
                 }
-            ]);
+            ])->latest('id');
         // Lọc theo level (nếu có)
         if ($request->filled('search')) {
             $myCourseBought->search($request->input('search'));
