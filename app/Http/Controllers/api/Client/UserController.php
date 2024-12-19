@@ -239,7 +239,7 @@ class UserController extends Controller
                 ->where('id_user', $authUser->id)
                 ->first();
             $course['progress_percent'] = $progress->progress_percent ?? 0;
-            //Kiểm tra khoá học đã được mua khoá hay 
+            //Kiểm tra khoá học đã được mua khoá hay
             if (DB::table('user_courses')->where('id_user', auth()->id())->where('id_course', $course->id)->exists()) {
                 $course->is_course_bought = true;
             } else {
@@ -321,10 +321,12 @@ class UserController extends Controller
                     'name_student' => $user->name,
                 ];
 
-                $admins = User::where('user_type', 'admin')->get();
+                $admins = User::whereIn('user_type', [User::TYPE_ADMIN, User::TYPE_SUPER_ADMIN])->get();
                 //Gửi thông báo kiểm duyệt cho admin
                 foreach ($admins as $admin) {
-                    $admin->notify(new RegisterTeacherNotification($newEducation, $user));
+                    if ($admin->hasPermission('course.approve') || $admin->user_type === User::TYPE_SUPER_ADMIN) {
+                        $admin->notify(new RegisterTeacherNotification($newEducation, $user));
+                    }
                 }
                 DB::commit();
             } catch (\Exception $e) {
@@ -575,13 +577,13 @@ class UserController extends Controller
             ])
                 ->where('user_id', $user->id)
                 ->get();
-                if(empty($roadmaps)) {
+            if (empty($roadmaps)) {
                 return response()->json([
                     'status' => 'error',
                     'message' => "Không có dữ liệu",
                     'data' => []
                 ], 204);
-                }
+            }
 
             return response()->json([
                 'status' => 'success',

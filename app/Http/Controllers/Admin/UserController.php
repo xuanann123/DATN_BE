@@ -32,7 +32,6 @@ class UserController extends Controller
         $title = "Thêm mới thành viên";
         $roles = [
             self::ADMIN => self::ADMIN,
-            self::TEACHER => self::TEACHER,
             self::STUDENT => self::STUDENT,
         ];
 
@@ -74,7 +73,6 @@ class UserController extends Controller
         $title = "Cập nhật tài khoản";
         $roles = [
             self::ADMIN => self::ADMIN,
-            self::TEACHER => self::TEACHER,
             self::STUDENT => self::STUDENT,
         ];
         //Danh sách role trên hệ thống
@@ -123,14 +121,14 @@ class UserController extends Controller
 
             //Nếu như mảng 1 value bằng 0 thì cập nhật nó là []
             $rolesID = [];
-            foreach($request->roles as $role) {
-                if($role == 0) {
+            foreach ($request->roles as $role) {
+                if ($role == 0) {
                     $rolesID = [];
                 } else {
                     $rolesID[] = $role;
                 }
             }
-           
+
             // dd($rolesID);
 
             // Cập nhật thông tin người dùng
