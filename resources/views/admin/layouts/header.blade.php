@@ -440,12 +440,7 @@
                                             Theo dõi
                                         </a>
                                     </li>
-                                    <li class="nav-item waves-effect waves-light" role="presentation">
-                                        <a class="nav-link" data-bs-toggle="tab" href="#alerts-tab" role="tab"
-                                            aria-selected="false" tabindex="-1">
-                                            ABC
-                                        </a>
-                                    </li>
+                                   
                                 </ul>
                             </div>
 
@@ -786,8 +781,13 @@
                                                     <span class="text-secondary fs-13 d-block">${title}</span>
 
                                                    <h5 class="mt-0 mb-2 lh-base badge bg-info">
-    ${notification.data.follower_name ? notification.data.follower_name : (notification.data.name ? notification.data.name : (notification.data.course_name ?  notification.data.course_name : notification.student_name))}
-</h5>
+${notification.data.student_name 
+    ? notification.data.student_name 
+    : (notification.data.follower_name 
+        ? notification.data.follower_name 
+        : (notification.data.name 
+            ? notification.data.name 
+            : notification.data.course_name))}</h5>
 
                                                 </a>
                                                 <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
