@@ -41,7 +41,7 @@ class RequestWithdrawMoney extends Notification implements ShouldBroadcast
                 'type' => 'request_withdraw_money',
                 'user_role' => 'instructor',
                 'message' => $this->status == true ? "Yêu cầu rút tiền đã được duyệt" : "Yêu cầu rút tiền không được duyệt",
-                'url' => 'http://localhost:5174/instructor/wallet'
+                'url' => 'http://localhost:5173/instructor/wallet'
             ];
     }
 
@@ -56,7 +56,7 @@ class RequestWithdrawMoney extends Notification implements ShouldBroadcast
             'type' => 'request_withdraw_money',
             'user_role' => 'instructor',
             'message' => $this->status == true ? "Yêu cầu rút tiền đã được duyệt" : "Yêu cầu rút tiền không được duyệt",
-            'url' => 'http://localhost:5174/instructor/wallet'
+            'url' => 'http://localhost:5173/instructor/wallet'
         ];
     }
 }

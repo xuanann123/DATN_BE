@@ -314,17 +314,17 @@ class TransactionController extends Controller
                 'status' => 'Thất bại',
                 'id_depositor' => auth()->id()
             ]);
-            Notification::query()->create([
-                'notifiable_type' => User::class,
-                'notifiable_id' => $requestMoney->id_user,
-                'type' => 'request_withdraw_money',
-                'data' => json_encode([
-                    'url' => 'http://localhost:5174/instructor/wallet',
-                    'type' => 'request_withdraw_money',
-                    'message' => 'Yêu cầu rút tiền không được duyệt',
-                    'user_role' => 'instructor',
-                ])
-            ]);
+            // Notification::query()->create([
+            //     'notifiable_type' => User::class,
+            //     'notifiable_id' => $requestMoney->id_user,
+            //     'type' => 'request_withdraw_money',
+            //     'data' => json_encode([
+            //         'url' => 'http://localhost:5174/instructor/wallet',
+            //         'type' => 'request_withdraw_money',
+            //         'message' => 'Yêu cầu rút tiền không được duyệt',
+            //         'user_role' => 'instructor',
+            //     ])
+            // ]);
             $user = User::find($requestMoney->id_user);
             $user->notify(new RequestWithdrawMoney(false));
 
@@ -340,17 +340,17 @@ class TransactionController extends Controller
                 'id_depositor' => auth()->id()
             ]);
 
-            Notification::query()->create([
-                'notifiable_type' => User::class,
-                'notifiable_id' => $requestMoney->id_user,
-                'type' => 'request_withdraw_money',
-                'data' => json_encode([
-                    'url' => 'http://localhost:5174/instructor/wallet',
-                    'type' => 'request_withdraw_money',
-                    'message' => 'Yêu cầu rút tiền đã được duyệt',
-                    'user_role' => 'instructor',
-                ])
-            ]);
+            // Notification::query()->create([
+            //     'notifiable_type' => User::class,
+            //     'notifiable_id' => $requestMoney->id_user,
+            //     'type' => 'request_withdraw_money',
+            //     'data' => json_encode([
+            //         'url' => 'http://localhost:5174/instructor/wallet',
+            //         'type' => 'request_withdraw_money',
+            //         'message' => 'Yêu cầu rút tiền đã được duyệt',
+            //         'user_role' => 'instructor',
+            //     ])
+            // ]);
 
             $user = User::find($requestMoney->id_user);
             $user->notify(new RequestWithdrawMoney(true));
