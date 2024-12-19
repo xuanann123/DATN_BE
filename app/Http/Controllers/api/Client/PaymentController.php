@@ -213,204 +213,227 @@ class PaymentController extends Controller
 
     public function buyCourse(Request $request)
     {
-        $userId = $request->id_user;
-        $courseId = $request->id_course;
+        DB::beginTransaction();
+        try {
+            $userId = $request->id_user;
+            $courseId = $request->id_course;
 
-        if (!$request->total_coin) {
-            return response()->json([
-                'data' => [
-                    'status' => 'error',
-                    'message' => 'Thiếu thông tin thanh toán'
-                ]
-            ]);
-        }
+            if (!$request->total_coin) {
+                return response()->json([
+                    'data' => [
+                        'status' => 'error',
+                        'message' => 'Thiếu thông tin thanh toán'
+                    ]
+                ]);
+            }
 
-        $course = Course::find($courseId);
-        if (!$course) {
-            return response()->json([
-                'data' => [
-                    'code' => 204,
-                    'status' => 'error',
-                    'message' => 'Khóa học không tồn tại'
-                ]
-            ]);
-        }
-
-        $user = User::find($userId);
-        if (!$user) {
-            return response()->json([
-                'data' => [
-                    'code' => 204,
-                    'status' => 'error',
-                    'message' => 'Người dùng không tồn tại'
-                ]
-            ]);
-        }
-
-        $checkByCourse = UserCourse::where('id_user', $userId)->where('id_course', $courseId)->first();
-        if ($checkByCourse) {
-            return response()->json([
-                'status' => "error",
-                'message' => "Bạn đã mua khóa học này rồi"
-
-            ], 409);
-        }
-
-        $wallet = PurchaseWallet::where('id_user', $userId)->first();
-        if (!$wallet) {
-            return response()->json([
-                'data' => [
-                    'code' => 204,
-                    'status' => 'error',
-                    'message' => 'Bạn chưa có ví, vui lòng nạp tiền để tạo ví'
-                ]
-            ]);
-        }
-
-        if ($wallet->balance < $request->total_coin_after_discount) {
-            return response()->json([
-                'data' => [
-                    'status' => 'error',
-                    'message' => 'Số dư không đủ, vui lòng nạp thêm xu'
-                ]
-            ]);
-        }
-
-        if ($request->total_coin != $request->total_coin_after_discount) {
-            if (!$request->voucher_code) {
+            $course = Course::find($courseId);
+            if (!$course) {
                 return response()->json([
                     'data' => [
                         'code' => 204,
                         'status' => 'error',
-                        'message' => 'Vui lòng nhập mã giảm giá'
+                        'message' => 'Khóa học không tồn tại'
                     ]
                 ]);
             }
-            if ($request->voucher_code) {
-                $voucher = Voucher::where('code', $request->voucher_code)
-                    ->where('start_time', '<', now())
-                    ->where('end_time', '>', now())
-                    ->where('is_active', 1)
-                    ->first();
-                if (!$voucher) {
+
+            $user = User::find($userId);
+            if (!$user) {
+                return response()->json([
+                    'data' => [
+                        'code' => 204,
+                        'status' => 'error',
+                        'message' => 'Người dùng không tồn tại'
+                    ]
+                ]);
+            }
+
+            $checkByCourse = UserCourse::where('id_user', $userId)->where('id_course', $courseId)->first();
+            if ($checkByCourse) {
+                return response()->json([
+                    'status' => "error",
+                    'message' => "Bạn đã mua khóa học này rồi"
+
+                ], 409);
+            }
+
+            $wallet = PurchaseWallet::where('id_user', $userId)->first();
+            if (!$wallet) {
+                return response()->json([
+                    'data' => [
+                        'code' => 204,
+                        'status' => 'error',
+                        'message' => 'Bạn chưa có ví, vui lòng nạp tiền để tạo ví'
+                    ]
+                ]);
+            }
+
+            if ($wallet->balance < $request->total_coin_after_discount) {
+                return response()->json([
+                    'data' => [
+                        'status' => 'error',
+                        'message' => 'Số dư không đủ, vui lòng nạp thêm xu'
+                    ]
+                ]);
+            }
+
+            if ($request->total_coin != $request->total_coin_after_discount) {
+                if (!$request->voucher_code) {
                     return response()->json([
                         'data' => [
                             'code' => 204,
                             'status' => 'error',
-                            'message' => 'Mã giảm giá không hợp lệ'
+                            'message' => 'Vui lòng nhập mã giảm giá'
                         ]
                     ]);
-                } else if ($voucher->count <= $voucher->used_count) {
-                    return response()->json([
-                        'data' => [
-                            'status' => 'error',
-                            'message' => 'Mã giảm giá đã hết lượt sử dụng'
-                        ]
-                    ]);
-                } else {
-                    $checkVoucher = VoucherUse::where('id_voucher', $voucher->id)
-                        ->where('id_user', $userId)
+                }
+                if ($request->voucher_code) {
+                    $voucher = Voucher::where('code', $request->voucher_code)
+                        ->where('start_time', '<', now())
+                        ->where('end_time', '>', now())
+                        ->where('is_active', 1)
                         ->first();
-
-                    if (!$checkVoucher) {
+                    if (!$voucher) {
+                        return response()->json([
+                            'data' => [
+                                'code' => 204,
+                                'status' => 'error',
+                                'message' => 'Mã giảm giá không hợp lệ'
+                            ]
+                        ]);
+                    } else if ($voucher->count <= $voucher->used_count) {
                         return response()->json([
                             'data' => [
                                 'status' => 'error',
-                                'message' => 'Vui lòng áp mã trước khi thanh toán'
+                                'message' => 'Mã giảm giá đã hết lượt sử dụng'
                             ]
                         ]);
-                    } else if ($checkVoucher) {
-                        if ($checkVoucher->is_used == true) {
+                    } else {
+                        $checkVoucher = VoucherUse::where('id_voucher', $voucher->id)
+                            ->where('id_user', $userId)
+                            ->first();
+
+                        if (!$checkVoucher) {
                             return response()->json([
                                 'data' => [
                                     'status' => 'error',
-                                    'message' => 'Bạn đã dùng mã này rồi'
+                                    'message' => 'Vui lòng áp mã trước khi thanh toán'
                                 ]
                             ]);
-                        } else if ($checkVoucher->expires_at < now()) {
-                            return response()->json([
-                                'data' => [
-                                    'status' => 'error',
-                                    'message' => 'Thời gian chờ đã hết, vui lòng áp lại mã'
-                                ]
-                            ]);
+                        } else if ($checkVoucher) {
+                            if ($checkVoucher->is_used == true) {
+                                return response()->json([
+                                    'data' => [
+                                        'status' => 'error',
+                                        'message' => 'Bạn đã dùng mã này rồi'
+                                    ]
+                                ]);
+                            } else if ($checkVoucher->expires_at < now()) {
+                                return response()->json([
+                                    'data' => [
+                                        'status' => 'error',
+                                        'message' => 'Thời gian chờ đã hết, vui lòng áp lại mã'
+                                    ]
+                                ]);
+                            }
                         }
                     }
                 }
             }
-        }
 
-        $newUserCourse = UserCourse::query()->create([
-            'id_user' => $userId,
-            'id_course' => $courseId,
-        ]);
-
-        $newBill = Bill::query()->create([
-            'id_user' => $userId,
-            'id_course' => $courseId,
-            'voucher_code' => $request->voucher_code ?? null,
-            'voucher_discount' => $request->coin_discount,
-            'total_coin' => $request->total_coin,
-            'total_coin_after_discount' => $request->total_coin_after_discount,
-            'status' => 'Thanh toán thành công'
-        ]);
-
-        if (!$newUserCourse) {
-            $newBill->delete();
-
-            return response()->json([
-                'data' => [
-                    'code' => 500,
-                    'status' => 'error',
-                    'message' => 'Mua khóa học thất bại'
-                ]
+            $newUserCourse = UserCourse::query()->create([
+                'id_user' => $userId,
+                'id_course' => $courseId,
             ]);
-        } else {
-            $withdrawalWallet = WithdrawalWallet::where('id_user', $course->id_user)->first();
-            if (!$withdrawalWallet) {
-                WithdrawalWallet::query()->create([
-                    'id_user' => $course->id_user,
-                    'balance' => $request->total_coin - ($request->total_coin * self::DISCOUNT),
+
+            $newBill = Bill::query()->create([
+                'id_user' => $userId,
+                'id_course' => $courseId,
+                'voucher_code' => $request->voucher_code ?? null,
+                'voucher_discount' => $request->coin_discount,
+                'total_coin' => $request->total_coin,
+                'total_coin_after_discount' => $request->total_coin_after_discount,
+                'status' => 'Thanh toán thành công'
+            ]);
+
+            if (!$newUserCourse) {
+                $newBill->delete();
+
+                return response()->json([
+                    'data' => [
+                        'code' => 500,
+                        'status' => 'error',
+                        'message' => 'Mua khóa học thất bại'
+                    ]
                 ]);
             } else {
-                $withdrawalWallet->update([
-                    'balance' => $withdrawalWallet->balance + ($request->total_coin - ($request->total_coin * self::DISCOUNT))
-                ]);
-            }
+                $originalPrice = $course->price_sale ? $course->price_sale : $course->price;
 
-            $wallet->update([
-                'balance' => $wallet->balance - $request->total_coin_after_discount,
-            ]);
+                if ($originalPrice != $request->total_coin) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Giá khóa học đã thay đổi, vui lòng thử lại.',
+                        'data' => [],
+                    ], 400);
+                }
 
-            $course->update([
-                'total_student' => $course->total_student + 1,
-            ]);
-
-            if ($request->voucher_code) {
-                DB::transaction(function () use ($request) {
-                    $voucher = Voucher::where('code', $request->voucher_code)->lockForUpdate()->first();
-                    $voucher->update([
-                        'used_count' => $voucher->used_count + 1,
+                $withdrawalWallet = WithdrawalWallet::where('id_user', $course->id_user)->first();
+                if (!$withdrawalWallet) {
+                    WithdrawalWallet::query()->create([
+                        'id_user' => $course->id_user,
+                        'balance' => $request->total_coin - ($request->total_coin * self::DISCOUNT),
                     ]);
+                } else {
+                    $withdrawalWallet->update([
+                        'balance' => $withdrawalWallet->balance + ($request->total_coin - ($request->total_coin * self::DISCOUNT))
+                    ]);
+                }
 
-                    $voucherUse = VoucherUse::firstOrCreate(
-                        ['id_user' => $request->id_user, 'id_voucher' => $voucher->id],
-                        ['is_used' => true]
-                    );
+                $wallet->update([
+                    'balance' => $wallet->balance - $request->total_coin_after_discount,
+                ]);
 
-                    if (!$voucherUse->wasRecentlyCreated) {
-                        $voucherUse->update(['is_used' => true]);
-                    }
-                });
+                $course->update([
+                    'total_student' => $course->total_student + 1,
+                ]);
+
+                if ($request->voucher_code) {
+                    DB::transaction(function () use ($request) {
+                        $voucher = Voucher::where('code', $request->voucher_code)->lockForUpdate()->first();
+                        $voucher->update([
+                            'used_count' => $voucher->used_count + 1,
+                        ]);
+
+                        $voucherUse = VoucherUse::firstOrCreate(
+                            ['id_user' => $request->id_user, 'id_voucher' => $voucher->id],
+                            ['is_used' => true]
+                        );
+
+                        if (!$voucherUse->wasRecentlyCreated) {
+                            $voucherUse->update(['is_used' => true]);
+                        }
+                    });
+                }
+
+                DB::commit();
+
+                return response()->json([
+                    'data' => [
+                        'status' => 'success',
+                        'message' => 'Mua khóa học thành công',
+                        'data' => $newBill
+                    ]
+                ], 201);
             }
-
+        } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
-                'data' => [
-                    'status' => 'success',
-                    'message' => 'Mua khóa học thành công',
-                    'data' => $newBill
-                ]
-            ], 201);
+                'status' => 'error',
+                'message' => 'Lỗi server.',
+                'error' => $e->getMessage(),
+                'data' => []
+            ], 500);
         }
     }
 

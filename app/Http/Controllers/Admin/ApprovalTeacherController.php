@@ -31,7 +31,9 @@ class ApprovalTeacherController extends Controller
         };
 
 
-        $listStudent = User::with('profile.education')->whereNotNull('status')
+        $listStudent = User::with('profile.education')
+            ->whereIn('user_type', [User::TYPE_MEMBER, User::TYPE_TEACHER])
+            ->whereNotNull('status')
             ->when($status != 'all', function ($query) use ($status) {
                 return match ($status) {
                     'pending' => $query->where('status', 'pending'),
@@ -58,7 +60,7 @@ class ApprovalTeacherController extends Controller
     {
         try {
             DB::beginTransaction();
-            //Đi cập nhật thằng user sang trạng thái 
+            //Đi cập nhật thằng user sang trạng thái
             $user = User::findOrFail($id);
             $reject = $request->input('reject');
             $admin_comments = $request->input('admin_comments') ? $request->input('admin_comments') : NULL;
@@ -80,7 +82,7 @@ class ApprovalTeacherController extends Controller
                     'status' => User::STATUS_REJECTED
                 ]);
                 Mail::to($user->email)->queue(new RegisterApproveFailEmail($user, $admin_comments));
-                //Thông báo đăng kí thất bại 
+                //Thông báo đăng kí thất bại
                 $user->notify(new RegisterApproveFailNotification($user));
                 DB::commit();
 
