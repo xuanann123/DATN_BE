@@ -74,7 +74,7 @@
                 <div class="card-body">
                     <form action="{{ route('admin.categories.action') }}">
                         @csrf
-                        <div class="row mb-3">
+                        {{-- <div class="row mb-3">
                             <div class="col-md-4 d-flex">
                                 <select name="act" id="" class="form-select">
                                     <option value="" class="form-control">Thao tác nhiều bản ghi</option>
@@ -87,17 +87,17 @@
                                     Chọn
                                 </button>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <table id="example" class="table table-bordered dt-responsive nowrap table-striped align-middle"
                             style="width:100%">
                             <thead>
                                 <tr>
-                                    <th scope="col" style="width: 50px;">
+                                    {{-- <th scope="col" style="width: 50px;">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" id="selectAll" value="option">
                                         </div>
-                                    </th>
+                                    </th> --}}
                                     <th data-ordering="false">Tên</th>
                                     <th data-ordering="false">Đường dẫn thân thiện</th>
                                     <th data-ordering="false">Ảnh</th>
@@ -110,12 +110,12 @@
                             <tbody class="list form-check-all">
                                 @foreach ($categories as $category)
                                     <tr>
-                                        <th scope="row">
+                                        {{-- <th scope="row">
                                             <div class="form-check">
                                                 <input class="form-check-input checkbox" type="checkbox" name="listCheck[]"
                                                     value="{{ $category->id }}">
                                             </div>
-                                        </th>
+                                        </th> --}}
                                         <td>{{ $category->name }}</td>
                                         <td>
                                             {{ $category->slug }}
