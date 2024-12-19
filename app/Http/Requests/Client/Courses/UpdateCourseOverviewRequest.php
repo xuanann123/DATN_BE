@@ -32,7 +32,18 @@ class UpdateCourseOverviewRequest extends BaseFormRequest
             'thumbnail' => 'nullable|image|max:2048', // max 2mb
             'trailer' => 'nullable|file|max:51200', // max 50mb
             'price' => 'nullable|numeric|min:0',
-            'price_sale' => 'nullable|numeric|min:0',
+            'price_sale' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) {
+                    $price = $this->input('price', 0);
+                    $priceSale = $value;
+                    if ($price > 0 && $priceSale < $price * 0.3) {
+                        $fail("Giá giảm không được nhỏ hơn 30% giá gốc.");
+                    }
+                },
+            ],
             'is_active' => 'nullable|boolean',
             'is_free' => 'nullable|boolean',
             'tags' => 'nullable|array',
