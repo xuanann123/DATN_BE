@@ -298,6 +298,42 @@ class CourseController extends Controller
         }
     }
 
+    public function updatePriceSale(Request $request, Course $course)
+    {
+        DB::beginTransaction();
+        try {
+            $price = (float) $course->price;
+            $priceSale = (float) $request->input('price_sale');
+
+            if ($priceSale > 0 && $priceSale < $price * 0.3) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Giá giảm không được nhỏ hơn hơn 30% giá gốc.',
+                    'data' => []
+                ], 400);
+            }
+
+            $course->price_sale = $priceSale;
+            $course->save();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Cập nhật giá giảm thành công!',
+                'data' => $course,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Đã xảy ra lỗi khi cập nhật giá giảm.',
+                'error' => $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
+    }
+
     public function deleteCourse(Course $course)
     {
         DB::beginTransaction();

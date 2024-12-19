@@ -123,7 +123,7 @@ class PaymentController extends Controller
 
         $vnp_Url = $vnp_Url . "?" . $query;
         if (isset($vnp_HashSecret)) {
-            $vnpSecureHash =   hash_hmac('sha512', $hashdata, $vnp_HashSecret);
+            $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
             $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
         }
         $returnData = array(
@@ -152,7 +152,7 @@ class PaymentController extends Controller
 
             $purchaseWallet = PurchaseWallet::where('id_user', $userId)->first();
             $amount = ($request->vnp_Amount) / 100;
-            $coin =  $amount / self::COIN_CONVERTER;
+            $coin = $amount / self::COIN_CONVERTER;
 
             if (!$purchaseWallet) {
                 $data = [
@@ -178,9 +178,11 @@ class PaymentController extends Controller
                 return redirect(env('FE_URL') . 'wallet?status=success');
             }
 
-            if ($purchaseWallet->update([
-                'balance' => $purchaseWallet->balance + $coin,
-            ])) {
+            if (
+                $purchaseWallet->update([
+                    'balance' => $purchaseWallet->balance + $coin,
+                ])
+            ) {
 
                 $purchaseWallet->transactions()->create([
                     'transactionable_type' => PurchaseWallet::class,
@@ -589,7 +591,7 @@ class PaymentController extends Controller
             ], 200);
         }
 
-        if($request->coin < 100 || $request->coin > 10000) {
+        if ($request->coin < 100 || $request->coin > 10000) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Số tiền rút không hợp lệ'
@@ -612,7 +614,7 @@ class PaymentController extends Controller
             ])
             ->count();
 
-        if($withdrawCount >= 5){
+        if ($withdrawCount >= 5) {
             return response()->json([
                 'code' => 422,
                 'status' => 'error',
@@ -641,23 +643,25 @@ class PaymentController extends Controller
             'balance' => ($withdrawalWallet->balance) - $request->coin,
         ]);
 
-        $usersAdmin = User::where('user_type', 'admin')->get();
+        $usersAdmin = User::whereIn('user_type', [User::TYPE_ADMIN, User::TYPE_SUPER_ADMIN])->get();
 
         foreach ($usersAdmin as $user) {
-            $newNotification = Notification::query()->create([
-                'notifiable_type' => User::class,
-                'notifiable_id' => $user->id,
-                'type' => 'request_withdraw_money',
-                'data' => json_encode([
+            if ($user->hasPermission('course.approve') || $user->user_type === User::TYPE_SUPER_ADMIN) {
+                $newNotification = Notification::query()->create([
+                    'notifiable_type' => User::class,
                     'notifiable_id' => $user->id,
                     'type' => 'request_withdraw_money',
-                    'name' => $user->name,
-                    'amount' => $newRequestWithdrawalWallet->amount,
-                    'message' => 'Có yêu cầu rút ' . number_format($newRequestWithdrawalWallet->amount) . 'đ',
-                    'url' => route('admin.transactions.withdraw-money'),
-                    'created_at' => $newRequestWithdrawalWallet->created_at
-                ]),
-            ]);
+                    'data' => json_encode([
+                        'notifiable_id' => $user->id,
+                        'type' => 'request_withdraw_money',
+                        'name' => $user->name,
+                        'amount' => $newRequestWithdrawalWallet->amount,
+                        'message' => 'Có yêu cầu rút ' . number_format($newRequestWithdrawalWallet->amount) . 'đ',
+                        'url' => route('admin.transactions.withdraw-money'),
+                        'created_at' => $newRequestWithdrawalWallet->created_at
+                    ]),
+                ]);
+            }
             broadcast(new RequestWithdrawMoney($newNotification->data));
         }
 
@@ -763,11 +767,11 @@ class PaymentController extends Controller
         // Số bản ghi trên một trang;
         $perPage = $request->perPage ?? 5;
 
-        if($request->start_date && $request->end_date) {
+        if ($request->start_date && $request->end_date) {
             $start_date = $request->start_date;
             $end_date = $request->end_date;
 
-            if($request->id_course) {
+            if ($request->id_course) {
                 $courseId = $request->id_course;
                 $hisroryBuyCourses = Bill::select(
                     'bills.id',
@@ -830,9 +834,7 @@ class PaymentController extends Controller
                 'message' => 'Lịch sử mua khóa học',
                 'data' => $hisroryBuyCourses
             ], 200);
-        }
-
-        else if($request->id_course) {
+        } else if ($request->id_course) {
             $courseId = $request->id_course;
             $hisroryBuyCourses = Bill::select(
                 'bills.id',
@@ -904,7 +906,7 @@ class PaymentController extends Controller
             ])
             ->count();
 
-        if($withdrawCount >= 5){
+        if ($withdrawCount >= 5) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Bạn đã hết dùng hết yêu cầu rút tiền của tháng này',

@@ -254,6 +254,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/course', [CourseController::class, 'index']);
         Route::get('/course/approved', [CourseController::class, 'getApprovedCourses']);
         Route::post('/course', [CourseController::class, 'storeNewCourse']);
+        Route::put('/course/{course}/update-price-sale', [CourseController::class, 'updatePriceSale']);
         Route::get('/course/{course}/preview', [PreviewCourseController::class, 'index']);
         //Lộ trình
         Route::prefix('roadmap')->group(function () {
