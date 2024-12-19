@@ -173,7 +173,7 @@ class UserController extends Controller
     //Danh sách khoá học của tôi đã mua
     public function myCourseBought(Request $request)
     {
-        $limit = $request->input('limit', 6);
+        $limit = $request->input('limit', 8);
         $authUser = Auth::user();
         $myCourseBought = $authUser->usercourses()->with('modules', 'user')
             ->withCount('ratings')

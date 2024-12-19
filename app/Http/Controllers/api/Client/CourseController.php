@@ -239,30 +239,14 @@ class CourseController extends Controller
                     $query->where('is_active', 1)
                         ->where('status', 'approved');
                 })
-                ->with([
-                    'courses' => function ($query) {
-                        $query->select('id', 'slug', 'name', 'level', 'thumbnail', 'price', 'price_sale', 'id_user', 'id_category')
-                            ->where('is_active', 1)
-                            ->where('status', 'approved')
-                            ->withCount([
-                                'modules as lessons_count' => function ($query) {
-                                    $query->whereHas('lessons');
-                                },
-                                'modules as quiz_count' => function ($query) {
-                                    $query->whereHas('quiz');
-                                }
-                            ])
-                            ->with(['user:id,name,avatar'])
-                            ->withCount('ratings')
-                            ->withAvg('ratings', 'rate')
-                            ->limit(4);
-                    }
-                ])->get();
+                ->with('courses')
+                ->get();
             foreach ($categories as $category) {
                 foreach ($category->courses as $course) {
                     // Sử dụng `withAvg` đã tính toán trước đó, nhưng định dạng lại thành số có 1 chữ số sau dấu thập phân
                     $course->ratings_avg_rate = number_format(round($course->ratings_avg_rate, 1), 1);
                     $course->total_student = DB::table('user_courses')->where('id_course', $course->id)->count();
+                    
 
                 }
             }
@@ -311,7 +295,7 @@ class CourseController extends Controller
     public function listFavoriteCourse(Request $request)
     {
         $user = Auth::user();
-        $limit = $request->input('limit', 6);
+        $limit = $request->input('limit', 8);
         //phân trang 6 bản ghi
         try {
             $courses = $user->wishlists()->with('modules', 'user')
@@ -594,7 +578,7 @@ class CourseController extends Controller
     public function listCourseAll(Request $request)
     {
         try {
-            $limit = $request->input('limit', 6);
+            $limit = $request->input('limit', 8);
 
             // Khởi tạo query cơ bản với các điều kiện chung
             $courses = Course::select('id', 'slug', 'name', 'level', 'thumbnail', 'price', 'price_sale', 'id_user', 'id_category')
