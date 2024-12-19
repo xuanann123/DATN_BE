@@ -166,12 +166,12 @@
                                                         <form action="" method="post">
                                                             @csrf
                                                             @method('DELETE')
-                                                            @if (Auth::id() != $item->id)
+                                                            {{-- @if (Auth::id() != $item->id)
                                                                 <button class="dropdown-item remove-item-btn"
                                                                     onclick="return confirm('Xác nhận xóa người dùng {{ $item->name }}?')"><i
                                                                         class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
                                                                     Xóa</button>
-                                                            @endif
+                                                            @endif --}}
                                                         </form>
                                                     </li>
                                                 </ul>
