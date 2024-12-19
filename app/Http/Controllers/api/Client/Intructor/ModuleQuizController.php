@@ -420,18 +420,22 @@ class ModuleQuizController extends Controller
 
             $questionsData = $request->input('questions');
 
+            // $checkOptionIndex = 0;
+
             foreach ($questionsData as $questionIndex => $questionData) {
+                // $checkQuestionIndex = $questionIndex++;
                 // return response()->json([
                 //     'test' => $questionData,
                 // ]);
                 // Kiểm tra nếu không có 'correct_answer' trong câu hỏi, trả về lỗi
-                if (!isset($questionData['correct_answer'])) {
+                if (!isset($questionData['correct_answer']) || $questionData['correct_answer'] < 0) {
                     return response()->json([
                         'status' => 'error',
-                        'message' => 'Phải chọn đáp án đúng cho câu hỏi.',
+                        'message' => 'Phải chọn đáp án đúng cho tất cả câu hỏi.',
                         'data' => []
                     ], 400);
                 }
+
                 // Tải ảnh câu hỏi từ url
                 $questionImage = $this->downloadImageFromUrl($questionData['image'] ?? null, 'questions', $importedImages);
 
@@ -445,7 +449,6 @@ class ModuleQuizController extends Controller
                 // Lưu câu hỏi vào mảng để lấy sau
                 $newQuestions[] = $newQuestion;
 
-
                 // Them dap an
                 foreach ($questionData['options'] as $optionIndex => $optionData) {
                     $optionText = is_array($optionData) ? ($optionData['text'] ?? null) : $optionData;
@@ -456,7 +459,7 @@ class ModuleQuizController extends Controller
                     if (empty($optionText) && !$optionImage) {
                         return response()->json([
                             'status' => 'error',
-                            'message' => 'Phải có nội dung cho câu trả lời thứ ' . ($optionIndex + 1),
+                            'message' => 'Phải có nội dung cho tất cả câu trả lời.',
                             'data' => []
                         ], 400);
                     }
