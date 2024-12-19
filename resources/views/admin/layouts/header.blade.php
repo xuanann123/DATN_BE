@@ -786,7 +786,7 @@
                                                     <span class="text-secondary fs-13 d-block">${title}</span>
 
                                                    <h5 class="mt-0 mb-2 lh-base badge bg-info">
-    ${notification.data.follower_name ? notification.data.follower_name : (notification.data.name ? notification.data.name : notification.data.course_name)}
+    ${notification.data.follower_name ? notification.data.follower_name : (notification.data.name ? notification.data.name : (notification.data.course_name? : notification.data.course_name : notification.student_name))}
 </h5>
 
                                                 </a>
