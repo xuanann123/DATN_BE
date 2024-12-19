@@ -527,7 +527,7 @@
                 {{-- Preview Quiz --}}
                 <div class="modal fade" id="previewQuizModal" tabindex="-1" aria-labelledby="previewQuizModal"
                     aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-xxl">
+                    <div class="modal-dialog modal-dialog-centered modal-xl">
                         <div class="modal-content border-0 shadow-xxl">
                             <div class="modal-header bg-primary-subtle">
                                 <h4 class="modal-title mb-3" id="previewQuizModalLabel">Lesson Preview</h4>
@@ -543,6 +543,28 @@
                         </div>
                     </div>
                 </div>
+                {{-- Preview Ảnh --}}
+                <div class="modal fade" id="previewImageModal" tabindex="-1" aria-labelledby="previewImageModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-xl">
+                        <div class="modal-content border-0 shadow-xxl">
+                            <div class="modal-header bg-primary-subtle">
+                                <h4 class="modal-title mb-3" id="previewImageModalLabel">Image Preview</h4>
+                                <button type="button" class="btn-close mb-2" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body p-4 text-center">
+                                <img id="modalImagePreview" src="" alt="Image Preview"
+                                    class="img-fluid w-100" />
+                            </div>
+                            <div class="modal-footer border-top-0">
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
         </div>
     </div>
@@ -706,12 +728,22 @@
                                             ${option.is_correct ? 'checked' : ''}
                                             disable
                                             >
+
                                     </div>
+                                     
                                     <input type="text" class="form-control ${option.is_correct ? 'border-success text-success' : ''}"
                                         placeholder=""
                                         name="answer${index}"
                                         value="${option.option}">
-                                </div>`
+                                         ${option.image_url ? `<span 
+                                    class="input-group-text border-1 rounded" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#previewImageModal"
+                                    data-image-url="http://127.0.0.1:8000/storage/${option.image_url}">
+                                    <i class="ri-image-fill fs-20"></i>
+                                </span>` : ''}
+                                                                                        
+                                                                </div>`
                             })
 
                             questionHtml += `</ul></div>`
@@ -757,10 +789,26 @@
                 $(this).prop('disabled', true)
             })
         })
+       
     </script>
     <script>
         // Lấy nội dung từ textarea và div
         const sampleCode = document.getElementById('sampleCode').value;
         const resultCode = document.getElementById('resultCode').innerText;
+    </script>
+    <script>
+         // Lắng nghe sự kiện click trên các icon mở modal
+$(document).on("click", '[data-bs-toggle="modal"][data-bs-target="#previewImageModal"]', function (event) {
+    // Lấy URL ảnh từ thuộc tính data-image-url
+    const imageUrl = $(this).data("image-url");
+    const modalImage = document.getElementById("modalImagePreview");
+
+    console.log("Image URL:", imageUrl); // Log ra URL ảnh để kiểm tra
+
+    // Cập nhật ảnh trong modal
+    if (modalImage && imageUrl) {
+        modalImage.src = imageUrl;
+    }
+});
     </script>
 @endsection
