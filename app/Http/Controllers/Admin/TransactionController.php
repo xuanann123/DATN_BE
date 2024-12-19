@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bill;
+use App\Models\Notification;
 use App\Models\PurchaseWallet;
 use App\Models\Transaction;
+use App\Models\User;
 use App\Models\WithdrawalWallet;
 use App\Models\WithdrawMoney;
+use App\Notifications\Client\Instructor\RequestWithdrawMoney;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -311,6 +314,20 @@ class TransactionController extends Controller
                 'status' => 'Thất bại',
                 'id_depositor' => auth()->id()
             ]);
+            Notification::query()->create([
+                'notifiable_type' => User::class,
+                'notifiable_id' => $requestMoney->id_user,
+                'type' => 'request_withdraw_money',
+                'data' => json_encode([
+                    'url' => 'http://localhost:5174/instructor/wallet',
+                    'type' => 'request_withdraw_money',
+                    'message' => 'Yêu cầu rút tiền không được duyệt',
+                    'user_role' => 'instructor',
+                ])
+            ]);
+            $user = User::find($requestMoney->id_user);
+            $user->notify(new RequestWithdrawMoney(false));
+
         } else if ($data['status'] == 'Hoàn thành') {
             $withdrawWallet = WithdrawalWallet::where('id_user', $requestMoney->id_user)->first();
             Transaction::query()->create([
@@ -322,6 +339,21 @@ class TransactionController extends Controller
                 'status' => 'Thành công',
                 'id_depositor' => auth()->id()
             ]);
+
+            Notification::query()->create([
+                'notifiable_type' => User::class,
+                'notifiable_id' => $requestMoney->id_user,
+                'type' => 'request_withdraw_money',
+                'data' => json_encode([
+                    'url' => 'http://localhost:5174/instructor/wallet',
+                    'type' => 'request_withdraw_money',
+                    'message' => 'Yêu cầu rút tiền đã được duyệt',
+                    'user_role' => 'instructor',
+                ])
+            ]);
+
+            $user = User::find($requestMoney->id_user);
+            $user->notify(new RequestWithdrawMoney(true));
         }
 
         session()->flash('success', 'Cập nhật thành công');
