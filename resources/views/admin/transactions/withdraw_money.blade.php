@@ -72,6 +72,7 @@
                                 <th>Trạng thái</th>
                                 <th>Ngày tạo</th>
                                 <th>Ghi chú</th>
+                                <th>Minh chứng</th>
                                 <th>Người duyệt</th>
                                 <th>Thao tác</th>
                             </tr>
@@ -82,10 +83,12 @@
                                     <td>{{ $withdraw->id }}</td>
                                     <td>{{ $withdraw->user_name }}</td>
                                     <td>
-                                        {{ number_format($withdraw->coin) }}
+                                        <span class="badge text-white bg-danger"> {{ number_format($withdraw->coin) }}</span>
                                     </td>
                                     <td>
-                                        {{ number_format($withdraw->amount) }}
+                                        <span class="badge text-white bg-danger">
+                                            {{ number_format($withdraw->amount) }}
+                                        </span>
                                     </td>
                                     <td>
                                         {{ $withdraw->bank_name }}
@@ -98,13 +101,22 @@
                                     </td>
 
                                     <td>
-                                        {{ $withdraw->status }}
+                                        <span class="badge text-white bg-{{ $withdraw->status == "Hoàn thành" ? "success" : "danger" }}">
+                                             {{ $withdraw->status }}
+                                        </span>
                                     </td>
                                     <td>
                                         {{ $withdraw->created_at }}
                                     </td>
                                     <td>
                                         {{ $withdraw->note }}
+                                    </td>
+                                    <td>
+                                        @if(!empty($withdraw->photo_evidence))
+                                            <a target="_blank" href="{{ Storage::url($withdraw->photo_evidence) }}">
+                                                <img src="{{ Storage::url($withdraw->photo_evidence) }}" width="100px" height="auto">
+                                            </a>
+                                        @endif
                                     </td>
                                     <td>
                                         {{ $withdraw->approver_name }}
@@ -137,7 +149,7 @@
                 </div>
                 <div class="modal-body">
                     <form id="edit-status" method="POST"
-                        action="{{ route('admin.transactions.update-status-request-money') }}">
+                        action="{{ route('admin.transactions.update-status-request-money') }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         <input type="hidden" name="id_withdraw_money" id="id_withdraw_money">
@@ -145,11 +157,14 @@
                         <div class="mb-3">
                             <label for="status_withdraw" class="form-label">Trạng thái</label>
                             <select name="status" id="status_withdraw" class="form-control">
-                                <option value="Đang xử lí">Đang xử lí</option>
                                 <option value="Hoàn thành">Hoàn thành</option>
                                 <option value="Thất bại">Thất bại</option>
                                 <option value="Đã hủy">Đã hủy</option>
                             </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="note" class="form-label">Ảnh minh chứng</label>
+                            <input type="file" name="photo_evidence" class="form-control" accept="image/*">
                         </div>
                         <div class="mb-3">
                             <label for="note" class="form-label">Ghi chú</label>
@@ -217,11 +232,13 @@
 
             $('#edit-status').on('submit', function(e) {
                 e.preventDefault();
-                var formData = $(this).serialize();
+                var formData = new FormData(this);
                 $.ajax({
                     url: $(this).attr('action'),
                     method: 'POST',
                     data: formData,
+                    processData: false,
+                    contentType: false,
                     success: function(response) {
                         $('#addModuleModal').modal('hide');
                         location.reload();
