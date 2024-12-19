@@ -33,7 +33,7 @@ class RegisterApproveFailNotification extends Notification implements ShouldBroa
             'id' => $this->user['id'],
             'student_name' => $this->user['name'],
             'message' => "Hệ thống từ chối ứng tuyển vị trí giảng viên, cám ơn bạn!.",
-            'url' => env('FE_URL') . 'account/profile/'
+            'url' => env('FE_URL') . 'instructor/register'
         ];
     }
     public function toBroadcast(object $notifiable): array
@@ -44,7 +44,7 @@ class RegisterApproveFailNotification extends Notification implements ShouldBroa
             'status'=> false,
             'student_name' => $this->user['name'],
             'message' => "Hệ thống từ chối ứng tuyển vị trí giảng viên, cám ơn bạn!.",
-            'url' => env('FE_URL') . 'account/profile/'
+            'url' => env('FE_URL') . 'instructor/register'
         ];
     }
 }
