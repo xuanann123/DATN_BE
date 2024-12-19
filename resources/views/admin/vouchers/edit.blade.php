@@ -240,9 +240,7 @@
                                             <option value="">Select type voucher</option>
                                             <option {{ $voucher->type == 'percent' ? 'selected' : '' }} value="percent">
                                                 Phần trăm</option>
-                                            <option {{ $voucher->type == 'fixed' ? 'selected' : '' }} value="fixed">Giá cố
-                                                định
-                                            </option>
+                                     
                                         </select>
                                         <small class="help-block form-text text-danger">
                                             @if ($errors->has('type'))

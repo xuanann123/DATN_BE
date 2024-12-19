@@ -240,9 +240,6 @@
                                             <option value="">Chọn loại giảm giá</option>
                                             <option {{ old('type') == 'percent' ? 'selected' : '' }} value="percent">
                                                 Phần trăm</option>
-                                            <option {{ old('type') == 'fixed' ? 'selected' : '' }} value="fixed">Giá cố
-                                                định
-                                            </option>
                                         </select>
                                         <small class="help-block form-text text-danger">
                                             @if ($errors->has('type'))
@@ -256,7 +253,7 @@
                                     <div class="mb-3">
                                         <label for="discount" class="form-label">Số phần trăm/xu giảm</label>
                                         <div class="input-group">
-                                            <input type="number" value="{{ old('discount') }}" id="discount"
+                                            <input type="number" value="{{ old('discount') }}" min="0" max="30" 
                                                 name="discount" placeholder="Discount" class="form-control">
                                             <span class="input-group-text" id="unit">%</span>
                                         </div>

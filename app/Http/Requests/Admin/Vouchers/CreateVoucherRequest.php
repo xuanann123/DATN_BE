@@ -20,7 +20,7 @@ class CreateVoucherRequest extends FormRequest
             'code' => 'required|unique:vouchers,code|max:255',
             'description' => 'nullable|min:6|max:65535',
             'type' => 'required',
-            'discount' => 'required|numeric|min:0',
+            'discount' => 'required|numeric|min:0|max:30',
             'count' => 'required|integer|min:0',
             'start_time' => 'required|date_format:Y-m-d\TH:i',
             'end_time' => 'required|date_format:Y-m-d\TH:i|after:start_time',
@@ -45,6 +45,8 @@ class CreateVoucherRequest extends FormRequest
             'discount.required' => 'Vui lòng nhập số phần trăm/xu giảm.',
             'discount.numeric' => 'Số phần trăm/xu giảm phải là một số.',
             'discount.min' => 'Giảm giá phải ít nhất là 1.',
+            'discount.max' => 'Giảm giá không được quá 30%.',
+
 
             'count.required' => 'Vui lòng nhập số lượng voucher.',
             'count.integer' => 'Số lượng phải là một số nguyên.',
